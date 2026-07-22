@@ -1,4 +1,7 @@
-Copyright (c) ViliusL
+get-in-loser — a personal derivative of miniPaint.
+
+Copyright (c) 2026 DazzlingDukeOfLazers (derivative modifications)
+Copyright (c) ViliusL (original miniPaint)
 https://github.com/viliusle
 
 Permission is hereby granted, free of charge, to any person obtaining

@@ -1,29 +1,16 @@
-# miniPaint
+# get-in-loser
 
-Online image editor lets you create and edit images using HTML5 technologies. No need to buy, download, install, or have outdated flash. No ads. Key features: layers, filters, open source Photoshop alternative.
+A personal, browser-based image editor. Runs entirely in your browser — nothing is uploaded to any server. This is a personal derivative with opinionated, non-standard workflow changes; it is **not** intended to track or contribute back to upstream.
 
-miniPaint operates directly in the browser. You can create images by pasting from the clipboard (ctrl+v) or uploading from the computer (_using menu or drag & drop_). Nothing will be sent to any server. Everything stays in your browser. 
+## Based on miniPaint
 
-## URL:
-**https://viliusle.github.io/miniPaint/**
+get-in-loser is a fork of [**miniPaint**](https://github.com/viliusle/miniPaint) by [ViliusL](https://github.com/viliusle), used under the MIT License. Enormous thanks to the original author and contributors — all of the foundation here is their work. See [`MIT-LICENSE.txt`](MIT-LICENSE.txt) for the full license and attribution.
 
-## Preview:
-![miniPaint](https://raw.githubusercontent.com/viliusle/miniPaint/master/images/preview.gif)
-(generated using miniPaint)
+The pristine upstream import is the first commit in this repository's history, so every change made here diffs cleanly against the original.
 
-**Change log:** [/miniPaint/releases](https://github.com/viliusle/miniPaint/releases)
+## Features (inherited from miniPaint)
 
-## Browser Support
-- Chrome
-- Firefox
-- Opera
-- Edge
-- Safari
-- Yandex
-
-## Features
-
-**Files**: open images, directories, URLs, data URLs, drag and drop, save (PNG, JPG, BMP, WEBP, animated GIF, TIFF, JSON (layers data), print.
+**Files**: open images, directories, URLs, data URLs, drag and drop, save (PNG, JPG, BMP, WEBP, animated GIF, TIFF, JSON layer data), print.
 
 **Edit**: undo, cut, copy, paste, selection, paste from the clipboard.
 
@@ -31,30 +18,20 @@ miniPaint operates directly in the browser. You can create images by pasting fro
 
 **Layers**: multi-layer system, differences, merging, flattening, transparency support.
 
-**Effects**: black and white, blur (box, gaussian, stack, zoom), bulge/pinch, denoise, desaturation, dither, dot screen, edge, emboss, enrich, gamma, grains, grayscale, heatmap, jpg compression, mosaic, oil, sepia, sharpen, solarize, tilt shift, vignette, vibrance, vintage, blueprint, night vision, pencil, also instagram filters: 1977, aden, clarendon, gingham, inkwell, lo-fi, toaster, valencia, x-pro ii.
+**Effects**: black and white, blur (box, gaussian, stack, zoom), bulge/pinch, denoise, desaturation, dither, dot screen, edge, emboss, enrich, gamma, grains, grayscale, heatmap, jpg compression, mosaic, oil, sepia, sharpen, solarize, tilt shift, vignette, vibrance, vintage, blueprint, night vision, pencil, plus instagram-style filters.
 
-**Tools**: pencil, brush, magic wand, eraser, fill, color picker, letter, crop, blur, sharpener, desaturation, clone, borders, sprites, keypoints, color zoom, change color, restore transparency, content fill. 
-
-**Help**: keyboard shortcuts, translation.
-
-## Embed
-To embed this app on another page, use the following HTML code:
-
-    <iframe style="box-sizing:border-box; width:100%; height:100vh;" id="miniPaint" src="https://viliusle.github.io/miniPaint/" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+**Tools**: pencil, brush, magic wand, eraser, fill, color picker, letter, crop, blur, sharpener, desaturation, clone, borders, sprites, keypoints, color zoom, change color, restore transparency, content fill.
 
 ## Build instructions
-See [Wiki > Build instructions](https://github.com/viliusle/miniPaint/wiki/Build-instructions)
 
-## Wiki
-See [Wiki](https://github.com/viliusle/miniPaint/wiki)
+```bash
+npm install
+npm run server   # dev server with live reload
+npm run build    # production build
+```
 
-## Contributors
-<a align="center" href="https://github.com/viliusle/miniPaint/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=viliusle/miniPaint" />
-</a>
+Build tooling follows upstream miniPaint; see [miniPaint Wiki > Build instructions](https://github.com/viliusle/miniPaint/wiki/Build-instructions) for details.
 
 ## License
-MIT License
 
-## Support
-Please use the GitHub issues for support, feature requests and bug reports, or contact us by sending an email to www.viliusl@gmail.com.
+MIT — see [`MIT-LICENSE.txt`](MIT-LICENSE.txt). Original work © ViliusL (miniPaint); derivative modifications © DazzlingDukeOfLazers.
