@@ -111,6 +111,46 @@ body.theme-green{
 	--scrollbar-thumb-color: #80937d;
 	--mobile-menu-toggle-filter: invert(1);
 }
+body.theme-yonce{
+	/* yonce - Beyonce inspired (https://yoncetheme.com/) */
+	--background: #121212;
+	--text-color: #ffffff;
+	--text-color-muted: #b7b7c0;
+	--text-color-red: #fc4384;
+	--text-color-green: #37e5e7;
+	--text-color-blue: #a06fca;
+	--link-color: #37e5e7;
+	--section-background-color: #1c1c1c;
+	--area-background-color: #2f2f2f;
+	--block-background-color: #2f2f2f;
+	--header-background-color: #171717;
+	--button-background-color: #2f2f2f;
+	--button-background-color-hover: #fc4384;
+	--button-background-color-active: #3a3a3a;
+	--button-shadow-color: rgba(0, 0, 0, 0.4);
+	--button-text-color-active: #37e5e7;
+	--button-toggle-background-color: #3a3a3a;
+	--button-toggle-background-color-hover: #4a4a4a;
+	--input-background-color: #1c1c1c;
+	--input-background-color-hover: #262626;
+	--input-text-color: #ffffff;
+	--input-border-color: #000000;
+	--input-border-color-active: #fc4384;
+	--input-group-border-color: #2f2f2f;
+	--menu-background-color: #0d0d0d;
+	--menu-icons-filter: invert(1);
+	--menu-icons-filter-active: none;
+	--menu-text-color: #e6e6e6;
+	--menu-dropdown-hover-background-color: #fc4384;
+	--menu-dropdown-border-color: #a06fca;
+	--background-color-active: #fc4384;
+	--background-color-hover: #2f2f2f;
+	--text-color-active: #121212;
+	--border-color: #a06fca;
+	--scrollbar-track-color: #1c1c1c;
+	--scrollbar-thumb-color: #fc4384;
+	--mobile-menu-toggle-filter: invert(1);
+}
 
 *{
 	box-sizing: border-box;
