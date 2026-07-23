@@ -54,6 +54,9 @@
 	--scrollbar-track-color: #464d4f;
 	--scrollbar-thumb-color: #2f3739;
 	--mobile-menu-toggle-filter: invert(1);
+	/* tint applied to the canvas + preview; themes may override */
+	--canvas-filter: none;
+	--accent-color: auto;
 }
 body.theme-light{
 	/* light */
@@ -123,8 +126,11 @@ body.theme-green{
 	--input-border-color-active: #58960e;
 	--input-group-border-color: #2b460f;
 	--menu-background-color: #1c2e04;
-	--menu-icons-filter: invert(1);
-	--menu-icons-filter-active: none;
+	/* icons, the logo hand and the canvas are all pushed into the green too */
+	--menu-icons-filter: invert(1) sepia(1) saturate(6) hue-rotate(55deg);
+	--menu-icons-filter-active: sepia(1) saturate(6) hue-rotate(55deg);
+	--canvas-filter: sepia(1) saturate(4) hue-rotate(55deg);
+	--accent-color: #58960e;
 	--menu-text-color: #acc3a9;
 	--menu-dropdown-hover-background-color: #58960e;
 	--menu-dropdown-border-color: #4d6b1e;
@@ -134,11 +140,13 @@ body.theme-green{
 	--border-color: #4d6b1e;
 	--scrollbar-track-color: #050702;
 	--scrollbar-thumb-color: #80937d;
-	--mobile-menu-toggle-filter: invert(1);
+	--mobile-menu-toggle-filter: invert(1) sepia(1) saturate(6) hue-rotate(55deg);
 }
-body.theme-classic{
-	/* classic - faithfully preserves every value of the original dark theme,
-	   in the sense that all of them are now black. */
+body.theme-dark{
+	/* dark - the darkest possible reading of "dark mode". every value is black,
+	   including the canvas and every icon. mouse movement fades it back. */
+	--canvas-filter: brightness(0);
+	--accent-color: #000000;
 	--background: #000000;
 	--text-color: #000000;
 	--text-color-muted: #000000;
@@ -251,6 +259,7 @@ body.theme-yonce{
 	--scrollbar-track-color: var(--yc-violet-900);
 	--scrollbar-thumb-color: var(--yc-hot-pink);
 	--mobile-menu-toggle-filter: invert(1);
+	--accent-color: var(--yc-petal-pink);
 }
 
 *{
@@ -318,6 +327,18 @@ input[type="text"], input[type="number"], textarea{
 	-webkit-appearance: none;
 	-moz-appearance: textfield;
 	appearance: none;
+}
+/* the canvas (and its preview) take the theme's tint, so "all black" and
+   "all green" actually mean all of it */
+#canvas_minipaint,
+#canvas_minipaint_background,
+#canvas_preview,
+#canvas_preview_background{
+	filter: var(--canvas-filter, none);
+}
+/* checkboxes / radios / sliders follow the theme accent */
+input[type="checkbox"], input[type="radio"], input[type="range"]{
+	accent-color: var(--accent-color, auto);
 }
 input:disabled {
 	opacity: 0.3;

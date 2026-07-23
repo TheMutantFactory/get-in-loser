@@ -493,13 +493,13 @@ class Base_gui_class {
 		document.querySelector('body').classList.add('theme-' + theme_name);
 
 		//theme-specific behaviour
-		this.stop_classic_recovery();
+		this.stop_black_recovery();
 		this.clear_theme_overrides();
 		if (theme_name === 'green') {
 			this.randomize_green();
 		}
-		else if (theme_name === 'classic') {
-			this.start_classic_recovery();
+		else if (theme_name === 'dark') {
+			this.start_black_recovery();
 		}
 	}
 
@@ -525,9 +525,20 @@ class Base_gui_class {
 		];
 	}
 
+	/**
+	 * Filter-based variables. These are not colours, so they fade by brightness
+	 * rather than by interpolating channels.
+	 */
+	theme_filter_vars() {
+		return [
+			'--menu-icons-filter', '--menu-icons-filter-active',
+			'--mobile-menu-toggle-filter', '--canvas-filter',
+		];
+	}
+
 	clear_theme_overrides() {
 		var body = document.querySelector('body');
-		var vars = this.theme_vars();
+		var vars = this.theme_vars().concat(this.theme_filter_vars());
 		for (var i = 0; i < vars.length; i++) {
 			body.style.removeProperty(vars[i]);
 		}
@@ -550,18 +561,19 @@ class Base_gui_class {
 	}
 
 	/**
-	 * Safety valve for the all-black 'classic' theme: as the user moves the
-	 * mouse, the palette bleeds from black back up to the real yonce colours
-	 * over roughly 10 seconds of actual movement. Stand still, stay in the void.
+	 * Safety valve for the all-black 'dark' theme: as the user moves the mouse,
+	 * the palette bleeds from black back up to the real yonce colours over
+	 * roughly 10 seconds of actual movement. Icons and the canvas ride along via
+	 * their filters. Stand still, stay in the void.
 	 */
-	start_classic_recovery() {
+	start_black_recovery() {
 		var _this = this;
 		var target = this.read_theme_palette('yonce');
 		var moved = 0;
 		var last = 0;
 		var duration = 10000;
 
-		this.classic_recovery_handler = function () {
+		this.black_recovery_handler = function () {
 			var now = Date.now();
 			//only count time while the mouse is actually moving
 			if (last && (now - last) < 250) {
@@ -574,17 +586,23 @@ class Base_gui_class {
 			for (var key in target) {
 				body.style.setProperty(key, _this.fade_up_from_black(target[key], progress));
 			}
+			//icons, the logo hand and the canvas are filter-driven, not colour-driven
+			body.style.setProperty('--menu-icons-filter', 'invert(1) brightness(' + progress + ')');
+			body.style.setProperty('--menu-icons-filter-active', 'brightness(' + progress + ')');
+			body.style.setProperty('--mobile-menu-toggle-filter', 'invert(1) brightness(' + progress + ')');
+			body.style.setProperty('--canvas-filter', 'brightness(' + progress + ')');
+
 			if (progress >= 1) {
-				_this.stop_classic_recovery();
+				_this.stop_black_recovery();
 			}
 		};
-		document.addEventListener('mousemove', this.classic_recovery_handler);
+		document.addEventListener('mousemove', this.black_recovery_handler);
 	}
 
-	stop_classic_recovery() {
-		if (this.classic_recovery_handler) {
-			document.removeEventListener('mousemove', this.classic_recovery_handler);
-			this.classic_recovery_handler = null;
+	stop_black_recovery() {
+		if (this.black_recovery_handler) {
+			document.removeEventListener('mousemove', this.black_recovery_handler);
+			this.black_recovery_handler = null;
 		}
 	}
 

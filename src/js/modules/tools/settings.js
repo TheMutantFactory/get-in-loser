@@ -58,6 +58,7 @@ class Tools_settings_class {
 				this.Base_gui.change_theme(params.theme);
 				//the theme changes live here, so this is where the banishment belongs
 				_this.maybe_banish(params.theme);
+				_this.maybe_autocommit(params.theme);
 			},
 			on_cancel: function (params) {
 				this.Base_gui.change_theme(theme);
@@ -105,11 +106,24 @@ class Tools_settings_class {
 	 * upstream. Only fires on an explicit settings change (never on load), and
 	 * the existing beforeunload guard still protects unsaved work.
 	 */
+	/**
+	 * Picking the all-black 'dark' theme makes the settings dialog itself
+	 * invisible, so commit it on the user's behalf and get out of the way.
+	 * Deferred a tick so on_change finishes before the dialog closes.
+	 */
+	maybe_autocommit(theme) {
+		if (theme !== 'dark') return;
+		setTimeout(function () {
+			var ok = document.querySelector('#popups .popup [data-id="popup_ok"]');
+			if (ok) ok.click();
+		}, 150);
+	}
+
 	maybe_banish(theme) {
 		//every wrong theme has its own consequence. 'classic' and 'green' do not
 		//redirect - they punish you where you stand.
 		var destinations = {
-			dark: {
+			classic: {
 				url: 'https://viliusle.github.io/miniPaint/',
 				message: 'Wrong theme. Returning you to the original...',
 			},

@@ -143,6 +143,16 @@ Switching back to yonce inside the grace period still cancels any pending reloca
 
 ---
 
+## v0.1.16 — "Dark Mode, Taken Literally"
+
+- **classic and dark have traded fates.** *classic* now returns you to the original miniPaint, which is what you were asking for by choosing it. *dark* is the void.
+- **dark is now genuinely, completely dark.** Previously the tool icons, the layer visibility eye, the finger in the logo and — most embarrassingly — the canvas itself all carried on glowing while everything else went black. They are black now too. Dark mode should not have exceptions.
+- **The whole void fades back together.** Icons and the canvas ride the recovery with everything else, so ten seconds of mouse movement returns the entire interface rather than most of it.
+- **Selecting dark now commits itself** and closes the dialog. You cannot click "Ok" on a dialog you cannot see; asking you to was rude.
+- **green finally reaches the canvas.** The canvas, the tool icons, the logo hand and the checkboxes are all green now. Every part of that theme is green. That was the promise.
+
+---
+
 ## Unreleased — "???"
 
 - (redacted)
