@@ -412,6 +412,15 @@ IMPORTANT: any new icon should also must be added on /service-worker.js + its ve
 	font-size: 18px;
 	font-weight: bold;
 }
+/* Preview zoom controls: match the themed input fields, not the pink active color */
+.canvas_preview_details .layer_add{
+	background-color: var(--input-background-color);
+	color: var(--input-text-color);
+	border-color: var(--input-border-color);
+}
+.canvas_preview_details .layer_add:hover{
+	background-color: var(--input-background-color-hover);
+}
 .layers_list .item{
 	margin-bottom:2px;
 	display: flex;
