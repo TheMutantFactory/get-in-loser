@@ -100,6 +100,14 @@ The one where the UI stopped holding still.
 
 ---
 
+## v0.1.11 — "The Folder Remembers"
+
+- **New — Smart folder** (*Settings → "Smart folder"*): toggle it on and pick a folder. Get in loser tells you plainly that it will read from and write to that folder, then keeps a single `get-in-loser.json` there holding your configuration and a session history.
+- **Pick a folder you have used before and it knows.** Your settings come back — theme and all — and the folder's history gains another entry. It has been counting. It will tell you how many times you have been here.
+- Requires a Chromium browser (Chrome/Edge) for the File System Access API; elsewhere it declines politely rather than pretending. The folder is remembered between sessions and reconnects on load, for as long as the browser still trusts you.
+
+---
+
 ## Unreleased — "???"
 
 - (redacted)

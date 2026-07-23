@@ -2,6 +2,7 @@ import config from './../../config.js';
 import Dialog_class from './../../libs/popup.js';
 import Helper_class from './../../libs/helpers.js';
 import Base_gui_class from './../../core/base-gui.js';
+import smart_folder from './../../libs/smart_folder.js';
 
 class Tools_settings_class {
 
@@ -50,6 +51,7 @@ class Tools_settings_class {
 				{name: "exit_confirm", title: "Exit confirmation:", value: exit_confirm},
 				{name: "thick_guides", title: "Thick guides:", value: thick_guides},
 				{name: "enable_autoresize", title: "Enable autoresize:", value: enable_autoresize},
+				{name: "smart_folder", title: "Smart folder (read/write):", value: smart_folder.is_enabled()},
 			],
 			on_change: function (params) {
 				this.Base_gui.change_theme(params.theme);
@@ -59,6 +61,7 @@ class Tools_settings_class {
 			},
 			on_finish: function (params) {
 				_this.save_values(params);
+				_this.handle_smart_folder(params.smart_folder);
 			},
 		};
 		this.POP.show(settings);
@@ -91,6 +94,16 @@ class Tools_settings_class {
 		//finish
 		this.Base_gui.prepare_canvas();
 		config.need_render = true;
+	}
+
+	handle_smart_folder(enabled) {
+		//triggered from the settings OK click, so the folder picker keeps its user gesture
+		if (enabled && !smart_folder.is_connected()) {
+			smart_folder.enable();
+		}
+		else if (!enabled && (smart_folder.is_enabled() || smart_folder.is_connected())) {
+			smart_folder.disable();
+		}
 	}
 
 	/**

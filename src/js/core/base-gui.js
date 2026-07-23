@@ -16,6 +16,7 @@ import Tools_translate_class from './../modules/tools/translate.js';
 import Tools_settings_class from './../modules/tools/settings.js';
 import Helper_class from './../libs/helpers.js';
 import alertify from './../../../node_modules/alertifyjs/build/alertify.min.js';
+import smart_folder from './../libs/smart_folder.js';
 
 var instance = null;
 
@@ -74,6 +75,8 @@ class Base_gui_class {
 		this.load_default_values();
 		this.render_main_gui();
 		this.init_service_worker();
+		//reconnect a previously-enabled smart folder (restores its config/history)
+		smart_folder.restore();
 	}
 
 	load_modules() {
