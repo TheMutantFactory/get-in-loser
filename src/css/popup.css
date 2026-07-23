@@ -269,3 +269,39 @@
 		display: none;
 	}
 }
+
+/* changelog / markdown viewer */
+.markdown_body{
+	max-width: 640px;
+	max-height: 62vh;
+	overflow-y: auto;
+	padding-right: 6px;
+	line-height: 1.5;
+	font-size: 14px;
+}
+.markdown_body h1{ font-size: 2rem; margin: 0 0 .3em; }
+.markdown_body h2{ font-size: 1.6rem; margin: 1.1em 0 .3em; color: var(--text-color); }
+.markdown_body h3{ font-size: 1.3rem; margin: .9em 0 .3em; }
+.markdown_body h4{ font-size: 1.1rem; margin: .8em 0 .3em; }
+.markdown_body p{ margin: .4em 0; }
+.markdown_body ul{ margin: .3em 0 .8em 1.3em; padding: 0; }
+.markdown_body li{ margin: .2em 0; }
+.markdown_body strong{ color: var(--text-color); }
+.markdown_body em{ color: var(--text-color-muted); }
+.markdown_body a{ color: var(--link-color); }
+.markdown_body code{
+	background-color: var(--input-background-color);
+	border: 1px solid var(--input-group-border-color);
+	border-radius: 3px;
+	padding: 0 4px;
+	font-size: .92em;
+}
+.markdown_body hr{
+	border: none;
+	border-top: 1px solid var(--border-color);
+	margin: 1.1em 0;
+}
+body.theme-yonce .markdown_body h1,
+body.theme-yonce .markdown_body h2{
+	color: var(--yc-petal-pink);
+}

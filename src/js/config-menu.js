@@ -749,8 +749,13 @@ const menuDefinition = [
 				target: 'help/shortcuts.shortcuts'
 			},
 			{
+				name: 'Changelog',
+				ellipsis: true,
+				target: 'help/changelog.changelog'
+			},
+			{
 				name: 'Report Issues',
-				href: 'https://github.com/viliusle/miniPaint/issues'
+				href: 'https://github.com/DazzlingDukeOfLazers/get-in-loser/issues'
 			},
 			{
 				divider: true

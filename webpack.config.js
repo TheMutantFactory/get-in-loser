@@ -33,6 +33,10 @@ module.exports = {
 				exclude: /(node_modules|bower_components)/,
 				use: ['babel-loader']
 			},
+			{
+				test: /\.md$/,
+				type: 'asset/source'
+			},
 		]
 	},
 	plugins: [
