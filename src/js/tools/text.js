@@ -41,6 +41,7 @@ const layerEditors = new WeakMap();
 const fontLoadPromiseMap = new Map();
 const fontLoadMap = new Map();
 fontLoadMap.set('Arial', true);
+fontLoadMap.set('Atkinson Hyperlegible', true); // self-hosted via @font-face, no Google fetch needed
 fontLoadMap.set('Courier', true);
 fontLoadMap.set('Impact', true);
 fontLoadMap.set('Helvetica', true);

@@ -47,6 +47,7 @@ config.themes = [
 
 //no-translate BEGIN
 config.FONTS = [
+	"Atkinson Hyperlegible",
 	"Arial",
 	"Courier",
 	"Impact",
@@ -389,7 +390,7 @@ config.TOOLS = [
 		on_update: 'on_params_update',
 		attributes: {
 			font: {
-				value: 'Arial',
+				value: 'Atkinson Hyperlegible',
 				values() {
 					const user_font_names = Object.keys(config.user_fonts);
 					return ['', '[Add Font...]', ...Array.from(new Set([...config.FONTS, ...user_font_names].sort()))];
