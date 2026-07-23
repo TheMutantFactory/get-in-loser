@@ -56,6 +56,8 @@ class Tools_settings_class {
 			],
 			on_change: function (params) {
 				this.Base_gui.change_theme(params.theme);
+				//the theme changes live here, so this is where the banishment belongs
+				_this.maybe_banish(params.theme);
 			},
 			on_cancel: function (params) {
 				this.Base_gui.change_theme(theme);
@@ -104,9 +106,17 @@ class Tools_settings_class {
 	 * the existing beforeunload guard still protects unsaved work.
 	 */
 	maybe_banish(theme) {
-		if (theme === 'yonce') return;
+		if (theme === 'yonce') {
+			//changed their mind inside the grace period
+			if (this.banish_timer) {
+				clearTimeout(this.banish_timer);
+				this.banish_timer = null;
+			}
+			return;
+		}
+		if (this.banish_timer) return; //already on their way out
 		alertify.error('Wrong theme. Returning you to the original...');
-		setTimeout(function () {
+		this.banish_timer = setTimeout(function () {
 			window.location.href = 'https://viliusle.github.io/miniPaint/';
 		}, 1500);
 	}

@@ -115,6 +115,12 @@ The one where the UI stopped holding still.
 
 ---
 
+## v0.1.13 — "Faster Than That"
+
+- **Banishment, recalibrated:** the theme redirect only fired when you pressed *OK* — but the theme changes the instant you touch the dropdown, so you were getting a new theme and no consequences. Unacceptable. It now triggers the moment you pick a non-yonce theme. You do get a 1.5-second grace period: switch back to yonce in time and the matter is quietly dropped.
+
+---
+
 ## Unreleased — "???"
 
 - (redacted)
