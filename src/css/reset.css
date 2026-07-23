@@ -121,6 +121,7 @@ body.theme-yonce{
 	--yc-lavender-purple: #a06fca;
 	/* accents */
 	--yc-hot-pink:        #fc4384;
+	--yc-rose:            #ea8ab4; /* softer pink for selections: black reads on it */
 	--yc-cyan:            #37e5e7;
 	/* neutrals (ink scale, dark -> light) */
 	--yc-black:           #000000;
@@ -177,7 +178,7 @@ body.theme-yonce{
 	--menu-text-color: var(--yc-ink-050);
 	--menu-dropdown-hover-background-color: var(--yc-hot-pink);
 	--menu-dropdown-border-color: var(--yc-lavender-purple);
-	--background-color-active: var(--yc-hot-pink);
+	--background-color-active: var(--yc-rose);
 	--background-color-hover: var(--yc-violet-700);
 	--text-color-active: var(--yc-ink-800);
 	--border-color: var(--yc-lavender-purple);
