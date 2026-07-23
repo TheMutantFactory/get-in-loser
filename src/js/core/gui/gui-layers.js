@@ -92,13 +92,12 @@ class GUI_layers_class {
 				);
 			}
 			else if (target.id == 'layer_name') {
-				//select layer (if needed) then open the rename dialog on a single click
-				if (target.dataset.id != config.layer.id) {
-					app.State.do_action(
-						new app.Actions.Select_layer_action(target.dataset.id)
-					);
-				}
-				_this.Layer_rename.rename(target.dataset.id);
+				//select layer
+				if (target.dataset.id == config.layer.id)
+					return;
+				app.State.do_action(
+					new app.Actions.Select_layer_action(target.dataset.id)
+				);
 			}
 			else if (target.id == 'delete_filter') {
 				//delete filter
@@ -120,6 +119,64 @@ class GUI_layers_class {
 			}
 		});
 
+		//right-click a layer name -> context menu (Rename)
+		document.getElementById('layers_base').addEventListener('contextmenu', function (event) {
+			var target = event.target;
+			if (target.id == 'layer_name') {
+				event.preventDefault();
+				_this.show_layer_menu(event.clientX, event.clientY, target.dataset.id);
+			}
+		});
+
+	}
+
+	show_layer_menu(x, y, layer_id) {
+		var _this = this;
+		this.hide_layer_menu();
+
+		var menu = document.createElement('div');
+		menu.className = 'layer_context_menu';
+		menu.innerHTML = '<button type="button" class="layer_context_item" data-action="rename">Rename</button>';
+		document.body.appendChild(menu);
+		this.layer_menu_el = menu;
+
+		//keep on screen
+		var rect = menu.getBoundingClientRect();
+		menu.style.left = Math.min(x, window.innerWidth - rect.width - 4) + 'px';
+		menu.style.top = Math.min(y, window.innerHeight - rect.height - 4) + 'px';
+
+		menu.addEventListener('click', function (e) {
+			if (e.target.dataset.action === 'rename') {
+				if (layer_id != config.layer.id) {
+					app.State.do_action(new app.Actions.Select_layer_action(layer_id));
+				}
+				_this.Layer_rename.rename(layer_id);
+			}
+			_this.hide_layer_menu();
+		});
+
+		//dismiss on outside click / escape (deferred so this event doesn't close it)
+		setTimeout(function () {
+			_this.layer_menu_dismiss = function (e) {
+				if (e.type === 'keydown' && e.key !== 'Escape') return;
+				if (_this.layer_menu_el && _this.layer_menu_el.contains(e.target)) return;
+				_this.hide_layer_menu();
+			};
+			document.addEventListener('mousedown', _this.layer_menu_dismiss);
+			document.addEventListener('keydown', _this.layer_menu_dismiss);
+		}, 0);
+	}
+
+	hide_layer_menu() {
+		if (this.layer_menu_el) {
+			this.layer_menu_el.remove();
+			this.layer_menu_el = null;
+		}
+		if (this.layer_menu_dismiss) {
+			document.removeEventListener('mousedown', this.layer_menu_dismiss);
+			document.removeEventListener('keydown', this.layer_menu_dismiss);
+			this.layer_menu_dismiss = null;
+		}
 	}
 
 	/**

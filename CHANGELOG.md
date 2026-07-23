@@ -68,6 +68,13 @@ The one where the UI stopped holding still.
 
 ---
 
+## v0.1.6 — "Right Of Way"
+
+- **Rename, reconsidered:** a single click on a layer now just *selects* it, like a reasonable tool. We heard you — the dialog was ambushing you every time you tried to switch layers. It has been asked to wait its turn.
+- **New — right-click menu:** right-click a layer name for a context menu. It currently offers exactly one option, "Rename," with the quiet confidence of a menu that knows more options are coming and is choosing not to say so yet.
+
+---
+
 ## Unreleased — "???"
 
 - (redacted)
