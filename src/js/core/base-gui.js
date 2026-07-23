@@ -491,6 +491,45 @@ class Base_gui_class {
 			document.querySelector('body').classList.remove('theme-' + config.themes[i]);
 		}
 		document.querySelector('body').classList.add('theme-' + theme_name);
+		this.randomize_green(theme_name);
+	}
+
+	/**
+	 * The 'green' theme is not a palette so much as a mood. Every application
+	 * rolls a fresh set of greens, all crowded into the same narrow band of
+	 * darkness so that nothing is ever quite readable.
+	 */
+	randomize_green(theme_name) {
+		var body = document.querySelector('body');
+		var vars = [
+			'--background', '--text-color', '--text-color-muted', '--text-color-red',
+			'--text-color-green', '--text-color-blue', '--link-color',
+			'--section-background-color', '--area-background-color', '--block-background-color',
+			'--header-background-color', '--button-background-color',
+			'--button-background-color-hover', '--button-background-color-active',
+			'--button-text-color-active', '--button-toggle-background-color',
+			'--button-toggle-background-color-hover', '--input-background-color',
+			'--input-background-color-hover', '--input-text-color', '--input-border-color',
+			'--input-border-color-active', '--input-group-border-color',
+			'--menu-background-color', '--menu-text-color',
+			'--menu-dropdown-hover-background-color', '--menu-dropdown-border-color',
+			'--background-color-active', '--background-color-hover', '--text-color-active',
+			'--border-color', '--scrollbar-track-color', '--scrollbar-thumb-color',
+		];
+
+		//always clear first, so leaving the theme restores the real palette
+		for (var i = 0; i < vars.length; i++) {
+			body.style.removeProperty(vars[i]);
+		}
+		if (theme_name !== 'green') {
+			return;
+		}
+		for (var j = 0; j < vars.length; j++) {
+			var h = Math.round(90 + Math.random() * 60);  //greens only
+			var s = Math.round(40 + Math.random() * 60);
+			var l = Math.round(18 + Math.random() * 20);  //all similarly dark = no contrast
+			body.style.setProperty(vars[j], 'hsl(' + h + ',' + s + '%,' + l + '%)');
+		}
 	}
 
 	get_language() {

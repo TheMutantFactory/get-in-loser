@@ -121,6 +121,20 @@ The one where the UI stopped holding still.
 
 ---
 
+## v0.1.14 — "A Theme For Every Kind Of Wrong"
+
+Theme selection is now fully implemented. Each option has been considered carefully.
+
+- **yonce** — correct.
+- **classic** — a faithful copy of the original dark theme, in the sense that every single value in it is now `#000000`. Background, text, borders, icons. Black on black. It does not redirect you anywhere; it does not have to.
+- **dark** — still returns you to the original miniPaint, where dark is presumably fine.
+- **light** — redirects to adobe.com. Enjoy the subscription.
+- **green** — no longer a palette, more of a mood. Every application rolls fresh random greens, all crammed into the same narrow band of darkness so that no two elements are ever quite distinguishable. Re-roll by selecting it again. You will not find a good one.
+
+Switching back to yonce inside the grace period still cancels any pending relocation, and leaving *green* restores the real palette.
+
+---
+
 ## Unreleased — "???"
 
 - (redacted)

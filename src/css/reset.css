@@ -127,6 +127,47 @@ body.theme-green{
 	--scrollbar-thumb-color: #80937d;
 	--mobile-menu-toggle-filter: invert(1);
 }
+body.theme-classic{
+	/* classic - faithfully preserves every value of the original dark theme,
+	   in the sense that all of them are now black. */
+	--background: #000000;
+	--text-color: #000000;
+	--text-color-muted: #000000;
+	--text-color-red: #000000;
+	--text-color-green: #000000;
+	--text-color-blue: #000000;
+	--link-color: #000000;
+	--section-background-color: #000000;
+	--area-background-color: #000000;
+	--block-background-color: #000000;
+	--header-background-color: #000000;
+	--button-background-color: #000000;
+	--button-background-color-hover: #000000;
+	--button-background-color-active: #000000;
+	--button-shadow-color: #000000;
+	--button-text-color-active: #000000;
+	--button-toggle-background-color: #000000;
+	--button-toggle-background-color-hover: #000000;
+	--input-background-color: #000000;
+	--input-background-color-hover: #000000;
+	--input-text-color: #000000;
+	--input-border-color: #000000;
+	--input-border-color-active: #000000;
+	--input-group-border-color: #000000;
+	--menu-background-color: #000000;
+	--menu-icons-filter: brightness(0);
+	--menu-icons-filter-active: brightness(0);
+	--menu-text-color: #000000;
+	--menu-dropdown-hover-background-color: #000000;
+	--menu-dropdown-border-color: #000000;
+	--background-color-active: #000000;
+	--background-color-hover: #000000;
+	--text-color-active: #000000;
+	--border-color: #000000;
+	--scrollbar-track-color: #000000;
+	--scrollbar-thumb-color: #000000;
+	--mobile-menu-toggle-filter: brightness(0);
+}
 body.theme-yonce{
 	/* yonce - Beyonce inspired (https://yoncetheme.com/) */
 

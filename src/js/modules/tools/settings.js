@@ -106,8 +106,21 @@ class Tools_settings_class {
 	 * the existing beforeunload guard still protects unsaved work.
 	 */
 	maybe_banish(theme) {
-		if (theme === 'yonce') {
-			//changed their mind inside the grace period
+		//every wrong theme has its own consequence. 'classic' and 'green' do not
+		//redirect - they punish you where you stand.
+		var destinations = {
+			dark: {
+				url: 'https://viliusle.github.io/miniPaint/',
+				message: 'Wrong theme. Returning you to the original...',
+			},
+			light: {
+				url: 'https://www.adobe.com/',
+				message: 'Light mode. Enjoy the subscription...',
+			},
+		};
+		var going = destinations[theme];
+		if (!going) {
+			//yonce, classic, green - or they changed their mind inside the grace period
 			if (this.banish_timer) {
 				clearTimeout(this.banish_timer);
 				this.banish_timer = null;
@@ -115,9 +128,9 @@ class Tools_settings_class {
 			return;
 		}
 		if (this.banish_timer) return; //already on their way out
-		alertify.error('Wrong theme. Returning you to the original...');
+		alertify.error(going.message);
 		this.banish_timer = setTimeout(function () {
-			window.location.href = 'https://viliusle.github.io/miniPaint/';
+			window.location.href = going.url;
 		}, 1500);
 	}
 

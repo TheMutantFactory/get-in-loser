@@ -40,6 +40,7 @@ config.enable_autoresize_by_default = true;
 //requires styles in reset.css
 config.themes = [
 	'yonce',
+	'classic',
 	'dark',
 	'light',
 	'green',
