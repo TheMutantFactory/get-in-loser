@@ -110,5 +110,66 @@
 	</div>
 	<div class="hidden" id="tmp"></div>
 	<div id="popups"></div>
+	<script>
+		// Logo whimsy: each letter gets its own LFO to bob up/down, the hand
+		// hovers like a ghost, and the "ticker" advancing the letter LFOs is
+		// mouse movement (so the wave animates as you move, and rests when still).
+		// Progressive enhancement over the static logo.
+		(function () {
+			var logo = document.querySelector('.logo');
+			if (!logo || !window.requestAnimationFrame) return;
+
+			function letters(str, grad) {
+				var frag = document.createDocumentFragment();
+				for (var i = 0; i < str.length; i++) {
+					var s = document.createElement('span');
+					s.className = 'logo_ch' + (grad ? ' logo_grad' : '');
+					s.textContent = str[i] === ' ' ? ' ' : str[i];
+					frag.appendChild(s);
+				}
+				return frag;
+			}
+			var hand = document.createElement('span');
+			hand.className = 'logo_l';
+			hand.setAttribute('aria-hidden', 'true');
+
+			logo.textContent = '';
+			logo.appendChild(letters('Get in ', false));
+			logo.appendChild(hand);
+			logo.appendChild(letters('oser', true));
+
+			var chars = [].slice.call(logo.getElementsByClassName('logo_ch'));
+
+			// Ticker = mouse movement: accumulate distance moved into a target phase.
+			var target = 0, phase = 0, lastX = null, lastY = null;
+			addEventListener('mousemove', function (e) {
+				if (lastX !== null) {
+					var dx = e.clientX - lastX, dy = e.clientY - lastY;
+					target += Math.min(50, Math.sqrt(dx * dx + dy * dy)) * 0.010;
+				}
+				lastX = e.clientX; lastY = e.clientY;
+			});
+
+			var start = null;
+			function tick(now) {
+				if (start === null) start = now;
+				var t = (now - start) / 1000;
+				phase += (target - phase) * 0.08; // ease applied phase toward mouse-driven target
+
+				for (var i = 0; i < chars.length; i++) {
+					// per-letter LFO: own frequency + phase offset -> subtle travelling wave
+					var y = Math.sin(phase * (0.6 + i * 0.05) + i * 0.8) * 1.7;
+					chars[i].style.transform = 'translateY(' + y.toFixed(2) + 'px)';
+				}
+				// hand: continuous ghostly hover (on its own) + a little mouse-driven drift
+				var hy = Math.sin(t * 1.15) * 2.3 + Math.sin(phase * 0.8) * 1.1;
+				var hx = Math.cos(t * 0.8) * 1.3;
+				hand.style.transform = 'translate(' + hx.toFixed(2) + 'px,' + hy.toFixed(2) + 'px)';
+
+				requestAnimationFrame(tick);
+			}
+			requestAnimationFrame(tick);
+		})();
+	</script>
 </body>
 </html>

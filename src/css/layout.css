@@ -141,8 +141,7 @@ body .sp-preview{
 /* ========== header ======================================================== */
 
 .logo{
-	display: inline-flex;
-	align-items: center;
+	display: inline-block;
 	height: 30px;
 	white-space: nowrap;
 	padding: 5px;
@@ -155,17 +154,39 @@ body .sp-preview{
 	color: #ffffff;
 	color: var(--text-color);
 }
+.logo_ch{
+	/* each letter is independently bob-able (LFO) via JS transforms */
+	display: inline-block;
+	will-change: transform;
+}
 .logo_l{
-	/* the finger-L hand stands in for the "l" in loser; sized in em so it
-	   scales with the logo text and stays vertically centered via flex */
-	flex: none;
+	/* the finger-L hand stands in for the "l" in loser; em-sized so it scales
+	   with the text, vertical-align tuned to sit centered on the text */
+	display: inline-block;
 	width: 1.15em;
 	height: 1.15em;
 	margin: 0 0.03em;
+	vertical-align: -0.26em;
 	background: url('images/logo.png') no-repeat center center;
 	background-size: contain;
 	image-rendering: pixelated;
 	filter: var(--mobile-menu-toggle-filter);
+	will-change: transform;
+}
+/* yonce whimsy: the icon + "oser" fade white (top) -> petal pink (bottom) */
+body.theme-yonce .logo_grad{
+	background: linear-gradient(to bottom, #ffffff 12%, var(--yc-petal-pink) 92%);
+	-webkit-background-clip: text;
+	background-clip: text;
+	-webkit-text-fill-color: transparent;
+	color: transparent;
+}
+body.theme-yonce .logo_l{
+	/* fill the hand shape with the same gradient (mask by the logo alpha) */
+	background: linear-gradient(to bottom, #ffffff 12%, var(--yc-petal-pink) 92%);
+	-webkit-mask: url('images/logo.png') no-repeat center / contain;
+	mask: url('images/logo.png') no-repeat center / contain;
+	filter: none;
 }
 .about-logo{
 	margin-left:22%;
