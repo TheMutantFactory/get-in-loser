@@ -81,6 +81,12 @@ The one where the UI stopped holding still.
 
 ---
 
+## v0.1.8 — "Reunited (The Row Holds)"
+
+- **Layers, responsiveness:** the visibility eye and the delete "×" had been wandering onto their own lines whenever a layer name got long or the panel got narrow. They have been returned to the row. The name now yields space — and truncates, politely — instead of evicting its neighbors. One layer, one line.
+
+---
+
 ## Unreleased — "???"
 
 - (redacted)

@@ -453,7 +453,9 @@ IMPORTANT: any new icon should also must be added on /service-worker.js + its ve
 .layers_list .layer_name{
 	display:block;
 	padding:1px 5px 3px 5px;
-	flex: 1 1 auto;
+	/* flex-basis 0 so a long name never pushes the icons/delete onto new lines;
+	   it grows to fill the row and truncates with the ellipsis below. */
+	flex: 1 1 0;
 	min-width: 0;
 	text-align: left;
 	overflow:hidden;
