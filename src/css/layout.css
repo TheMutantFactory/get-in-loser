@@ -146,7 +146,7 @@ body .sp-preview{
 	height: 30px;
 	width: auto;
 	white-space: nowrap;
-	padding: 5px 5px 5px 36px;
+	padding: 5px;
 	margin: 5px;
 	font-size: 16px;
 	text-decoration: none;
@@ -154,20 +154,17 @@ body .sp-preview{
 	color: #ffffff;
 	color: var(--text-color);
 }
-.logo:after{
-	position:absolute;
-	content:"";
-	left: 0;
-	top: 0;
-	width: 31px;
-	height: 30px;
+.logo_l{
+	/* the finger-L hand stands in for the "l" in loser */
+	display: inline-block;
+	width: 1.35em;
+	height: 1.35em;
+	margin: 0 0.04em;
 	background: url('images/logo.png') no-repeat center center;
-	background-size: auto 28px;
+	background-size: contain;
 	image-rendering: pixelated;
 	filter: var(--mobile-menu-toggle-filter);
-}
-.logo:hover:after{
-	left: 2px;
+	vertical-align: -0.28em;
 }
 .about-logo{
 	margin-left:22%;
