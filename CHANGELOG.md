@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to **Get in loser** — a browser paint tool, and also, allegedly, a roguelite. Newest first. Dates are approximate; time is a construct; the fog is real.
+All notable changes to **Get in loser** — a browser paint tool, and also, allegedly, a roguelite. In order of descent: oldest at the top, because the way down only makes sense from the top. Dates are approximate; time is a construct; the fog is real.
 
 ---
 
@@ -44,6 +44,20 @@ The one where it's just a paint app. For now.
 - **Meta-progression:** the swatches you never use are being saved. For the run. For *a* run. It's fine.
 - **Boss — The Marquee:** defeat the dashed selection that circles your best work and calls it "just a draft." Reward: the Crop tool, and closure.
 - **Known issue:** the tutorial for the paint tool is finished. The tutorial for the *other* thing is written on the inside of the fog. We are aware. We put it there.
+
+---
+
+## v0.1.4 — "The Letters Have Learned To Float"
+
+The one where the UI stopped holding still.
+
+- **Legibility (paint tool):** the entire interface is now set in Atkinson Hyperlegible, and every font grew by a few points. This is so you can read the tool labels. It is also, per the Braille Institute, so you can read the *warnings.*
+- **Selection color:** softened the tool-selection pink to Petal Pink (`#ce59a7`), after the previous pink was formally reclassified as "too hot to look at directly." Black icons are legible again. We are calling this a truce.
+- **De-pinking:** the number fields, the preview zoom buttons, and the layer controls no longer glow. They match the other inputs now. They are calmer. They have accepted their roles.
+- **Layers:** rows now grow to fit their names instead of clipping them. The names have more room. They are using it to become longer. We are monitoring the situation.
+- **Palette:** the swatch picker now ships pre-loaded with the theme colors, the default color is an honest black, and every tool fills with black by default. The 2009-startup green is gone. Do not ask where.
+- **THE LOGO:** the "l" in *loser* is the finger now. The finger hovers on its own, like a ghost, because it is one. Move your mouse and the other letters begin to bob — the wave is *ticked by your cursor,* so the logo only breathes while you are watching it. The finger and "oser" bleed from white into pink. It is still pointing at something. You have been moving your mouse for a while now.
+- **Meta:** added this Changelog (Help → Changelog). You are reading the tutorial. This is the tutorial. Hello.
 
 ---
 
