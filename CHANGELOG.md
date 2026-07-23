@@ -94,6 +94,12 @@ The one where the UI stopped holding still.
 
 ---
 
+## v0.1.10 — "Paste, By Request"
+
+- **Edit → Paste (menu):** now actually pastes. It asks the browser for clipboard-read permission the first time — grant it once and the menu item reads an image straight off your clipboard and drops it in as a layer. Where the browser refuses (Firefox, Safari, insecure contexts, a denied prompt), it steps aside and points you back to the ever-reliable Ctrl+V. Copy was never the problem; *reading* your clipboard is the part browsers guard, and rightly so.
+
+---
+
 ## Unreleased — "???"
 
 - (redacted)
