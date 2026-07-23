@@ -92,12 +92,13 @@ class GUI_layers_class {
 				);
 			}
 			else if (target.id == 'layer_name') {
-				//select layer
-				if (target.dataset.id == config.layer.id)
-					return;
-				app.State.do_action(
-					new app.Actions.Select_layer_action(target.dataset.id)
-				);
+				//select layer (if needed) then open the rename dialog on a single click
+				if (target.dataset.id != config.layer.id) {
+					app.State.do_action(
+						new app.Actions.Select_layer_action(target.dataset.id)
+					);
+				}
+				_this.Layer_rename.rename(target.dataset.id);
 			}
 			else if (target.id == 'delete_filter') {
 				//delete filter
@@ -116,14 +117,6 @@ class GUI_layers_class {
 						effects[i].object[function_name](target.dataset.id);
 					}
 				}
-			}
-		});
-
-		document.getElementById('layers_base').addEventListener('dblclick', function (event) {
-			var target = event.target;
-			if (target.id == 'layer_name') {
-				//rename layer
-				_this.Layer_rename.rename(target.dataset.id);
 			}
 		});
 

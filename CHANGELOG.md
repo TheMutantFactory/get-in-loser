@@ -61,6 +61,13 @@ The one where the UI stopped holding still.
 
 ---
 
+## v0.1.5 — "One Click, No Take-Backs"
+
+- **Cosmetic:** the delete "×" on each layer is now Petal Pink, matching the tool-selection color — a red × felt like a threat, and we prefer our threats color-coordinated.
+- **Rename (a functional change, we admit it):** the layer rename dialog now opens on a *single* click instead of a double-click. One click. Faster. Also less deniable. The layer will know you named it. It will remember the name you chose. Choose kindly.
+
+---
+
 ## Unreleased — "???"
 
 - (redacted)

@@ -530,8 +530,10 @@ IMPORTANT: any new icon should also must be added on /service-worker.js + its ve
 	width:12px;
 	height:19px;
 	margin-left: 5px;
-	background: transparent url(images/icons/delete.svg) no-repeat center center;
-	background-size: 10px 10px;
+	/* delete "x" tinted to the tool-selection color via alpha mask */
+	background-color: var(--background-color-active);
+	-webkit-mask: url(images/icons/delete.svg) no-repeat center / 10px 10px;
+	mask: url(images/icons/delete.svg) no-repeat center / 10px 10px;
 	border: none;
 	box-shadow: none;
 }
