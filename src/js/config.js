@@ -9,7 +9,7 @@ config.WIDTH = null;
 config.HEIGHT = null;
 config.visible_width = null;
 config.visible_height = null;
-config.COLOR = '#008000';
+config.COLOR = '#000000';
 config.ALPHA = 255;
 config.ZOOM = 1;
 config.SNAP = true;
@@ -23,7 +23,13 @@ config.need_render_changed_params = false; // Set specifically when param change
 config.mouse = {};
 config.mouse_lock = null;
 config.swatches = {
-	default: [] // Only default used right now, object format for swatch swapping in future.
+	// yonce theme palette (3 rows x 7). Slot 0 mirrors the current color, so it
+	// leads with black (the default) to avoid overwriting a unique theme color.
+	default: [
+		'#000000', '#0f0b14', '#14101b', '#1b1524', '#241a30', '#281c33', '#302340',
+		'#3d2d50', '#503865', '#a06fca', '#fc4384', '#ce59a7', '#37e5e7', '#ffffff',
+		'#121212', '#1c1c1c', '#2f2f2f', '#3a3a3a', '#4a4a4a', '#b7b7c0', '#e6e6e6'
+	]
 };
 config.user_fonts = {};
 config.guides_enabled = true;

@@ -331,9 +331,9 @@ class GUI_colors_class {
 					hex: this.inputs.swatches.uiSwatches('get_selected_hex')
 				});
 			});
-		if (this.uiType === 'dialog') {
-			this.inputs.swatches.uiSwatches('set_all_hex', config.swatches.default);
-		}
+		// Initialize swatches from the default palette for both sidebar and dialog
+		// (upstream only did this for the dialog, leaving the sidebar grid blank).
+		this.inputs.swatches.uiSwatches('set_all_hex', config.swatches.default);
 
 		// Initialize color picker gradient
 		this.inputs.pickerGradient
