@@ -144,7 +144,8 @@ body .sp-preview{
 	position: relative;
 	display: inline-block;
 	height: 30px;
-	width: 110px;
+	width: auto;
+	white-space: nowrap;
 	padding: 5px 5px 5px 36px;
 	margin: 5px;
 	font-size: 14px;
@@ -160,8 +161,9 @@ body .sp-preview{
 	top: 0;
 	width: 31px;
 	height: 30px;
-	background: url('images/logo.svg') no-repeat center center;
+	background: url('images/logo.png') no-repeat center center;
 	background-size: auto 28px;
+	image-rendering: pixelated;
 	filter: var(--mobile-menu-toggle-filter);
 }
 .logo:hover:after{
