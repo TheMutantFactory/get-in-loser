@@ -141,30 +141,31 @@ body .sp-preview{
 /* ========== header ======================================================== */
 
 .logo{
-	position: relative;
-	display: inline-block;
+	display: inline-flex;
+	align-items: center;
 	height: 30px;
-	width: auto;
 	white-space: nowrap;
 	padding: 5px;
 	margin: 5px;
-	font-size: 16px;
+	/* responsive: scales with the viewport, bounded to fit the header */
+	font-size: clamp(15px, 1.4vw, 18px);
+	line-height: 1;
 	text-decoration: none;
 	font-weight: bold;
 	color: #ffffff;
 	color: var(--text-color);
 }
 .logo_l{
-	/* the finger-L hand stands in for the "l" in loser */
-	display: inline-block;
-	width: 1.35em;
-	height: 1.35em;
-	margin: 0 0.04em;
+	/* the finger-L hand stands in for the "l" in loser; sized in em so it
+	   scales with the logo text and stays vertically centered via flex */
+	flex: none;
+	width: 1.15em;
+	height: 1.15em;
+	margin: 0 0.03em;
 	background: url('images/logo.png') no-repeat center center;
 	background-size: contain;
 	image-rendering: pixelated;
 	filter: var(--mobile-menu-toggle-filter);
-	vertical-align: -0.28em;
 }
 .about-logo{
 	margin-left:22%;
