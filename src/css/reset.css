@@ -113,42 +113,67 @@ body.theme-green{
 }
 body.theme-yonce{
 	/* yonce - Beyonce inspired (https://yoncetheme.com/) */
-	--background: #121212;
-	--text-color: #ffffff;
-	--text-color-muted: #b7b7c0;
-	--text-color-red: #fc4384;
-	--text-color-green: #37e5e7;
-	--text-color-blue: #a06fca;
-	--link-color: #37e5e7;
-	--section-background-color: #1c1c1c;
-	--area-background-color: #2f2f2f;
-	--block-background-color: #2f2f2f;
-	--header-background-color: #171717;
-	--button-background-color: #2f2f2f;
-	--button-background-color-hover: #fc4384;
-	--button-background-color-active: #3a3a3a;
-	--button-shadow-color: rgba(0, 0, 0, 0.4);
-	--button-text-color-active: #37e5e7;
-	--button-toggle-background-color: #3a3a3a;
-	--button-toggle-background-color-hover: #4a4a4a;
-	--input-background-color: #1c1c1c;
-	--input-background-color-hover: #262626;
-	--input-text-color: #ffffff;
-	--input-border-color: #000000;
-	--input-border-color-active: #fc4384;
-	--input-group-border-color: #2f2f2f;
-	--menu-background-color: #0d0d0d;
+
+	/* --- palette: named colors, defined once --- */
+	/* violet family */
+	--yc-midnight-violet: #281c33;
+	--yc-vintage-grape:   #503865;
+	--yc-lavender-purple: #a06fca;
+	/* accents */
+	--yc-hot-pink:        #fc4384;
+	--yc-cyan:            #37e5e7;
+	/* neutrals (ink scale, dark -> light) */
+	--yc-black:           #000000;
+	--yc-ink-900:         #0d0d0d;
+	--yc-ink-800:         #121212;
+	--yc-ink-700:         #171717;
+	--yc-ink-600:         #1c1c1c;
+	--yc-ink-500:         #262626;
+	--yc-ink-400:         #2f2f2f;
+	--yc-ink-300:         #3a3a3a;
+	--yc-ink-200:         #4a4a4a;
+	--yc-ink-100:         #b7b7c0;
+	--yc-ink-050:         #e6e6e6;
+	--yc-white:           #ffffff;
+	--yc-shadow:          rgba(0, 0, 0, 0.4);
+
+	/* --- theme roles: reference palette names, never raw hex --- */
+	--background: var(--yc-midnight-violet);
+	--text-color: var(--yc-white);
+	--text-color-muted: var(--yc-ink-100);
+	--text-color-red: var(--yc-hot-pink);
+	--text-color-green: var(--yc-cyan);
+	--text-color-blue: var(--yc-lavender-purple);
+	--link-color: var(--yc-cyan);
+	--section-background-color: var(--yc-ink-600);
+	--area-background-color: var(--yc-ink-400);
+	--block-background-color: var(--yc-ink-400);
+	--header-background-color: var(--yc-ink-700);
+	--button-background-color: var(--yc-ink-400);
+	--button-background-color-hover: var(--yc-hot-pink);
+	--button-background-color-active: var(--yc-ink-300);
+	--button-shadow-color: var(--yc-shadow);
+	--button-text-color-active: var(--yc-cyan);
+	--button-toggle-background-color: var(--yc-ink-300);
+	--button-toggle-background-color-hover: var(--yc-ink-200);
+	--input-background-color: var(--yc-ink-600);
+	--input-background-color-hover: var(--yc-ink-500);
+	--input-text-color: var(--yc-white);
+	--input-border-color: var(--yc-black);
+	--input-border-color-active: var(--yc-hot-pink);
+	--input-group-border-color: var(--yc-ink-400);
+	--menu-background-color: var(--yc-ink-900);
 	--menu-icons-filter: invert(1);
 	--menu-icons-filter-active: none;
-	--menu-text-color: #e6e6e6;
-	--menu-dropdown-hover-background-color: #fc4384;
-	--menu-dropdown-border-color: #a06fca;
-	--background-color-active: #fc4384;
-	--background-color-hover: #2f2f2f;
-	--text-color-active: #121212;
-	--border-color: #a06fca;
-	--scrollbar-track-color: #1c1c1c;
-	--scrollbar-thumb-color: #fc4384;
+	--menu-text-color: var(--yc-ink-050);
+	--menu-dropdown-hover-background-color: var(--yc-hot-pink);
+	--menu-dropdown-border-color: var(--yc-lavender-purple);
+	--background-color-active: var(--yc-hot-pink);
+	--background-color-hover: var(--yc-ink-400);
+	--text-color-active: var(--yc-ink-800);
+	--border-color: var(--yc-lavender-purple);
+	--scrollbar-track-color: var(--yc-ink-600);
+	--scrollbar-thumb-color: var(--yc-hot-pink);
 	--mobile-menu-toggle-filter: invert(1);
 }
 
