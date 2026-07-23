@@ -1,3 +1,19 @@
+/* Atkinson Hyperlegible (Braille Institute) - self-hosted, see fonts/atkinson-hyperlegible-LICENSE.txt */
+@font-face {
+	font-family: 'Atkinson Hyperlegible';
+	font-style: normal;
+	font-weight: 400;
+	font-display: swap;
+	src: url('fonts/atkinson-hyperlegible-latin-400-normal.woff2') format('woff2');
+}
+@font-face {
+	font-family: 'Atkinson Hyperlegible';
+	font-style: normal;
+	font-weight: 700;
+	font-display: swap;
+	src: url('fonts/atkinson-hyperlegible-latin-700-normal.woff2') format('woff2');
+}
+
 :root {
 	/* original - default */
 	--background: #666d6f;
@@ -121,7 +137,7 @@ body.theme-yonce{
 	--yc-lavender-purple: #a06fca;
 	/* accents */
 	--yc-hot-pink:        #fc4384;
-	--yc-rose:            #ea8ab4; /* softer pink for selections: black reads on it */
+	--yc-petal-pink:      #ce59a7; /* selection color; black text reads on it */
 	--yc-cyan:            #37e5e7;
 	/* neutrals (ink scale, dark -> light) */
 	--yc-black:           #000000;
@@ -178,7 +194,7 @@ body.theme-yonce{
 	--menu-text-color: var(--yc-ink-050);
 	--menu-dropdown-hover-background-color: var(--yc-hot-pink);
 	--menu-dropdown-border-color: var(--yc-lavender-purple);
-	--background-color-active: var(--yc-rose);
+	--background-color-active: var(--yc-petal-pink);
 	--background-color-hover: var(--yc-violet-700);
 	--text-color-active: var(--yc-ink-800);
 	--border-color: var(--yc-lavender-purple);
@@ -204,8 +220,8 @@ body{
 	background-repeat: no-repeat;
 	background-attachment: fixed;
 	background-size: cover;
-	font-size: 1.3rem;
-	font-family: Arial, Helvetica, sans-serif;
+	font-size: 1.5rem;
+	font-family: 'Atkinson Hyperlegible', Arial, Helvetica, sans-serif;
 	color: var(--text-color);
 	line-height: 1.4;
 	font-weight: normal;
@@ -244,7 +260,7 @@ input[type="text"], select, input[type="number"], textarea{
 	border-radius: var(--input-border-radius);
 	color: var(--input-text-color);
 	padding: 3px 5px;
-	font-size: 13px;
+	font-size: 15px;
 }
 input:disabled {
 	opacity: 0.3;

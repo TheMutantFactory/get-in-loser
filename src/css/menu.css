@@ -44,7 +44,7 @@
 .main_menu > ul.menu_bar > li > a {
 	display: flex;
 	align-items: center;
-	font-size: 12px;
+	font-size: 14px;
 	color: var(--menu-text-color);
 	text-decoration: none;
 	padding: 0 10px;
@@ -102,7 +102,7 @@
 	position: relative;
 	height: 30px;
 	padding: 0 10px;
-	font-size: 12px;
+	font-size: 14px;
 	line-height: 30px;
 	text-decoration: none;
 	color: var(--menu-dropdown-text-color);
