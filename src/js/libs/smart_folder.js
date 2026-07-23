@@ -72,6 +72,31 @@ class Smart_folder_class {
 		return this.Helper.getCookie(ENABLED_COOKIE) == 1;
 	}
 
+	//--- header toggle button ------------------------------------------------
+
+	init_toggle() {
+		var _this = this;
+		var btn = document.getElementById('smart_folder_toggle');
+		if (!btn) return;
+		this.toggle_el = btn;
+		btn.addEventListener('click', function () {
+			//a real click, so the folder picker keeps its user gesture
+			if (_this.is_connected()) _this.disable();
+			else _this.enable();
+		});
+		this.update_toggle();
+	}
+
+	update_toggle() {
+		var btn = this.toggle_el || document.getElementById('smart_folder_toggle');
+		if (!btn) return;
+		var on = this.is_connected();
+		btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+		btn.setAttribute('title', on
+			? 'Smart folder: on' + (this.handle ? ' (' + this.handle.name + ')' : '') + ' — click to disconnect'
+			: 'Smart folder: off — click to pick a folder');
+	}
+
 	//--- toggle entry points -------------------------------------------------
 
 	async enable() {
@@ -101,6 +126,7 @@ class Smart_folder_class {
 		this.data = null;
 		this.Helper.setCookie(ENABLED_COOKIE, 0);
 		try { await idb_del(HANDLE_KEY); } catch (e) { /* ignore */ }
+		this.update_toggle();
 		alertify.success('Smart folder disabled. Get in loser will no longer read or write to the folder.');
 	}
 
@@ -124,6 +150,7 @@ class Smart_folder_class {
 	//--- folder connect: read/create config + append history -----------------
 
 	async connect_folder(dir) {
+		this.update_toggle();
 		var existing = await this.read_config(dir);
 		if (existing) {
 			this.data = existing;

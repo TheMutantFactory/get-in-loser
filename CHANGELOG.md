@@ -108,6 +108,13 @@ The one where the UI stopped holding still.
 
 ---
 
+## v0.1.12 — "There Is Only One Theme"
+
+- **Smart folder has a home now:** a folder icon sits to the right of the logo. Click it to pick your folder; it glows Petal Pink while connected and tells you which folder it is holding. The Settings toggle still exists, at the bottom of a long list, where you did not find it. Fair.
+- **Theme selection, clarified:** choosing any theme other than *yonce* now returns you to the original miniPaint. Immediately. We are not angry. We simply understand that you would be happier there. (Your unsaved work still gets the usual "are you sure" — we are petty, not cruel.)
+
+---
+
 ## Unreleased — "???"
 
 - (redacted)

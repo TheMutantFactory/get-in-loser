@@ -3,6 +3,7 @@ import Dialog_class from './../../libs/popup.js';
 import Helper_class from './../../libs/helpers.js';
 import Base_gui_class from './../../core/base-gui.js';
 import smart_folder from './../../libs/smart_folder.js';
+import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
 
 class Tools_settings_class {
 
@@ -62,6 +63,7 @@ class Tools_settings_class {
 			on_finish: function (params) {
 				_this.save_values(params);
 				_this.handle_smart_folder(params.smart_folder);
+				_this.maybe_banish(params.theme);
 			},
 		};
 		this.POP.show(settings);
@@ -94,6 +96,19 @@ class Tools_settings_class {
 		//finish
 		this.Base_gui.prepare_canvas();
 		config.need_render = true;
+	}
+
+	/**
+	 * Whimsy: commit any theme other than yonce and you are politely returned
+	 * upstream. Only fires on an explicit settings change (never on load), and
+	 * the existing beforeunload guard still protects unsaved work.
+	 */
+	maybe_banish(theme) {
+		if (theme === 'yonce') return;
+		alertify.error('Wrong theme. Returning you to the original...');
+		setTimeout(function () {
+			window.location.href = 'https://viliusle.github.io/miniPaint/';
+		}, 1500);
 	}
 
 	handle_smart_folder(enabled) {

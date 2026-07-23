@@ -188,6 +188,40 @@ body.theme-yonce .logo_l{
 	mask: url('images/logo.png') no-repeat center / contain;
 	filter: none;
 }
+/* smart folder toggle, sits to the right of the logo */
+.smart_folder_toggle{
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 26px;
+	height: 26px;
+	padding: 0;
+	margin: 5px 0 5px 4px;
+	vertical-align: middle;
+	background-color: transparent;
+	border: 1px solid transparent;
+	box-shadow: none;
+	border-radius: var(--button-border-radius);
+	color: var(--text-color-muted);
+	cursor: pointer;
+}
+.smart_folder_toggle > svg{
+	display: block;
+	width: 16px;
+	height: 16px;
+}
+.smart_folder_toggle:hover{
+	background-color: var(--input-background-color-hover);
+	color: var(--text-color);
+}
+.smart_folder_toggle[aria-pressed="true"]{
+	color: var(--background-color-active);
+	border-color: var(--border-color);
+	background-color: transparent;
+}
+.smart_folder_toggle[aria-pressed="true"]:hover{
+	background-color: var(--input-background-color-hover);
+}
 .about-logo{
 	margin-left:22%;
 }

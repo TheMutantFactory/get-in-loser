@@ -75,7 +75,8 @@ class Base_gui_class {
 		this.load_default_values();
 		this.render_main_gui();
 		this.init_service_worker();
-		//reconnect a previously-enabled smart folder (restores its config/history)
+		//smart folder: header toggle + reconnect a previously-enabled folder
+		smart_folder.init_toggle();
 		smart_folder.restore();
 	}
 
