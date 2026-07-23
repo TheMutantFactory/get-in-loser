@@ -136,43 +136,52 @@ body.theme-yonce{
 	--yc-ink-050:         #e6e6e6;
 	--yc-white:           #ffffff;
 	--yc-shadow:          rgba(0, 0, 0, 0.4);
+	/* violet-tinted surfaces + gradient floor */
+	--yc-onyx:            #0f0b14;
+	--yc-violet-950:      #14101b;
+	--yc-violet-900:      #1b1524;
+	--yc-violet-800:      #241a30;
+	--yc-violet-700:      #302340;
+	--yc-violet-600:      #3d2d50;
 
 	/* --- theme roles: reference palette names, never raw hex --- */
-	--background: var(--yc-midnight-violet);
+	/* gradient: Midnight Violet (top) -> Onyx (bottom); angle set per-load by JS,
+	   falling back to a straight 180deg vertical when no tilt is applied. */
+	--background: linear-gradient(var(--yc-bg-angle, 180deg), var(--yc-midnight-violet), var(--yc-onyx));
 	--text-color: var(--yc-white);
 	--text-color-muted: var(--yc-ink-100);
 	--text-color-red: var(--yc-hot-pink);
 	--text-color-green: var(--yc-cyan);
 	--text-color-blue: var(--yc-lavender-purple);
 	--link-color: var(--yc-cyan);
-	--section-background-color: var(--yc-ink-600);
-	--area-background-color: var(--yc-ink-400);
+	--section-background-color: var(--yc-violet-900);
+	--area-background-color: var(--yc-violet-700);
 	--block-background-color: var(--yc-vintage-grape);
-	--header-background-color: var(--yc-ink-700);
-	--button-background-color: var(--yc-ink-400);
+	--header-background-color: var(--yc-violet-950);
+	--button-background-color: var(--yc-violet-700);
 	--button-background-color-hover: var(--yc-hot-pink);
-	--button-background-color-active: var(--yc-ink-300);
+	--button-background-color-active: var(--yc-violet-800);
 	--button-shadow-color: var(--yc-shadow);
 	--button-text-color-active: var(--yc-cyan);
-	--button-toggle-background-color: var(--yc-ink-300);
-	--button-toggle-background-color-hover: var(--yc-ink-200);
-	--input-background-color: var(--yc-ink-600);
-	--input-background-color-hover: var(--yc-ink-500);
+	--button-toggle-background-color: var(--yc-violet-800);
+	--button-toggle-background-color-hover: var(--yc-violet-600);
+	--input-background-color: var(--yc-violet-900);
+	--input-background-color-hover: var(--yc-violet-800);
 	--input-text-color: var(--yc-white);
 	--input-border-color: var(--yc-black);
 	--input-border-color-active: var(--yc-hot-pink);
-	--input-group-border-color: var(--yc-ink-400);
-	--menu-background-color: var(--yc-ink-900);
+	--input-group-border-color: var(--yc-violet-700);
+	--menu-background-color: var(--yc-violet-950);
 	--menu-icons-filter: invert(1);
 	--menu-icons-filter-active: none;
 	--menu-text-color: var(--yc-ink-050);
 	--menu-dropdown-hover-background-color: var(--yc-hot-pink);
 	--menu-dropdown-border-color: var(--yc-lavender-purple);
 	--background-color-active: var(--yc-hot-pink);
-	--background-color-hover: var(--yc-ink-400);
+	--background-color-hover: var(--yc-violet-700);
 	--text-color-active: var(--yc-ink-800);
 	--border-color: var(--yc-lavender-purple);
-	--scrollbar-track-color: var(--yc-ink-600);
+	--scrollbar-track-color: var(--yc-violet-900);
 	--scrollbar-thumb-color: var(--yc-hot-pink);
 	--mobile-menu-toggle-filter: invert(1);
 }
