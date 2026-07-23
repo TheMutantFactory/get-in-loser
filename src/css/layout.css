@@ -414,28 +414,35 @@ IMPORTANT: any new icon should also must be added on /service-worker.js + its ve
 }
 .layers_list .item{
 	margin-bottom:2px;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+}
+.layers_list .item > .clear{
+	display: none;
 }
 .layers_list .layer_name{
 	display:block;
 	padding:1px 5px 3px 5px;
-	height:19px;
-	width: calc(100% - 44px);
+	flex: 1 1 auto;
+	min-width: 0;
 	text-align: left;
 	overflow:hidden;
+	text-overflow: ellipsis;
 	background-color:#989898;
 	background-color: var(--area-background-color);
 	border:1px solid #393939;
 	border-color: var(--border-color);
 	border-radius:3px;
 	cursor:pointer;
-	overflow:hidden;
 	font-size: 18px;
 	font-weight: bold;
+	line-height: 1.4;
 	color:var(--text-color);
 	white-space: nowrap;
 }
 .layers_list .item.shorter .layer_name{
-	width: calc(100% - 63px);
+	width: auto;
 }
 .layers_list .item.active .layer_name{
 	background-color: var(--background-color-active);
@@ -487,6 +494,7 @@ IMPORTANT: any new icon should also must be added on /service-worker.js + its ve
 .layers_list .visible{ opacity:0.4; }
 .layers_list .delete{
 	float:right;
+	order: 1;
 	cursor:pointer;
 	padding:0px 3px 0px 3px;
 	width:12px;
@@ -500,6 +508,8 @@ IMPORTANT: any new icon should also must be added on /service-worker.js + its ve
 /* filters */
 .layers_list .filters{
 	margin-bottom: 5px;
+	order: 2;
+	flex: 0 0 100%;
 }
 .layers_list .filter{
 	margin-bottom: 2px;
