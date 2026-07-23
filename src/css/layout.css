@@ -409,6 +409,8 @@ IMPORTANT: any new icon should also must be added on /service-worker.js + its ve
 	color: var(--text-color-active);
 	cursor:pointer;
 	text-decoration:none;
+	font-size: 18px;
+	font-weight: bold;
 }
 .layers_list .item{
 	margin-bottom:2px;
@@ -427,7 +429,8 @@ IMPORTANT: any new icon should also must be added on /service-worker.js + its ve
 	border-radius:3px;
 	cursor:pointer;
 	overflow:hidden;
-	font-size: 14px;
+	font-size: 18px;
+	font-weight: bold;
 	color:var(--text-color);
 	white-space: nowrap;
 }
