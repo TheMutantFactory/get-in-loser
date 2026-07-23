@@ -87,6 +87,13 @@ The one where the UI stopped holding still.
 
 ---
 
+## v0.1.9 — "Legible At Last"
+
+- **Colors panel:** the three toggle icons (picker / channels / swatches) are now white instead of the pressed-state cyan, which had been quietly cosplaying as a UI accent.
+- **Error popups:** the lower-right notifications were black text on a muted red — a color combination previously only found in ransom notes. They now match the grape layer panels: white text, rounded corners, and a colored left edge (red for errors; other colors exist for the other outcomes, should you ever be so lucky).
+
+---
+
 ## Unreleased — "???"
 
 - (redacted)

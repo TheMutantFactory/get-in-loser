@@ -805,8 +805,38 @@ canvas{
 	height: 0;
 	border: none;
 }
+/* Colors panel toggle icons: white, not the pressed-state cyan
+   (setting the active-text var whitens both the icon and its underline) */
+#toggle_color_picker_section_button,
+#toggle_color_channels_section_button,
+#toggle_color_swatches_section_button{
+	--button-text-color-active: var(--text-color);
+	color: var(--text-color);
+}
+
+/* Error / notification popups: readable, styled like the (grape) layer panels */
 .alertify-notifier{
-	color: black;
+	color: var(--text-color);
+}
+.alertify-notifier .ajs-message{
+	background: var(--block-background-color) !important;
+	color: var(--text-color) !important;
+	border: 1px solid var(--border-color);
+	border-radius: 4px;
+	box-shadow: 0 3px 12px rgba(0, 0, 0, 0.5);
+	text-shadow: none;
+}
+.alertify-notifier .ajs-message.ajs-error{
+	background: var(--block-background-color) !important;
+	border-left: 4px solid var(--text-color-red);
+}
+.alertify-notifier .ajs-message.ajs-success{
+	background: var(--block-background-color) !important;
+	border-left: 4px solid var(--text-color-green);
+}
+.alertify-notifier .ajs-message.ajs-warning{
+	background: var(--block-background-color) !important;
+	border-left: 4px solid var(--text-color-blue);
 }
 .effectsPreview{
 	cursor: pointer;
