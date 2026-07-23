@@ -75,6 +75,12 @@ The one where the UI stopped holding still.
 
 ---
 
+## v0.1.7 — "The Menu Reveals Itself"
+
+- **Layer right-click menu:** the context menu that previously offered only "Rename" now admits it has always had more to say. Added *Duplicate*, *Convert to Raster*, *Merge Down* (which appears only when there is, in fact, a layer below to merge into — it will not pretend otherwise), and, past a respectful divider, *Delete*. Each acts on the layer you clicked, whether or not it was the one you were looking at.
+
+---
+
 ## Unreleased — "???"
 
 - (redacted)

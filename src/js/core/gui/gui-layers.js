@@ -11,6 +11,7 @@ import Layer_rename_class from './../../modules/layer/rename.js';
 import Effects_browser_class from './../../modules/effects/browser.js';
 import Layer_duplicate_class from './../../modules/layer/duplicate.js';
 import Layer_raster_class from './../../modules/layer/raster.js';
+import Layer_merge_class from './../../modules/layer/merge.js';
 import Tools_translate_class from './../../modules/tools/translate.js';
 
 var template = `
@@ -36,6 +37,7 @@ class GUI_layers_class {
 		this.Effects_browser = new Effects_browser_class();
 		this.Layer_duplicate = new Layer_duplicate_class();
 		this.Layer_raster = new Layer_raster_class();
+		this.Layer_merge = new Layer_merge_class();
 		this.Tools_translate = new Tools_translate_class();
 	}
 
@@ -134,9 +136,25 @@ class GUI_layers_class {
 		var _this = this;
 		this.hide_layer_menu();
 
+		var items = [
+			{ label: 'Rename', run: function () { _this.Layer_rename.rename(layer_id); } },
+			{ label: 'Duplicate', run: function () { _this.Layer_duplicate.duplicate(); } },
+			{ label: 'Convert to Raster', run: function () { _this.Layer_raster.raster(); } }
+		];
+		if (this.Base_layers.find_previous(layer_id) != null) {
+			items.push({ label: 'Merge Down', run: function () { _this.Layer_merge.merge(); } });
+		}
+		items.push({ divider: true });
+		items.push({ label: 'Delete', run: function () { app.State.do_action(new app.Actions.Delete_layer_action(layer_id)); } });
+
 		var menu = document.createElement('div');
 		menu.className = 'layer_context_menu';
-		menu.innerHTML = '<button type="button" class="layer_context_item" data-action="rename">Rename</button>';
+		var html = '';
+		for (var i = 0; i < items.length; i++) {
+			if (items[i].divider) html += '<div class="layer_context_divider"></div>';
+			else html += '<button type="button" class="layer_context_item" data-index="' + i + '">' + items[i].label + '</button>';
+		}
+		menu.innerHTML = html;
 		document.body.appendChild(menu);
 		this.layer_menu_el = menu;
 
@@ -146,11 +164,13 @@ class GUI_layers_class {
 		menu.style.top = Math.min(y, window.innerHeight - rect.height - 4) + 'px';
 
 		menu.addEventListener('click', function (e) {
-			if (e.target.dataset.action === 'rename') {
+			var idx = e.target.dataset.index;
+			if (idx != null && items[idx]) {
+				//select the target layer first so per-layer actions apply to it
 				if (layer_id != config.layer.id) {
 					app.State.do_action(new app.Actions.Select_layer_action(layer_id));
 				}
-				_this.Layer_rename.rename(layer_id);
+				items[idx].run();
 			}
 			_this.hide_layer_menu();
 		});

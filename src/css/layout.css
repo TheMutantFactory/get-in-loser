@@ -566,6 +566,12 @@ IMPORTANT: any new icon should also must be added on /service-worker.js + its ve
 	background-color: var(--background-color-active);
 	color: var(--text-color-active);
 }
+.layer_context_menu .layer_context_divider{
+	height: 1px;
+	margin: 4px 0;
+	background-color: var(--border-color);
+	opacity: 0.5;
+}
 
 /* filters */
 .layers_list .filters{
