@@ -403,22 +403,23 @@ IMPORTANT: any new icon should also must be added on /service-worker.js + its ve
 	padding:1px 8px;
 	margin-right: 10px;
 	background-color: #419147;
-	background-color: var(--background-color-active);
+	background-color: var(--input-background-color);
 	border:1px solid #444;
-	border-color: var(--border-color);
-	color: var(--text-color-active);
+	border-color: var(--input-border-color);
+	color: var(--input-text-color);
 	cursor:pointer;
 	text-decoration:none;
 	font-size: 18px;
 	font-weight: bold;
 }
-/* Preview zoom controls: match the themed input fields, not the pink active color */
-.canvas_preview_details .layer_add{
+/* Layers header buttons (D, R, move arrows) match the themed input fields too */
+.layer_duplicate, .layer_raster, .layers_arrow{
 	background-color: var(--input-background-color);
 	color: var(--input-text-color);
 	border-color: var(--input-border-color);
 }
-.canvas_preview_details .layer_add:hover{
+/* Shared hover for all these control buttons (preview zoom + layer buttons) */
+.layer_add:hover, .layer_duplicate:hover, .layer_raster:hover, .layers_arrow:hover{
 	background-color: var(--input-background-color-hover);
 }
 .layers_list .item{
@@ -439,9 +440,9 @@ IMPORTANT: any new icon should also must be added on /service-worker.js + its ve
 	overflow:hidden;
 	text-overflow: ellipsis;
 	background-color:#989898;
-	background-color: var(--area-background-color);
+	background-color: var(--input-background-color);
 	border:1px solid #393939;
-	border-color: var(--border-color);
+	border-color: var(--input-border-color);
 	border-radius:3px;
 	cursor:pointer;
 	font-size: 18px;
@@ -454,8 +455,9 @@ IMPORTANT: any new icon should also must be added on /service-worker.js + its ve
 	width: auto;
 }
 .layers_list .item.active .layer_name{
-	background-color: var(--background-color-active);
-	color: var(--text-color-active);
+	background-color: var(--input-background-color-hover);
+	border-color: var(--border-color);
+	color: var(--input-text-color);
 }
 .layers_list .arrow_down{
 	position: relative;
