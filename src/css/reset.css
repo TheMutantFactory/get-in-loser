@@ -262,6 +262,13 @@ input[type="text"], select, input[type="number"], textarea{
 	padding: 3px 5px;
 	font-size: 15px;
 }
+/* Raw text/number inputs (e.g. in popups) otherwise fall back to the browser's
+   native light rendering, ignoring the themed background. Force custom styling. */
+input[type="text"], input[type="number"], textarea{
+	-webkit-appearance: none;
+	-moz-appearance: textfield;
+	appearance: none;
+}
 input:disabled {
 	opacity: 0.3;
 }
