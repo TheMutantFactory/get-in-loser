@@ -114,7 +114,8 @@ class Tools_settings_class {
 				message: 'Wrong theme. Returning you to the original...',
 			},
 			light: {
-				url: 'https://www.adobe.com/',
+				//utm values are lowercase + hyphenated; spaces would encode as %20
+				url: 'https://www.adobe.com/?utm_source=get-in-loser&utm_medium=referral&utm_campaign=light-mode',
 				message: 'Light mode. Enjoy the subscription...',
 			},
 		};

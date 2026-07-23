@@ -491,17 +491,24 @@ class Base_gui_class {
 			document.querySelector('body').classList.remove('theme-' + config.themes[i]);
 		}
 		document.querySelector('body').classList.add('theme-' + theme_name);
-		this.randomize_green(theme_name);
+
+		//theme-specific behaviour
+		this.stop_classic_recovery();
+		this.clear_theme_overrides();
+		if (theme_name === 'green') {
+			this.randomize_green();
+		}
+		else if (theme_name === 'classic') {
+			this.start_classic_recovery();
+		}
 	}
 
 	/**
-	 * The 'green' theme is not a palette so much as a mood. Every application
-	 * rolls a fresh set of greens, all crowded into the same narrow band of
-	 * darkness so that nothing is ever quite readable.
+	 * Colour variables a theme can define. Shared by the green randomiser and
+	 * the classic (black) recovery.
 	 */
-	randomize_green(theme_name) {
-		var body = document.querySelector('body');
-		var vars = [
+	theme_vars() {
+		return [
 			'--background', '--text-color', '--text-color-muted', '--text-color-red',
 			'--text-color-green', '--text-color-blue', '--link-color',
 			'--section-background-color', '--area-background-color', '--block-background-color',
@@ -516,20 +523,129 @@ class Base_gui_class {
 			'--background-color-active', '--background-color-hover', '--text-color-active',
 			'--border-color', '--scrollbar-track-color', '--scrollbar-thumb-color',
 		];
+	}
 
-		//always clear first, so leaving the theme restores the real palette
+	clear_theme_overrides() {
+		var body = document.querySelector('body');
+		var vars = this.theme_vars();
 		for (var i = 0; i < vars.length; i++) {
 			body.style.removeProperty(vars[i]);
 		}
-		if (theme_name !== 'green') {
-			return;
-		}
-		for (var j = 0; j < vars.length; j++) {
+	}
+
+	/**
+	 * The 'green' theme is not a palette so much as a mood. Every application
+	 * rolls a fresh set of greens, all crowded into the same narrow band of
+	 * darkness so that nothing is ever quite readable.
+	 */
+	randomize_green() {
+		var body = document.querySelector('body');
+		var vars = this.theme_vars();
+		for (var i = 0; i < vars.length; i++) {
 			var h = Math.round(90 + Math.random() * 60);  //greens only
 			var s = Math.round(40 + Math.random() * 60);
 			var l = Math.round(18 + Math.random() * 20);  //all similarly dark = no contrast
-			body.style.setProperty(vars[j], 'hsl(' + h + ',' + s + '%,' + l + '%)');
+			body.style.setProperty(vars[i], 'hsl(' + h + ',' + s + '%,' + l + '%)');
 		}
+	}
+
+	/**
+	 * Safety valve for the all-black 'classic' theme: as the user moves the
+	 * mouse, the palette bleeds from black back up to the real yonce colours
+	 * over roughly 10 seconds of actual movement. Stand still, stay in the void.
+	 */
+	start_classic_recovery() {
+		var _this = this;
+		var target = this.read_theme_palette('yonce');
+		var moved = 0;
+		var last = 0;
+		var duration = 10000;
+
+		this.classic_recovery_handler = function () {
+			var now = Date.now();
+			//only count time while the mouse is actually moving
+			if (last && (now - last) < 250) {
+				moved += (now - last);
+			}
+			last = now;
+
+			var progress = Math.min(1, moved / duration);
+			var body = document.querySelector('body');
+			for (var key in target) {
+				body.style.setProperty(key, _this.fade_up_from_black(target[key], progress));
+			}
+			if (progress >= 1) {
+				_this.stop_classic_recovery();
+			}
+		};
+		document.addEventListener('mousemove', this.classic_recovery_handler);
+	}
+
+	stop_classic_recovery() {
+		if (this.classic_recovery_handler) {
+			document.removeEventListener('mousemove', this.classic_recovery_handler);
+			this.classic_recovery_handler = null;
+		}
+	}
+
+	/**
+	 * Read another theme's computed colours without disturbing the current one.
+	 */
+	read_theme_palette(theme_name) {
+		var body = document.querySelector('body');
+		var restore = [];
+		for (var i in config.themes) {
+			var cls = 'theme-' + config.themes[i];
+			if (body.classList.contains(cls)) {
+				restore.push(cls);
+			}
+			body.classList.remove(cls);
+		}
+		body.classList.add('theme-' + theme_name);
+
+		var computed = getComputedStyle(body);
+		var vars = this.theme_vars();
+		var out = {};
+		for (var j = 0; j < vars.length; j++) {
+			var value = computed.getPropertyValue(vars[j]).trim();
+			//skip anything that did not fully resolve, it would only be invalid
+			if (value && value.indexOf('var(') === -1) {
+				out[vars[j]] = value;
+			}
+		}
+
+		body.classList.remove('theme-' + theme_name);
+		for (var k = 0; k < restore.length; k++) {
+			body.classList.add(restore[k]);
+		}
+		return out;
+	}
+
+	/**
+	 * Scale every colour inside a value from black (progress 0) up to its real
+	 * value (progress 1). Handles plain colours and gradients alike.
+	 */
+	fade_up_from_black(value, progress) {
+		value = value.replace(/rgba?\(([^)]+)\)/gi, function (match, inner) {
+			var parts = inner.split(',');
+			var r = Math.round(parseFloat(parts[0]) * progress);
+			var g = Math.round(parseFloat(parts[1]) * progress);
+			var b = Math.round(parseFloat(parts[2]) * progress);
+			if (parts.length > 3) {
+				return 'rgba(' + r + ',' + g + ',' + b + ',' + parts[3].trim() + ')';
+			}
+			return 'rgb(' + r + ',' + g + ',' + b + ')';
+		});
+		value = value.replace(/#([0-9a-f]{6}|[0-9a-f]{3})\b/gi, function (match, hex) {
+			if (hex.length === 3) {
+				hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+			}
+			var r = Math.round(parseInt(hex.substr(0, 2), 16) * progress);
+			var g = Math.round(parseInt(hex.substr(2, 2), 16) * progress);
+			var b = Math.round(parseInt(hex.substr(4, 2), 16) * progress);
+			return 'rgb(' + r + ',' + g + ',' + b + ')';
+		});
+		return value;
 	}
 
 	get_language() {

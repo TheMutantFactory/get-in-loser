@@ -135,6 +135,14 @@ Switching back to yonce inside the grace period still cancels any pending reloca
 
 ---
 
+## v0.1.15 — "The Void Is Negotiable"
+
+- **classic now has an exit.** It is still absolute black on absolute black. But as you move the mouse, the colour bleeds back in — the entire palette climbing out of black toward yonce over roughly ten seconds of actual movement, gradient and all. Stop moving and it stops healing. You are not trapped; you are being asked to demonstrate effort.
+- **green is greener.** The greys, the whites, and the blues it had quietly inherited are all green now — even the semantic "red" is green. There is no longer anything in that theme which is not green, which somehow makes the contrast worse.
+- **light** now carries a UTM to adobe.com so the referral is properly attributed. No spaces in it — `get-in-loser`. We are unserious, not unprofessional.
+
+---
+
 ## Unreleased — "???"
 
 - (redacted)

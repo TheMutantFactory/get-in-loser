@@ -100,6 +100,10 @@ body.theme-green{
 	--background: #050702;
 	--text-color: #acc3a9;
 	--text-color-muted: #80937d;
+	/* the "red" and "blue" semantic colours are green here too */
+	--text-color-red: #7fbf5e;
+	--text-color-green: #8bdb8b;
+	--text-color-blue: #5f9e52;
 	--link-color: #9ffda5;
 	--section-background-color: #1c2e04;
 	--area-background-color: #3b5f11;
@@ -108,17 +112,22 @@ body.theme-green{
 	--button-background-color: #2e4a0d;
 	--button-background-color-hover: #58960e;
 	--button-background-color-active:#2b460f;
-	--button-text-color-active: #ccc;
+	--button-shadow-color: rgba(5, 20, 2, 0.4);
+	--button-text-color-active: #cbe8b4;
 	--button-toggle-background-color: #243e05;
 	--button-toggle-background-color-hover: #243e05;
-	--input-background-color: #ffffff;
-	--input-background-color-hover: #ddd;
-	--input-text-color: #0c0c0d;
-	--input-border-color: #ccc;
+	--input-background-color: #0d1a03;
+	--input-background-color-hover: #16290a;
+	--input-text-color: #9fd18f;
+	--input-border-color: #3b5f11;
+	--input-border-color-active: #58960e;
+	--input-group-border-color: #2b460f;
 	--menu-background-color: #1c2e04;
 	--menu-icons-filter: invert(1);
 	--menu-icons-filter-active: none;
 	--menu-text-color: #acc3a9;
+	--menu-dropdown-hover-background-color: #58960e;
+	--menu-dropdown-border-color: #4d6b1e;
 	--background-color-active: #58960e;
 	--background-color-hover: #58960e;
 	--text-color-active: #acc3a9;
