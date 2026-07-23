@@ -176,7 +176,7 @@ config.TOOLS = [
 			border: true,
 			fill: true,
 			border_color: '#555555',
-			fill_color: '#aaaaaa',
+			fill_color: '#000000',
 			radius: {
 				value: 0,
 				min: 0,
@@ -192,7 +192,7 @@ config.TOOLS = [
 			border: true,
 			fill: true,
 			border_color: '#555555',
-			fill_color: '#aaaaaa',
+			fill_color: '#000000',
 			circle: false,
 		},
 	},
@@ -212,7 +212,7 @@ config.TOOLS = [
 			border: true,
 			fill: true,
 			border_color: '#555555',
-			fill_color: '#aaaaaa',
+			fill_color: '#000000',
 		},
 	},
 	{
@@ -223,7 +223,7 @@ config.TOOLS = [
 			border: true,
 			fill: true,
 			border_color: '#555555',
-			fill_color: '#aaaaaa',
+			fill_color: '#000000',
 		},
 	},
 	{
@@ -234,7 +234,7 @@ config.TOOLS = [
 			border: true,
 			fill: true,
 			border_color: '#555555',
-			fill_color: '#aaaaaa',
+			fill_color: '#000000',
 		},
 	},
 	{
@@ -245,7 +245,7 @@ config.TOOLS = [
 			border: true,
 			fill: true,
 			border_color: '#555555',
-			fill_color: '#aaaaaa',
+			fill_color: '#000000',
 		},
 	},
 	{
@@ -256,7 +256,7 @@ config.TOOLS = [
 			border: true,
 			fill: true,
 			border_color: '#555555',
-			fill_color: '#aaaaaa',
+			fill_color: '#000000',
 		},
 	},
 	{
@@ -267,7 +267,7 @@ config.TOOLS = [
 			border: true,
 			fill: true,
 			border_color: '#555555',
-			fill_color: '#aaaaaa',
+			fill_color: '#000000',
 		},
 	},
 	{
@@ -278,7 +278,7 @@ config.TOOLS = [
 			border: true,
 			fill: true,
 			border_color: '#555555',
-			fill_color: '#aaaaaa',
+			fill_color: '#000000',
 		},
 	},
 	{
@@ -289,7 +289,7 @@ config.TOOLS = [
 			border: true,
 			fill: true,
 			border_color: '#555555',
-			fill_color: '#aaaaaa',
+			fill_color: '#000000',
 		},
 	},
 	{
@@ -302,7 +302,7 @@ config.TOOLS = [
 			border: true,
 			fill: true,
 			border_color: '#555555',
-			fill_color: '#aaaaaa',
+			fill_color: '#000000',
 		},
 	},
 	{
@@ -313,7 +313,7 @@ config.TOOLS = [
 			border: true,
 			fill: true,
 			border_color: '#555555',
-			fill_color: '#aaaaaa',
+			fill_color: '#000000',
 		},
 	},
 	{
@@ -324,7 +324,7 @@ config.TOOLS = [
 			border: true,
 			fill: true,
 			border_color: '#555555',
-			fill_color: '#aaaaaa',
+			fill_color: '#000000',
 		},
 	},
 	{
@@ -334,7 +334,7 @@ config.TOOLS = [
 			border_size: 4,
 			fill: true,
 			border_color: '#555555',
-			fill_color: '#aaaaaa',
+			fill_color: '#000000',
 		},
 	},
 	{
@@ -345,7 +345,7 @@ config.TOOLS = [
 			border: true,
 			fill: true,
 			border_color: '#555555',
-			fill_color: '#aaaaaa',
+			fill_color: '#000000',
 		},
 	},
 	{
@@ -370,7 +370,7 @@ config.TOOLS = [
 			border: true,
 			fill: true,
 			border_color: '#555555',
-			fill_color: '#aaaaaa',
+			fill_color: '#000000',
 		},
 	},
 	{
@@ -381,7 +381,7 @@ config.TOOLS = [
 			border: true,
 			fill: true,
 			border_color: '#555555',
-			fill_color: '#aaaaaa',
+			fill_color: '#000000',
 		},
 	},
 	{
@@ -412,7 +412,7 @@ config.TOOLS = [
 				value: false,
 				icon: `strikethrough.svg`
 			},
-			fill: '#008800',
+			fill: '#000000',
 			stroke: '#000000',
 			stroke_size: {
 				value: 0,
@@ -436,7 +436,7 @@ config.TOOLS = [
 	{
 		name: 'gradient',
 		attributes: {
-			color_1: '#008000',
+			color_1: '#000000',
 			color_2: '#ffffff',
 			alpha: 0,
 			radial: false,
@@ -509,7 +509,7 @@ config.TOOLS = [
 			border: true,
 			fill: true,
 			border_color: '#555555',
-			fill_color: '#aaaaaa',
+			fill_color: '#000000',
 		},
 	},
 ];
