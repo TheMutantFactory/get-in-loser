@@ -13,6 +13,7 @@ import Layer_duplicate_class from './../../modules/layer/duplicate.js';
 import Layer_raster_class from './../../modules/layer/raster.js';
 import Layer_merge_class from './../../modules/layer/merge.js';
 import Tools_translate_class from './../../modules/tools/translate.js';
+import context_menu from './../../libs/context_menu.js';
 
 var template = `
 	<button type="button" class="layer_add trn" id="insert_layer" title="Insert new layer">+</button>
@@ -134,69 +135,36 @@ class GUI_layers_class {
 
 	show_layer_menu(x, y, layer_id) {
 		var _this = this;
-		this.hide_layer_menu();
 
-		var items = [
-			{ label: 'Rename', run: function () { _this.Layer_rename.rename(layer_id); } },
-			{ label: 'Duplicate', run: function () { _this.Layer_duplicate.duplicate(); } },
-			{ label: 'Convert to Raster', run: function () { _this.Layer_raster.raster(); } }
-		];
-		if (this.Base_layers.find_previous(layer_id) != null) {
-			items.push({ label: 'Merge Down', run: function () { _this.Layer_merge.merge(); } });
-		}
-		items.push({ divider: true });
-		items.push({ label: 'Delete', run: function () { app.State.do_action(new app.Actions.Delete_layer_action(layer_id)); } });
-
-		var menu = document.createElement('div');
-		menu.className = 'layer_context_menu';
-		var html = '';
-		for (var i = 0; i < items.length; i++) {
-			if (items[i].divider) html += '<div class="layer_context_divider"></div>';
-			else html += '<button type="button" class="layer_context_item" data-index="' + i + '">' + items[i].label + '</button>';
-		}
-		menu.innerHTML = html;
-		document.body.appendChild(menu);
-		this.layer_menu_el = menu;
-
-		//keep on screen
-		var rect = menu.getBoundingClientRect();
-		menu.style.left = Math.min(x, window.innerWidth - rect.width - 4) + 'px';
-		menu.style.top = Math.min(y, window.innerHeight - rect.height - 4) + 'px';
-
-		menu.addEventListener('click', function (e) {
-			var idx = e.target.dataset.index;
-			if (idx != null && items[idx]) {
-				//select the target layer first so per-layer actions apply to it
+		//per-layer actions act on the selected layer, so select the clicked one first
+		function on_layer(fn) {
+			return function () {
 				if (layer_id != config.layer.id) {
 					app.State.do_action(new app.Actions.Select_layer_action(layer_id));
 				}
-				items[idx].run();
-			}
-			_this.hide_layer_menu();
+				fn();
+			};
+		}
+
+		var items = [
+			{ label: 'Rename', run: on_layer(function () { _this.Layer_rename.rename(layer_id); }) },
+			{ label: 'Duplicate', run: on_layer(function () { _this.Layer_duplicate.duplicate(); }) },
+			{ label: 'Convert to Raster', run: on_layer(function () { _this.Layer_raster.raster(); }) }
+		];
+		if (this.Base_layers.find_previous(layer_id) != null) {
+			items.push({ label: 'Merge Down', run: on_layer(function () { _this.Layer_merge.merge(); }) });
+		}
+		items.push({ divider: true });
+		items.push({
+			label: 'Delete',
+			run: on_layer(function () { app.State.do_action(new app.Actions.Delete_layer_action(layer_id)); })
 		});
 
-		//dismiss on outside click / escape (deferred so this event doesn't close it)
-		setTimeout(function () {
-			_this.layer_menu_dismiss = function (e) {
-				if (e.type === 'keydown' && e.key !== 'Escape') return;
-				if (_this.layer_menu_el && _this.layer_menu_el.contains(e.target)) return;
-				_this.hide_layer_menu();
-			};
-			document.addEventListener('mousedown', _this.layer_menu_dismiss);
-			document.addEventListener('keydown', _this.layer_menu_dismiss);
-		}, 0);
+		context_menu.show(x, y, items);
 	}
 
 	hide_layer_menu() {
-		if (this.layer_menu_el) {
-			this.layer_menu_el.remove();
-			this.layer_menu_el = null;
-		}
-		if (this.layer_menu_dismiss) {
-			document.removeEventListener('mousedown', this.layer_menu_dismiss);
-			document.removeEventListener('keydown', this.layer_menu_dismiss);
-			this.layer_menu_dismiss = null;
-		}
+		context_menu.hide();
 	}
 
 	/**

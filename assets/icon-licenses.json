@@ -1,0 +1,40 @@
+{
+  "_comment": "Licence data for third-party icon artwork bundled in this repo. Fetched from the Noun Project API v2 (GET /v2/icon/{id}) on 2026-07-23. This file is imported by src/js/modules/help/icon_license.js and shown in-app, so keep it accurate.",
+  "icons": [
+    {
+      "id": "4398322",
+      "term": "Loser gesture",
+      "attribution": "Loser gesture by Dooder from Noun Project",
+      "creator": {
+        "name": "Dooder",
+        "username": "topg38",
+        "url": "https://thenounproject.com/creator/topg38/"
+      },
+      "collection": "Pixel Art Hand Gesture",
+      "tags": ["finger", "hand", "loser", "loser-gesture", "pixel", "pointing"],
+      "license": {
+        "id": "creative-commons-attribution",
+        "name": "CC BY 3.0",
+        "full_name": "Creative Commons Attribution 3.0 Unported",
+        "url": "https://creativecommons.org/licenses/by/3.0/",
+        "requires_attribution": true
+      },
+      "source": "The Noun Project",
+      "url": "https://thenounproject.com/icon/loser-gesture-4398322/",
+      "used_for": "The hand that forms the \"l\" in the get-in-loser wordmark, plus the favicons, PWA icons and social card.",
+      "source_file": "assets/noun-4398322-source.png",
+      "derived_files": [
+        "images/logo.png",
+        "images/favicon.png",
+        "images/favicon.svg",
+        "images/manifest/48x48.png",
+        "images/manifest/72x72.png",
+        "images/manifest/96x96.png",
+        "images/manifest/144x144.png",
+        "images/manifest/168x168.png",
+        "images/manifest/192x192.png",
+        "images/preview.jpg"
+      ]
+    }
+  ]
+}

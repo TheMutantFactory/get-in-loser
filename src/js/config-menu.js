@@ -754,6 +754,11 @@ const menuDefinition = [
 				target: 'help/changelog.changelog'
 			},
 			{
+				name: 'Icon License',
+				ellipsis: true,
+				target: 'help/icon_license.icon_license'
+			},
+			{
 				name: 'Report Issues',
 				href: 'https://github.com/DazzlingDukeOfLazers/get-in-loser/issues'
 			},

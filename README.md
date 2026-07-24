@@ -54,6 +54,7 @@ Uses the File System Access API, so **Chromium only** (Chrome/Edge); elsewhere i
 - **Colors** — the swatch picker ships preloaded with the theme palette, and the default color is black.
 - **Edit → Paste** — reads the clipboard via the async Clipboard API where the browser allows it (after a one-time permission grant), falling back to the Ctrl+V paste-event path.
 - **Help → Changelog** — an in-app markdown viewer for [`CHANGELOG.md`](CHANGELOG.md), which is written as patch notes for a paint tool that is also, allegedly, a roguelite.
+- **Help → Icon License** — the credit for the logo artwork, also reachable by right-clicking the hand in the logo. It reads from [`assets/icon-licenses.json`](assets/icon-licenses.json), so the in-app credit can't drift from the repo's record.
 
 ## Build instructions
 
@@ -80,3 +81,9 @@ See [`assets/README.md`](assets/README.md) for provenance and an outstanding ico
 MIT — see [`MIT-LICENSE.txt`](MIT-LICENSE.txt). Original work © ViliusL (miniPaint); derivative modifications © DazzlingDukeOfLazers.
 
 Atkinson Hyperlegible is bundled under its own license, included at [`fonts/atkinson-hyperlegible-LICENSE.txt`](fonts/atkinson-hyperlegible-LICENSE.txt).
+
+### Icon attribution
+
+The hand in the logo is ["Loser gesture"](https://thenounproject.com/icon/loser-gesture-4398322/) by [Dooder](https://thenounproject.com/creator/topg38/) from [The Noun Project](https://thenounproject.com/), used under [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) and modified (rotated left 90°, flipped horizontally, recolored per theme). The icon's actual name is "Loser gesture"; this was discovered after naming the project.
+
+Also shown in-app under **Help → Icon License**. Details and the reasoning behind attributing under CC BY are in [`assets/README.md`](assets/README.md).

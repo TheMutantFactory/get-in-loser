@@ -30,14 +30,41 @@ The script reproduces the committed files byte-for-byte, so a clean run should
 leave `git status` empty. If it does not, the script and the committed assets
 have drifted.
 
-## Attribution / licensing — please confirm
+## Attribution
 
-The hand is **icon 4398322 from [The Noun Project](https://thenounproject.com/)**.
-Noun Project icons are either **CC BY** (which *requires* visible attribution to
-the creator) or **royalty-free** (if bought through a subscription, no
-attribution needed). This repo is public and redistributes the icon in several
-forms, so the correct choice depends on which licence this download came under.
+The hand is **["Loser gesture"](https://thenounproject.com/icon/loser-gesture-4398322/)
+by [Dooder](https://thenounproject.com/creator/topg38/) from
+[The Noun Project](https://thenounproject.com/)**, used under
+**[CC BY 3.0](https://creativecommons.org/licenses/by/3.0/)**.
 
-If it was CC BY, add the creator's name and a link here and in the app's About
-dialog. If it was a royalty-free download, no attribution is required and this
-section can simply say so.
+*Modifications:* rotated left 90° and flipped horizontally so it reads as an
+**L**, then recolored per theme.
+
+The icon's own name is "Loser gesture." That was not planned.
+
+CC BY 3.0 requires visible attribution to the creator. This repo carries it in
+three places:
+
+- this file
+- the root `README.md`
+- **in the app** — Help → Icon License, or right-click the hand in the logo
+
+The machine-readable copy is [`icon-licenses.json`](icon-licenses.json), fetched
+from the Noun Project API (`GET /v2/icon/4398322`). The app imports that file
+directly, so the in-app credit cannot drift from the record here.
+
+### Why CC BY rather than the royalty-free license
+
+A NounPro subscription grants a royalty-free license that removes the
+attribution requirement, so attributing is not the only option available here.
+It is the deliberate one, for two reasons:
+
+1. **This repo redistributes the icon, not just uses it.** `noun-4398322-source.png`
+   is committed to a public repository, so anyone can take the icon from here.
+   Royalty-free terms generally cover *using* an icon in a product; they are not
+   a grant to redistribute it as a standalone asset. CC BY explicitly permits
+   redistribution, provided the credit rides along.
+2. **It costs nothing.** The attribution is three links and a dialog.
+
+Not legal advice — but for a public MIT repo, the license that permits
+redistribution is the sturdier one to stand on.

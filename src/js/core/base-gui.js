@@ -78,6 +78,11 @@ class Base_gui_class {
 		//smart folder: header toggle + reconnect a previously-enabled folder
 		smart_folder.init_toggle();
 		smart_folder.restore();
+
+		//right-click the hand in the logo -> icon licence / source page
+		if (this.modules['help/icon_license']) {
+			this.modules['help/icon_license'].init_context_menu();
+		}
 	}
 
 	load_modules() {

@@ -168,6 +168,17 @@ Switching back to yonce inside the grace period still cancels any pending reloca
 
 ---
 
+## v0.1.19 — "The Hand Has A Name"
+
+- **We looked up the icon.** The hand in the logo — the one that has been pointing this whole time — is a real icon by a real person, and we had never actually read its record. Its name is **"Loser gesture."** We did not name it that. It was called that before we found it. We named the project *afterward.* We have decided not to think about this further.
+- **New — Help → Icon License**, or *right-click the hand itself.* The credit is now in the app: creator, license, the page it came from, and exactly which files it became. It reads from a data file fetched straight from the source, so the credit in the app and the credit in the repo cannot drift apart. One of them lying to you would be thematically appropriate but practically unacceptable.
+- **Attribution, properly.** It is used under CC BY 3.0, which asks that we say who made it. We say so in three places now. It is the least we can do for something that has been silently gesturing at you since v0.1.0.
+- **Under the hood:** the layer right-click menu and the new logo right-click menu are now the same menu, wearing different options.
+
+*Naming a thing gives it power. We are aware of the risk. We accepted it.*
+
+---
+
 ## Unreleased — "???"
 
 - (redacted)
