@@ -522,6 +522,7 @@ class Base_gui_class {
 			'--menu-dropdown-hover-background-color', '--menu-dropdown-border-color',
 			'--background-color-active', '--background-color-hover', '--text-color-active',
 			'--border-color', '--scrollbar-track-color', '--scrollbar-thumb-color',
+			'--button-highlight',
 		];
 	}
 

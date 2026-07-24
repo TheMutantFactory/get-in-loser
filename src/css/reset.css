@@ -57,6 +57,8 @@
 	/* tint applied to the canvas + preview; themes may override */
 	--canvas-filter: none;
 	--accent-color: auto;
+	/* the hairline highlight inset on buttons, so themes can kill it */
+	--button-highlight: rgba(255, 255, 255, 0.1);
 }
 body.theme-light{
 	/* light */
@@ -147,6 +149,7 @@ body.theme-dark{
 	   including the canvas and every icon. mouse movement fades it back. */
 	--canvas-filter: brightness(0);
 	--accent-color: #000000;
+	--button-highlight: rgba(0, 0, 0, 0);
 	--background: #000000;
 	--text-color: #000000;
 	--text-color-muted: #000000;
@@ -328,12 +331,25 @@ input[type="text"], input[type="number"], textarea{
 	-moz-appearance: textfield;
 	appearance: none;
 }
-/* the canvas (and its preview) take the theme's tint, so "all black" and
-   "all green" actually mean all of it */
+/* Everything whose colour is hardcoded or set inline (canvas, colour picker,
+   swatches, native colour/range inputs, effect previews) takes the theme's
+   tint - so "all black" and "all green" actually mean all of it. */
 #canvas_minipaint,
 #canvas_minipaint_background,
 #canvas_preview,
-#canvas_preview_background{
+#canvas_preview_background,
+.transparent-grid,
+#selected_color_sample,
+.swatch,
+.effectsPreview,
+.alpha_overlay,
+.saturation_gradient,
+.value_gradient,
+.primary_pick,
+.secondary_pick,
+.padded_track,
+input[type="color"],
+input[type="range"]{
 	filter: var(--canvas-filter, none);
 }
 /* checkboxes / radios / sliders follow the theme accent */
@@ -352,7 +368,7 @@ input[type="range"]{
 }
 button, input[type="button"]{
 	border-radius: var(--button-border-radius);
-	box-shadow: 0 1px 2px 0 var(--button-shadow-color), 0 1px 0 0 rgba(255, 255, 255, 0.1) inset;
+	box-shadow: 0 1px 2px 0 var(--button-shadow-color), 0 1px 0 0 var(--button-highlight) inset;
 	cursor: pointer;
 	border: 1px solid var(--border-color);
 	background-color: var(--button-background-color);

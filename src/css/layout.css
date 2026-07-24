@@ -368,7 +368,9 @@ IMPORTANT: any new icon should also must be added on /service-worker.js + its ve
 .sidebar_left .media:after{ background-image: url('images/icons/media.svg'); }
 .sidebar_left .shape:after{ background-image: url('images/icons/shape.svg'); }
 .sidebar_left .text:after{ background-image: url('images/icons/text.svg'); background-size: 16px auto; }
-.sidebar_left .gradient:after{ background-image: url('images/icons/gradient.png'); background-size: 18px 12px; filter: none; }
+/* the gradient icon is a colour PNG, so it opts out of the invert filter -
+   but it still has to obey the theme tint (black in dark, green in green) */
+.sidebar_left .gradient:after{ background-image: url('images/icons/gradient.png'); background-size: 18px 12px; filter: var(--canvas-filter, none); }
 .sidebar_left .clone:after{ background-image: url('images/icons/clone.svg'); }
 .sidebar_left .crop:after{ background-image: url('images/icons/crop.svg'); }
 .sidebar_left .blur:after{ background-image: url('images/icons/blur.svg'); }

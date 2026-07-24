@@ -153,6 +153,14 @@ Switching back to yonce inside the grace period still cancels any pending reloca
 
 ---
 
+## v0.1.17 — "No, All Of It"
+
+- **dark mode holds out no longer.** The colour picker had been quietly glowing this whole time — the saturation square, the hue strip, the alpha checkerboard, the swatch grid, the native colour and range inputs, the effect previews, and the gradient tool's icon, which upstream had specifically excused from tinting. All black now.
+- **Even the hairline.** Every button carried a hardcoded white inset highlight. It is a variable now, and in dark it is nothing.
+- All of it still fades back together on mouse movement. The void is complete, and it is still negotiable.
+
+---
+
 ## Unreleased — "???"
 
 - (redacted)
