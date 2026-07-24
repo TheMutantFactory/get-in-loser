@@ -1,4 +1,4 @@
-# get-in-loser
+# get in loser
 
 A personal, browser-based image editor. Runs entirely in your browser — nothing is uploaded to any server. This is a personal derivative with opinionated, non-standard workflow changes; it is **not** intended to track or contribute back to upstream.
 
@@ -8,19 +8,52 @@ get-in-loser is a fork of [**miniPaint**](https://github.com/viliusle/miniPaint)
 
 The pristine upstream import is the first commit in this repository's history, so every change made here diffs cleanly against the original.
 
-## Features (inherited from miniPaint)
+## What's different from upstream
 
-**Files**: open images, directories, URLs, data URLs, drag and drop, save (PNG, JPG, BMP, WEBP, animated GIF, TIFF, JSON layer data), print.
+### The "yonce" theme
 
-**Edit**: undo, cut, copy, paste, selection, paste from the clipboard.
+The default theme is **yonce** — Beyoncé-inspired, built as two-tier CSS design tokens in [`src/css/reset.css`](src/css/reset.css): a named palette (`--yc-*`) that the semantic roles reference, so no role assignment carries a raw hex.
 
-**Image**: information, EXIF, trim, zoom, resize (Hermite resample, default resize), rotate, flip, color corrections (brightness, contrast, hue, saturation, luminance), automatic color adjustment, grid, histogram, negative.
+| Token | Value | Used for |
+| --- | --- | --- |
+| Midnight Violet | `#281c33` | background (top of gradient) |
+| Onyx | `#0f0b14` | background (bottom of gradient) |
+| Vintage Grape | `#503865` | panels |
+| Lavender Purple | `#a06fca` | borders, accents |
+| Petal Pink | `#ce59a7` | selection / active state |
+| Hot Pink | `#fc4384` | hovers, scrollbar |
+| Cyan | `#37e5e7` | links, active button text |
 
-**Layers**: multi-layer system, differences, merging, flattening, transparency support.
+The background is a Midnight Violet → Onyx gradient, tilted a random **<10°** on every page load — non-interactive, non-deterministic.
 
-**Effects**: black and white, blur (box, gaussian, stack, zoom), bulge/pinch, denoise, desaturation, dither, dot screen, edge, emboss, enrich, gamma, grains, grayscale, heatmap, jpg compression, mosaic, oil, sepia, sharpen, solarize, tilt shift, vignette, vibrance, vintage, blueprint, night vision, pencil, plus instagram-style filters.
+### The other themes are traps
 
-**Tools**: pencil, brush, magic wand, eraser, fill, color picker, letter, crop, blur, sharpener, desaturation, clone, borders, sprites, keypoints, color zoom, change color, restore transparency, content fill.
+Theme selection is fully implemented, in the sense that every option other than yonce is a consequence:
+
+- **classic** — returns you to the original miniPaint.
+- **dark** — the darkest possible reading of "dark mode". Every value is `#000000`, including the canvas and every icon. **Moving the mouse fades it back** to yonce over ~10 seconds of actual movement; stand still and it stays dark. Selecting it auto-commits, since you cannot click "Ok" on a dialog you cannot see.
+- **light** — redirects to adobe.com.
+- **green** — randomized greens, re-rolled on every application, all crammed into one narrow band of lightness so nothing is quite readable.
+
+Switching back to yonce within a 1.5s grace period cancels any pending redirect.
+
+### The logo
+
+The "l" in *loser* is the hand icon — finger up, thumb right, so it reads as an **L**. Each letter has its own low-frequency oscillator and bobs independently, **ticked by mouse movement** rather than by time: the wordmark animates while you move and rests when you stop. The hand hovers on its own like a ghost. The hand and "oser" carry a vertical white → Petal Pink gradient.
+
+### Smart folder
+
+**Settings → Smart folder**, or the folder icon beside the logo. Pick a folder and get-in-loser reads from and writes to it, keeping a single `get-in-loser.json` there with your configuration and a session history. Pick a folder you have used before and it restores those settings and appends a session. The directory handle is remembered between sessions and reconnects on load while permission holds.
+
+Uses the File System Access API, so **Chromium only** (Chrome/Edge); elsewhere it declines rather than half-working.
+
+### Other changes
+
+- **Typography** — the UI is set in [Atkinson Hyperlegible](https://www.brailleinstitute.org/freefont/), self-hosted in [`fonts/`](fonts) (no third-party requests), and it is also the default font for the text tool.
+- **Layers** — rows size to their text instead of clipping; right-click a layer for a context menu (Rename, Duplicate, Convert to Raster, Merge Down, Delete).
+- **Colors** — the swatch picker ships preloaded with the theme palette, and the default color is black.
+- **Edit → Paste** — reads the clipboard via the async Clipboard API where the browser allows it (after a one-time permission grant), falling back to the Ctrl+V paste-event path.
+- **Help → Changelog** — an in-app markdown viewer for [`CHANGELOG.md`](CHANGELOG.md), which is written as patch notes for a paint tool that is also, allegedly, a roguelite.
 
 ## Build instructions
 
@@ -32,6 +65,18 @@ npm run build    # production build
 
 Build tooling follows upstream miniPaint; see [miniPaint Wiki > Build instructions](https://github.com/viliusle/miniPaint/wiki/Build-instructions) for details.
 
+## Regenerating image assets
+
+The logo, favicons, PWA icons and social card are all derived from source artwork in [`assets/`](assets):
+
+```bash
+python3 assets/generate_assets.py
+```
+
+See [`assets/README.md`](assets/README.md) for provenance and an outstanding icon-licensing question.
+
 ## License
 
 MIT — see [`MIT-LICENSE.txt`](MIT-LICENSE.txt). Original work © ViliusL (miniPaint); derivative modifications © DazzlingDukeOfLazers.
+
+Atkinson Hyperlegible is bundled under its own license, included at [`fonts/atkinson-hyperlegible-LICENSE.txt`](fonts/atkinson-hyperlegible-LICENSE.txt).
