@@ -343,14 +343,19 @@ input[type="text"], input[type="number"], textarea{
 .swatch,
 .effectsPreview,
 .alpha_overlay,
-.saturation_gradient,
-.value_gradient,
-.primary_pick,
-.secondary_pick,
-.padded_track,
+.ui_color_picker_gradient,
+.ui_range,
 input[type="color"],
 input[type="range"]{
 	filter: var(--canvas-filter, none);
+}
+/* these components are tinted as a whole (which covers their tracks, gradients
+   and handle markers), so nested pieces must not tint a second time - two
+   filters would multiply and lag behind during the fade */
+.ui_color_picker_gradient .ui_range,
+.ui_range .alpha_overlay,
+.ui_color_picker_gradient .alpha_overlay{
+	filter: none;
 }
 /* checkboxes / radios / sliders follow the theme accent */
 input[type="checkbox"], input[type="radio"], input[type="range"]{

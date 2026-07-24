@@ -161,6 +161,13 @@ Switching back to yonce inside the grace period still cancels any pending reloca
 
 ---
 
+## v0.1.18 — "The Sliders Were Hiding"
+
+- **The colour sliders have joined us.** Their handles are little CSS triangles built out of hardcoded white borders, and the colour channel section is collapsed by default — so they were both invisible to the sweep and stubbornly bright once you opened it. The slider and picker components are now tinted whole, handles and all.
+- Nested pieces are explicitly exempted from tinting twice, because two filters multiply, and a slider that fades at the square of everything else looks haunted in a way we did not intend.
+
+---
+
 ## Unreleased — "???"
 
 - (redacted)
