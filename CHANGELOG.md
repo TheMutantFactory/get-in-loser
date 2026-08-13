@@ -194,6 +194,12 @@ The one where the colors stop being a read-only fact about your image and start 
 
 ---
 
+## v0.1.21 — "The Changelog Could Not Read Itself"
+
+- **Fixed:** every section heading in this very changelog was being teleported into the dialog's title bar, stacked in one spot, where only the topmost survived — so the dialog introduced itself as *Unreleased — "???"* and the history below scrolled by headless. A dialog that misreports its own history. In *this* app. We checked the CSS and, regrettably, it was CSS. The title bar's layout rule applied to every heading inside the dialog, not just the title. It has been scoped. The changelog can read itself again. We recommend it start from the top.
+
+---
+
 ## Unreleased — "???"
 
 - (redacted)

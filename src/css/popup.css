@@ -31,7 +31,9 @@
 #popups .popup a{
 	color: var(--link-color);
 }
-#popups .popup h2{
+/* the direct child only: this is the dialog's own title bar. Nested h2s
+   (e.g. markdown content in the Changelog dialog) must flow normally. */
+#popups .popup > h2{
 	display: block;
 	position: absolute;
 	top: 0;
