@@ -8,7 +8,7 @@ module.exports = {
 	output: {
 		path: path.resolve(__dirname, 'dist'),
 		filename: 'bundle.js',
-		publicPath: '/dist/'
+		publicPath: 'auto'
 	},
 	resolve: {
 		extensions: ['.js', '.css'],
@@ -55,6 +55,12 @@ module.exports = {
 		//contentBase: "./",
 		static: {
 			directory: path.resolve(__dirname, "./"),
+		},
+		// keep serving the live bundle at /dist/ now that output.publicPath is
+		// 'auto' (relative) for subpath hosting - otherwise dist/bundle.js would
+		// resolve to the stale on-disk build
+		devMiddleware: {
+			publicPath: '/dist/',
 		},
 	}
 };
