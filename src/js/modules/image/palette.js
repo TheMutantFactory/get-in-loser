@@ -39,6 +39,7 @@ class Image_color_class {
 			},
 			params: [
 				{title: "Dominant color:", html: this.generate_color_box(dominant, 200)},
+				{name: "mode", title: "Mode:", values: ['Shift - preserve shading', 'Replace - exact colors']},
 			],
 			on_finish: function (params) {
 				_this.execute(params);
@@ -74,21 +75,23 @@ class Image_color_class {
 	remap_palette(data, params) {
 		var old_palette = this.original_palette;
 		var p_n = old_palette.length;
+		var replace = params.mode != undefined && params.mode.indexOf('Replace') == 0;
 
-		//collect deltas between original and edited colors
+		//collect edited colors and their deltas from the originals
+		var new_palette = [];
 		var deltas = [];
 		var changed = false;
 		for (var m = 0; m < p_n; m++) {
-			var new_rgb = this.Helper.hexToRgb(params["color_" + m]);
+			new_palette[m] = this.Helper.hexToRgb(params["color_" + m]);
 			deltas[m] = {
-				r: new_rgb.r - old_palette[m].r,
-				g: new_rgb.g - old_palette[m].g,
-				b: new_rgb.b - old_palette[m].b,
+				r: new_palette[m].r - old_palette[m].r,
+				g: new_palette[m].g - old_palette[m].g,
+				b: new_palette[m].b - old_palette[m].b,
 			};
 			if (deltas[m].r != 0 || deltas[m].g != 0 || deltas[m].b != 0)
 				changed = true;
 		}
-		if (changed == false)
+		if (changed == false && replace == false)
 			return data;
 
 		var imgData = data.data;
@@ -109,14 +112,22 @@ class Image_color_class {
 				}
 			}
 
-			var delta = deltas[index1];
-			if (delta.r == 0 && delta.g == 0 && delta.b == 0)
-				continue;
+			if (replace == true) {
+				//quantize to the edited palette color exactly
+				imgData[k] = new_palette[index1].r;
+				imgData[k + 1] = new_palette[index1].g;
+				imgData[k + 2] = new_palette[index1].b;
+			}
+			else {
+				var delta = deltas[index1];
+				if (delta.r == 0 && delta.g == 0 && delta.b == 0)
+					continue;
 
-			//shift by the edited color's delta, keeping shading
-			imgData[k] = Math.max(0, Math.min(255, imgData[k] + delta.r));
-			imgData[k + 1] = Math.max(0, Math.min(255, imgData[k + 1] + delta.g));
-			imgData[k + 2] = Math.max(0, Math.min(255, imgData[k + 2] + delta.b));
+				//shift by the edited color's delta, keeping shading
+				imgData[k] = Math.max(0, Math.min(255, imgData[k] + delta.r));
+				imgData[k + 1] = Math.max(0, Math.min(255, imgData[k + 1] + delta.g));
+				imgData[k + 2] = Math.max(0, Math.min(255, imgData[k + 2] + delta.b));
+			}
 		}
 
 		return data;
