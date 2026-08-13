@@ -179,6 +179,21 @@ Switching back to yonce inside the grace period still cancels any pending reloca
 
 ---
 
+## v0.1.20 — "The Palette Talks Back"
+
+The one where the colors stop being a read-only fact about your image and start being negotiable.
+
+- **Image → Color Palette is no longer a museum.** The dialog used to show you your image's palette behind glass: here are your nine colors, look, don't touch. The glass is gone. Every swatch is now a real color input. Click one. Change it. The image *changes with it.* The dominant color stays behind glass, as a reminder of how things used to be.
+- **Two ways to negotiate:**
+  - **Shift — preserve shading:** every pixel follows its palette color by the same distance you moved it. Gradients survive. Anti-aliasing survives. Your image keeps its soul and changes its wardrobe.
+  - **Replace — exact colors:** every pixel snaps to its palette color, exactly, no survivors. It is Decrease Color Depth with *your* hand on the palette. The image comes back flatter, harder, and extremely certain of itself.
+- **Live preview, before and after,** so you can watch the negotiation happen. `Ctrl+Z` remains the mediator of record.
+- **SURFACE BREACH:** the editor is now live at **mutantfactory.net/get-in-loser**. Yes — after nineteen versions of descending, we went *up.* The Depth Meter reads 100%. The surface was up here the whole time. The fog thins at altitude but it does not lift; bring your own Ink.
+
+*The palette has always known what colors it wanted to be. Now it has a form to fill out.*
+
+---
+
 ## Unreleased — "???"
 
 - (redacted)
