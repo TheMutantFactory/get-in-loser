@@ -346,8 +346,114 @@ IMPORTANT: any new icon should also must be added on /service-worker.js + its ve
 .sidebar_right.active{
 	right: 0 !important;
 }
-.sidebar_right .block.layers{
+.sidebar_right .block.layers:last-child{
 	flex: 1;
+}
+
+/* ---------- sidebar panels: pin + reorder ---------- */
+
+.sidebar_right .block.pinned{
+	position: -webkit-sticky;
+	position: sticky;
+	top: 0;
+}
+.sidebar_right .block.pinned > h2{
+	box-shadow: 0 1px 0 0 var(--border-color);
+}
+.sidebar_right .block.dragging{
+	opacity: 0.5;
+}
+.block h2.panel_header{
+	padding-right: 80px;
+	cursor: pointer;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.block h2.panel_header.toggle:before{
+	/* collapse arrow sits left of the panel controls */
+	right: 68px;
+}
+.panel_controls{
+	position: absolute;
+	top: 0;
+	right: 2px;
+	height: 100%;
+	display: flex;
+	align-items: center;
+}
+.panel_control{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 16px;
+	height: 16px;
+	padding: 0;
+	margin: 0;
+	border: none;
+	border-radius: 3px;
+	background: none;
+	color: var(--text-color-muted);
+	font-size: 13px;
+	line-height: 1;
+	cursor: pointer;
+}
+.panel_control:hover{
+	background-color: rgba(255, 255, 255, 0.18);
+	color: var(--text-color);
+}
+.panel_control:focus-visible{
+	outline: 1px solid var(--text-color);
+	outline-offset: -1px;
+}
+.panel_control[disabled]{
+	opacity: 0.25;
+	cursor: default;
+	background: none;
+}
+.panel_pin[aria-pressed="true"]{
+	color: #00b8b8;
+	background-color: rgba(0, 184, 184, 0.15);
+}
+.panel_drag_handle{
+	cursor: grab;
+}
+.block.dragging .panel_drag_handle{
+	cursor: grabbing;
+}
+
+/* ---------- palette panel ---------- */
+
+.palette_colors{
+	display: flex;
+	flex-wrap: wrap;
+	gap: 2px;
+}
+.palette_color{
+	width: 20px;
+	height: 20px;
+	padding: 0;
+	margin: 0;
+	border: 1px solid rgba(0, 0, 0, 0.55);
+	border-radius: 2px;
+	cursor: pointer;
+}
+.palette_color:hover{
+	transform: scale(1.15);
+}
+.palette_color.active{
+	outline: 2px solid #ffffff;
+	outline-offset: -3px;
+	box-shadow: 0 0 0 1px #000000;
+}
+.palette_meta{
+	font-size: 90%;
+}
+.palette .details button{
+	margin: 0 3px 0 0;
+}
+#palette_select{
+	width: 100%;
 }
 .sidebar_right .block.layers .content{
 	padding-bottom: 25px;
@@ -355,9 +461,16 @@ IMPORTANT: any new icon should also must be added on /service-worker.js + its ve
 
 /* preview */
 .canvas_preview_wrapper{
-	position:relative;
-	height:100px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 	margin: 5px 5px 10px 5px;
+}
+.canvas_preview_inner{
+	position: relative;
+	line-height: 0;
+	width: 176px;
+	height: 176px;
 }
 .canvas_preview_details{
 	padding: 0 5px;

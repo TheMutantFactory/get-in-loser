@@ -31,6 +31,11 @@ config.guides = [];
 config.ruler_active = false;
 config.enable_autoresize_by_default = true;
 
+//pixel edit mode
+config.PIXEL_MODE = false;
+config.PIXEL_GRID = true;
+config.palette = null;
+
 //requires styles in reset.css
 config.themes = [
 	'dark',

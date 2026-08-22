@@ -81,6 +81,11 @@ class GUI_information_class {
 			return;
 		}
 
+		if(document.getElementById('mouse_info_size') == null) {
+			//block not rendered yet
+			return;
+		}
+
 		var width = this.Helper.get_user_unit(config.WIDTH, this.units, this.resolution);
 		var height = this.Helper.get_user_unit(config.HEIGHT, this.units, this.resolution);
 

@@ -7,6 +7,9 @@ import config from './../config.js';
 import Base_layers_class from './base-layers.js';
 import GUI_tools_class from './gui/gui-tools.js';
 import GUI_preview_class from './gui/gui-preview.js';
+import GUI_panels_class from './gui/gui-panels.js';
+import GUI_palette_class from './gui/gui-palette.js';
+import {should_draw_pixel_grid, grid_line_positions} from './pixel-grid.js';
 import GUI_colors_class from './gui/gui-colors.js';
 import GUI_layers_class from './gui/gui-layers.js';
 import GUI_information_class from './gui/gui-information.js';
@@ -59,7 +62,9 @@ class Base_gui_class {
 
 		this.GUI_tools = new GUI_tools_class(this);
 		this.GUI_preview = new GUI_preview_class(this);
+		this.GUI_panels = new GUI_panels_class(this);
 		this.GUI_colors = new GUI_colors_class(this);
+		this.GUI_palette = new GUI_palette_class(this);
 		this.GUI_layers = new GUI_layers_class(this);
 		this.GUI_information = new GUI_information_class(this);
 		this.GUI_details = new GUI_details_class(this);
@@ -141,11 +146,13 @@ class Base_gui_class {
 		this.GUI_tools.render_main_tools();
 		this.GUI_preview.render_main_preview();
 		this.GUI_colors.render_main_colors();
+		this.GUI_palette.render_main_palette();
 		this.GUI_layers.render_main_layers();
 		this.GUI_information.render_main_information();
 		this.GUI_details.render_main_details();
 		this.GUI_menu.render_main();
 		this.load_saved_changes();
+		this.GUI_panels.render_main_panels();
 
 		this.set_events();
 		this.load_translations();
@@ -253,7 +260,8 @@ class Base_gui_class {
 		config.visible_width = w;
 		config.visible_height = h;
 
-		if(config.ZOOM >= 1) {
+		if(config.ZOOM >= 1 || config.PIXEL_MODE) {
+			//pixel mode never interpolates, otherwise pixel art turns to mush
 			ctx.imageSmoothingEnabled = false;
 		}
 		else{
@@ -261,6 +269,13 @@ class Base_gui_class {
 		}
 
 		this.render_canvas_background('canvas_minipaint');
+
+		//keep the sidebar preview in sync with the canvas aspect ratio
+		this.GUI_preview.update_preview_size();
+		this.render_canvas_background('canvas_preview', 8);
+
+		//the information block otherwise only refreshes on mouse move
+		this.GUI_information.show_size();
 
 		//change wrapper dimensions
 		document.getElementById('canvas_wrapper').style.width = w + 'px';
@@ -398,6 +413,78 @@ class Base_gui_class {
 			ctx.lineTo(width, 0.5 + i);
 			ctx.stroke();
 		}
+	}
+
+	/**
+	 * draws a 1px grid over every image pixel - only useful when zoomed in far
+	 * enough that image pixels are large on screen.
+	 *
+	 * @param {canvas.context} ctx
+	 * @returns {boolean} whether anything was drawn
+	 */
+	draw_pixel_grid(ctx) {
+		var state = {
+			pixel_mode: config.PIXEL_MODE,
+			grid_enabled: config.PIXEL_GRID,
+			zoom: config.ZOOM,
+			width: config.WIDTH,
+			height: config.HEIGHT,
+		};
+
+		if (should_draw_pixel_grid(state) == false) {
+			return false;
+		}
+
+		//image coordinate sitting at the top left corner of the visible canvas
+		var origin = this.Base_layers.get_world_coords(0, 0);
+
+		var vertical = grid_line_positions({
+			count: config.WIDTH,
+			zoom: config.ZOOM,
+			origin: origin.x,
+			screen_size: ctx.canvas.width,
+		});
+		var horizontal = grid_line_positions({
+			count: config.HEIGHT,
+			zoom: config.ZOOM,
+			origin: origin.y,
+			screen_size: ctx.canvas.height,
+		});
+
+		if (vertical.length == 0 && horizontal.length == 0) {
+			return false;
+		}
+
+		var minor = 'rgba(128, 128, 128, 0.35)';
+		var major = 'rgba(0, 0, 0, 0.4)';
+
+		ctx.save();
+		//the transform mid render loop is not the plain zoom matrix, so draw in
+		//screen pixels instead of image coordinates
+		ctx.setTransform(1, 0, 0, 1, 0, 0);
+		ctx.globalAlpha = 1;
+		ctx.globalCompositeOperation = 'source-over';
+		ctx.filter = 'none';
+		ctx.lineWidth = 1;
+
+		for (var i = 0; i < vertical.length; i++) {
+			ctx.strokeStyle = vertical[i].major ? major : minor;
+			ctx.beginPath();
+			ctx.moveTo(vertical[i].position, 0);
+			ctx.lineTo(vertical[i].position, ctx.canvas.height);
+			ctx.stroke();
+		}
+		for (var j = 0; j < horizontal.length; j++) {
+			ctx.strokeStyle = horizontal[j].major ? major : minor;
+			ctx.beginPath();
+			ctx.moveTo(0, horizontal[j].position);
+			ctx.lineTo(ctx.canvas.width, horizontal[j].position);
+			ctx.stroke();
+		}
+
+		ctx.restore();
+
+		return true;
 	}
 
 	draw_guides(ctx){

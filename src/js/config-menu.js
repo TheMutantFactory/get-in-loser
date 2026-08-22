@@ -287,6 +287,58 @@ const menuDefinition = [
 		]
 	},
 	{
+		name: 'Pixel',
+		children: [
+			{
+				name: 'New Pixel Canvas',
+				ellipsis: true,
+				target: 'tools/pixel.new_canvas'
+			},
+			{
+				name: 'Canvas Size in Pixels',
+				ellipsis: true,
+				target: 'tools/pixel.size'
+			},
+			{
+				divider: true
+			},
+			{
+				name: 'Pixel Mode',
+				target: 'tools/pixel.pixel_mode'
+			},
+			{
+				name: 'Pixel Grid',
+				target: 'tools/pixel.grid'
+			},
+			{
+				name: 'Zoom to Fit',
+				target: 'tools/pixel.zoom_to_fit'
+			},
+			{
+				divider: true
+			},
+			{
+				name: 'Palette',
+				children: [
+					{
+						name: 'Load Palette',
+						ellipsis: true,
+						target: 'tools/palettes.load'
+					},
+					{
+						name: 'Import Palette',
+						ellipsis: true,
+						target: 'tools/palettes.import_palette'
+					},
+					{
+						name: 'Export Palette',
+						target: 'tools/palettes.export_palette'
+					}
+				]
+			}
+		]
+	},
+	{
 		name: 'Layer',
 		children: [
 			{

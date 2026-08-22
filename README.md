@@ -22,6 +22,41 @@ The pristine upstream import is the first commit in this repository's history, s
 
 **Tools**: pencil, brush, magic wand, eraser, fill, color picker, letter, crop, blur, sharpener, desaturation, clone, borders, sprites, keypoints, color zoom, change color, restore transparency, content fill.
 
+## Changes in this fork
+
+**Pixel edit mode** (`Pixel` menu)
+
+- *New Pixel Canvas* / *Canvas Size in Pixels* — dimensions entered as plain pixels, with no unit or resolution conversion, plus presets for common pixel art sizes (16x24 first).
+- *Pixel Mode* — forces nearest-neighbour sampling at every zoom level, so pixel art never gets interpolated.
+- *Pixel Grid* — a hairline grid on every image pixel once zoomed past 6x, with a stronger line every 8 pixels.
+- *Zoom to Fit*.
+
+**Colour palettes**
+
+- JSON palettes live in [`src/palettes`](src/palettes) and are bundled at build time. See that folder's README for the format — the loader also accepts bare arrays, hex codes without `#`, rgb triplets and per-colour objects.
+- A `Palette` block on the right sidebar switches palette and sets the drawing colour with one click.
+- `Pixel > Palette` loads a bundled palette, imports a `.json` palette at runtime, or exports the current one.
+
+**Right sidebar panels**
+
+- Every block has pin, move up, move down and drag controls in its header.
+- Pinned blocks stick to the top of the sidebar while it scrolls, and stack rather than overlap when several are pinned.
+- Panel order and pinned state are remembered between sessions.
+
+**Fixes**
+
+- The preview window kept a fixed 176x100 canvas whatever the image was, so anything that was not 16:9-ish came out stretched — a 16x24 sprite most of all. It now fits the image aspect ratio inside a 176x176 box and scales both axes equally.
+- `zoomView.constrain()` can raise the zoom scale on its own, but the render loop applied zoom changes as a delta against the last *requested* zoom. The two disagreed, so the scale was applied twice and the canvas transform ended up at `ZOOM²`. At the zoom levels pixel art needs, that put every brush stroke in the wrong place and made a single pencil dot cover the whole canvas.
+- The Information block only refreshed its size readout on mouse move, so it showed stale dimensions after a canvas resize.
+
+## Tests
+
+```bash
+npm test
+```
+
+Jest covers the geometry and parsing that the features above depend on: preview sizing and the active zone, palette parsing and nearest-colour matching, pixel grid placement, and pixel canvas sizing.
+
 ## Build instructions
 
 ```bash
