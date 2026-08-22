@@ -18,6 +18,7 @@ class BulgePinch_class extends Base_tools_class {
 		this.tmpCanvas = null;
 		this.tmpCanvasCtx = null;
 		this.started = false;
+		this.pointer_down = false;
 	}
 
 	load() {
@@ -34,17 +35,38 @@ class BulgePinch_class extends Base_tools_class {
 		this.show_mouse_cursor(mouse.x, mouse.y, params.radius, 'circle');
 	}
 
-	mousedown(e) {
+	async mousedown(e) {
 		this.started = false;
+		this.pointer_down = true;
 		var mouse = this.get_mouse_info(e);
 		var params = this.getParams();
 		if (mouse.click_valid == false) {
 			return;
 		}
-		if (config.layer.type != 'image') {
-			alertify.error('This layer must contain an image. Please convert it to raster to apply this tool.');
-			return;
+
+		if (config.layer.type != 'image' || config.layer.is_vector == true) {
+			//Convert instead of demanding it - see libs/rasterize.js
+			var ready = await this.rasterize_active_layer('edited');
+			if (ready == false) {
+				return;
+			}
+			if (this.pointer_down == false) {
+				//released while converting - apply the click and commit it
+				this.begin_stroke(mouse, params);
+				return this.mouseup(e);
+			}
 		}
+
+		this.begin_stroke(mouse, params);
+	}
+
+	/**
+	 * Take a working copy of the layer image and apply the first dab to it.
+	 *
+	 * @param {object} mouse
+	 * @param {object} params
+	 */
+	begin_stroke(mouse, params) {
 		this.started = true;
 
 		//get canvas from layer
@@ -63,6 +85,9 @@ class BulgePinch_class extends Base_tools_class {
 	}
 
 	mouseup(e) {
+		//cleared before the started check: mousedown may still be awaiting a rasterize
+		this.pointer_down = false;
+
 		if (this.started == false) {
 			return;
 		}

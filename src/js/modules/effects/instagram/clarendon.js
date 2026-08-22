@@ -3,6 +3,7 @@ import config from '../../../config.js';
 import Dialog_class from '../../../libs/popup.js';
 import Base_layers_class from '../../../core/base-layers.js';
 import alertify from 'alertifyjs/build/alertify.min.js';
+import { ensure_raster_layer } from './../../../libs/rasterize.js';
 
 class Effects_clarendon_class {
 
@@ -12,10 +13,13 @@ class Effects_clarendon_class {
 		this.Base_layers = new Base_layers_class();
 	}
 
-	clarendon() {
-		if (config.layer.type != 'image') {
-			alertify.error('This layer must contain an image. Please convert it to raster to apply this tool.');
-			return;
+	async clarendon() {
+		if (config.layer.type != 'image' || config.layer.is_vector == true) {
+			//Convert instead of demanding it - see libs/rasterize.js
+			var ready = await ensure_raster_layer('edited');
+			if (ready == false) {
+				return;
+			}
 		}
 
 		//get canvas from layer

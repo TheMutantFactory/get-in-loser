@@ -4,6 +4,7 @@ import Dialog_class from './../../libs/popup.js';
 import Base_layers_class from './../../core/base-layers.js';
 import Vintage_class from './../../libs/vintage.js';
 import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
+import { ensure_raster_layer } from './../../libs/rasterize.js';
 
 class Effects_vintage_class {
 
@@ -13,12 +14,15 @@ class Effects_vintage_class {
 		this.Vintage = new Vintage_class(config.WIDTH, config.HEIGHT);
 	}
 
-	vintage() {
+	async vintage() {
 		var _this = this;
 
-		if (config.layer.type != 'image') {
-			alertify.error('This layer must contain an image. Please convert it to raster to apply this tool.');
-			return;
+		if (config.layer.type != 'image' || config.layer.is_vector == true) {
+			//Convert instead of demanding it - see libs/rasterize.js
+			var ready = await ensure_raster_layer('edited');
+			if (ready == false) {
+				return;
+			}
 		}
 
 		this.Vintage.reset_random_values(config.WIDTH, config.HEIGHT);

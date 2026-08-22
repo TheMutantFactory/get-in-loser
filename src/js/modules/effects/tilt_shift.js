@@ -5,6 +5,7 @@ import Base_layers_class from './../../core/base-layers.js';
 import ImageFilters from './../../libs/imagefilters.js';
 import glfx from './../../libs/glfx.js';
 import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
+import { ensure_raster_layer } from './../../libs/rasterize.js';
 
 class Effects_tiltShift_class {
 
@@ -14,12 +15,15 @@ class Effects_tiltShift_class {
 		this.fx_filter = false;
 	}
 
-	tilt_shift() {
+	async tilt_shift() {
 		var _this = this;
 
-		if (config.layer.type != 'image') {
-			alertify.error('This layer must contain an image. Please convert it to raster to apply this tool.');
-			return;
+		if (config.layer.type != 'image' || config.layer.is_vector == true) {
+			//Convert instead of demanding it - see libs/rasterize.js
+			var ready = await ensure_raster_layer('edited');
+			if (ready == false) {
+				return;
+			}
 		}
 
 		var settings = {

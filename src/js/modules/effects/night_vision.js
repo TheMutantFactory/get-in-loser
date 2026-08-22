@@ -5,6 +5,7 @@ import Base_layers_class from './../../core/base-layers.js';
 import glfx from './../../libs/glfx.js';
 import ImageFilters_class from './../../libs/imagefilters.js';
 import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
+import { ensure_raster_layer } from './../../libs/rasterize.js';
 
 class Effects_nightVision_class {
 
@@ -15,10 +16,13 @@ class Effects_nightVision_class {
 		this.ImageFilters = ImageFilters_class;
 	}
 
-	night_vision() {
-		if (config.layer.type != 'image') {
-			alertify.error('This layer must contain an image. Please convert it to raster to apply this tool.');
-			return;
+	async night_vision() {
+		if (config.layer.type != 'image' || config.layer.is_vector == true) {
+			//Convert instead of demanding it - see libs/rasterize.js
+			var ready = await ensure_raster_layer('edited');
+			if (ready == false) {
+				return;
+			}
 		}
 
 		//get canvas from layer

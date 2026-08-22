@@ -16,9 +16,13 @@ class Effects_browser_class extends Base_tools_class {
 		var _this = this;
 		var html = '';
 
-		if (config.layer.type != 'image') {
-			alertify.error('This layer must contain an image. Please convert it to raster to apply this tool.');
-			return;
+		if (config.layer.type != 'image' || config.layer.is_vector == true) {
+			//Convert instead of demanding it. This one extends Base_tools and browser() was
+			//already async, so it uses the method rather than the lib directly.
+			var ready = await this.rasterize_active_layer('edited');
+			if (ready == false) {
+				return;
+			}
 		}
 
 		var data = this.get_effects_list();
