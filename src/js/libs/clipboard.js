@@ -50,9 +50,12 @@ class Clipboard_class {
 		document.body.appendChild(this.pasteCatcher);
 
 		// create an observer instance
+		//note: `this` is not the class inside these callbacks - module code is
+		//strict, so a plain forEach/setTimeout callback gets undefined/window.
+		//Everything here has to go through _self.
 		var observer = new MutationObserver(function (mutations) {
 			mutations.forEach(function (mutation) {
-				if (this.paste_mode == 'auto' || this.ctrl_pressed == false || mutation.type != 'childList')
+				if (_self.paste_mode == 'auto' || _self.ctrl_pressed == false || mutation.type != 'childList')
 					return true;
 
 				//if paste handle failed - capture pasted object manually
@@ -63,7 +66,7 @@ class Clipboard_class {
 					}
 					//register cleanup after some time.
 					setTimeout(function () {
-						this.pasteCatcher.innerHTML = '';
+						_self.pasteCatcher.innerHTML = '';
 					}, 20);
 				}
 			});
