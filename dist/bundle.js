@@ -28500,8 +28500,11 @@ var Help_feedback_class = /*#__PURE__*/function () {
               } else if (result.rejected > 0) {
                 _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_8___default().error('The server refused that report. It has been kept, not sent again.');
               } else {
-                //held: offline, rate limited or the service is down. The report is safe.
-                _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_8___default().warning('Saved. Your feedback will be sent next time you are online.');
+                //HELD. The report is safe either way, but do not assert a reason that has not been
+                //checked: a browser reports a CORS refusal as a plain network failure, so "you are
+                //offline" was being said to people who were online and whose origin simply was not on
+                //the allow-list. Only navigator.onLine can rule offline in, and only in one direction.
+                _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_8___default().warning(window.navigator.onLine === false ? 'Saved. Your feedback will be sent next time you are online.' : 'Saved, but the feedback service could not be reached. It will be sent later.');
               }
             case 5:
             case "end":
@@ -28654,6 +28657,13 @@ var Help_feedback_class = /*#__PURE__*/function () {
             case 2:
               _context3.prev = 2;
               _t = _context3["catch"](0);
+              //Offline, DNS, an extension, or a CORS refusal - the browser deliberately does not say
+              //which, so this cannot tell them apart. Say so once in the console, where a developer
+              //will see it and a reporter will not, and name the origin because "not on the
+              //allow-list" is the one cause that never fixes itself by waiting.
+              console.warn('feedback: could not reach ' + this.endpoint + ' from ' + window.location.origin + '. Offline, blocked, or this origin is not in the service ALLOWED_ORIGINS.', _t);
+
+              //The report is fine; the world is not. Hold it.
               return _context3.abrupt("return", 'retry');
             case 3:
               body = null;
