@@ -71,6 +71,10 @@ Uses the File System Access API, so **Chromium only** (Chrome/Edge); elsewhere i
 - A `Palette` block on the right sidebar switches palette and sets the drawing colour with one click.
 - `Pixel > Palette` loads a bundled palette, imports a `.json` palette at runtime, or exports the current one.
 
+**Navigation**
+
+- Hold the **middle mouse button (scroll wheel) and drag** anywhere over the drawing area to pan the image. Tools only respond to the left button, so painting is unaffected. Panning is bounded the same way the preview's drag-to-pan is — the image cannot be dragged off screen.
+
 **Right sidebar panels**
 
 - Every block has pin, move up, move down and drag controls in its header.

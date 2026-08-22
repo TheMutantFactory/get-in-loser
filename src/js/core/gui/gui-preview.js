@@ -11,6 +11,8 @@ import {
 	calc_active_zone,
 	calc_zoom_position,
 } from './preview-geometry.js';
+import {is_pan_start, is_pan_released, pan_delta} from './../pan.js';
+import zoomView from './../../libs/zoomView.js';
 
 var instance = null;
 
@@ -60,6 +62,13 @@ class GUI_preview_class {
 		};
 
 		this.mouse_pressed = false;
+
+		//middle mouse button drag panning
+		this.pan_data = {
+			active: false,
+			last: {x: 0, y: 0},
+		};
+
 		this.canvas_preview = null;
 		if (GUI_class != undefined) {
 			this.GUI = GUI_class;
@@ -175,6 +184,104 @@ class GUI_preview_class {
 				return;
 			_this.set_zoom_position(e);
 		});
+
+		this.set_pan_events();
+	}
+
+	/**
+	 * Hold the scroll wheel (middle mouse button) and drag to pan the image.
+	 * Tools only respond to the left button, so the middle one is free.
+	 */
+	set_pan_events() {
+		var _this = this;
+		var wrapper = document.getElementById('main_wrapper');
+
+		wrapper.addEventListener('mousedown', function (e) {
+			if (is_pan_start(e) == false) {
+				return;
+			}
+
+			//stop the browser's middle click autoscroll / paste
+			e.preventDefault();
+			_this.pan_start(e.clientX, e.clientY);
+		}, false);
+
+		//middle click otherwise opens links / pastes on some platforms
+		wrapper.addEventListener('auxclick', function (e) {
+			if (e.button === 1) {
+				e.preventDefault();
+			}
+		}, false);
+
+		document.addEventListener('mousemove', function (e) {
+			if (_this.pan_data.active == false) {
+				return;
+			}
+			if (is_pan_released(e)) {
+				//button was let go outside the window
+				_this.pan_stop();
+				return;
+			}
+
+			e.preventDefault();
+			_this.pan_move(e.clientX, e.clientY);
+		}, false);
+
+		document.addEventListener('mouseup', function (e) {
+			if (_this.pan_data.active && e.button === 1) {
+				_this.pan_stop();
+			}
+		}, false);
+
+		//never leave the canvas stuck in panning state
+		window.addEventListener('blur', function () {
+			_this.pan_stop();
+		}, false);
+	}
+
+	/**
+	 * @param {number} x client coordinates
+	 * @param {number} y
+	 */
+	pan_start(x, y) {
+		this.pan_data.active = true;
+		this.pan_data.last = {x: x, y: y};
+
+		document.body.classList.add('panning');
+	}
+
+	/**
+	 * @param {number} x client coordinates
+	 * @param {number} y
+	 */
+	pan_move(x, y) {
+		if (this.pan_data.active == false) {
+			return false;
+		}
+
+		var delta = pan_delta(this.pan_data.last, {x: x, y: y});
+		if (delta.x == 0 && delta.y == 0) {
+			return false;
+		}
+
+		this.pan_data.last = {x: x, y: y};
+
+		//zoomView.constrain() keeps the image from being dragged off screen
+		zoomView.move(delta.x, delta.y);
+		config.need_render = true;
+
+		return true;
+	}
+
+	pan_stop() {
+		if (this.pan_data.active == false) {
+			return false;
+		}
+
+		this.pan_data.active = false;
+		document.body.classList.remove('panning');
+
+		return true;
 	}
 
 	prepare_canvas() {
