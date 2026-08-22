@@ -9,6 +9,7 @@ import filesaver from './../../../../node_modules/file-saver/dist/FileSaver.min.
 import GIF from './../../../../node_modules/gif.js.optimized/';
 import CanvasToTIFF from './../../libs/canvastotiff.js';
 import Tools_settings_class from "../tools/settings";
+import { serialize_volume } from './../../core/voxel.js';
 
 var instance = null;
 
@@ -676,6 +677,19 @@ class File_save_class {
 
 		//fonts
 		export_data.user_fonts = config.user_fonts;
+
+		//voxel model. The layers only ever hold the ONE slice being edited, so without this the
+		//other 23 are gone on reload - which is most of the work.
+		if (config.voxel != null && config.voxel.volume != null) {
+			export_data.voxel = {
+				volume: serialize_volume(config.voxel.volume),
+				axis: config.voxel.axis,
+				slice: config.voxel.slice,
+				yaw: config.voxel.yaw,
+				enabled: config.voxel.enabled,
+				onion: config.voxel.onion,
+			};
+		}
 
 		//layers
 		export_data.layers = [];

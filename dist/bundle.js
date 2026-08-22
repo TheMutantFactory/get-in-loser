@@ -14215,24 +14215,38 @@ var GUI_voxel_class = /*#__PURE__*/function () {
   }, {
     key: "draw_voxels",
     value: function draw_voxels(vol, view, ox, oy) {
-      var ctx = this.ctx;
       var order = (0,_voxel_view_js__WEBPACK_IMPORTED_MODULE_4__.draw_order)(vol, view, _voxel_js__WEBPACK_IMPORTED_MODULE_3__.get_voxel);
+      //which sides face the camera depends on the yaw; drawing a fixed pair leaves the model
+      //open at the back once it has been turned
+      var faces = (0,_voxel_view_js__WEBPACK_IMPORTED_MODULE_4__.visible_faces)(view.yaw);
       for (var i = 0; i < order.length; i++) {
         var v = order[i];
         var c = (0,_voxel_js__WEBPACK_IMPORTED_MODULE_3__.unpack)(v.value);
-
-        //the eight corners this voxel needs, projected once
-        var p = function p(dx, dy, dz) {
-          var q = (0,_voxel_view_js__WEBPACK_IMPORTED_MODULE_4__.project)(v.x + dx, v.y + dy, v.z + dz, view);
-          return [q.sx + ox, q.sy + oy];
-        };
-        var top = [p(0, 1, 0), p(1, 1, 0), p(1, 1, 1), p(0, 1, 1)];
-        var left = [p(0, 0, 1), p(0, 1, 1), p(1, 1, 1), p(1, 0, 1)];
-        var right = [p(1, 0, 1), p(1, 1, 1), p(1, 1, 0), p(1, 0, 0)];
-        this.fill_face(top, c, 1);
-        this.fill_face(left, c, 0.72);
-        this.fill_face(right, c, 0.52);
+        this.fill_face(this.face_points(v, _voxel_view_js__WEBPACK_IMPORTED_MODULE_4__.FACE_CORNERS.top, view, ox, oy), c, 1);
+        this.fill_face(this.face_points(v, _voxel_view_js__WEBPACK_IMPORTED_MODULE_4__.FACE_CORNERS[faces.left], view, ox, oy), c, 0.72);
+        this.fill_face(this.face_points(v, _voxel_view_js__WEBPACK_IMPORTED_MODULE_4__.FACE_CORNERS[faces.right], view, ox, oy), c, 0.52);
       }
+    }
+
+    /**
+     * Project one face of one voxel.
+     *
+     * @param {object} v keys x, y, z
+     * @param {array} corners offsets from FACE_CORNERS
+     * @param {object} view
+     * @param {number} ox
+     * @param {number} oy
+     * @returns {array} [[x, y], ...]
+     */
+  }, {
+    key: "face_points",
+    value: function face_points(v, corners, view, ox, oy) {
+      var out = [];
+      for (var i = 0; i < corners.length; i++) {
+        var q = (0,_voxel_view_js__WEBPACK_IMPORTED_MODULE_4__.project)(v.x + corners[i][0], v.y + corners[i][1], v.z + corners[i][2], view);
+        out.push([q.sx + ox, q.sy + oy]);
+      }
+      return out;
     }
 
     /**
@@ -14783,6 +14797,7 @@ function stroke_nibs(from_x, from_y, to_x, to_y, size) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   FACE_CORNERS: () => (/* binding */ FACE_CORNERS),
 /* harmony export */   ONION: () => (/* binding */ ONION),
 /* harmony export */   TILE: () => (/* binding */ TILE),
 /* harmony export */   VOXEL_H: () => (/* binding */ VOXEL_H),
@@ -14794,7 +14809,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   onion_slices: () => (/* binding */ onion_slices),
 /* harmony export */   project: () => (/* binding */ project),
 /* harmony export */   rotate_xz: () => (/* binding */ rotate_xz),
-/* harmony export */   slice_quad: () => (/* binding */ slice_quad)
+/* harmony export */   slice_quad: () => (/* binding */ slice_quad),
+/* harmony export */   visible_faces: () => (/* binding */ visible_faces)
 /* harmony export */ });
 /*
  * get-in-loser - derivative of miniPaint (https://github.com/viliusle/miniPaint)
@@ -15119,6 +15135,57 @@ function onion_slices(current, count, before, after) {
   return out;
 }
 
+/**
+ * The corners of each face of a unit voxel, as offsets from its origin.
+ */
+var FACE_CORNERS = {
+  top: [[0, 1, 0], [1, 1, 0], [1, 1, 1], [0, 1, 1]],
+  '+x': [[1, 0, 0], [1, 1, 0], [1, 1, 1], [1, 0, 1]],
+  '-x': [[0, 0, 0], [0, 1, 0], [0, 1, 1], [0, 0, 1]],
+  '+z': [[0, 0, 1], [0, 1, 1], [1, 1, 1], [1, 0, 1]],
+  '-z': [[0, 0, 0], [0, 1, 0], [1, 1, 0], [1, 0, 0]]
+};
+
+/**
+ * WHICH SIDE FACES THE CAMERA CAN SEE at a given yaw.
+ *
+ * Drawing a fixed pair - the model's +x and +z, say - is only right at yaw 0. Orbit past that and
+ * those faces point AWAY, so the cubes are drawn inside out: the near sides are never filled and
+ * the model reads as hollow, open at the back. Which face is visible follows from the projection:
+ * screen depth grows with rx + rz, so the visible sides are the ones lying toward increasing rx
+ * and increasing rz, and what those are in model space changes with every quarter turn.
+ *
+ * The top is always visible - the camera is above the model at every yaw.
+ *
+ * @param {number} yaw
+ * @returns {object} keys right (the +rx face) and left (the +rz face)
+ */
+function visible_faces(yaw) {
+  var turn = ((parseInt(yaw, 10) || 0) % 360 + 360) % 360;
+  if (turn === 90) {
+    return {
+      right: '-z',
+      left: '+x'
+    };
+  }
+  if (turn === 180) {
+    return {
+      right: '-x',
+      left: '-z'
+    };
+  }
+  if (turn === 270) {
+    return {
+      right: '+z',
+      left: '-x'
+    };
+  }
+  return {
+    right: '+x',
+    left: '+z'
+  };
+}
+
 
 /***/ },
 
@@ -15138,10 +15205,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   clamp_slice: () => (/* binding */ clamp_slice),
 /* harmony export */   count_filled: () => (/* binding */ count_filled),
 /* harmony export */   create_volume: () => (/* binding */ create_volume),
+/* harmony export */   deserialize_volume: () => (/* binding */ deserialize_volume),
 /* harmony export */   get_voxel: () => (/* binding */ get_voxel),
 /* harmony export */   index_of: () => (/* binding */ index_of),
 /* harmony export */   pack: () => (/* binding */ pack),
 /* harmony export */   read_slice: () => (/* binding */ read_slice),
+/* harmony export */   serialize_volume: () => (/* binding */ serialize_volume),
 /* harmony export */   set_voxel: () => (/* binding */ set_voxel),
 /* harmony export */   slice_dimensions: () => (/* binding */ slice_dimensions),
 /* harmony export */   slice_to_voxel: () => (/* binding */ slice_to_voxel),
@@ -15430,6 +15499,74 @@ function count_filled(vol) {
     }
   }
   return n;
+}
+
+/**
+ * Pack a volume into something JSON can carry.
+ *
+ * Base64 of the raw voxels rather than an array of numbers. NOT because it is always smaller - for
+ * a mostly empty 16x16x24 an array of zeroes is 12 KB against base64's 33 KB - but because it is
+ * CONSTANT. A number array runs from 12 KB empty to 66 KB full, and quicksave has a fixed budget it
+ * shares with the image data, so the worst case is the number that matters and base64 halves it.
+ *
+ * BYTES ARE WRITTEN BIG-ENDIAN BY HAND rather than handing over the Uint32Array's own buffer. That
+ * buffer's byte order is the machine's, so a model saved on one and opened on another would come
+ * back with every colour channel rotated. Doing it explicitly costs nothing at this size and means
+ * the format says what it means.
+ *
+ * @param {object} vol
+ * @returns {object|null} plain JSON-safe object
+ */
+function serialize_volume(vol) {
+  if (vol == null || vol.data == null) {
+    return null;
+  }
+  var bytes = new Uint8Array(vol.data.length * 4);
+  for (var i = 0; i < vol.data.length; i++) {
+    var value = vol.data[i] >>> 0;
+    bytes[i * 4] = value >>> 24 & 255;
+    bytes[i * 4 + 1] = value >>> 16 & 255;
+    bytes[i * 4 + 2] = value >>> 8 & 255;
+    bytes[i * 4 + 3] = value & 255;
+  }
+  var binary = '';
+  //chunked: String.fromCharCode.apply on a 24 KB array blows the argument limit in some browsers
+  var CHUNK = 8192;
+  for (var o = 0; o < bytes.length; o += CHUNK) {
+    binary += String.fromCharCode.apply(null, bytes.subarray(o, o + CHUNK));
+  }
+  return {
+    w: vol.w,
+    d: vol.d,
+    h: vol.h,
+    encoding: 'base64-be',
+    data: btoa(binary)
+  };
+}
+
+/**
+ * @param {object} saved from serialize_volume
+ * @returns {object|null} a volume, or null when the data is unusable
+ */
+function deserialize_volume(saved) {
+  if (saved == null || typeof saved.data !== 'string') {
+    return null;
+  }
+  var vol = create_volume(saved.w, saved.d, saved.h);
+  try {
+    var binary = atob(saved.data);
+    var expected = vol.data.length * 4;
+    if (binary.length !== expected) {
+      //dimensions and payload disagree - keep the empty volume rather than a shifted one
+      return null;
+    }
+    for (var i = 0; i < vol.data.length; i++) {
+      vol.data[i] = (binary.charCodeAt(i * 4) << 24 | binary.charCodeAt(i * 4 + 1) << 16 | binary.charCodeAt(i * 4 + 2) << 8 | binary.charCodeAt(i * 4 + 3)) >>> 0;
+    }
+  } catch (e) {
+    return null;
+  }
+  return vol;
 }
 
 
@@ -28882,6 +29019,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _core_gui_gui_tools__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ../../core/gui/gui-tools */ "./src/js/core/gui/gui-tools.js");
 /* harmony import */ var _node_modules_semver_compare___WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./../../../../node_modules/semver-compare/ */ "./node_modules/semver-compare/index.js");
 /* harmony import */ var _node_modules_semver_compare___WEBPACK_IMPORTED_MODULE_15___default = /*#__PURE__*/__webpack_require__.n(_node_modules_semver_compare___WEBPACK_IMPORTED_MODULE_15__);
+/* harmony import */ var _core_voxel_js__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./../../core/voxel.js */ "./src/js/core/voxel.js");
+
 
 
 
@@ -29549,6 +29688,9 @@ var File_open_class = /*#__PURE__*/function () {
               _context3.next = 5;
               return _app_js__WEBPACK_IMPORTED_MODULE_5__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_5__["default"].Actions.Bundle_action('open_json_file', 'Open JSON File', actions));
             case 5:
+              _context3.next = 6;
+              return this.restore_voxel(json);
+            case 6:
             case "end":
               return _context3.stop();
           }
@@ -29560,8 +29702,87 @@ var File_open_class = /*#__PURE__*/function () {
       return load_json;
     }()
     /**
+     * Bring a saved voxel model back.
+     *
+     * Restored AFTER the layers, deliberately: the layers carry the one slice that was on screen,
+     * and putting the volume back first would have it overwritten. A file with no voxel block
+     * clears the mode rather than leaving the previous model half attached to a new image.
+     *
+     * @param {object} json
+     * @returns {boolean} whether a model was restored
+     */
+  }, {
+    key: "restore_voxel",
+    value: (function () {
+      var _restore_voxel = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_1__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4___default().mark(function _callee4(json) {
+        var volume, voxel;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4___default().wrap(function (_context4) {
+          while (1) switch (_context4.prev = _context4.next) {
+            case 0:
+              if (!(json.voxel == null || json.voxel.volume == null)) {
+                _context4.next = 1;
+                break;
+              }
+              _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].voxel = null;
+              if (this.Base_gui.GUI_voxel) {
+                this.Base_gui.GUI_voxel.render_voxel();
+              }
+              return _context4.abrupt("return", false);
+            case 1:
+              volume = (0,_core_voxel_js__WEBPACK_IMPORTED_MODULE_16__.deserialize_volume)(json.voxel.volume);
+              if (!(volume == null)) {
+                _context4.next = 2;
+                break;
+              }
+              //corrupt or truncated: better to lose the model than to load a shifted one silently
+              _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].voxel = null;
+              _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_12___default().error('The voxel model in that file could not be read.');
+              return _context4.abrupt("return", false);
+            case 2:
+              _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].voxel = {
+                volume: volume,
+                axis: json.voxel.axis || 'y',
+                slice: parseInt(json.voxel.slice, 10) || 0,
+                yaw: parseInt(json.voxel.yaw, 10) || 0,
+                enabled: json.voxel.enabled !== false,
+                onion: json.voxel.onion || {
+                  enabled: true,
+                  before: 1,
+                  after: 1
+                }
+              };
+
+              //REBUILD THE CANVAS FROM THE VOLUME rather than trusting the restored layer. In voxel mode
+              //the canvas is only ever a view of a slice, so deriving it is both the correct thing and
+              //immune to anything the layer restore does or does not manage.
+              voxel = this.Base_gui.modules ? this.Base_gui.modules['tools/voxel'] : null;
+              if (!(voxel && _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].voxel.enabled)) {
+                _context4.next = 3;
+                break;
+              }
+              _context4.next = 3;
+              return voxel.reset_canvas_for_slice(true);
+            case 3:
+              if (this.Base_gui.GUI_voxel) {
+                this.Base_gui.GUI_voxel.render_voxel();
+              }
+              _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].need_render = true;
+              return _context4.abrupt("return", true);
+            case 4:
+            case "end":
+              return _context4.stop();
+          }
+        }, _callee4, this);
+      }));
+      function restore_voxel(_x4) {
+        return _restore_voxel.apply(this, arguments);
+      }
+      return restore_voxel;
+    }()
+    /**
      * Returns an action that saves the exif data of the provided object to the current layer
      */
+    )
   }, {
     key: "extract_exif",
     value: function extract_exif(object) {
@@ -29685,7 +29906,10 @@ var File_quickload_class = /*#__PURE__*/function () {
         //nothing was found
         return false;
       }
-      this.File_open.load_json(json);
+
+      //returned, not dropped: load_json is async, and a caller that cannot wait for it has no way
+      //to know whether the load finished
+      return this.File_open.load_json(json);
     }
   }]);
 }();
@@ -29745,6 +29969,14 @@ var File_quicksave_class = /*#__PURE__*/function () {
   }, {
     key: "quicksave",
     value: function quicksave() {
+      //COMMIT THE LIVE SLICE FIRST. The canvas holds the slice being edited and the volume holds
+      //the other 23; without this the volume's copy of the current one is whatever it was before
+      //the last edit, and the work on screen comes back missing after a reload.
+      var voxel = _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].voxel != null && window.Layers ? window.Layers.Base_gui.modules['tools/voxel'] : null;
+      if (voxel) {
+        voxel.commit_slice();
+      }
+
       //save image data
       var data_json = this.File_save.export_as_json();
       if (data_json.length > 5000000) {
@@ -29787,6 +30019,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _node_modules_gif_js_optimized___WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(_node_modules_gif_js_optimized___WEBPACK_IMPORTED_MODULE_10__);
 /* harmony import */ var _libs_canvastotiff_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./../../libs/canvastotiff.js */ "./src/js/libs/canvastotiff.js");
 /* harmony import */ var _tools_settings__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../tools/settings */ "./src/js/modules/tools/settings.js");
+/* harmony import */ var _core_voxel_js__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./../../core/voxel.js */ "./src/js/core/voxel.js");
+
 
 
 
@@ -30397,6 +30631,19 @@ var File_save_class = /*#__PURE__*/function () {
 
       //fonts
       export_data.user_fonts = _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].user_fonts;
+
+      //voxel model. The layers only ever hold the ONE slice being edited, so without this the
+      //other 23 are gone on reload - which is most of the work.
+      if (_config_js__WEBPACK_IMPORTED_MODULE_3__["default"].voxel != null && _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].voxel.volume != null) {
+        export_data.voxel = {
+          volume: (0,_core_voxel_js__WEBPACK_IMPORTED_MODULE_13__.serialize_volume)(_config_js__WEBPACK_IMPORTED_MODULE_3__["default"].voxel.volume),
+          axis: _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].voxel.axis,
+          slice: _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].voxel.slice,
+          yaw: _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].voxel.yaw,
+          enabled: _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].voxel.enabled,
+          onion: _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].voxel.onion
+        };
+      }
 
       //layers
       export_data.layers = [];

@@ -261,7 +261,85 @@ function count_filled(vol) {
 	return n;
 }
 
+
+/**
+ * Pack a volume into something JSON can carry.
+ *
+ * Base64 of the raw voxels rather than an array of numbers. NOT because it is always smaller - for
+ * a mostly empty 16x16x24 an array of zeroes is 12 KB against base64's 33 KB - but because it is
+ * CONSTANT. A number array runs from 12 KB empty to 66 KB full, and quicksave has a fixed budget it
+ * shares with the image data, so the worst case is the number that matters and base64 halves it.
+ *
+ * BYTES ARE WRITTEN BIG-ENDIAN BY HAND rather than handing over the Uint32Array's own buffer. That
+ * buffer's byte order is the machine's, so a model saved on one and opened on another would come
+ * back with every colour channel rotated. Doing it explicitly costs nothing at this size and means
+ * the format says what it means.
+ *
+ * @param {object} vol
+ * @returns {object|null} plain JSON-safe object
+ */
+function serialize_volume(vol) {
+	if (vol == null || vol.data == null) {
+		return null;
+	}
+
+	var bytes = new Uint8Array(vol.data.length * 4);
+	for (var i = 0; i < vol.data.length; i++) {
+		var value = vol.data[i] >>> 0;
+		bytes[i * 4] = (value >>> 24) & 255;
+		bytes[i * 4 + 1] = (value >>> 16) & 255;
+		bytes[i * 4 + 2] = (value >>> 8) & 255;
+		bytes[i * 4 + 3] = value & 255;
+	}
+
+	var binary = '';
+	//chunked: String.fromCharCode.apply on a 24 KB array blows the argument limit in some browsers
+	var CHUNK = 8192;
+	for (var o = 0; o < bytes.length; o += CHUNK) {
+		binary += String.fromCharCode.apply(null, bytes.subarray(o, o + CHUNK));
+	}
+
+	return {w: vol.w, d: vol.d, h: vol.h, encoding: 'base64-be', data: btoa(binary)};
+}
+
+/**
+ * @param {object} saved from serialize_volume
+ * @returns {object|null} a volume, or null when the data is unusable
+ */
+function deserialize_volume(saved) {
+	if (saved == null || typeof saved.data !== 'string') {
+		return null;
+	}
+
+	var vol = create_volume(saved.w, saved.d, saved.h);
+
+	try {
+		var binary = atob(saved.data);
+		var expected = vol.data.length * 4;
+		if (binary.length !== expected) {
+			//dimensions and payload disagree - keep the empty volume rather than a shifted one
+			return null;
+		}
+
+		for (var i = 0; i < vol.data.length; i++) {
+			vol.data[i] = (
+				(binary.charCodeAt(i * 4) << 24) |
+				(binary.charCodeAt(i * 4 + 1) << 16) |
+				(binary.charCodeAt(i * 4 + 2) << 8) |
+				binary.charCodeAt(i * 4 + 3)
+			) >>> 0;
+		}
+	}
+	catch (e) {
+		return null;
+	}
+
+	return vol;
+}
+
 export {
+	serialize_volume,
+	deserialize_volume,
 	DEFAULT_SIZE,
 	MAX_SIZE,
 	AXES,

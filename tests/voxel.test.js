@@ -18,6 +18,8 @@ import {
 	write_slice,
 	clamp_slice,
 	count_filled,
+	serialize_volume,
+	deserialize_volume,
 } from '../src/js/core/voxel.js';
 
 const RED = pack(255, 0, 0, 255);
@@ -217,5 +219,81 @@ describe('clamp_slice', () => {
 		expect(clamp_slice(v, 'y', -5)).toBe(0);
 		expect(clamp_slice(v, 'y', 'abc')).toBe(0);
 		expect(clamp_slice(v, 'y', 999)).toBe(23);
+	});
+});
+
+describe('serialize_volume / deserialize_volume', () => {
+	const filled = () => {
+		const v = vol16();
+		set_voxel(v, 0, 0, 0, RED);
+		set_voxel(v, 15, 23, 15, BLUE);
+		set_voxel(v, 7, 12, 3, pack(1, 2, 3, 4));
+		return v;
+	};
+
+	test('a volume survives the round trip exactly', () => {
+		const before = filled();
+		const after = deserialize_volume(serialize_volume(before));
+
+		expect([after.w, after.d, after.h]).toEqual([before.w, before.d, before.h]);
+		expect(Array.from(after.data)).toEqual(Array.from(before.data));
+	});
+
+	test('every channel survives - not just the ones that happen to be 255', () => {
+		const v = vol16();
+		set_voxel(v, 1, 1, 1, pack(17, 34, 51, 68));
+		const back = deserialize_volume(serialize_volume(v));
+		expect(unpack(get_voxel(back, 1, 1, 1))).toEqual({r: 17, g: 34, b: 51, a: 68});
+	});
+
+	test('the encoding is declared, and byte order is not left to the machine', () => {
+		//a buffer handed over raw would come back channel-rotated on a big-endian reader
+		expect(serialize_volume(vol16()).encoding).toBe('base64-be');
+	});
+
+	test('is JSON safe', () => {
+		const saved = serialize_volume(filled());
+		const round = JSON.parse(JSON.stringify(saved));
+		expect(Array.from(deserialize_volume(round).data)).toEqual(Array.from(filled().data));
+	});
+
+	test('the encoded size is CONSTANT, whatever the model contains', () => {
+		//this is the reason for base64, and it is not "smaller" - an array of zeroes beats it on an
+		//empty volume. Quicksave has a fixed budget, so a predictable ceiling is worth more than a
+		//good best case.
+		const empty = vol16();
+		const full = vol16();
+		for (let i = 0; i < full.data.length; i++) {
+			full.data[i] = RED;
+		}
+
+		expect(serialize_volume(empty).data.length).toBe(serialize_volume(full).data.length);
+	});
+
+	test('beats a number array in the case that decides the budget - the full one', () => {
+		const full = vol16();
+		for (let i = 0; i < full.data.length; i++) {
+			full.data[i] = RED;
+		}
+		const asNumbers = JSON.stringify(Array.from(full.data)).length;
+
+		expect(serialize_volume(full).data.length).toBeLessThan(asNumbers);
+	});
+
+	test('refuses a payload that disagrees with its dimensions', () => {
+		const saved = serialize_volume(vol16());
+		//claim a bigger volume than the bytes describe
+		expect(deserialize_volume({...saved, h: 25})).toBe(null);
+	});
+
+	test('refuses junk rather than returning a shifted volume', () => {
+		expect(deserialize_volume(null)).toBe(null);
+		expect(deserialize_volume({})).toBe(null);
+		expect(deserialize_volume({w: 16, d: 16, h: 24, data: 'not base64 !!!'})).toBe(null);
+		expect(serialize_volume(null)).toBe(null);
+	});
+
+	test('an empty volume round trips too', () => {
+		expect(count_filled(deserialize_volume(serialize_volume(vol16())))).toBe(0);
 	});
 });

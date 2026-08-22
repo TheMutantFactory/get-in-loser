@@ -71,7 +71,7 @@ Uses the File System Access API, so **Chromium only** (Chrome/Edge); elsewhere i
 - **The volume is the model; the canvas is a view of one slice.** Rotating changes which way the volume is *cut* - top, front or side - and never touches the data, so it is instant and lossless. Paint on the front, and it is there when you look from the top.
 - A second view on the sidebar draws the model in isometric with the current slice picked out, because a flat canvas cannot show you where in the model you are painting. It orbits in quarter turns.
 - **Onion skinning** shows the neighbouring slices faintly behind the live one - warm below, cool above, fading with distance - so lining a shape up with what it sits on is something you can see rather than remember.
-- Slices import and export as a single PNG strip, inspectable in any editor.
+- Slices import and export as a single PNG strip, inspectable in any editor, and the model rides along in quicksave (`F9`/`F10`) so it survives a reload. On load the canvas is rebuilt *from the volume* rather than from the saved layer, since in voxel mode the canvas is only ever a view of a slice.
 - Slice changes are navigation, not edits, so they do not fill the undo history. The trade is that undo does not step back across a slice change; it applies to the slice you are on.
 
 **Colour palettes**

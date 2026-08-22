@@ -31,6 +31,14 @@ class File_quicksave_class {
 	}
 
 	quicksave() {
+		//COMMIT THE LIVE SLICE FIRST. The canvas holds the slice being edited and the volume holds
+		//the other 23; without this the volume's copy of the current one is whatever it was before
+		//the last edit, and the work on screen comes back missing after a reload.
+		var voxel = config.voxel != null && window.Layers ? window.Layers.Base_gui.modules['tools/voxel'] : null;
+		if (voxel) {
+			voxel.commit_slice();
+		}
+
 		//save image data
 		var data_json = this.File_save.export_as_json();
 		if (data_json.length > 5000000) {

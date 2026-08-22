@@ -10,7 +10,7 @@
 
 import config from './../../config.js';
 import {AXES, AXIS_LABELS, unpack, get_voxel, slice_dimensions} from './../voxel.js';
-import {draw_order, project, bounds, slice_quad, fit_scale} from './../voxel-view.js';
+import {draw_order, project, bounds, slice_quad, fit_scale, FACE_CORNERS, visible_faces} from './../voxel-view.js';
 
 var instance = null;
 
@@ -217,27 +217,40 @@ class GUI_voxel_class {
 	 * of cubes read as solid rather than as a flat blob of colour.
 	 */
 	draw_voxels(vol, view, ox, oy) {
-		var ctx = this.ctx;
 		var order = draw_order(vol, view, get_voxel);
+		//which sides face the camera depends on the yaw; drawing a fixed pair leaves the model
+		//open at the back once it has been turned
+		var faces = visible_faces(view.yaw);
 
 		for (var i = 0; i < order.length; i++) {
 			var v = order[i];
 			var c = unpack(v.value);
 
-			//the eight corners this voxel needs, projected once
-			var p = function (dx, dy, dz) {
-				var q = project(v.x + dx, v.y + dy, v.z + dz, view);
-				return [q.sx + ox, q.sy + oy];
-			};
-
-			var top = [p(0, 1, 0), p(1, 1, 0), p(1, 1, 1), p(0, 1, 1)];
-			var left = [p(0, 0, 1), p(0, 1, 1), p(1, 1, 1), p(1, 0, 1)];
-			var right = [p(1, 0, 1), p(1, 1, 1), p(1, 1, 0), p(1, 0, 0)];
-
-			this.fill_face(top, c, 1);
-			this.fill_face(left, c, 0.72);
-			this.fill_face(right, c, 0.52);
+			this.fill_face(this.face_points(v, FACE_CORNERS.top, view, ox, oy), c, 1);
+			this.fill_face(this.face_points(v, FACE_CORNERS[faces.left], view, ox, oy), c, 0.72);
+			this.fill_face(this.face_points(v, FACE_CORNERS[faces.right], view, ox, oy), c, 0.52);
 		}
+	}
+
+	/**
+	 * Project one face of one voxel.
+	 *
+	 * @param {object} v keys x, y, z
+	 * @param {array} corners offsets from FACE_CORNERS
+	 * @param {object} view
+	 * @param {number} ox
+	 * @param {number} oy
+	 * @returns {array} [[x, y], ...]
+	 */
+	face_points(v, corners, view, ox, oy) {
+		var out = [];
+
+		for (var i = 0; i < corners.length; i++) {
+			var q = project(v.x + corners[i][0], v.y + corners[i][1], v.z + corners[i][2], view);
+			out.push([q.sx + ox, q.sy + oy]);
+		}
+
+		return out;
 	}
 
 	/**

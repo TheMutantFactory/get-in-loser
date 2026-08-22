@@ -7,6 +7,8 @@ import {
 	YAWS,
 	ONION,
 	onion_slices,
+	FACE_CORNERS,
+	visible_faces,
 	rotate_xz,
 	project,
 	depth_key,
@@ -274,5 +276,57 @@ describe('onion_slices', () => {
 
 	test('a one-slice volume has no neighbours to show', () => {
 		expect(onion_slices(0, 1, 4, 4)).toEqual([]);
+	});
+});
+
+describe('visible_faces', () => {
+	test('the two sides facing the camera change with every quarter turn', () => {
+		expect(visible_faces(0)).toEqual({right: '+x', left: '+z'});
+		expect(visible_faces(90)).toEqual({right: '-z', left: '+x'});
+		expect(visible_faces(180)).toEqual({right: '-x', left: '-z'});
+		expect(visible_faces(270)).toEqual({right: '+z', left: '-x'});
+	});
+
+	test('never picks a face pointing AWAY from the camera', () => {
+		//screen depth grows with rx + rz, so a visible face must lie toward increasing rx/rz.
+		//Getting this wrong draws the cubes inside out and the model reads as open at the back.
+		const w = 4, d = 4;
+		const outward = {'+x': [1, 0], '-x': [-1, 0], '+z': [0, 1], '-z': [0, -1]};
+
+		for (const yaw of YAWS) {
+			const f = visible_faces(yaw);
+			//step one voxel along the face normal and check it moves TOWARD the camera
+			for (const face of [f.right, f.left]) {
+				const n = outward[face];
+				const here = depth_key(2, 0, 2, yaw, w, d);
+				const there = depth_key(2 + n[0], 0, 2 + n[1], yaw, w, d);
+				expect(there).toBeGreaterThan(here);
+			}
+		}
+	});
+
+	test('the two faces are always different', () => {
+		for (const yaw of YAWS) {
+			const f = visible_faces(yaw);
+			expect(f.right).not.toBe(f.left);
+		}
+	});
+
+	test('every yaw names faces that actually exist', () => {
+		for (const yaw of YAWS.concat([null, 'junk', -90, 450])) {
+			const f = visible_faces(yaw);
+			expect(FACE_CORNERS[f.right]).toBeDefined();
+			expect(FACE_CORNERS[f.left]).toBeDefined();
+		}
+	});
+
+	test('every face is a flat quad of four corners', () => {
+		for (const name of Object.keys(FACE_CORNERS)) {
+			const face = FACE_CORNERS[name];
+			expect(face.length).toBe(4);
+			//a face is flat: one of the three axes is constant across all four corners
+			const constant = [0, 1, 2].filter((ax) => new Set(face.map((c) => c[ax])).size === 1);
+			expect(constant.length).toBeGreaterThanOrEqual(1);
+		}
 	});
 });

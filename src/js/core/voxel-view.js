@@ -287,4 +287,46 @@ function onion_slices(current, count, before, after) {
 	return out;
 }
 
-export {YAWS, ONION, onion_slices, TILE, VOXEL_H, rotate_xz, project, depth_key, draw_order, bounds, slice_quad, fit_scale};
+
+/**
+ * The corners of each face of a unit voxel, as offsets from its origin.
+ */
+const FACE_CORNERS = {
+	top: [[0, 1, 0], [1, 1, 0], [1, 1, 1], [0, 1, 1]],
+	'+x': [[1, 0, 0], [1, 1, 0], [1, 1, 1], [1, 0, 1]],
+	'-x': [[0, 0, 0], [0, 1, 0], [0, 1, 1], [0, 0, 1]],
+	'+z': [[0, 0, 1], [0, 1, 1], [1, 1, 1], [1, 0, 1]],
+	'-z': [[0, 0, 0], [0, 1, 0], [1, 1, 0], [1, 0, 0]],
+};
+
+/**
+ * WHICH SIDE FACES THE CAMERA CAN SEE at a given yaw.
+ *
+ * Drawing a fixed pair - the model's +x and +z, say - is only right at yaw 0. Orbit past that and
+ * those faces point AWAY, so the cubes are drawn inside out: the near sides are never filled and
+ * the model reads as hollow, open at the back. Which face is visible follows from the projection:
+ * screen depth grows with rx + rz, so the visible sides are the ones lying toward increasing rx
+ * and increasing rz, and what those are in model space changes with every quarter turn.
+ *
+ * The top is always visible - the camera is above the model at every yaw.
+ *
+ * @param {number} yaw
+ * @returns {object} keys right (the +rx face) and left (the +rz face)
+ */
+function visible_faces(yaw) {
+	var turn = ((parseInt(yaw, 10) || 0) % 360 + 360) % 360;
+
+	if (turn === 90) {
+		return {right: '-z', left: '+x'};
+	}
+	if (turn === 180) {
+		return {right: '-x', left: '-z'};
+	}
+	if (turn === 270) {
+		return {right: '+z', left: '-x'};
+	}
+
+	return {right: '+x', left: '+z'};
+}
+
+export {YAWS, ONION, onion_slices, FACE_CORNERS, visible_faces, TILE, VOXEL_H, rotate_xz, project, depth_key, draw_order, bounds, slice_quad, fit_scale};

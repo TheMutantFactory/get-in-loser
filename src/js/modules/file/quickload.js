@@ -38,7 +38,9 @@ class File_quickload_class {
 			return false;
 		}
 
-		this.File_open.load_json(json);
+		//returned, not dropped: load_json is async, and a caller that cannot wait for it has no way
+		//to know whether the load finished
+		return this.File_open.load_json(json);
 	}
 
 }

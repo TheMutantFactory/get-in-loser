@@ -9,6 +9,7 @@ import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.j
 import EXIF from './../../../../node_modules/exif-js/exif.js';
 import GUI_tools_class from "../../core/gui/gui-tools";
 import semver_compare from './../../../../node_modules/semver-compare/';
+import { deserialize_volume } from './../../core/voxel.js';
 
 var instance = null;
 
@@ -669,6 +670,60 @@ class File_open_class {
 		await app.State.do_action(
 			new app.Actions.Bundle_action('open_json_file', 'Open JSON File', actions)
 		);
+
+		await this.restore_voxel(json);
+	}
+
+	/**
+	 * Bring a saved voxel model back.
+	 *
+	 * Restored AFTER the layers, deliberately: the layers carry the one slice that was on screen,
+	 * and putting the volume back first would have it overwritten. A file with no voxel block
+	 * clears the mode rather than leaving the previous model half attached to a new image.
+	 *
+	 * @param {object} json
+	 * @returns {boolean} whether a model was restored
+	 */
+	async restore_voxel(json) {
+		if (json.voxel == null || json.voxel.volume == null) {
+			config.voxel = null;
+			if (this.Base_gui.GUI_voxel) {
+				this.Base_gui.GUI_voxel.render_voxel();
+			}
+			return false;
+		}
+
+		var volume = deserialize_volume(json.voxel.volume);
+		if (volume == null) {
+			//corrupt or truncated: better to lose the model than to load a shifted one silently
+			config.voxel = null;
+			alertify.error('The voxel model in that file could not be read.');
+			return false;
+		}
+
+		config.voxel = {
+			volume: volume,
+			axis: json.voxel.axis || 'y',
+			slice: parseInt(json.voxel.slice, 10) || 0,
+			yaw: parseInt(json.voxel.yaw, 10) || 0,
+			enabled: json.voxel.enabled !== false,
+			onion: json.voxel.onion || {enabled: true, before: 1, after: 1},
+		};
+
+		//REBUILD THE CANVAS FROM THE VOLUME rather than trusting the restored layer. In voxel mode
+		//the canvas is only ever a view of a slice, so deriving it is both the correct thing and
+		//immune to anything the layer restore does or does not manage.
+		var voxel = this.Base_gui.modules ? this.Base_gui.modules['tools/voxel'] : null;
+		if (voxel && config.voxel.enabled) {
+			await voxel.reset_canvas_for_slice(true);
+		}
+
+		if (this.Base_gui.GUI_voxel) {
+			this.Base_gui.GUI_voxel.render_voxel();
+		}
+		config.need_render = true;
+
+		return true;
 	}
 
 	/**
