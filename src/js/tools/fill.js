@@ -57,13 +57,15 @@ class Fill_class extends Base_tools_class {
 			return;
 		}
 
-		if (config.layer.type != 'image' && config.layer.type !== null) {
-			alertify.error('This layer must contain an image. Please convert it to raster to apply this tool.');
-			return;
-		}
-		if (config.layer.is_vector == true) {
-			alertify.error('Layer is vector, convert it to raster to apply this tool.');
-			return;
+		if ((config.layer.type != 'image' && config.layer.type !== null) || config.layer.is_vector == true) {
+			//Convert rather than telling the reporter to go and do it - see
+			//Base_tools.rasterize_active_layer. An EMPTY layer is deliberately not caught here:
+			//fill already treats a null type as "fill the whole canvas", and rasterizing nothing
+			//first would only add an empty layer and an undo step.
+			var ready = await this.rasterize_active_layer('filled');
+			if (ready == false) {
+				return;
+			}
 		}
 		if (config.ALPHA == 0) {
 			alertify.error('Color alpha value can not be zero.');

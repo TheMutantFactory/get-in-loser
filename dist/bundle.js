@@ -37300,7 +37300,7 @@ var Fill_class = /*#__PURE__*/function (_Base_tools_class) {
     key: "fill",
     value: function () {
       var _fill = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_6___default().mark(function _callee(mouse) {
-        var params, canvas, ctx, mouse_x, mouse_y, color_to;
+        var params, ready, canvas, ctx, mouse_x, mouse_y, color_to;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_6___default().wrap(function (_context) {
           while (1) switch (_context.prev = _context.next) {
             case 0:
@@ -37311,18 +37311,18 @@ var Fill_class = /*#__PURE__*/function (_Base_tools_class) {
               }
               return _context.abrupt("return");
             case 1:
-              if (!(_config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.type != 'image' && _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.type !== null)) {
-                _context.next = 2;
-                break;
-              }
-              _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_12___default().error('This layer must contain an image. Please convert it to raster to apply this tool.');
-              return _context.abrupt("return");
-            case 2:
-              if (!(_config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.is_vector == true)) {
+              if (!(_config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.type != 'image' && _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.type !== null || _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.is_vector == true)) {
                 _context.next = 3;
                 break;
               }
-              _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_12___default().error('Layer is vector, convert it to raster to apply this tool.');
+              _context.next = 2;
+              return this.rasterize_active_layer('filled');
+            case 2:
+              ready = _context.sent;
+              if (!(ready == false)) {
+                _context.next = 3;
+                break;
+              }
               return _context.abrupt("return");
             case 3:
               if (!(_config_js__WEBPACK_IMPORTED_MODULE_8__["default"].ALPHA == 0)) {
@@ -37755,7 +37755,7 @@ var Magic_erase_class = /*#__PURE__*/function (_Base_tools_class) {
     key: "magic_erase",
     value: function () {
       var _magic_erase = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_6___default().mark(function _callee(mouse) {
-        var params, canvas, ctx, mouse_x, mouse_y;
+        var params, ready, canvas, ctx, mouse_x, mouse_y;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_6___default().wrap(function (_context) {
           while (1) switch (_context.prev = _context.next) {
             case 0:
@@ -37766,18 +37766,18 @@ var Magic_erase_class = /*#__PURE__*/function (_Base_tools_class) {
               }
               return _context.abrupt("return");
             case 1:
-              if (!(_config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.type != 'image')) {
-                _context.next = 2;
-                break;
-              }
-              _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_11___default().error('This layer must contain an image. Please convert it to raster to apply this tool.');
-              return _context.abrupt("return");
-            case 2:
-              if (!(_config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.is_vector == true)) {
+              if (!(_config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.type != 'image' || _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.is_vector == true)) {
                 _context.next = 3;
                 break;
               }
-              _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_11___default().error('Layer is vector, convert it to raster to apply this tool.');
+              _context.next = 2;
+              return this.rasterize_active_layer('erased');
+            case 2:
+              ready = _context.sent;
+              if (!(ready == false)) {
+                _context.next = 3;
+                break;
+              }
               return _context.abrupt("return");
             case 3:
               //get canvas from layer
@@ -37910,7 +37910,11 @@ var Magic_erase_class = /*#__PURE__*/function (_Base_tools_class) {
       //destination-out + blur = anti-aliasing
       ctxTemp.putImageData(img_tmp, 0, 0);
       context.globalCompositeOperation = "destination-out";
-      if (anti_aliasing == true) {
+      if (anti_aliasing == true && _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].PIXEL_MODE != true) {
+        //The "anti aliasing" option is a 1px blur over the erase mask. That is a soft edge by
+        //construction, and a soft edge on a pixel canvas is the partial-alpha ghost that made
+        //the plain eraser look broken - so pixel mode does not get it, whatever the checkbox
+        //says. The checkbox still governs everywhere else.
         context.filter = 'blur(1px)';
       }
       context.drawImage(canvasTemp, 0, 0);

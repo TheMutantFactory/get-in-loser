@@ -55,13 +55,14 @@ class Magic_erase_class extends Base_tools_class {
 			return;
 		}
 
-		if (config.layer.type != 'image') {
-			alertify.error('This layer must contain an image. Please convert it to raster to apply this tool.');
-			return;
-		}
-		if (config.layer.is_vector == true) {
-			alertify.error('Layer is vector, convert it to raster to apply this tool.');
-			return;
+		if (config.layer.type != 'image' || config.layer.is_vector == true) {
+			//Convert rather than telling the reporter to go and do it - see
+			//Base_tools.rasterize_active_layer. An empty layer returns false and this quietly does
+			//nothing: there is nothing to magic erase, and that is not worth a dialog.
+			var ready = await this.rasterize_active_layer('erased');
+			if (ready == false) {
+				return;
+			}
 		}
 
 		//get canvas from layer
@@ -204,7 +205,11 @@ class Magic_erase_class extends Base_tools_class {
 		//destination-out + blur = anti-aliasing
 		ctxTemp.putImageData(img_tmp, 0, 0);
 		context.globalCompositeOperation = "destination-out";
-		if (anti_aliasing == true) {
+		if (anti_aliasing == true && config.PIXEL_MODE != true) {
+			//The "anti aliasing" option is a 1px blur over the erase mask. That is a soft edge by
+			//construction, and a soft edge on a pixel canvas is the partial-alpha ghost that made
+			//the plain eraser look broken - so pixel mode does not get it, whatever the checkbox
+			//says. The checkbox still governs everywhere else.
 			context.filter = 'blur(1px)';
 		}
 		context.drawImage(canvasTemp, 0, 0);
