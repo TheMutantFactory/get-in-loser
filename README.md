@@ -71,6 +71,13 @@ Uses the File System Access API, so **Chromium only** (Chrome/Edge); elsewhere i
 - A `Palette` block on the right sidebar switches palette and sets the drawing colour with one click.
 - `Pixel > Palette` loads a bundled palette, imports a `.json` palette at runtime, or exports the current one.
 
+**Feedback** (`Help > Send Feedback`)
+
+- Replaces the old link out to GitHub issues. A report is filed without leaving the app and carries the build, the platform and the selected tool, which a reporter would otherwise have had to assemble by hand — and no longer needs a GitHub account.
+- Posts to [feedback-service](https://github.com/TheMutantFactory/feedback-service) as envelope v1. The contract lives in that repo; this side is [`feedback-envelope.js`](src/js/libs/feedback-envelope.js).
+- **The client is an outbox.** Nothing leaves local storage until the server acknowledges it: offline or a 5xx holds the report and retries next session, a 429 holds it and everything behind it, and a 4xx sets it aside rather than dropping it — so "it ate my feedback" is answerable. See [`feedback-outbox.js`](src/js/libs/feedback-outbox.js).
+- **The screenshot is opt-in and off by default.** In a paint app the canvas is the reporter's own artwork, and may be someone else's if they opened it, so the dialog states exactly what is sent and the picture is only taken when the box is ticked. If the capture fails the note still goes and `shot_attached` says no, rather than promising an image that does not exist.
+
 **Navigation**
 
 - Hold the **middle mouse button (scroll wheel) and drag** anywhere over the drawing area to pan the image. Tools only respond to the left button, so painting is unaffected. Panning is bounded the same way the preview's drag-to-pan is — the image cannot be dragged off screen.
@@ -93,7 +100,7 @@ Uses the File System Access API, so **Chromium only** (Chrome/Edge); elsewhere i
 npm test
 ```
 
-Jest covers the geometry and parsing that the features above depend on: preview sizing and the active zone, palette parsing and nearest-colour matching, pixel grid placement, and pixel canvas sizing.
+Jest covers the geometry and parsing that the features above depend on: preview sizing and the active zone, palette parsing and nearest-colour matching, pixel grid placement, pixel canvas sizing, middle-drag panning, and the feedback envelope and outbox.
 
 ## Build instructions
 

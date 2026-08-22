@@ -5333,8 +5333,9 @@ var menuDefinition = [{
     ellipsis: true,
     target: 'help/icon_license.icon_license'
   }, {
-    name: 'Report Issues',
-    href: 'https://github.com/DazzlingDukeOfLazers/get-in-loser/issues'
+    name: 'Send Feedback',
+    ellipsis: true,
+    target: 'help/feedback.feedback'
   }, {
     divider: true
   }, {
@@ -15385,6 +15386,423 @@ var Context_menu_class = /*#__PURE__*/function () {
 }();
 var instance = new Context_menu_class();
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (instance);
+
+/***/ },
+
+/***/ "./src/js/libs/feedback-envelope.js"
+/*!******************************************!*\
+  !*** ./src/js/libs/feedback-envelope.js ***!
+  \******************************************/
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   APP_NAME: () => (/* binding */ APP_NAME),
+/* harmony export */   ENVELOPE_VERSION: () => (/* binding */ ENVELOPE_VERSION),
+/* harmony export */   IMAGE_LIMIT: () => (/* binding */ IMAGE_LIMIT),
+/* harmony export */   TEXT_LIMIT: () => (/* binding */ TEXT_LIMIT),
+/* harmony export */   build_envelope: () => (/* binding */ build_envelope),
+/* harmony export */   classify_response: () => (/* binding */ classify_response),
+/* harmony export */   detect_platform: () => (/* binding */ detect_platform),
+/* harmony export */   element_key: () => (/* binding */ element_key),
+/* harmony export */   install_id: () => (/* binding */ install_id)
+/* harmony export */ });
+/*
+ * get-in-loser - derivative of miniPaint (https://github.com/viliusle/miniPaint)
+ *
+ * The browser half of feedback-service's envelope v1. Pure, so every decision that can be made
+ * without a network is tested without one - see tests/feedback-envelope.test.js.
+ *
+ * The contract lives in the feedback-service repo (schema/envelope.v1.md), not here. Adding a
+ * field is not a version bump; `v` only moves when an existing field changes meaning.
+ */
+
+/** Envelope version this client speaks. */
+var ENVELOPE_VERSION = 1;
+
+/** Must match the `app` other Get in loser reports were filed under, or grouping splits in two. */
+var APP_NAME = 'Get in loser';
+
+/** The server refuses a longer note with a 413, so the UI stops the reporter before it does. */
+var TEXT_LIMIT = 8 * 1024;
+
+/** The server refuses a larger image with a 413. */
+var IMAGE_LIMIT = 2 * 1024 * 1024;
+
+/**
+ * How a reply to POST /v1/report should be treated.
+ *
+ * This is the outbox's whole reason to exist: "an outbox that cannot tell those apart either loses
+ * good reports or retries bad ones forever." Mirrors the Godot client's classification so both
+ * clients behave the same way against the same server.
+ *
+ * @param {number} status HTTP status, or 0 for a transport failure
+ * @param {object} body parsed JSON response, when there was one
+ * @returns {string} one of:
+ *   sent      - stored; drop it from the outbox
+ *   discarded - a [deleteme] report, accepted and thrown away by design; drop it, never retry
+ *   rejected  - malformed; keep it aside but never send it again
+ *   limited   - rate limited; hold this one AND everything after it
+ *   retry     - the report is fine, the world is not; keep it and try later
+ */
+function classify_response(status, body) {
+  if (status === 429) {
+    return 'limited';
+  }
+  if (status === 200 || status === 202) {
+    //202 {discarded: true} is the server accepting a test report and storing nothing
+    return body && body.discarded === true ? 'discarded' : 'sent';
+  }
+  if (status >= 400 && status < 500) {
+    //4xx means this payload will never be accepted. Retrying is a loop.
+    return 'rejected';
+  }
+
+  //5xx, 0, and anything unrecognised: the report is fine, try later. Defaulting the other way
+  //would throw away good reports over a transient blip.
+  return 'retry';
+}
+
+/**
+ * Best-effort platform string. Never throws and never returns empty - the server rejects an empty
+ * required field, and losing a report over a browser that hides its user agent is a bad trade.
+ *
+ * @param {object} nav a navigator-shaped object
+ * @returns {string}
+ */
+function detect_platform(nav) {
+  nav = nav || {};
+  var data = nav.userAgentData;
+  if (data && typeof data.platform === 'string' && data.platform.length > 0) {
+    return data.platform;
+  }
+  var ua = typeof nav.userAgent === 'string' ? nav.userAgent : '';
+  //MOST SPECIFIC FIRST. An iPhone's user agent says "like Mac OS X" and an Android's says
+  //"Linux", so a looser pattern placed earlier swallows the platform that actually matters -
+  //which is exactly what half of all UI reports being platform-specific makes expensive.
+  var known = [[/iPhone|iPad|iPod/i, 'iOS'], [/CrOS/i, 'ChromeOS'], [/Android/i, 'Android'], [/Windows/i, 'Windows'], [/Macintosh|Mac OS X/i, 'macOS'], [/Linux/i, 'Linux']];
+  for (var i = 0; i < known.length; i++) {
+    if (known[i][0].test(ua)) {
+      return known[i][1];
+    }
+  }
+  if (typeof nav.platform === 'string' && nav.platform.length > 0) {
+    return nav.platform;
+  }
+  return 'unknown';
+}
+
+/**
+ * The field reports GROUP on.
+ *
+ * Content-free by contract: schema may appear, player data may not. A tool name and a dialog title
+ * are schema. The layer name, the file name and the colour are the user's, and any of them would
+ * give every report its own bucket while leaking what the user is working on.
+ *
+ * @param {object} state keys: tool (string), dialog (string|null)
+ * @returns {string}
+ */
+function element_key(state) {
+  state = state || {};
+  var clean = function clean(value) {
+    return String(value || '').toLowerCase().replace(/[^a-z0-9_]+/g, '_').replace(/^_+|_+$/g, '');
+  };
+  if (state.dialog) {
+    var dialog = clean(state.dialog);
+    if (dialog) {
+      return 'dialog/' + dialog;
+    }
+  }
+  var tool = clean(state.tool);
+  return tool ? 'editor/tool.' + tool : 'editor';
+}
+
+/**
+ * A stable per-browser id, so one reporter's history groups and an abuser can be dropped without
+ * accounts. Random, never derived from anything about the machine - it identifies a browser
+ * profile to this app and nothing else.
+ *
+ * @param {object} storage a localStorage-shaped object
+ * @param {function} random returns a 16-char hex string
+ * @returns {string}
+ */
+function install_id(storage, random) {
+  var KEY = 'feedback_install_id';
+  try {
+    var existing = storage.getItem(KEY);
+    if (typeof existing === 'string' && /^[0-9a-f]{8,64}$/.test(existing)) {
+      return existing;
+    }
+  } catch (e) {
+    //private mode can throw on read; fall through and mint a throwaway
+  }
+  var fresh = random();
+  try {
+    storage.setItem(KEY, fresh);
+  } catch (e) {
+    //storage unavailable - the report still goes, it just will not group with the next one
+  }
+  return fresh;
+}
+
+/**
+ * Build the envelope.
+ *
+ * @param {object} input keys: text, app_version, platform, install_id, tool, dialog,
+ *   shot_attached, ts
+ * @returns {object|null} null when there is no note - a report with no note is a mis-click, and
+ *   the server would 400 it anyway
+ */
+function build_envelope(input) {
+  input = input || {};
+  var text = String(input.text == null ? '' : input.text).trim();
+  if (text.length === 0) {
+    return null;
+  }
+  return {
+    v: ENVELOPE_VERSION,
+    app: APP_NAME,
+    //an empty required field is a 400, so never let one through
+    app_version: String(input.app_version || 'unknown'),
+    platform: String(input.platform || 'unknown'),
+    install_id: String(input.install_id || 'unknown'),
+    ts: String(input.ts || new Date().toISOString()),
+    text: text.slice(0, TEXT_LIMIT),
+    element_key: element_key({
+      tool: input.tool,
+      dialog: input.dialog
+    }),
+    shot_attached: input.shot_attached === true
+  };
+}
+
+
+/***/ },
+
+/***/ "./src/js/libs/feedback-outbox.js"
+/*!****************************************!*\
+  !*** ./src/js/libs/feedback-outbox.js ***!
+  \****************************************/
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   MAX_QUEUED: () => (/* binding */ MAX_QUEUED),
+/* harmony export */   MAX_REJECTED: () => (/* binding */ MAX_REJECTED),
+/* harmony export */   OUTBOX_KEY: () => (/* binding */ OUTBOX_KEY),
+/* harmony export */   REJECTED_KEY: () => (/* binding */ REJECTED_KEY),
+/* harmony export */   drain: () => (/* binding */ drain),
+/* harmony export */   enqueue: () => (/* binding */ enqueue),
+/* harmony export */   pending_count: () => (/* binding */ pending_count),
+/* harmony export */   read_queue: () => (/* binding */ read_queue),
+/* harmony export */   write_queue: () => (/* binding */ write_queue)
+/* harmony export */ });
+/* harmony import */ var _babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ "./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js");
+/* harmony import */ var _babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/typeof */ "./node_modules/@babel/runtime/helpers/esm/typeof.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_2__);
+
+
+
+/*
+ * get-in-loser - derivative of miniPaint (https://github.com/viliusle/miniPaint)
+ *
+ * The outbox. Pure of the network but not of storage - it takes a storage-shaped object and a
+ * send function, so the whole drain is testable without either. See tests/feedback-outbox.test.js.
+ *
+ * THE OUTBOX IS THE SOURCE OF TRUTH, NOT THE REQUEST. A browser app goes offline, gets closed
+ * mid-send, and sits behind captive portals. Nothing is removed from the queue until the server
+ * acknowledges it, and a report refused as malformed is set aside rather than dropped, because
+ * "it ate my feedback" should be answerable afterwards.
+ */
+
+/** Queue of envelopes waiting to be sent. */
+var OUTBOX_KEY = 'feedback_outbox';
+
+/** Reports the server refused as malformed. Kept, never deleted. */
+var REJECTED_KEY = 'feedback_rejected';
+
+/**
+ * How many reports to hold. A browser that never reaches the server must not grow localStorage
+ * without bound, and localStorage throwing QuotaExceeded would take the app's other saved state
+ * down with it. Oldest is dropped first: a stale report about an old build is worth less than a
+ * fresh one, and this is the one place where dropping is the lesser evil.
+ */
+var MAX_QUEUED = 50;
+
+/** Rejected reports worth keeping around to answer "did it send?". */
+var MAX_REJECTED = 20;
+
+/**
+ * @param {object} storage localStorage-shaped
+ * @param {string} key
+ * @returns {array} always an array, even if the slot holds junk
+ */
+function read_queue(storage, key) {
+  try {
+    var raw = storage.getItem(key);
+    if (!raw) {
+      return [];
+    }
+    var parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed.filter(function (e) {
+      return e && (0,_babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_1__["default"])(e) === 'object';
+    }) : [];
+  } catch (e) {
+    //corrupt or unreadable. An empty queue loses reports; throwing loses the whole feature.
+    return [];
+  }
+}
+
+/**
+ * @param {object} storage localStorage-shaped
+ * @param {string} key
+ * @param {array} entries
+ * @returns {boolean} whether the write landed
+ */
+function write_queue(storage, key, entries) {
+  try {
+    storage.setItem(key, JSON.stringify(entries));
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+/**
+ * Add a report to the queue.
+ *
+ * @param {object} storage localStorage-shaped
+ * @param {object} entry keys: envelope, image (data URL or null)
+ * @returns {array} the queue as it now stands
+ */
+function enqueue(storage, entry) {
+  var queue = read_queue(storage, OUTBOX_KEY);
+  queue.push(entry);
+
+  //oldest first, so the newest report always survives
+  while (queue.length > MAX_QUEUED) {
+    queue.shift();
+  }
+  write_queue(storage, OUTBOX_KEY, queue);
+  return queue;
+}
+
+/**
+ * @param {object} storage localStorage-shaped
+ * @returns {number} reports still waiting to be sent
+ */
+function pending_count(storage) {
+  return read_queue(storage, OUTBOX_KEY).length;
+}
+
+/**
+ * Drain the queue.
+ *
+ * @param {object} storage localStorage-shaped
+ * @param {function} send async (entry) => outcome string from classify_response
+ * @returns {object} keys: sent, discarded, rejected, held
+ */
+function drain(_x, _x2) {
+  return _drain.apply(this, arguments);
+}
+function _drain() {
+  _drain = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_2___default().mark(function _callee(storage, send) {
+    var queue, keep, rejected, result, limited, i, entry, outcome, kept, _t;
+    return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_2___default().wrap(function (_context) {
+      while (1) switch (_context.prev = _context.next) {
+        case 0:
+          queue = read_queue(storage, OUTBOX_KEY);
+          if (!(queue.length === 0)) {
+            _context.next = 1;
+            break;
+          }
+          return _context.abrupt("return", {
+            sent: 0,
+            discarded: 0,
+            rejected: 0,
+            held: 0
+          });
+        case 1:
+          keep = [];
+          rejected = [];
+          result = {
+            sent: 0,
+            discarded: 0,
+            rejected: 0,
+            held: 0
+          };
+          limited = false;
+          i = 0;
+        case 2:
+          if (!(i < queue.length)) {
+            _context.next = 8;
+            break;
+          }
+          entry = queue[i];
+          if (!limited) {
+            _context.next = 3;
+            break;
+          }
+          //the window is per minute, so everything after a 429 would only collect 429s too.
+          //Position in the queue is preserved.
+          keep.push(entry);
+          result.held++;
+          return _context.abrupt("continue", 7);
+        case 3:
+          _context.prev = 3;
+          _context.next = 4;
+          return send(entry);
+        case 4:
+          outcome = _context.sent;
+          _context.next = 6;
+          break;
+        case 5:
+          _context.prev = 5;
+          _t = _context["catch"](3);
+          //a thrown send is a transport failure, which is the world's problem, not the report's
+          outcome = 'retry';
+        case 6:
+          if (outcome === 'sent') {
+            result.sent++;
+          } else if (outcome === 'discarded') {
+            result.discarded++;
+          } else if (outcome === 'rejected') {
+            rejected.push(entry);
+            result.rejected++;
+          } else if (outcome === 'limited') {
+            keep.push(entry);
+            result.held++;
+            limited = true;
+          } else {
+            keep.push(entry);
+            result.held++;
+          }
+        case 7:
+          i++;
+          _context.next = 2;
+          break;
+        case 8:
+          write_queue(storage, OUTBOX_KEY, keep);
+          if (rejected.length > 0) {
+            kept = read_queue(storage, REJECTED_KEY).concat(rejected);
+            while (kept.length > MAX_REJECTED) {
+              kept.shift();
+            }
+            write_queue(storage, REJECTED_KEY, kept);
+          }
+          return _context.abrupt("return", result);
+        case 9:
+        case "end":
+          return _context.stop();
+      }
+    }, _callee, null, [[3, 5]]);
+  }));
+  return _drain.apply(this, arguments);
+}
+
 
 /***/ },
 
@@ -27661,7 +28079,7 @@ var File_save_class = /*#__PURE__*/function () {
         height: _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].HEIGHT,
         about: 'Image data with multi-layers. Can be opened using miniPaint - ' + 'https://github.com/viliusle/miniPaint',
         date: today,
-        version: "0.1.0",
+        version: "0.1.22",
         layer_active: _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].layer.id,
         guides: _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].guides
       };
@@ -27761,7 +28179,7 @@ var Help_about_class = /*#__PURE__*/function () {
           html: '<span class="about-name">Get in loser</span>'
         }, {
           title: "Version:",
-          value: "0.1.0"
+          value: "0.1.22"
         }, {
           title: "Description:",
           value: "A personal browser-based image editor."
@@ -27886,6 +28304,439 @@ var Help_changelog_class = /*#__PURE__*/function () {
   }]);
 }();
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Help_changelog_class);
+
+/***/ },
+
+/***/ "./src/js/modules/help/feedback.js"
+/*!*****************************************!*\
+  !*** ./src/js/modules/help/feedback.js ***!
+  \*****************************************/
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/toConsumableArray */ "./node_modules/@babel/runtime/helpers/esm/toConsumableArray.js");
+/* harmony import */ var _babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ "./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js");
+/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
+/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./../../config.js */ "./src/js/config.js");
+/* harmony import */ var _libs_popup_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./../../libs/popup.js */ "./src/js/libs/popup.js");
+/* harmony import */ var _libs_helpers_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./../../libs/helpers.js */ "./src/js/libs/helpers.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./../../../../node_modules/alertifyjs/build/alertify.min.js */ "./node_modules/alertifyjs/build/alertify.min.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(_node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_8__);
+/* harmony import */ var _libs_feedback_envelope_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./../../libs/feedback-envelope.js */ "./src/js/libs/feedback-envelope.js");
+/* harmony import */ var _libs_feedback_outbox_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./../../libs/feedback-outbox.js */ "./src/js/libs/feedback-outbox.js");
+
+
+
+
+
+/*
+ * Get in loser - https://github.com/TheMutantFactory/get-in-loser
+ *
+ * Send feedback from inside the app, to feedback-service (envelope v1).
+ *
+ * Replaces the old Help > Report Issues link to GitHub issues. That link asked a reporter to leave
+ * the app, hold a GitHub account, and reassemble by hand the build and state this sends for them.
+ *
+ * WHAT THIS SENDS is stated in the dialog, because the reporter is the one who should decide. The
+ * screenshot is the whole privacy surface here: in a paint app the canvas is the reporter's own
+ * artwork, and may be someone else's if they opened it. So it is OFF by default, labelled for what
+ * it is, and never taken unless the box is ticked.
+ */
+
+
+
+
+
+
+
+
+/** No trailing slash. */
+var ENDPOINT = 'https://feedback.mutantfactory.net';
+
+/** Longest edge of the screenshot. Keeps a 4K canvas under the server's 2 MB image limit. */
+var SHOT_MAX_EDGE = 1280;
+var instance = null;
+var Help_feedback_class = /*#__PURE__*/function () {
+  function Help_feedback_class() {
+    var _this2 = this;
+    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_2__["default"])(this, Help_feedback_class);
+    //singleton
+    if (instance) {
+      return instance;
+    }
+    instance = this;
+    this.POP = new _libs_popup_js__WEBPACK_IMPORTED_MODULE_6__["default"]();
+    this.Helper = new _libs_helpers_js__WEBPACK_IMPORTED_MODULE_7__["default"]();
+    this.draining = false;
+
+    //an instance property, not the constant, so a staging service can be pointed at from the
+    //console. Deliberately NOT read from a URL parameter - a link that redirects someone's
+    //feedback to another server is not a feature.
+    this.endpoint = ENDPOINT;
+
+    //anything held from a previous session goes out as soon as there is a network again
+    this.flush_later();
+    window.addEventListener('online', function () {
+      return _this2.flush_later();
+    }, false);
+  }
+
+  /**
+   * menu: Help > Send Feedback
+   */
+  return (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_3__["default"])(Help_feedback_class, [{
+    key: "feedback",
+    value: function feedback() {
+      var _this = this;
+      var waiting = (0,_libs_feedback_outbox_js__WEBPACK_IMPORTED_MODULE_10__.pending_count)(window.localStorage);
+      var settings = {
+        title: 'Send Feedback',
+        params: [{
+          name: 'text',
+          title: 'What happened?',
+          type: 'textarea',
+          value: '',
+          placeholder: 'What you did, what you expected, what happened instead.'
+        }, {
+          name: 'include_shot',
+          title: 'Include a picture of the canvas:',
+          value: false
+        }, {
+          title: '',
+          html: this.explain(waiting)
+        }],
+        on_finish: function on_finish(params) {
+          _this.submit(params);
+        }
+      };
+      this.POP.show(settings);
+    }
+
+    /**
+     * The reporter is told what leaves their machine before they send it, not after.
+     *
+     * @param {number} waiting reports still queued from earlier
+     * @returns {string} html
+     */
+  }, {
+    key: "explain",
+    value: function explain(waiting) {
+      var held = waiting > 0 ? '<br><br><b>' + waiting + ' earlier report' + (waiting === 1 ? '' : 's') + '</b> could not be sent yet and will go with this one.' : '';
+      return '<span class="text_muted">' + 'Sent with your note: the app version, your browser platform, the tool you have ' + 'selected, and a random id for this browser so replies can be grouped. ' + '<b>No account, no email, no canvas</b> &mdash; unless you tick the box, which sends ' + 'a picture of the visible canvas. <b>That is your artwork</b>, so it is off unless ' + 'you say otherwise. Reports are read by a person; nothing is published automatically.' + held + '</span>';
+    }
+
+    /**
+     * @param {object} params from the dialog
+     */
+  }, {
+    key: "submit",
+    value: (function () {
+      var _submit = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_1__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4___default().mark(function _callee(params) {
+        var _this3 = this;
+        var text, image, envelope, result;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4___default().wrap(function (_context) {
+          while (1) switch (_context.prev = _context.next) {
+            case 0:
+              text = String(params.text || '').trim();
+              if (!(text.length === 0)) {
+                _context.next = 1;
+                break;
+              }
+              //the server would 400 this; saying so here costs the reporter nothing
+              _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_8___default().error('Add a note first - a report with no note cannot be acted on.');
+              return _context.abrupt("return");
+            case 1:
+              if (!(text.length > _libs_feedback_envelope_js__WEBPACK_IMPORTED_MODULE_9__.TEXT_LIMIT)) {
+                _context.next = 2;
+                break;
+              }
+              _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_8___default().error('That note is too long (limit ' + Math.floor(_libs_feedback_envelope_js__WEBPACK_IMPORTED_MODULE_9__.TEXT_LIMIT / 1024) + ' KB).');
+              return _context.abrupt("return");
+            case 2:
+              image = null;
+              if (params.include_shot === true) {
+                image = this.capture_canvas();
+              }
+              envelope = (0,_libs_feedback_envelope_js__WEBPACK_IMPORTED_MODULE_9__.build_envelope)({
+                text: text,
+                app_version:  true ? "0.1.22" : 0,
+                platform: (0,_libs_feedback_envelope_js__WEBPACK_IMPORTED_MODULE_9__.detect_platform)(window.navigator),
+                install_id: (0,_libs_feedback_envelope_js__WEBPACK_IMPORTED_MODULE_9__.install_id)(window.localStorage, function () {
+                  return _this3.random_id();
+                }),
+                tool: _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].TOOL ? _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].TOOL.name : null,
+                //ONE FACT, ONE FIELD. The flag says what is actually attached, not what was asked for:
+                //if the capture failed there is no image, and claiming one nobody can produce is worse
+                //than a plain no.
+                shot_attached: image !== null
+              });
+              if (!(envelope === null)) {
+                _context.next = 3;
+                break;
+              }
+              _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_8___default().error('Add a note first.');
+              return _context.abrupt("return");
+            case 3:
+              if (params.include_shot === true && image === null) {
+                _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_8___default().warning('The canvas picture could not be captured; sending the note without it.');
+              }
+              (0,_libs_feedback_outbox_js__WEBPACK_IMPORTED_MODULE_10__.enqueue)(window.localStorage, {
+                envelope: envelope,
+                image: image
+              });
+              _context.next = 4;
+              return this.flush();
+            case 4:
+              result = _context.sent;
+              if (result.sent > 0) {
+                _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_8___default().success('Thanks - your feedback was sent.');
+              } else if (result.rejected > 0) {
+                _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_8___default().error('The server refused that report. It has been kept, not sent again.');
+              } else {
+                //held: offline, rate limited or the service is down. The report is safe.
+                _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_8___default().warning('Saved. Your feedback will be sent next time you are online.');
+              }
+            case 5:
+            case "end":
+              return _context.stop();
+          }
+        }, _callee, this);
+      }));
+      function submit(_x) {
+        return _submit.apply(this, arguments);
+      }
+      return submit;
+    }()
+    /**
+     * A PNG of the visible canvas, scaled down to stay under the server's image limit.
+     *
+     * @returns {string|null} data URL, or null when there is nothing to send or it did not work
+     */
+    )
+  }, {
+    key: "capture_canvas",
+    value: function capture_canvas() {
+      try {
+        var source = document.getElementById('canvas_minipaint');
+        if (source == null || source.width === 0 || source.height === 0) {
+          return null;
+        }
+        var scale = Math.min(1, SHOT_MAX_EDGE / Math.max(source.width, source.height));
+        var w = Math.max(1, Math.round(source.width * scale));
+        var h = Math.max(1, Math.round(source.height * scale));
+        var target = document.createElement('canvas');
+        target.width = w;
+        target.height = h;
+        var ctx = target.getContext('2d');
+        ctx.drawImage(source, 0, 0, w, h);
+        var url = target.toDataURL('image/png');
+
+        //a data URL is ~4/3 of the bytes it encodes; refuse rather than have the server 413 it
+        if (url.length * 0.75 > _libs_feedback_envelope_js__WEBPACK_IMPORTED_MODULE_9__.IMAGE_LIMIT) {
+          return null;
+        }
+        return url;
+      } catch (e) {
+        //a tainted canvas (an image opened from another origin) throws here. The note still goes.
+        return null;
+      }
+    }
+
+    /**
+     * @returns {string} 16 hex characters
+     */
+  }, {
+    key: "random_id",
+    value: function random_id() {
+      var bytes = new Uint8Array(8);
+      window.crypto.getRandomValues(bytes);
+      return (0,_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(bytes).map(function (b) {
+        return ('0' + b.toString(16)).slice(-2);
+      }).join('');
+    }
+
+    /**
+     * Drain the outbox. Safe to call at any time; concurrent drains are refused rather than queued,
+     * because two drains racing over one queue is how duplicates are born.
+     *
+     * @returns {object} keys: sent, discarded, rejected, held
+     */
+  }, {
+    key: "flush",
+    value: (function () {
+      var _flush = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_1__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4___default().mark(function _callee2() {
+        var _this4 = this;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4___default().wrap(function (_context2) {
+          while (1) switch (_context2.prev = _context2.next) {
+            case 0:
+              if (!this.draining) {
+                _context2.next = 1;
+                break;
+              }
+              return _context2.abrupt("return", {
+                sent: 0,
+                discarded: 0,
+                rejected: 0,
+                held: 0
+              });
+            case 1:
+              this.draining = true;
+              _context2.prev = 2;
+              _context2.next = 3;
+              return (0,_libs_feedback_outbox_js__WEBPACK_IMPORTED_MODULE_10__.drain)(window.localStorage, function (entry) {
+                return _this4.send(entry);
+              });
+            case 3:
+              return _context2.abrupt("return", _context2.sent);
+            case 4:
+              _context2.prev = 4;
+              this.draining = false;
+              return _context2.finish(4);
+            case 5:
+            case "end":
+              return _context2.stop();
+          }
+        }, _callee2, this, [[2,, 4, 5]]);
+      }));
+      function flush() {
+        return _flush.apply(this, arguments);
+      }
+      return flush;
+    }()
+    /**
+     * Try once, on the next tick, and never let it surface an error - a background flush that pops
+     * a dialog on app start would be worse than a report arriving a session late.
+     */
+    )
+  }, {
+    key: "flush_later",
+    value: function flush_later() {
+      var _this5 = this;
+      window.setTimeout(function () {
+        _this5.flush()["catch"](function () {});
+      }, 2000);
+    }
+
+    /**
+     * Send one queued report: the note, then the image.
+     *
+     * @param {object} entry keys: envelope, image
+     * @returns {string} outcome for the outbox
+     */
+  }, {
+    key: "send",
+    value: (function () {
+      var _send = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_1__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4___default().mark(function _callee3(entry) {
+        var response, body, outcome, _t, _t2;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4___default().wrap(function (_context3) {
+          while (1) switch (_context3.prev = _context3.next) {
+            case 0:
+              _context3.prev = 0;
+              _context3.next = 1;
+              return fetch(this.endpoint + '/v1/report', {
+                method: 'POST',
+                headers: {
+                  'content-type': 'application/json'
+                },
+                body: JSON.stringify(entry.envelope)
+              });
+            case 1:
+              response = _context3.sent;
+              _context3.next = 3;
+              break;
+            case 2:
+              _context3.prev = 2;
+              _t = _context3["catch"](0);
+              return _context3.abrupt("return", 'retry');
+            case 3:
+              body = null;
+              _context3.prev = 4;
+              _context3.next = 5;
+              return response.json();
+            case 5:
+              body = _context3.sent;
+              _context3.next = 7;
+              break;
+            case 6:
+              _context3.prev = 6;
+              _t2 = _context3["catch"](4);
+            case 7:
+              outcome = (0,_libs_feedback_envelope_js__WEBPACK_IMPORTED_MODULE_9__.classify_response)(response.status, body);
+              if (!(outcome === 'sent' && entry.image && body && body.id && body.image_accepted)) {
+                _context3.next = 8;
+                break;
+              }
+              _context3.next = 8;
+              return this.send_image(body.id, entry.image);
+            case 8:
+              return _context3.abrupt("return", outcome);
+            case 9:
+            case "end":
+              return _context3.stop();
+          }
+        }, _callee3, this, [[0, 2], [4, 6]]);
+      }));
+      function send(_x2) {
+        return _send.apply(this, arguments);
+      }
+      return send;
+    }()
+    /**
+     * @param {string} id report id from the server
+     * @param {string} data_url the PNG
+     */
+    )
+  }, {
+    key: "send_image",
+    value: (function () {
+      var _send_image = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_1__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4___default().mark(function _callee4(id, data_url) {
+        var blob, _t3;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4___default().wrap(function (_context4) {
+          while (1) switch (_context4.prev = _context4.next) {
+            case 0:
+              _context4.prev = 0;
+              _context4.next = 1;
+              return fetch(data_url);
+            case 1:
+              _context4.next = 2;
+              return _context4.sent.blob();
+            case 2:
+              blob = _context4.sent;
+              _context4.next = 3;
+              return fetch(this.endpoint + '/v1/report/' + encodeURIComponent(id) + '/image', {
+                method: 'PUT',
+                headers: {
+                  'content-type': 'image/png'
+                },
+                body: blob
+              });
+            case 3:
+              _context4.next = 5;
+              break;
+            case 4:
+              _context4.prev = 4;
+              _t3 = _context4["catch"](0);
+            case 5:
+            case "end":
+              return _context4.stop();
+          }
+        }, _callee4, this, [[0, 4]]);
+      }));
+      function send_image(_x3, _x4) {
+        return _send_image.apply(this, arguments);
+      }
+      return send_image;
+    }())
+  }]);
+}();
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Help_feedback_class);
 
 /***/ },
 
@@ -61323,6 +62174,7 @@ var map = {
 	"./file/save.js": "./src/js/modules/file/save.js",
 	"./help/about.js": "./src/js/modules/help/about.js",
 	"./help/changelog.js": "./src/js/modules/help/changelog.js",
+	"./help/feedback.js": "./src/js/modules/help/feedback.js",
 	"./help/icon_license.js": "./src/js/modules/help/icon_license.js",
 	"./help/shortcuts.js": "./src/js/modules/help/shortcuts.js",
 	"./image/auto_adjust.js": "./src/js/modules/image/auto_adjust.js",

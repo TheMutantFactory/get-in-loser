@@ -811,8 +811,9 @@ const menuDefinition = [
 				target: 'help/icon_license.icon_license'
 			},
 			{
-				name: 'Report Issues',
-				href: 'https://github.com/DazzlingDukeOfLazers/get-in-loser/issues'
+				name: 'Send Feedback',
+				ellipsis: true,
+				target: 'help/feedback.feedback'
 			},
 			{
 				divider: true
