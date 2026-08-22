@@ -11,10 +11,7 @@ class Edit_selection_class {
 	}
 
 	select_all() {
-		if (config.layer.type != 'image') {
-			alertify.error('This layer must contain an image. Please convert it to raster to apply this tool.');
-			return;
-		}
+		//no layer type check - see Selection_class.select_all, which this delegates to
 		this.Selection.select_all();
 	}
 

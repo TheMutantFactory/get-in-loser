@@ -21740,10 +21740,7 @@ var Edit_selection_class = /*#__PURE__*/function () {
   return (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__["default"])(Edit_selection_class, [{
     key: "select_all",
     value: function select_all() {
-      if (_config_js__WEBPACK_IMPORTED_MODULE_2__["default"].layer.type != 'image') {
-        _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_5___default().error('This layer must contain an image. Please convert it to raster to apply this tool.');
-        return;
-      }
+      //no layer type check - see Selection_class.select_all, which this delegates to
       this.Selection.select_all();
     }
   }, {
@@ -40875,26 +40872,31 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
-/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
-/* harmony import */ var _babel_runtime_helpers_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/possibleConstructorReturn */ "./node_modules/@babel/runtime/helpers/esm/possibleConstructorReturn.js");
-/* harmony import */ var _babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @babel/runtime/helpers/getPrototypeOf */ "./node_modules/@babel/runtime/helpers/esm/getPrototypeOf.js");
-/* harmony import */ var _babel_runtime_helpers_inherits__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @babel/runtime/helpers/inherits */ "./node_modules/@babel/runtime/helpers/esm/inherits.js");
-/* harmony import */ var _app_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./../app.js */ "./src/js/app.js");
-/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./../config.js */ "./src/js/config.js");
-/* harmony import */ var _core_base_tools_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./../core/base-tools.js */ "./src/js/core/base-tools.js");
-/* harmony import */ var _core_base_layers_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./../core/base-layers.js */ "./src/js/core/base-layers.js");
-/* harmony import */ var _core_base_selection_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./../core/base-selection.js */ "./src/js/core/base-selection.js");
-/* harmony import */ var _core_gui_gui_tools_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./../core/gui/gui-tools.js */ "./src/js/core/gui/gui-tools.js");
-/* harmony import */ var _libs_helpers_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./../libs/helpers.js */ "./src/js/libs/helpers.js");
-/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./../../../node_modules/alertifyjs/build/alertify.min.js */ "./node_modules/alertifyjs/build/alertify.min.js");
-/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_12___default = /*#__PURE__*/__webpack_require__.n(_node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_12__);
+/* harmony import */ var _babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ "./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js");
+/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
+/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
+/* harmony import */ var _babel_runtime_helpers_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @babel/runtime/helpers/possibleConstructorReturn */ "./node_modules/@babel/runtime/helpers/esm/possibleConstructorReturn.js");
+/* harmony import */ var _babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @babel/runtime/helpers/getPrototypeOf */ "./node_modules/@babel/runtime/helpers/esm/getPrototypeOf.js");
+/* harmony import */ var _babel_runtime_helpers_inherits__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @babel/runtime/helpers/inherits */ "./node_modules/@babel/runtime/helpers/esm/inherits.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var _app_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./../app.js */ "./src/js/app.js");
+/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./../config.js */ "./src/js/config.js");
+/* harmony import */ var _core_base_tools_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./../core/base-tools.js */ "./src/js/core/base-tools.js");
+/* harmony import */ var _core_base_layers_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./../core/base-layers.js */ "./src/js/core/base-layers.js");
+/* harmony import */ var _core_base_selection_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./../core/base-selection.js */ "./src/js/core/base-selection.js");
+/* harmony import */ var _core_gui_gui_tools_js__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./../core/gui/gui-tools.js */ "./src/js/core/gui/gui-tools.js");
+/* harmony import */ var _libs_helpers_js__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./../libs/helpers.js */ "./src/js/libs/helpers.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./../../../node_modules/alertifyjs/build/alertify.min.js */ "./node_modules/alertifyjs/build/alertify.min.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_14___default = /*#__PURE__*/__webpack_require__.n(_node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_14__);
 
 
 
 
 
-function _callSuper(t, o, e) { return o = (0,_babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_3__["default"])(o), (0,_babel_runtime_helpers_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_2__["default"])(t, _isNativeReflectConstruct() ? Reflect.construct(o, e || [], (0,_babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_3__["default"])(t).constructor) : o.apply(t, e)); }
+
+
+function _callSuper(t, o, e) { return o = (0,_babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_4__["default"])(o), (0,_babel_runtime_helpers_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_3__["default"])(t, _isNativeReflectConstruct() ? Reflect.construct(o, e || [], (0,_babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_4__["default"])(t).constructor) : o.apply(t, e)); }
 function _isNativeReflectConstruct() { try { var t = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); } catch (t) {} return (_isNativeReflectConstruct = function _isNativeReflectConstruct() { return !!t; })(); }
 
 
@@ -40908,17 +40910,17 @@ var instance = null;
 var Selection_class = /*#__PURE__*/function (_Base_tools_class) {
   function Selection_class(ctx) {
     var _this2;
-    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__["default"])(this, Selection_class);
+    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__["default"])(this, Selection_class);
     _this2 = _callSuper(this, Selection_class);
 
     //singleton
     if (instance) {
-      return (0,_babel_runtime_helpers_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_2__["default"])(_this2, instance);
+      return (0,_babel_runtime_helpers_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_3__["default"])(_this2, instance);
     }
     instance = _this2;
     var _this = _this2;
-    _this2.Base_layers = new _core_base_layers_js__WEBPACK_IMPORTED_MODULE_8__["default"]();
-    _this2.Helper = new _libs_helpers_js__WEBPACK_IMPORTED_MODULE_11__["default"]();
+    _this2.Base_layers = new _core_base_layers_js__WEBPACK_IMPORTED_MODULE_10__["default"]();
+    _this2.Helper = new _libs_helpers_js__WEBPACK_IMPORTED_MODULE_13__["default"]();
     _this2.ctx = ctx;
     _this2.name = 'selection';
     _this2.type = null;
@@ -40942,12 +40944,12 @@ var Selection_class = /*#__PURE__*/function (_Base_tools_class) {
       }
     };
     _this2.mousedown_selection = null;
-    _this2.Base_selection = new _core_base_selection_js__WEBPACK_IMPORTED_MODULE_9__["default"](ctx, sel_config, _this2.name);
-    _this2.GUI_tools = new _core_gui_gui_tools_js__WEBPACK_IMPORTED_MODULE_10__["default"]();
+    _this2.Base_selection = new _core_base_selection_js__WEBPACK_IMPORTED_MODULE_11__["default"](ctx, sel_config, _this2.name);
+    _this2.GUI_tools = new _core_gui_gui_tools_js__WEBPACK_IMPORTED_MODULE_12__["default"]();
     return _this2;
   }
-  (0,_babel_runtime_helpers_inherits__WEBPACK_IMPORTED_MODULE_4__["default"])(Selection_class, _Base_tools_class);
-  return (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__["default"])(Selection_class, [{
+  (0,_babel_runtime_helpers_inherits__WEBPACK_IMPORTED_MODULE_5__["default"])(Selection_class, _Base_tools_class);
+  return (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__["default"])(Selection_class, [{
     key: "load",
     value: function load() {
       var _this3 = this;
@@ -40979,11 +40981,11 @@ var Selection_class = /*#__PURE__*/function (_Base_tools_class) {
         if (_this3.Helper.is_input(e.target)) return;
         if (code == 27) {
           //escape
-          _app_js__WEBPACK_IMPORTED_MODULE_5__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_5__["default"].Actions.Bundle_action('clear_selection', 'Clear Selection', _this3.on_leave()));
+          _app_js__WEBPACK_IMPORTED_MODULE_7__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_7__["default"].Actions.Bundle_action('clear_selection', 'Clear Selection', _this3.on_leave()));
         }
         if (code == 46) {
           //delete
-          if (_config_js__WEBPACK_IMPORTED_MODULE_6__["default"].TOOL.name == _this3.name) {
+          if (_config_js__WEBPACK_IMPORTED_MODULE_8__["default"].TOOL.name == _this3.name) {
             _this3.delete_selection();
           }
         }
@@ -40998,33 +41000,36 @@ var Selection_class = /*#__PURE__*/function (_Base_tools_class) {
     key: "dragStart",
     value: function dragStart(event) {
       var _this = this;
-      if (_config_js__WEBPACK_IMPORTED_MODULE_6__["default"].TOOL.name != _this.name) return;
+      if (_config_js__WEBPACK_IMPORTED_MODULE_8__["default"].TOOL.name != _this.name) return;
       _this.mousedown(event);
     }
   }, {
     key: "dragMove",
     value: function dragMove(event) {
       var _this = this;
-      if (_config_js__WEBPACK_IMPORTED_MODULE_6__["default"].TOOL.name != _this.name) return;
+      if (_config_js__WEBPACK_IMPORTED_MODULE_8__["default"].TOOL.name != _this.name) return;
       _this.mousemove(event);
     }
   }, {
     key: "dragEnd",
     value: function dragEnd(event) {
       var _this = this;
-      if (_config_js__WEBPACK_IMPORTED_MODULE_6__["default"].TOOL.name != _this.name) return;
+      if (_config_js__WEBPACK_IMPORTED_MODULE_8__["default"].TOOL.name != _this.name) return;
       _this.mouseup(event);
     }
   }, {
     key: "mousedown",
     value: function mousedown(e) {
       var mouse = this.get_mouse_info(e);
-      var layer = _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer;
+      var layer = _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer;
       if (this.Base_selection.is_drag == false || mouse.click_valid == false) return;
-      if (_config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.type != 'image') {
-        _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_12___default().error('This layer must contain an image. Please convert it to raster to apply this tool.');
-        return;
-      }
+
+      //NO LAYER TYPE CHECK. A selection is a region of the CANVAS, not of a layer's pixels -
+      //drawing the rectangle reads nothing and writes nothing. Refusing here meant you could not
+      //even select on a stroke you had just drawn, and converting here would rasterize a layer
+      //for an operation that never touches it. The conversion belongs in the operations that do
+      //touch pixels, which is delete_selection below.
+
       this.mousedown_selection = JSON.parse(JSON.stringify(this.selection));
       if (this.selection.width != null && this.selection.height != null && mouse.x > this.selection.x && mouse.x < this.selection.x + this.selection.width && mouse.y > this.selection.y && mouse.y < this.selection.y + this.selection.height && layer.width == layer.width_original && layer.height == layer.height_original) {
         //move
@@ -41033,8 +41038,8 @@ var Selection_class = /*#__PURE__*/function (_Base_tools_class) {
           this.init_tmp_canvas();
 
           //register tmp canvas for faster redraw
-          _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.link_canvas = this.tmpCanvas;
-          _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].need_render = true;
+          _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.link_canvas = this.tmpCanvas;
+          _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].need_render = true;
         }
       } else {
         //create new selection
@@ -41056,7 +41061,7 @@ var Selection_class = /*#__PURE__*/function (_Base_tools_class) {
     value: function mousemove(e) {
       var mouse = this.get_mouse_info(e);
       if (this.Base_selection.is_drag == false || mouse.is_drag == false) return;
-      if (e.type == 'mousedown' && mouse.click_valid == false || _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.type != 'image') {
+      if (e.type == 'mousedown' && mouse.click_valid == false) {
         return;
       }
       if (this.selection_coords_from === null) {
@@ -41066,7 +41071,7 @@ var Selection_class = /*#__PURE__*/function (_Base_tools_class) {
         //create new selection
         this.selection.width = mouse.x - mouse.click_x;
         this.selection.height = mouse.y - mouse.click_y;
-        _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].need_render = true;
+        _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].need_render = true;
       }
     }
   }, {
@@ -41076,7 +41081,7 @@ var Selection_class = /*#__PURE__*/function (_Base_tools_class) {
       if (!this.Base_selection.is_drag) {
         return;
       }
-      if (e.type == 'mousedown' && mouse.click_valid == false || _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.type != 'image') {
+      if (e.type == 'mousedown' && mouse.click_valid == false) {
         return;
       }
       if (this.type === 'move') {
@@ -41086,7 +41091,7 @@ var Selection_class = /*#__PURE__*/function (_Base_tools_class) {
       var height = mouse.y - this.selection.y;
       if (width == 0 || height == 0) {
         //cancel selection
-        _app_js__WEBPACK_IMPORTED_MODULE_5__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_5__["default"].Actions.Bundle_action('clear_selection', 'Clear Selection', this.on_leave()));
+        _app_js__WEBPACK_IMPORTED_MODULE_7__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_7__["default"].Actions.Bundle_action('clear_selection', 'Clear Selection', this.on_leave()));
         return;
       }
       if (this.selection.width != null && this.selection.height != null) {
@@ -41108,22 +41113,20 @@ var Selection_class = /*#__PURE__*/function (_Base_tools_class) {
           width: Math.abs(details.width),
           height: Math.abs(details.height)
         };
-        _app_js__WEBPACK_IMPORTED_MODULE_5__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_5__["default"].Actions.Set_selection_action(this.selection.x, this.selection.y, this.selection.width, this.selection.height, this.mousedown_selection));
+        _app_js__WEBPACK_IMPORTED_MODULE_7__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_7__["default"].Actions.Set_selection_action(this.selection.x, this.selection.y, this.selection.width, this.selection.height, this.mousedown_selection));
       }
     }
   }, {
     key: "select_all",
     value: function select_all() {
-      if (_config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.type != 'image') {
-        _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_12___default().error('This layer must contain an image. Please convert it to raster to apply this tool.');
-        return;
-      }
+      //Same reasoning as mousedown: this sets a rectangle and touches no pixels. Rasterizing on
+      //ctrl+A - a reflex - would destroy a vector stroke for an operation that does not need it.
       var actions = [];
-      if (_config_js__WEBPACK_IMPORTED_MODULE_6__["default"].TOOL.name != this.name) {
-        actions.push(new _app_js__WEBPACK_IMPORTED_MODULE_5__["default"].Actions.Activate_tool_action(this.name));
+      if (_config_js__WEBPACK_IMPORTED_MODULE_8__["default"].TOOL.name != this.name) {
+        actions.push(new _app_js__WEBPACK_IMPORTED_MODULE_7__["default"].Actions.Activate_tool_action(this.name));
       }
-      actions.push(new _app_js__WEBPACK_IMPORTED_MODULE_5__["default"].Actions.Set_selection_action(0, 0, _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].WIDTH, _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].HEIGHT, this.selection));
-      _app_js__WEBPACK_IMPORTED_MODULE_5__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_5__["default"].Actions.Bundle_action('select_all', 'Select All', actions));
+      actions.push(new _app_js__WEBPACK_IMPORTED_MODULE_7__["default"].Actions.Set_selection_action(0, 0, _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].WIDTH, _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].HEIGHT, this.selection));
+      _app_js__WEBPACK_IMPORTED_MODULE_7__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_7__["default"].Actions.Bundle_action('select_all', 'Select All', actions));
     }
   }, {
     key: "render",
@@ -41134,62 +41137,89 @@ var Selection_class = /*#__PURE__*/function (_Base_tools_class) {
     key: "save_translate",
     value: function save_translate() {
       if (this.tmpCanvas == null) return;
-      delete _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.link_canvas;
-      _app_js__WEBPACK_IMPORTED_MODULE_5__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_5__["default"].Actions.Bundle_action('selection_tool', 'Selection Tool', [new _app_js__WEBPACK_IMPORTED_MODULE_5__["default"].Actions.Update_layer_image_action(this.tmpCanvas)]));
+      delete _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.link_canvas;
+      _app_js__WEBPACK_IMPORTED_MODULE_7__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_7__["default"].Actions.Bundle_action('selection_tool', 'Selection Tool', [new _app_js__WEBPACK_IMPORTED_MODULE_7__["default"].Actions.Update_layer_image_action(this.tmpCanvas)]));
       this.reset_tmp_canvas();
-      _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].need_render = true;
+      _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].need_render = true;
     }
   }, {
     key: "delete_selection",
-    value: function delete_selection() {
-      var selection = this.selection;
-      var layer = _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer;
-      if (_config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.type != 'image') {
-        _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_12___default().error('This layer must contain an image. Please convert it to raster to apply this tool.');
-        return;
-      }
-      if (selection == null) {
-        _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_12___default().error('Nothing is selected.');
-        return;
-      }
-      this.init_tmp_canvas();
-      var mouse_x = selection.x - layer.x;
-      var mouse_y = selection.y - layer.y;
+    value: function () {
+      var _delete_selection = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_6___default().mark(function _callee() {
+        var selection, ready, layer, mouse_x, mouse_y;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_6___default().wrap(function (_context) {
+          while (1) switch (_context.prev = _context.next) {
+            case 0:
+              selection = this.selection;
+              if (!(_config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.type != 'image' || _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.is_vector == true)) {
+                _context.next = 2;
+                break;
+              }
+              _context.next = 1;
+              return this.rasterize_active_layer('edited');
+            case 1:
+              ready = _context.sent;
+              if (!(ready == false)) {
+                _context.next = 2;
+                break;
+              }
+              return _context.abrupt("return");
+            case 2:
+              //re-read: rasterize_active_layer swaps in a new layer
+              layer = _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer;
+              if (!(selection == null)) {
+                _context.next = 3;
+                break;
+              }
+              _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_14___default().error('Nothing is selected.');
+              return _context.abrupt("return");
+            case 3:
+              this.init_tmp_canvas();
+              mouse_x = selection.x - layer.x;
+              mouse_y = selection.y - layer.y; //adapt to origin size
+              mouse_x = this.adaptSize(mouse_x, 'width');
+              mouse_y = this.adaptSize(mouse_y, 'height');
+              selection.width = this.adaptSize(selection.width, 'width');
+              selection.height = this.adaptSize(selection.height, 'height');
 
-      //adapt to origin size
-      mouse_x = this.adaptSize(mouse_x, 'width');
-      mouse_y = this.adaptSize(mouse_y, 'height');
-      selection.width = this.adaptSize(selection.width, 'width');
-      selection.height = this.adaptSize(selection.height, 'height');
-
-      //do erase
-      this.tmpCanvasCtx.clearRect(mouse_x, mouse_y, selection.width, selection.height);
-      _app_js__WEBPACK_IMPORTED_MODULE_5__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_5__["default"].Actions.Bundle_action('delete_selection', 'Delete Selection', [new _app_js__WEBPACK_IMPORTED_MODULE_5__["default"].Actions.Update_layer_image_action(this.tmpCanvas), new _app_js__WEBPACK_IMPORTED_MODULE_5__["default"].Actions.Reset_selection_action(this.selection)]));
-      this.reset_tmp_canvas();
-      delete _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.link_canvas;
-      this.reset_tmp_canvas();
-    }
+              //do erase
+              this.tmpCanvasCtx.clearRect(mouse_x, mouse_y, selection.width, selection.height);
+              _app_js__WEBPACK_IMPORTED_MODULE_7__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_7__["default"].Actions.Bundle_action('delete_selection', 'Delete Selection', [new _app_js__WEBPACK_IMPORTED_MODULE_7__["default"].Actions.Update_layer_image_action(this.tmpCanvas), new _app_js__WEBPACK_IMPORTED_MODULE_7__["default"].Actions.Reset_selection_action(this.selection)]));
+              this.reset_tmp_canvas();
+              delete _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.link_canvas;
+              this.reset_tmp_canvas();
+            case 4:
+            case "end":
+              return _context.stop();
+          }
+        }, _callee, this);
+      }));
+      function delete_selection() {
+        return _delete_selection.apply(this, arguments);
+      }
+      return delete_selection;
+    }()
   }, {
     key: "init_tmp_canvas",
     value: function init_tmp_canvas() {
       this.tmpCanvas = document.createElement('canvas');
       this.tmpCanvasCtx = this.tmpCanvas.getContext("2d");
-      this.tmpCanvas.width = _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.width_original;
-      this.tmpCanvas.height = _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.height_original;
-      this.tmpCanvasCtx.drawImage(_config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.link, 0, 0);
+      this.tmpCanvas.width = _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.width_original;
+      this.tmpCanvas.height = _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.height_original;
+      this.tmpCanvasCtx.drawImage(_config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.link, 0, 0);
     }
   }, {
     key: "on_leave",
     value: function on_leave() {
-      var actions = [new _app_js__WEBPACK_IMPORTED_MODULE_5__["default"].Actions.Reset_selection_action(this.selection)];
-      delete _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.link_canvas;
+      var actions = [new _app_js__WEBPACK_IMPORTED_MODULE_7__["default"].Actions.Reset_selection_action(this.selection)];
+      delete _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.link_canvas;
       this.reset_tmp_canvas();
       return actions;
     }
   }, {
     key: "clear_selection",
     value: function clear_selection() {
-      _app_js__WEBPACK_IMPORTED_MODULE_5__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_5__["default"].Actions.Bundle_action('clear_selection', 'Clear Selection', this.on_leave()));
+      _app_js__WEBPACK_IMPORTED_MODULE_7__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_7__["default"].Actions.Bundle_action('clear_selection', 'Clear Selection', this.on_leave()));
     }
   }, {
     key: "reset_tmp_canvas",
@@ -41201,7 +41231,7 @@ var Selection_class = /*#__PURE__*/function (_Base_tools_class) {
       this.tmpCanvasCtx = null;
     }
   }]);
-}(_core_base_tools_js__WEBPACK_IMPORTED_MODULE_7__["default"]);
+}(_core_base_tools_js__WEBPACK_IMPORTED_MODULE_9__["default"]);
 ;
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Selection_class);
 

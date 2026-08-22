@@ -127,10 +127,11 @@ class Selection_class extends Base_tools_class {
 		if (this.Base_selection.is_drag == false || mouse.click_valid == false)
 			return;
 
-		if (config.layer.type != 'image') {
-			alertify.error('This layer must contain an image. Please convert it to raster to apply this tool.');
-			return;
-		}
+		//NO LAYER TYPE CHECK. A selection is a region of the CANVAS, not of a layer's pixels -
+		//drawing the rectangle reads nothing and writes nothing. Refusing here meant you could not
+		//even select on a stroke you had just drawn, and converting here would rasterize a layer
+		//for an operation that never touches it. The conversion belongs in the operations that do
+		//touch pixels, which is delete_selection below.
 
 		this.mousedown_selection = JSON.parse(JSON.stringify(this.selection));
 
@@ -169,7 +170,7 @@ class Selection_class extends Base_tools_class {
 		var mouse = this.get_mouse_info(e);
 		if (this.Base_selection.is_drag == false || mouse.is_drag == false)
 			return;
-		if (e.type == 'mousedown' && (mouse.click_valid == false) || config.layer.type != 'image') {
+		if (e.type == 'mousedown' && (mouse.click_valid == false)) {
 			return;
 		}
 		if (this.selection_coords_from === null) {
@@ -189,7 +190,7 @@ class Selection_class extends Base_tools_class {
 		if (!this.Base_selection.is_drag) {
 			return;
 		}
-		if ((e.type == 'mousedown' && mouse.click_valid == false) || config.layer.type != 'image') {
+		if (e.type == 'mousedown' && mouse.click_valid == false) {
 			return;
 		}
 		if (this.type === 'move') {
@@ -233,10 +234,8 @@ class Selection_class extends Base_tools_class {
 	}
 
 	select_all() {
-		if (config.layer.type != 'image') {
-			alertify.error('This layer must contain an image. Please convert it to raster to apply this tool.');
-			return;
-		}
+		//Same reasoning as mousedown: this sets a rectangle and touches no pixels. Rasterizing on
+		//ctrl+A - a reflex - would destroy a vector stroke for an operation that does not need it.
 		let actions = [];
 
 		if (config.TOOL.name != this.name) {
@@ -271,14 +270,21 @@ class Selection_class extends Base_tools_class {
 		config.need_render = true;
 	}
 
-	delete_selection() {
+	async delete_selection() {
 		var selection = this.selection;
-		var layer = config.layer;
 
-		if (config.layer.type != 'image') {
-			alertify.error('This layer must contain an image. Please convert it to raster to apply this tool.');
-			return;
+		if (config.layer.type != 'image' || config.layer.is_vector == true) {
+			//THE ONE THAT ACTUALLY WRITES. Clearing a rectangle out of the layer needs pixels, so
+			//this is where the conversion belongs - at the moment they are needed, not when the
+			//selection was drawn. See libs/rasterize.js.
+			var ready = await this.rasterize_active_layer('edited');
+			if (ready == false) {
+				return;
+			}
 		}
+
+		//re-read: rasterize_active_layer swaps in a new layer
+		var layer = config.layer;
 
 		if (selection == null) {
 			alertify.error('Nothing is selected.');
