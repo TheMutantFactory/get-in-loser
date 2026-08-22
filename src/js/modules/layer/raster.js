@@ -25,7 +25,11 @@ class Layer_raster_class {
 			height: canvas.height,
 			opacity: current_layer.opacity,
 		};
-		app.State.do_action(
+		//RETURN the promise. Insert_layer_action loads the data URL asynchronously, so a caller
+		//that needs the new raster layer to exist - a tool rasterizing before it paints - has to be
+		//able to wait for it. Dropping it on the floor made `await raster()` resolve immediately,
+		//before the layer had been swapped.
+		return app.State.do_action(
 			new app.Actions.Bundle_action('convert_to_raster', 'Convert to Raster', [
 				new app.Actions.Insert_layer_action(params, false),
 				new app.Actions.Delete_layer_action(current_id)

@@ -8,6 +8,7 @@ import Base_layers_class from './base-layers.js';
 import Base_gui_class from './base-gui.js';
 import app from "../app";
 import Helper_class from "../libs/helpers";
+import alertify from './../../../node_modules/alertifyjs/build/alertify.min.js';
 
 /**
  * Base tools class, can be used for extending on tools like brush, provides various helping methods.
@@ -728,6 +729,50 @@ class Base_tools_class {
 		}
 
 		return null;
+	}
+
+	/**
+	 * Rasterize the active layer so a pixel tool can work on it.
+	 *
+	 * WHY. Tools that read and write pixels - erase, fill, blur - refuse anything that is not an
+	 * image layer, and tell the reporter to go and convert it themselves. In a paint app that is a
+	 * dead end at the worst moment: you draw a stroke, reach for the eraser, and are told the thing
+	 * you just drew cannot be erased. Rasterizing is what the message asks for, so do it.
+	 *
+	 * The conversion is its OWN undo step rather than being folded into the tool's action, so it
+	 * can be undone on its own and a tool that rasterizes then does nothing has still left a
+	 * reversible trail. Nothing here is silent - losing the ability to re-edit a stroke as vector
+	 * is worth a sentence.
+	 *
+	 * @param {string} reason shown to the user, e.g. 'erased'
+	 * @returns {Promise<boolean>} false when there is nothing to rasterize
+	 */
+	async rasterize_active_layer(reason) {
+		var layer = config.layer;
+
+		if (layer == null || layer.type == null) {
+			//an empty layer. Nothing to convert and nothing to act on - not an error either.
+			return false;
+		}
+		if (layer.type == 'image' && layer.is_vector != true) {
+			//already usable
+			return true;
+		}
+
+		var raster = this.Base_gui && this.Base_gui.modules ? this.Base_gui.modules['layer/raster'] : null;
+		if (raster == null) {
+			return false;
+		}
+
+		await raster.raster();
+
+		//raster() swaps in a NEW layer, so re-read rather than trusting the old reference
+		var converted = config.layer != null && config.layer.type == 'image';
+		if (converted) {
+			alertify.success('Layer converted to raster so it can be ' + (reason || 'edited') + '.');
+		}
+
+		return converted;
 	}
 
 }

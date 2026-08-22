@@ -8753,14 +8753,21 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
-/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
-/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../config.js */ "./src/js/config.js");
-/* harmony import */ var _base_layers_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./base-layers.js */ "./src/js/core/base-layers.js");
-/* harmony import */ var _base_gui_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./base-gui.js */ "./src/js/core/base-gui.js");
-/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../app */ "./src/js/app.js");
-/* harmony import */ var _libs_helpers__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../libs/helpers */ "./src/js/libs/helpers.js");
+/* harmony import */ var _babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ "./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js");
+/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
+/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./../config.js */ "./src/js/config.js");
+/* harmony import */ var _base_layers_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./base-layers.js */ "./src/js/core/base-layers.js");
+/* harmony import */ var _base_gui_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./base-gui.js */ "./src/js/core/base-gui.js");
+/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../app */ "./src/js/app.js");
+/* harmony import */ var _libs_helpers__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../libs/helpers */ "./src/js/libs/helpers.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./../../../node_modules/alertifyjs/build/alertify.min.js */ "./node_modules/alertifyjs/build/alertify.min.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(_node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_9__);
 /* provided dependency */ var $ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
+
+
 
 
 /*
@@ -8774,15 +8781,16 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
 /**
  * Base tools class, can be used for extending on tools like brush, provides various helping methods.
  */
 var Base_tools_class = /*#__PURE__*/function () {
   function Base_tools_class(save_mouse) {
-    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__["default"])(this, Base_tools_class);
-    this.Base_layers = new _base_layers_js__WEBPACK_IMPORTED_MODULE_3__["default"]();
-    this.Base_gui = new _base_gui_js__WEBPACK_IMPORTED_MODULE_4__["default"]();
-    this.Helper = new _libs_helpers__WEBPACK_IMPORTED_MODULE_6__["default"]();
+    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__["default"])(this, Base_tools_class);
+    this.Base_layers = new _base_layers_js__WEBPACK_IMPORTED_MODULE_5__["default"]();
+    this.Base_gui = new _base_gui_js__WEBPACK_IMPORTED_MODULE_6__["default"]();
+    this.Helper = new _libs_helpers__WEBPACK_IMPORTED_MODULE_8__["default"]();
     this.is_drag = false;
     this.mouse_last_click_pos = [false, false];
     this.mouse_click_pos = [false, false];
@@ -8801,7 +8809,7 @@ var Base_tools_class = /*#__PURE__*/function () {
       this.events();
     }
   }
-  return (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__["default"])(Base_tools_class, [{
+  return (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__["default"])(Base_tools_class, [{
     key: "dragStart",
     value: function dragStart(event) {
       var _this = this;
@@ -8877,7 +8885,7 @@ var Base_tools_class = /*#__PURE__*/function () {
   }, {
     key: "prepare",
     value: function prepare() {
-      this.is_drag = _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].mouse.is_drag;
+      this.is_drag = _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].mouse.is_drag;
     }
   }, {
     key: "set_mouse_info",
@@ -8913,7 +8921,7 @@ var Base_tools_class = /*#__PURE__*/function () {
       var y_rel = mouse_y - start_pos.y;
 
       //save
-      _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].mouse = {
+      _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].mouse = {
         x: mouse_x,
         y: mouse_y,
         x_rel: x_rel,
@@ -8959,7 +8967,7 @@ var Base_tools_class = /*#__PURE__*/function () {
         //mouse not set yet - set it now...
         this.set_mouse_info(event);
       }
-      return _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].mouse;
+      return _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].mouse;
     }
   }, {
     key: "calc_average_mouse_speed",
@@ -8987,7 +8995,7 @@ var Base_tools_class = /*#__PURE__*/function () {
   }, {
     key: "get_params_hash",
     value: function get_params_hash() {
-      var data = [this.getParams(), _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].COLOR, _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].ALPHA];
+      var data = [this.getParams(), _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].COLOR, _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].ALPHA];
       return JSON.stringify(data);
     }
   }, {
@@ -9012,9 +9020,9 @@ var Base_tools_class = /*#__PURE__*/function () {
       x = x - start_pos.x;
       y = y - start_pos.y;
       var element = document.getElementById('mouse');
-      size = size * _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].ZOOM;
-      x = x * _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].ZOOM;
-      y = y * _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].ZOOM;
+      size = size * _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].ZOOM;
+      x = x * _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].ZOOM;
+      y = y * _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].ZOOM;
       if (size < 5) {
         //too small
         element.className = '';
@@ -9034,8 +9042,8 @@ var Base_tools_class = /*#__PURE__*/function () {
     value: function getParams() {
       var params = {};
       // Number inputs return the .value if defined as objects.
-      for (var attributeName in _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].TOOL.attributes) {
-        var attribute = _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].TOOL.attributes[attributeName];
+      for (var attributeName in _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].TOOL.attributes) {
+        var attribute = _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].TOOL.attributes[attributeName];
         if (!isNaN(attribute.value) && attribute.value != null) {
           if (typeof attribute.value === 'string') {
             params[attributeName] = attribute;
@@ -9053,13 +9061,13 @@ var Base_tools_class = /*#__PURE__*/function () {
     value: function adaptSize(value) {
       var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "width";
       var response;
-      if (_config_js__WEBPACK_IMPORTED_MODULE_2__["default"].layer.width_original == null) {
+      if (_config_js__WEBPACK_IMPORTED_MODULE_4__["default"].layer.width_original == null) {
         return value;
       }
       if (type === "width") {
-        response = value / (_config_js__WEBPACK_IMPORTED_MODULE_2__["default"].layer.width / _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].layer.width_original);
+        response = value / (_config_js__WEBPACK_IMPORTED_MODULE_4__["default"].layer.width / _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].layer.width_original);
       } else {
-        response = value / (_config_js__WEBPACK_IMPORTED_MODULE_2__["default"].layer.height / _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].layer.height_original);
+        response = value / (_config_js__WEBPACK_IMPORTED_MODULE_4__["default"].layer.height / _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].layer.height_original);
       }
       return response;
     }
@@ -9121,19 +9129,19 @@ var Base_tools_class = /*#__PURE__*/function () {
   }, {
     key: "default_dragStart",
     value: function default_dragStart(event) {
-      if (_config_js__WEBPACK_IMPORTED_MODULE_2__["default"].TOOL.name != this.name) return;
+      if (_config_js__WEBPACK_IMPORTED_MODULE_4__["default"].TOOL.name != this.name) return;
       this.mousedown(event);
     }
   }, {
     key: "default_dragMove",
     value: function default_dragMove(event) {
-      if (_config_js__WEBPACK_IMPORTED_MODULE_2__["default"].TOOL.name != this.name) return;
+      if (_config_js__WEBPACK_IMPORTED_MODULE_4__["default"].TOOL.name != this.name) return;
       this.mousemove(event);
     }
   }, {
     key: "default_dragEnd",
     value: function default_dragEnd(event) {
-      if (_config_js__WEBPACK_IMPORTED_MODULE_2__["default"].TOOL.name != this.name) return;
+      if (_config_js__WEBPACK_IMPORTED_MODULE_4__["default"].TOOL.name != this.name) return;
       this.mouseup(event);
     }
   }, {
@@ -9168,7 +9176,7 @@ var Base_tools_class = /*#__PURE__*/function () {
         color: null,
         is_vector: true
       };
-      _app__WEBPACK_IMPORTED_MODULE_5__["default"].State.do_action(new _app__WEBPACK_IMPORTED_MODULE_5__["default"].Actions.Bundle_action('new_' + this.name + '_layer', 'New ' + this.Helper.ucfirst(this.name) + ' Layer', [new _app__WEBPACK_IMPORTED_MODULE_5__["default"].Actions.Insert_layer_action(this.layer)]));
+      _app__WEBPACK_IMPORTED_MODULE_7__["default"].State.do_action(new _app__WEBPACK_IMPORTED_MODULE_7__["default"].Actions.Bundle_action('new_' + this.name + '_layer', 'New ' + this.Helper.ucfirst(this.name) + ' Layer', [new _app__WEBPACK_IMPORTED_MODULE_7__["default"].Actions.Insert_layer_action(this.layer)]));
     }
   }, {
     key: "shape_mousemove",
@@ -9185,7 +9193,7 @@ var Base_tools_class = /*#__PURE__*/function () {
       var click_y = Math.round(this.shape_mouse_click.y);
 
       //apply snap
-      var snap_info = this.calc_snap_position(e, mouse_x, mouse_y, _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].layer.id);
+      var snap_info = this.calc_snap_position(e, mouse_x, mouse_y, _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].layer.id);
       if (snap_info != null) {
         if (snap_info.x != null) {
           mouse_x = snap_info.x;
@@ -9213,10 +9221,10 @@ var Base_tools_class = /*#__PURE__*/function () {
       }
 
       //more data
-      _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].layer.x = x;
-      _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].layer.y = y;
-      _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].layer.width = width;
-      _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].layer.height = height;
+      _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].layer.x = x;
+      _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].layer.y = y;
+      _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].layer.width = width;
+      _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].layer.height = height;
       this.Base_layers.render();
     }
   }, {
@@ -9225,7 +9233,7 @@ var Base_tools_class = /*#__PURE__*/function () {
       var mouse = this.get_mouse_info(e);
       var params = this.getParams();
       if (mouse.click_valid == false) {
-        _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].layer.status = null;
+        _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].layer.status = null;
         return;
       }
       var mouse_x = Math.round(mouse.x);
@@ -9234,7 +9242,7 @@ var Base_tools_class = /*#__PURE__*/function () {
       var click_y = Math.round(this.shape_mouse_click.y);
 
       //apply snap
-      var snap_info = this.calc_snap_position(e, mouse_x, mouse_y, _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].layer.id);
+      var snap_info = this.calc_snap_position(e, mouse_x, mouse_y, _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].layer.id);
       if (snap_info != null) {
         if (snap_info.x != null) {
           mouse_x = snap_info.x;
@@ -9266,12 +9274,12 @@ var Base_tools_class = /*#__PURE__*/function () {
       }
       if (width == 0 && height == 0) {
         //same coordinates - cancel
-        _app__WEBPACK_IMPORTED_MODULE_5__["default"].State.scrap_last_action();
+        _app__WEBPACK_IMPORTED_MODULE_7__["default"].State.scrap_last_action();
         return;
       }
 
       //more data
-      _app__WEBPACK_IMPORTED_MODULE_5__["default"].State.do_action(new _app__WEBPACK_IMPORTED_MODULE_5__["default"].Actions.Update_layer_action(_config_js__WEBPACK_IMPORTED_MODULE_2__["default"].layer.id, {
+      _app__WEBPACK_IMPORTED_MODULE_7__["default"].State.do_action(new _app__WEBPACK_IMPORTED_MODULE_7__["default"].Actions.Update_layer_action(_config_js__WEBPACK_IMPORTED_MODULE_4__["default"].layer.id, {
         x: x,
         y: y,
         width: width,
@@ -9298,39 +9306,39 @@ var Base_tools_class = /*#__PURE__*/function () {
     key: "get_snap_positions",
     value: function get_snap_positions(exclude_id) {
       var snap_positions = {
-        x: [0, _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].WIDTH / 2, _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].WIDTH],
-        y: [0, _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].HEIGHT / 2, _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].HEIGHT]
+        x: [0, _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].WIDTH / 2, _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].WIDTH],
+        y: [0, _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].HEIGHT / 2, _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].HEIGHT]
       };
-      if (_config_js__WEBPACK_IMPORTED_MODULE_2__["default"].guides_enabled == true) {
+      if (_config_js__WEBPACK_IMPORTED_MODULE_4__["default"].guides_enabled == true) {
         //use guides
-        for (var i in _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].guides) {
-          var guide = _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].guides[i];
+        for (var i in _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].guides) {
+          var guide = _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].guides[i];
           if (guide.y === null) snap_positions.x.push(guide.x);else snap_positions.y.push(guide.y);
         }
       }
-      for (var i in _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].layers) {
-        if (exclude_id != null && exclude_id == _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].layers[i].id) {
+      for (var i in _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].layers) {
+        if (exclude_id != null && exclude_id == _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].layers[i].id) {
           continue;
         }
-        if (_config_js__WEBPACK_IMPORTED_MODULE_2__["default"].layers[i].visible == false || _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].layers[i].x === null || _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].layers[i].y === null || _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].layers[i].width === null || _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].layers[i].height === null) {
+        if (_config_js__WEBPACK_IMPORTED_MODULE_4__["default"].layers[i].visible == false || _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].layers[i].x === null || _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].layers[i].y === null || _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].layers[i].width === null || _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].layers[i].height === null) {
           continue;
         }
 
         //x
-        var x = _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].layers[i].x;
-        if (x > 0 && x < _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].WIDTH) snap_positions.x.push(x);
-        var x = _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].layers[i].x + _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].layers[i].width / 2;
-        if (x > 0 && x < _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].WIDTH) snap_positions.x.push(x);
-        var x = _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].layers[i].x + _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].layers[i].width;
-        if (x > 0 && x < _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].WIDTH) snap_positions.x.push(x);
+        var x = _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].layers[i].x;
+        if (x > 0 && x < _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].WIDTH) snap_positions.x.push(x);
+        var x = _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].layers[i].x + _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].layers[i].width / 2;
+        if (x > 0 && x < _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].WIDTH) snap_positions.x.push(x);
+        var x = _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].layers[i].x + _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].layers[i].width;
+        if (x > 0 && x < _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].WIDTH) snap_positions.x.push(x);
 
         //y
-        var y = _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].layers[i].y;
-        if (y > 0 && y < _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].HEIGHT) snap_positions.y.push(y);
-        var y = _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].layers[i].y + _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].layers[i].height / 2;
-        if (y > 0 && y < _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].HEIGHT) snap_positions.y.push(y);
-        var y = _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].layers[i].y + _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].layers[i].height;
-        if (y > 0 && y < _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].HEIGHT) snap_positions.y.push(y);
+        var y = _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].layers[i].y;
+        if (y > 0 && y < _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].HEIGHT) snap_positions.y.push(y);
+        var y = _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].layers[i].y + _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].layers[i].height / 2;
+        if (y > 0 && y < _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].HEIGHT) snap_positions.y.push(y);
+        var y = _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].layers[i].y + _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].layers[i].height;
+        if (y > 0 && y < _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].HEIGHT) snap_positions.y.push(y);
       }
       return snap_positions;
     }
@@ -9352,7 +9360,7 @@ var Base_tools_class = /*#__PURE__*/function () {
         y: null
       };
       var params = this.getParams();
-      if (_config_js__WEBPACK_IMPORTED_MODULE_2__["default"].SNAP === false || event.shiftKey == true || event.ctrlKey == true || event.metaKey == true) {
+      if (_config_js__WEBPACK_IMPORTED_MODULE_4__["default"].SNAP === false || event.shiftKey == true || event.ctrlKey == true || event.metaKey == true) {
         this.snap_line_info = {
           x: null,
           y: null
@@ -9362,7 +9370,7 @@ var Base_tools_class = /*#__PURE__*/function () {
 
       //settings
       var sensitivity = 0.01;
-      var max_distance = (_config_js__WEBPACK_IMPORTED_MODULE_2__["default"].WIDTH + _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].HEIGHT) / 2 * sensitivity / _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].ZOOM;
+      var max_distance = (_config_js__WEBPACK_IMPORTED_MODULE_4__["default"].WIDTH + _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].HEIGHT) / 2 * sensitivity / _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].ZOOM;
 
       //collect snap positions
       if (typeof exclude_id != "undefined") var snap_positions = this.get_snap_positions(exclude_id);else var snap_positions = this.get_snap_positions();
@@ -9404,7 +9412,7 @@ var Base_tools_class = /*#__PURE__*/function () {
           start_x: min_value.x,
           start_y: 0,
           end_x: min_value.x,
-          end_y: _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].HEIGHT
+          end_y: _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].HEIGHT
         };
       } else {
         this.snap_line_info.x = null;
@@ -9416,7 +9424,7 @@ var Base_tools_class = /*#__PURE__*/function () {
         this.snap_line_info.y = {
           start_x: 0,
           start_y: min_value.y,
-          end_x: _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].WIDTH,
+          end_x: _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].WIDTH,
           end_y: min_value.y
         };
       } else {
@@ -9427,6 +9435,71 @@ var Base_tools_class = /*#__PURE__*/function () {
       }
       return null;
     }
+
+    /**
+     * Rasterize the active layer so a pixel tool can work on it.
+     *
+     * WHY. Tools that read and write pixels - erase, fill, blur - refuse anything that is not an
+     * image layer, and tell the reporter to go and convert it themselves. In a paint app that is a
+     * dead end at the worst moment: you draw a stroke, reach for the eraser, and are told the thing
+     * you just drew cannot be erased. Rasterizing is what the message asks for, so do it.
+     *
+     * The conversion is its OWN undo step rather than being folded into the tool's action, so it
+     * can be undone on its own and a tool that rasterizes then does nothing has still left a
+     * reversible trail. Nothing here is silent - losing the ability to re-edit a stroke as vector
+     * is worth a sentence.
+     *
+     * @param {string} reason shown to the user, e.g. 'erased'
+     * @returns {Promise<boolean>} false when there is nothing to rasterize
+     */
+  }, {
+    key: "rasterize_active_layer",
+    value: (function () {
+      var _rasterize_active_layer = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().mark(function _callee(reason) {
+        var layer, raster, converted;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().wrap(function (_context) {
+          while (1) switch (_context.prev = _context.next) {
+            case 0:
+              layer = _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].layer;
+              if (!(layer == null || layer.type == null)) {
+                _context.next = 1;
+                break;
+              }
+              return _context.abrupt("return", false);
+            case 1:
+              if (!(layer.type == 'image' && layer.is_vector != true)) {
+                _context.next = 2;
+                break;
+              }
+              return _context.abrupt("return", true);
+            case 2:
+              raster = this.Base_gui && this.Base_gui.modules ? this.Base_gui.modules['layer/raster'] : null;
+              if (!(raster == null)) {
+                _context.next = 3;
+                break;
+              }
+              return _context.abrupt("return", false);
+            case 3:
+              _context.next = 4;
+              return raster.raster();
+            case 4:
+              //raster() swaps in a NEW layer, so re-read rather than trusting the old reference
+              converted = _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].layer != null && _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].layer.type == 'image';
+              if (converted) {
+                _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_9___default().success('Layer converted to raster so it can be ' + (reason || 'edited') + '.');
+              }
+              return _context.abrupt("return", converted);
+            case 5:
+            case "end":
+              return _context.stop();
+          }
+        }, _callee, this);
+      }));
+      function rasterize_active_layer(_x) {
+        return _rasterize_active_layer.apply(this, arguments);
+      }
+      return rasterize_active_layer;
+    }())
   }]);
 }();
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Base_tools_class);
@@ -32153,7 +32226,11 @@ var Layer_raster_class = /*#__PURE__*/function () {
         height: canvas.height,
         opacity: current_layer.opacity
       };
-      _app_js__WEBPACK_IMPORTED_MODULE_2__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_2__["default"].Actions.Bundle_action('convert_to_raster', 'Convert to Raster', [new _app_js__WEBPACK_IMPORTED_MODULE_2__["default"].Actions.Insert_layer_action(params, false), new _app_js__WEBPACK_IMPORTED_MODULE_2__["default"].Actions.Delete_layer_action(current_id)]));
+      //RETURN the promise. Insert_layer_action loads the data URL asynchronously, so a caller
+      //that needs the new raster layer to exist - a tool rasterizing before it paints - has to be
+      //able to wait for it. Dropping it on the floor made `await raster()` resolve immediately,
+      //before the layer had been swapped.
+      return _app_js__WEBPACK_IMPORTED_MODULE_2__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_2__["default"].Actions.Bundle_action('convert_to_raster', 'Convert to Raster', [new _app_js__WEBPACK_IMPORTED_MODULE_2__["default"].Actions.Insert_layer_action(params, false), new _app_js__WEBPACK_IMPORTED_MODULE_2__["default"].Actions.Delete_layer_action(current_id)]));
     }
   }]);
 }();
@@ -36805,24 +36882,29 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
-/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
-/* harmony import */ var _babel_runtime_helpers_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/possibleConstructorReturn */ "./node_modules/@babel/runtime/helpers/esm/possibleConstructorReturn.js");
-/* harmony import */ var _babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @babel/runtime/helpers/getPrototypeOf */ "./node_modules/@babel/runtime/helpers/esm/getPrototypeOf.js");
-/* harmony import */ var _babel_runtime_helpers_inherits__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @babel/runtime/helpers/inherits */ "./node_modules/@babel/runtime/helpers/esm/inherits.js");
-/* harmony import */ var _app_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./../app.js */ "./src/js/app.js");
-/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./../config.js */ "./src/js/config.js");
-/* harmony import */ var _core_base_tools_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./../core/base-tools.js */ "./src/js/core/base-tools.js");
-/* harmony import */ var _core_base_layers_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./../core/base-layers.js */ "./src/js/core/base-layers.js");
-/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./../../../node_modules/alertifyjs/build/alertify.min.js */ "./node_modules/alertifyjs/build/alertify.min.js");
-/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(_node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_9__);
-/* harmony import */ var _core_pixel_paint_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./../core/pixel-paint.js */ "./src/js/core/pixel-paint.js");
+/* harmony import */ var _babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ "./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js");
+/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
+/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
+/* harmony import */ var _babel_runtime_helpers_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @babel/runtime/helpers/possibleConstructorReturn */ "./node_modules/@babel/runtime/helpers/esm/possibleConstructorReturn.js");
+/* harmony import */ var _babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @babel/runtime/helpers/getPrototypeOf */ "./node_modules/@babel/runtime/helpers/esm/getPrototypeOf.js");
+/* harmony import */ var _babel_runtime_helpers_inherits__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @babel/runtime/helpers/inherits */ "./node_modules/@babel/runtime/helpers/esm/inherits.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var _app_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./../app.js */ "./src/js/app.js");
+/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./../config.js */ "./src/js/config.js");
+/* harmony import */ var _core_base_tools_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./../core/base-tools.js */ "./src/js/core/base-tools.js");
+/* harmony import */ var _core_base_layers_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./../core/base-layers.js */ "./src/js/core/base-layers.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./../../../node_modules/alertifyjs/build/alertify.min.js */ "./node_modules/alertifyjs/build/alertify.min.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_11___default = /*#__PURE__*/__webpack_require__.n(_node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_11__);
+/* harmony import */ var _core_pixel_paint_js__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./../core/pixel-paint.js */ "./src/js/core/pixel-paint.js");
 
 
 
 
 
-function _callSuper(t, o, e) { return o = (0,_babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_3__["default"])(o), (0,_babel_runtime_helpers_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_2__["default"])(t, _isNativeReflectConstruct() ? Reflect.construct(o, e || [], (0,_babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_3__["default"])(t).constructor) : o.apply(t, e)); }
+
+
+function _callSuper(t, o, e) { return o = (0,_babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_4__["default"])(o), (0,_babel_runtime_helpers_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_3__["default"])(t, _isNativeReflectConstruct() ? Reflect.construct(o, e || [], (0,_babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_4__["default"])(t).constructor) : o.apply(t, e)); }
 function _isNativeReflectConstruct() { try { var t = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); } catch (t) {} return (_isNativeReflectConstruct = function _isNativeReflectConstruct() { return !!t; })(); }
 
 
@@ -36833,18 +36915,19 @@ function _isNativeReflectConstruct() { try { var t = !Boolean.prototype.valueOf.
 var Erase_class = /*#__PURE__*/function (_Base_tools_class) {
   function Erase_class(ctx) {
     var _this;
-    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__["default"])(this, Erase_class);
+    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__["default"])(this, Erase_class);
     _this = _callSuper(this, Erase_class);
-    _this.Base_layers = new _core_base_layers_js__WEBPACK_IMPORTED_MODULE_8__["default"]();
+    _this.Base_layers = new _core_base_layers_js__WEBPACK_IMPORTED_MODULE_10__["default"]();
     _this.ctx = ctx;
     _this.name = 'erase';
     _this.tmpCanvas = null;
     _this.tmpCanvasCtx = null;
     _this.started = false;
+    _this.pointer_down = false;
     return _this;
   }
-  (0,_babel_runtime_helpers_inherits__WEBPACK_IMPORTED_MODULE_4__["default"])(Erase_class, _Base_tools_class);
-  return (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__["default"])(Erase_class, [{
+  (0,_babel_runtime_helpers_inherits__WEBPACK_IMPORTED_MODULE_5__["default"])(Erase_class, _Base_tools_class);
+  return (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__["default"])(Erase_class, [{
     key: "load",
     value: function load() {
       this.default_events();
@@ -36852,7 +36935,7 @@ var Erase_class = /*#__PURE__*/function (_Base_tools_class) {
   }, {
     key: "default_dragMove",
     value: function default_dragMove(event, is_touch) {
-      if (_config_js__WEBPACK_IMPORTED_MODULE_6__["default"].TOOL.name != this.name) return;
+      if (_config_js__WEBPACK_IMPORTED_MODULE_8__["default"].TOOL.name != this.name) return;
       this.mousemove(event, is_touch);
 
       //mouse cursor
@@ -36875,41 +36958,89 @@ var Erase_class = /*#__PURE__*/function (_Base_tools_class) {
     }
   }, {
     key: "mousedown",
-    value: function mousedown(e) {
-      this.started = false;
-      var mouse = this.get_mouse_info(e);
-      var params = this.getParams();
-      if (mouse.click_valid == false) {
-        return;
+    value: function () {
+      var _mousedown = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_6___default().mark(function _callee(e) {
+        var mouse, params, ready;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_6___default().wrap(function (_context) {
+          while (1) switch (_context.prev = _context.next) {
+            case 0:
+              this.started = false;
+              this.pointer_down = true;
+              mouse = this.get_mouse_info(e);
+              params = this.getParams();
+              if (!(mouse.click_valid == false)) {
+                _context.next = 1;
+                break;
+              }
+              return _context.abrupt("return");
+            case 1:
+              if (!(_config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.type != 'image' || _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.is_vector == true)) {
+                _context.next = 4;
+                break;
+              }
+              _context.next = 2;
+              return this.rasterize_active_layer('erased');
+            case 2:
+              ready = _context.sent;
+              if (!(ready == false)) {
+                _context.next = 3;
+                break;
+              }
+              return _context.abrupt("return");
+            case 3:
+              if (!(this.pointer_down == false)) {
+                _context.next = 4;
+                break;
+              }
+              //released while the layer was converting: erase the click and commit it, rather
+              //than leaving a stroke that silently did nothing
+              this.begin_stroke(mouse, params);
+              return _context.abrupt("return", this.mouseup(e));
+            case 4:
+              if (!(_config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.rotate || 0 > 0)) {
+                _context.next = 5;
+                break;
+              }
+              _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_11___default().error('Erase on rotate object is disabled. Please rasterize first.');
+              return _context.abrupt("return");
+            case 5:
+              this.begin_stroke(mouse, params);
+            case 6:
+            case "end":
+              return _context.stop();
+          }
+        }, _callee, this);
+      }));
+      function mousedown(_x) {
+        return _mousedown.apply(this, arguments);
       }
-      if (_config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.type != 'image') {
-        _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_9___default().error('This layer must contain an image. Please convert it to raster to apply this tool.');
-        return;
-      }
-      if (_config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.is_vector == true) {
-        _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_9___default().error('Layer is vector, convert it to raster to apply this tool.');
-        return;
-      }
-      if (_config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.rotate || 0 > 0) {
-        _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_9___default().error('Erase on rotate object is disabled. Please rasterize first.');
-        return;
-      }
+      return mousedown;
+    }()
+    /**
+     * Take a working copy of the layer image and apply the first erase to it.
+     *
+     * @param {object} mouse
+     * @param {object} params
+     */
+  }, {
+    key: "begin_stroke",
+    value: function begin_stroke(mouse, params) {
       this.started = true;
 
       //get canvas from layer
       this.tmpCanvas = document.createElement('canvas');
       this.tmpCanvasCtx = this.tmpCanvas.getContext("2d");
-      this.tmpCanvas.width = _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.width_original;
-      this.tmpCanvas.height = _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.height_original;
-      this.tmpCanvasCtx.drawImage(_config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.link, 0, 0);
-      this.tmpCanvasCtx.scale(_config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.width_original / _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.width, _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.height_original / _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.height);
+      this.tmpCanvas.width = _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.width_original;
+      this.tmpCanvas.height = _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.height_original;
+      this.tmpCanvasCtx.drawImage(_config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.link, 0, 0);
+      this.tmpCanvasCtx.scale(_config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.width_original / _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.width, _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.height_original / _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.height);
 
       //do erase
       this.erase_general(this.tmpCanvasCtx, 'click', mouse, params.size, params.strict, params.circle);
 
       //register tmp canvas for faster redraw
-      _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.link_canvas = this.tmpCanvas;
-      _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].need_render = true;
+      _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.link_canvas = this.tmpCanvas;
+      _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].need_render = true;
     }
   }, {
     key: "mousemove",
@@ -36932,37 +37063,41 @@ var Erase_class = /*#__PURE__*/function (_Base_tools_class) {
       this.erase_general(this.tmpCanvasCtx, 'move', mouse, params.size, params.strict, params.circle, is_touch);
 
       //draw draft preview
-      _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].need_render = true;
+      _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].need_render = true;
     }
   }, {
     key: "mouseup",
     value: function mouseup(e) {
+      //cleared before the started check: mousedown may still be awaiting a rasterize, and it
+      //needs to know the button has already been released
+      this.pointer_down = false;
       if (this.started == false) {
         return;
       }
-      delete _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.link_canvas;
-      _app_js__WEBPACK_IMPORTED_MODULE_5__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_5__["default"].Actions.Bundle_action('erase_tool', 'Erase Tool', [new _app_js__WEBPACK_IMPORTED_MODULE_5__["default"].Actions.Update_layer_image_action(this.tmpCanvas)]));
+      delete _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.link_canvas;
+      _app_js__WEBPACK_IMPORTED_MODULE_7__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_7__["default"].Actions.Bundle_action('erase_tool', 'Erase Tool', [new _app_js__WEBPACK_IMPORTED_MODULE_7__["default"].Actions.Update_layer_image_action(this.tmpCanvas)]));
 
       //decrease memory
       this.tmpCanvas.width = 1;
       this.tmpCanvas.height = 1;
       this.tmpCanvas = null;
       this.tmpCanvasCtx = null;
+      this.started = false;
     }
   }, {
     key: "erase_general",
     value: function erase_general(ctx, type, mouse, size, strict, is_circle, is_touch) {
-      if (_config_js__WEBPACK_IMPORTED_MODULE_6__["default"].PIXEL_MODE) {
+      if (_config_js__WEBPACK_IMPORTED_MODULE_8__["default"].PIXEL_MODE) {
         //A circular nib with a soft edge subtracts PART of a pixel's alpha, which leaves a
         //ghost and reads as the eraser not working. In pixel mode a pixel is cleared or it is
         //left alone.
         return this.erase_pixel(ctx, type, mouse, size, is_touch);
       }
-      var mouse_x = Math.round(mouse.x) - _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.x;
-      var mouse_y = Math.round(mouse.y) - _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.y;
-      var alpha = _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].ALPHA;
-      var mouse_last_x = parseInt(mouse.last_x) - _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.x;
-      var mouse_last_y = parseInt(mouse.last_y) - _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.y;
+      var mouse_x = Math.round(mouse.x) - _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.x;
+      var mouse_y = Math.round(mouse.y) - _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.y;
+      var alpha = _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].ALPHA;
+      var mouse_last_x = parseInt(mouse.last_x) - _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.x;
+      var mouse_last_y = parseInt(mouse.last_y) - _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.y;
       ctx.beginPath();
       ctx.lineWidth = size;
       ctx.lineCap = 'round';
@@ -36973,8 +37108,8 @@ var Erase_class = /*#__PURE__*/function (_Base_tools_class) {
         var size_half = Math.ceil(size / 2);
         if (size == 1) {
           //single cell mode
-          mouse_x = Math.floor(mouse.x) - _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.x;
-          mouse_y = Math.floor(mouse.y) - _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.y;
+          mouse_x = Math.floor(mouse.x) - _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.x;
+          mouse_y = Math.floor(mouse.y) - _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.y;
           size_half = 0;
         }
         ctx.save();
@@ -37027,7 +37162,7 @@ var Erase_class = /*#__PURE__*/function (_Base_tools_class) {
   }, {
     key: "erase_pixel",
     value: function erase_pixel(ctx, type, mouse, size, is_touch) {
-      var layer = _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer;
+      var layer = _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer;
 
       //mousedown scaled this context by width_original/width so layer coordinates land on the
       //original image. That scale is a float on any resized layer, and a scaled integer is not
@@ -37056,18 +37191,18 @@ var Erase_class = /*#__PURE__*/function (_Base_tools_class) {
       var has_last = mouse.last_x !== false && mouse.last_x != null && mouse.last_y !== false && mouse.last_y != null;
       if (type === 'move' && has_last && is_touch !== true) {
         //fill the gap a fast drag leaves between reported points
-        var nibs = (0,_core_pixel_paint_js__WEBPACK_IMPORTED_MODULE_10__.stroke_nibs)(to_image_x(mouse.last_x), to_image_y(mouse.last_y), x, y, nib_size);
+        var nibs = (0,_core_pixel_paint_js__WEBPACK_IMPORTED_MODULE_12__.stroke_nibs)(to_image_x(mouse.last_x), to_image_y(mouse.last_y), x, y, nib_size);
         for (var i = 0; i < nibs.length; i++) {
           ctx.fillRect(nibs[i].x, nibs[i].y, nibs[i].size, nibs[i].size);
         }
       } else {
-        var nib = (0,_core_pixel_paint_js__WEBPACK_IMPORTED_MODULE_10__.nib_origin)(x, y, nib_size);
+        var nib = (0,_core_pixel_paint_js__WEBPACK_IMPORTED_MODULE_12__.nib_origin)(x, y, nib_size);
         ctx.fillRect(nib.x, nib.y, nib.size, nib.size);
       }
       ctx.restore();
     }
   }]);
-}(_core_base_tools_js__WEBPACK_IMPORTED_MODULE_7__["default"]);
+}(_core_base_tools_js__WEBPACK_IMPORTED_MODULE_9__["default"]);
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Erase_class);
 
 /***/ },

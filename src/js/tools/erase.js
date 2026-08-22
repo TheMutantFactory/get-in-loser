@@ -15,6 +15,7 @@ class Erase_class extends Base_tools_class {
 		this.tmpCanvas = null;
 		this.tmpCanvasCtx = null;
 		this.started = false;
+		this.pointer_down = false;
 	}
 
 	load() {
@@ -49,25 +50,47 @@ class Erase_class extends Base_tools_class {
 		}
 	}
 
-	mousedown(e) {
+	async mousedown(e) {
 		this.started = false;
+		this.pointer_down = true;
 		var mouse = this.get_mouse_info(e);
 		var params = this.getParams();
 		if (mouse.click_valid == false) {
 			return;
 		}
-		if (config.layer.type != 'image') {
-			alertify.error('This layer must contain an image. Please convert it to raster to apply this tool.');
-			return;
+
+		if (config.layer.type != 'image' || config.layer.is_vector == true) {
+			//"Please convert it to raster to apply this tool" was a dead end reached at the worst
+			//moment: draw a stroke, reach for the eraser, get told the thing you just drew cannot
+			//be erased. Do the conversion instead of demanding it. It stays its own undo step, so
+			//getting the vector stroke back is two ctrl+z - the erase, then the conversion.
+			var ready = await this.rasterize_active_layer('erased');
+			if (ready == false) {
+				//an empty layer. Nothing to erase, and nothing worth interrupting anyone over.
+				return;
+			}
+			if (this.pointer_down == false) {
+				//released while the layer was converting: erase the click and commit it, rather
+				//than leaving a stroke that silently did nothing
+				this.begin_stroke(mouse, params);
+				return this.mouseup(e);
+			}
 		}
-		if (config.layer.is_vector == true) {
-			alertify.error('Layer is vector, convert it to raster to apply this tool.');
-			return;
-		}
+
 		if (config.layer.rotate || 0 > 0) {
 			alertify.error('Erase on rotate object is disabled. Please rasterize first.');
 			return;
 		}
+		this.begin_stroke(mouse, params);
+	}
+
+	/**
+	 * Take a working copy of the layer image and apply the first erase to it.
+	 *
+	 * @param {object} mouse
+	 * @param {object} params
+	 */
+	begin_stroke(mouse, params) {
 		this.started = true;
 
 		//get canvas from layer
@@ -114,6 +137,10 @@ class Erase_class extends Base_tools_class {
 	}
 
 	mouseup(e) {
+		//cleared before the started check: mousedown may still be awaiting a rasterize, and it
+		//needs to know the button has already been released
+		this.pointer_down = false;
+
 		if (this.started == false) {
 			return;
 		}
@@ -130,6 +157,7 @@ class Erase_class extends Base_tools_class {
 		this.tmpCanvas.height = 1;
 		this.tmpCanvas = null;
 		this.tmpCanvasCtx = null;
+		this.started = false;
 	}
 
 	erase_general(ctx, type, mouse, size, strict, is_circle, is_touch) {
