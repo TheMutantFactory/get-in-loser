@@ -17,6 +17,7 @@ class Blur_class extends Base_tools_class {
 		this.tmpCanvas = null;
 		this.tmpCanvasCtx = null;
 		this.started = false;
+		this.pointer_down = false;
 	}
 
 	load() {
@@ -34,21 +35,44 @@ class Blur_class extends Base_tools_class {
 		this.show_mouse_cursor(mouse.x, mouse.y, params.size, 'circle');
 	}
 
-	mousedown(e) {
+	async mousedown(e) {
 		this.started = false;
+		this.pointer_down = true;
 		var mouse = this.get_mouse_info(e);
 		var params = this.getParams();
 		if (mouse.click_valid == false) {
 			return;
 		}
-		if (config.layer.type != 'image') {
-			alertify.error('This layer must contain an image. Please convert it to raster to apply this tool.');
-			return;
+
+		if (config.layer.type != 'image' || config.layer.is_vector == true) {
+			//Convert instead of demanding it - see Base_tools.rasterize_active_layer.
+			var ready = await this.rasterize_active_layer('blurred');
+			if (ready == false) {
+				//empty layer: nothing to work on, and not worth a dialog
+				return;
+			}
+			if (this.pointer_down == false) {
+				//released while converting - apply the click and commit it, rather than leaving a
+				//stroke that silently did nothing
+				this.begin_stroke(mouse, params);
+				return this.mouseup(e);
+			}
 		}
+
 		if (config.layer.rotate || 0 > 0) {
 			alertify.error('Erase on rotate object is disabled. Please rasterize first.');
 			return;
 		}
+		this.begin_stroke(mouse, params);
+	}
+
+	/**
+	 * Take a working copy of the layer image and apply the first dab to it.
+	 *
+	 * @param {object} mouse
+	 * @param {object} params
+	 */
+	begin_stroke(mouse, params) {
 		this.started = true;
 
 		//get canvas from layer
@@ -86,6 +110,10 @@ class Blur_class extends Base_tools_class {
 	}
 
 	mouseup(e) {
+		//cleared before the started check: mousedown may still be awaiting a rasterize and needs
+		//to know the button has already been released
+		this.pointer_down = false;
+
 		if (this.started == false) {
 			return;
 		}

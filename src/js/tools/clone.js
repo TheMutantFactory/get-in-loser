@@ -110,7 +110,7 @@ class Clone_class extends Base_tools_class {
 		}
 	}
 
-	mouseRightClick(e) {
+	async mouseRightClick(e) {
 		if (config.TOOL.name != this.name)
 			return;
 		var mouse = this.get_mouse_info(e);
@@ -120,11 +120,15 @@ class Clone_class extends Base_tools_class {
 			e.preventDefault();
 		}
 		if (params.source_layer.value == 'Previous' && config.layer.type === null) {
-			this.Layer_raster.raster();
+			//already here, but the promise was dropped - the layer was read before it existed
+			await this.Layer_raster.raster();
 		}
-		if (config.layer.type != 'image') {
-			alertify.error('This layer must contain an image. Please convert it to raster to apply this tool.');
-			return;
+		if (config.layer.type != 'image' || config.layer.is_vector == true) {
+			//Convert instead of demanding it - see Base_tools.rasterize_active_layer.
+			var ready = await this.rasterize_active_layer('cloned');
+			if (ready == false) {
+				return;
+			}
 		}
 		if (config.layer.rotate || 0 > 0) {
 			alertify.error('Erase on rotate object is disabled. Please rasterize first.');
@@ -144,16 +148,20 @@ class Clone_class extends Base_tools_class {
 		}
 	}
 
-	mouseLongClick(){
+	async mouseLongClick(){
 		var params = this.getParams();
 		var mouse = this.get_mouse_info();
 
 		if (params.source_layer.value == 'Previous' && config.layer.type === null) {
-			this.Layer_raster.raster();
+			//already here, but the promise was dropped - the layer was read before it existed
+			await this.Layer_raster.raster();
 		}
-		if (config.layer.type != 'image') {
-			alertify.error('This layer must contain an image. Please convert it to raster to apply this tool.');
-			return;
+		if (config.layer.type != 'image' || config.layer.is_vector == true) {
+			//Convert instead of demanding it - see Base_tools.rasterize_active_layer.
+			var ready = await this.rasterize_active_layer('cloned');
+			if (ready == false) {
+				return;
+			}
 		}
 		if (config.layer.rotate || 0 > 0) {
 			alertify.error('Erase on rotate object is disabled. Please rasterize first.');
@@ -170,8 +178,9 @@ class Clone_class extends Base_tools_class {
 		alertify.success('Source coordinates saved.');
 	}
 
-	mousedown(e) {
+	async mousedown(e) {
 		this.started = false;
+		this.pointer_down = true;
 		var mouse = this.get_mouse_info(e);
 		var params = this.getParams();
 		var layer = config.layer;
@@ -182,11 +191,15 @@ class Clone_class extends Base_tools_class {
 		}
 
 		if (params.source_layer.value == 'Previous' && config.layer.type === null) {
-			this.Layer_raster.raster();
+			//already here, but the promise was dropped - the layer was read before it existed
+			await this.Layer_raster.raster();
 		}
-		if (config.layer.type != 'image') {
-			alertify.error('This layer must contain an image. Please convert it to raster to apply this tool.');
-			return;
+		if (config.layer.type != 'image' || config.layer.is_vector == true) {
+			//Convert instead of demanding it - see Base_tools.rasterize_active_layer.
+			var ready = await this.rasterize_active_layer('cloned');
+			if (ready == false) {
+				return;
+			}
 		}
 		if (config.layer.rotate || 0 > 0) {
 			alertify.error('Erase on rotate object is disabled. Please rasterize first.');
@@ -254,6 +267,9 @@ class Clone_class extends Base_tools_class {
 	}
 
 	mouseup(e) {
+		//cleared before the started check: mousedown may still be awaiting a rasterize
+		this.pointer_down = false;
+
 		if (this.started == false) {
 			return;
 		}

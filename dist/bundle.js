@@ -35101,25 +35101,30 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
-/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
-/* harmony import */ var _babel_runtime_helpers_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/possibleConstructorReturn */ "./node_modules/@babel/runtime/helpers/esm/possibleConstructorReturn.js");
-/* harmony import */ var _babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @babel/runtime/helpers/getPrototypeOf */ "./node_modules/@babel/runtime/helpers/esm/getPrototypeOf.js");
-/* harmony import */ var _babel_runtime_helpers_inherits__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @babel/runtime/helpers/inherits */ "./node_modules/@babel/runtime/helpers/esm/inherits.js");
-/* harmony import */ var _app_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./../app.js */ "./src/js/app.js");
-/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./../config.js */ "./src/js/config.js");
-/* harmony import */ var _core_base_tools_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./../core/base-tools.js */ "./src/js/core/base-tools.js");
-/* harmony import */ var _core_base_layers_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./../core/base-layers.js */ "./src/js/core/base-layers.js");
-/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./../../../node_modules/alertifyjs/build/alertify.min.js */ "./node_modules/alertifyjs/build/alertify.min.js");
-/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(_node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_9__);
-/* harmony import */ var _libs_imagefilters_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./../libs/imagefilters.js */ "./src/js/libs/imagefilters.js");
-/* harmony import */ var _libs_helpers_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./../libs/helpers.js */ "./src/js/libs/helpers.js");
+/* harmony import */ var _babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ "./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js");
+/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
+/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
+/* harmony import */ var _babel_runtime_helpers_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @babel/runtime/helpers/possibleConstructorReturn */ "./node_modules/@babel/runtime/helpers/esm/possibleConstructorReturn.js");
+/* harmony import */ var _babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @babel/runtime/helpers/getPrototypeOf */ "./node_modules/@babel/runtime/helpers/esm/getPrototypeOf.js");
+/* harmony import */ var _babel_runtime_helpers_inherits__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @babel/runtime/helpers/inherits */ "./node_modules/@babel/runtime/helpers/esm/inherits.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var _app_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./../app.js */ "./src/js/app.js");
+/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./../config.js */ "./src/js/config.js");
+/* harmony import */ var _core_base_tools_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./../core/base-tools.js */ "./src/js/core/base-tools.js");
+/* harmony import */ var _core_base_layers_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./../core/base-layers.js */ "./src/js/core/base-layers.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./../../../node_modules/alertifyjs/build/alertify.min.js */ "./node_modules/alertifyjs/build/alertify.min.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_11___default = /*#__PURE__*/__webpack_require__.n(_node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_11__);
+/* harmony import */ var _libs_imagefilters_js__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./../libs/imagefilters.js */ "./src/js/libs/imagefilters.js");
+/* harmony import */ var _libs_helpers_js__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./../libs/helpers.js */ "./src/js/libs/helpers.js");
 
 
 
 
 
-function _callSuper(t, o, e) { return o = (0,_babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_3__["default"])(o), (0,_babel_runtime_helpers_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_2__["default"])(t, _isNativeReflectConstruct() ? Reflect.construct(o, e || [], (0,_babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_3__["default"])(t).constructor) : o.apply(t, e)); }
+
+
+function _callSuper(t, o, e) { return o = (0,_babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_4__["default"])(o), (0,_babel_runtime_helpers_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_3__["default"])(t, _isNativeReflectConstruct() ? Reflect.construct(o, e || [], (0,_babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_4__["default"])(t).constructor) : o.apply(t, e)); }
 function _isNativeReflectConstruct() { try { var t = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); } catch (t) {} return (_isNativeReflectConstruct = function _isNativeReflectConstruct() { return !!t; })(); }
 
 
@@ -35131,19 +35136,20 @@ function _isNativeReflectConstruct() { try { var t = !Boolean.prototype.valueOf.
 var Blur_class = /*#__PURE__*/function (_Base_tools_class) {
   function Blur_class(ctx) {
     var _this;
-    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__["default"])(this, Blur_class);
+    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__["default"])(this, Blur_class);
     _this = _callSuper(this, Blur_class);
-    _this.Base_layers = new _core_base_layers_js__WEBPACK_IMPORTED_MODULE_8__["default"]();
-    _this.Helper = new _libs_helpers_js__WEBPACK_IMPORTED_MODULE_11__["default"]();
+    _this.Base_layers = new _core_base_layers_js__WEBPACK_IMPORTED_MODULE_10__["default"]();
+    _this.Helper = new _libs_helpers_js__WEBPACK_IMPORTED_MODULE_13__["default"]();
     _this.ctx = ctx;
     _this.name = 'blur';
     _this.tmpCanvas = null;
     _this.tmpCanvasCtx = null;
     _this.started = false;
+    _this.pointer_down = false;
     return _this;
   }
-  (0,_babel_runtime_helpers_inherits__WEBPACK_IMPORTED_MODULE_4__["default"])(Blur_class, _Base_tools_class);
-  return (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__["default"])(Blur_class, [{
+  (0,_babel_runtime_helpers_inherits__WEBPACK_IMPORTED_MODULE_5__["default"])(Blur_class, _Base_tools_class);
+  return (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__["default"])(Blur_class, [{
     key: "load",
     value: function load() {
       this.default_events();
@@ -35151,7 +35157,7 @@ var Blur_class = /*#__PURE__*/function (_Base_tools_class) {
   }, {
     key: "default_dragMove",
     value: function default_dragMove(event) {
-      if (_config_js__WEBPACK_IMPORTED_MODULE_6__["default"].TOOL.name != this.name) return;
+      if (_config_js__WEBPACK_IMPORTED_MODULE_8__["default"].TOOL.name != this.name) return;
       this.mousemove(event);
 
       //mouse cursor
@@ -35161,36 +35167,88 @@ var Blur_class = /*#__PURE__*/function (_Base_tools_class) {
     }
   }, {
     key: "mousedown",
-    value: function mousedown(e) {
-      this.started = false;
-      var mouse = this.get_mouse_info(e);
-      var params = this.getParams();
-      if (mouse.click_valid == false) {
-        return;
+    value: function () {
+      var _mousedown = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_6___default().mark(function _callee(e) {
+        var mouse, params, ready;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_6___default().wrap(function (_context) {
+          while (1) switch (_context.prev = _context.next) {
+            case 0:
+              this.started = false;
+              this.pointer_down = true;
+              mouse = this.get_mouse_info(e);
+              params = this.getParams();
+              if (!(mouse.click_valid == false)) {
+                _context.next = 1;
+                break;
+              }
+              return _context.abrupt("return");
+            case 1:
+              if (!(_config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.type != 'image' || _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.is_vector == true)) {
+                _context.next = 4;
+                break;
+              }
+              _context.next = 2;
+              return this.rasterize_active_layer('blurred');
+            case 2:
+              ready = _context.sent;
+              if (!(ready == false)) {
+                _context.next = 3;
+                break;
+              }
+              return _context.abrupt("return");
+            case 3:
+              if (!(this.pointer_down == false)) {
+                _context.next = 4;
+                break;
+              }
+              //released while converting - apply the click and commit it, rather than leaving a
+              //stroke that silently did nothing
+              this.begin_stroke(mouse, params);
+              return _context.abrupt("return", this.mouseup(e));
+            case 4:
+              if (!(_config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.rotate || 0 > 0)) {
+                _context.next = 5;
+                break;
+              }
+              _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_11___default().error('Erase on rotate object is disabled. Please rasterize first.');
+              return _context.abrupt("return");
+            case 5:
+              this.begin_stroke(mouse, params);
+            case 6:
+            case "end":
+              return _context.stop();
+          }
+        }, _callee, this);
+      }));
+      function mousedown(_x) {
+        return _mousedown.apply(this, arguments);
       }
-      if (_config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.type != 'image') {
-        _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_9___default().error('This layer must contain an image. Please convert it to raster to apply this tool.');
-        return;
-      }
-      if (_config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.rotate || 0 > 0) {
-        _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_9___default().error('Erase on rotate object is disabled. Please rasterize first.');
-        return;
-      }
+      return mousedown;
+    }()
+    /**
+     * Take a working copy of the layer image and apply the first dab to it.
+     *
+     * @param {object} mouse
+     * @param {object} params
+     */
+  }, {
+    key: "begin_stroke",
+    value: function begin_stroke(mouse, params) {
       this.started = true;
 
       //get canvas from layer
       this.tmpCanvas = document.createElement('canvas');
       this.tmpCanvasCtx = this.tmpCanvas.getContext("2d");
-      this.tmpCanvas.width = _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.width_original;
-      this.tmpCanvas.height = _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.height_original;
-      this.tmpCanvasCtx.drawImage(_config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.link, 0, 0);
+      this.tmpCanvas.width = _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.width_original;
+      this.tmpCanvas.height = _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.height_original;
+      this.tmpCanvasCtx.drawImage(_config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.link, 0, 0);
 
       //do blur
       this.blur_general('click', mouse, params.size, params.strength);
 
       //register tmp canvas for faster redraw
-      _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.link_canvas = this.tmpCanvas;
-      _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].need_render = true;
+      _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.link_canvas = this.tmpCanvas;
+      _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].need_render = true;
     }
   }, {
     key: "mousemove",
@@ -35209,16 +35267,19 @@ var Blur_class = /*#__PURE__*/function (_Base_tools_class) {
       this.blur_general('move', mouse, params.size, params.strength);
 
       //draw draft preview
-      _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].need_render = true;
+      _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].need_render = true;
     }
   }, {
     key: "mouseup",
     value: function mouseup(e) {
+      //cleared before the started check: mousedown may still be awaiting a rasterize and needs
+      //to know the button has already been released
+      this.pointer_down = false;
       if (this.started == false) {
         return;
       }
-      delete _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.link_canvas;
-      _app_js__WEBPACK_IMPORTED_MODULE_5__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_5__["default"].Actions.Bundle_action('blur_tool', 'Blur Tool', [new _app_js__WEBPACK_IMPORTED_MODULE_5__["default"].Actions.Update_layer_image_action(this.tmpCanvas)]));
+      delete _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.link_canvas;
+      _app_js__WEBPACK_IMPORTED_MODULE_7__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_7__["default"].Actions.Bundle_action('blur_tool', 'Blur Tool', [new _app_js__WEBPACK_IMPORTED_MODULE_7__["default"].Actions.Update_layer_image_action(this.tmpCanvas)]));
 
       //decrease memory
       this.tmpCanvas.width = 1;
@@ -35230,8 +35291,8 @@ var Blur_class = /*#__PURE__*/function (_Base_tools_class) {
     key: "blur_general",
     value: function blur_general(type, mouse, size, strength) {
       var ctx = this.tmpCanvasCtx;
-      var mouse_x = Math.round(mouse.x) - _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.x;
-      var mouse_y = Math.round(mouse.y) - _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.y;
+      var mouse_x = Math.round(mouse.x) - _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.x;
+      var mouse_y = Math.round(mouse.y) - _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.y;
 
       //adapt to origin size
       mouse_x = this.adaptSize(mouse_x, 'width');
@@ -35253,11 +35314,11 @@ var Blur_class = /*#__PURE__*/function (_Base_tools_class) {
         if (strength < 1) strength = 1;
       }
       var imageData = ctx.getImageData(center_x, center_y, size_w, size_h);
-      var filtered = _libs_imagefilters_js__WEBPACK_IMPORTED_MODULE_10__["default"].StackBlur(imageData, strength); //add effect
+      var filtered = _libs_imagefilters_js__WEBPACK_IMPORTED_MODULE_12__["default"].StackBlur(imageData, strength); //add effect
       this.Helper.image_round(this.tmpCanvasCtx, mouse_x, mouse_y, size_w, size_h, filtered);
     }
   }]);
-}(_core_base_tools_js__WEBPACK_IMPORTED_MODULE_7__["default"]);
+}(_core_base_tools_js__WEBPACK_IMPORTED_MODULE_9__["default"]);
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Blur_class);
 
 /***/ },
@@ -36019,24 +36080,29 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
-/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
-/* harmony import */ var _babel_runtime_helpers_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/possibleConstructorReturn */ "./node_modules/@babel/runtime/helpers/esm/possibleConstructorReturn.js");
-/* harmony import */ var _babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @babel/runtime/helpers/getPrototypeOf */ "./node_modules/@babel/runtime/helpers/esm/getPrototypeOf.js");
-/* harmony import */ var _babel_runtime_helpers_inherits__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @babel/runtime/helpers/inherits */ "./node_modules/@babel/runtime/helpers/esm/inherits.js");
-/* harmony import */ var _app_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./../app.js */ "./src/js/app.js");
-/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./../config.js */ "./src/js/config.js");
-/* harmony import */ var _core_base_tools_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./../core/base-tools.js */ "./src/js/core/base-tools.js");
-/* harmony import */ var _core_base_layers_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./../core/base-layers.js */ "./src/js/core/base-layers.js");
-/* harmony import */ var _modules_layer_raster_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./../modules/layer/raster.js */ "./src/js/modules/layer/raster.js");
-/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./../../../node_modules/alertifyjs/build/alertify.min.js */ "./node_modules/alertifyjs/build/alertify.min.js");
-/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(_node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10__);
+/* harmony import */ var _babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ "./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js");
+/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
+/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
+/* harmony import */ var _babel_runtime_helpers_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @babel/runtime/helpers/possibleConstructorReturn */ "./node_modules/@babel/runtime/helpers/esm/possibleConstructorReturn.js");
+/* harmony import */ var _babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @babel/runtime/helpers/getPrototypeOf */ "./node_modules/@babel/runtime/helpers/esm/getPrototypeOf.js");
+/* harmony import */ var _babel_runtime_helpers_inherits__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @babel/runtime/helpers/inherits */ "./node_modules/@babel/runtime/helpers/esm/inherits.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var _app_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./../app.js */ "./src/js/app.js");
+/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./../config.js */ "./src/js/config.js");
+/* harmony import */ var _core_base_tools_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./../core/base-tools.js */ "./src/js/core/base-tools.js");
+/* harmony import */ var _core_base_layers_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./../core/base-layers.js */ "./src/js/core/base-layers.js");
+/* harmony import */ var _modules_layer_raster_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./../modules/layer/raster.js */ "./src/js/modules/layer/raster.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./../../../node_modules/alertifyjs/build/alertify.min.js */ "./node_modules/alertifyjs/build/alertify.min.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_12___default = /*#__PURE__*/__webpack_require__.n(_node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_12__);
 
 
 
 
 
-function _callSuper(t, o, e) { return o = (0,_babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_3__["default"])(o), (0,_babel_runtime_helpers_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_2__["default"])(t, _isNativeReflectConstruct() ? Reflect.construct(o, e || [], (0,_babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_3__["default"])(t).constructor) : o.apply(t, e)); }
+
+
+function _callSuper(t, o, e) { return o = (0,_babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_4__["default"])(o), (0,_babel_runtime_helpers_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_3__["default"])(t, _isNativeReflectConstruct() ? Reflect.construct(o, e || [], (0,_babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_4__["default"])(t).constructor) : o.apply(t, e)); }
 function _isNativeReflectConstruct() { try { var t = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); } catch (t) {} return (_isNativeReflectConstruct = function _isNativeReflectConstruct() { return !!t; })(); }
 
 
@@ -36047,10 +36113,10 @@ function _isNativeReflectConstruct() { try { var t = !Boolean.prototype.valueOf.
 var Clone_class = /*#__PURE__*/function (_Base_tools_class) {
   function Clone_class(ctx) {
     var _this2;
-    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__["default"])(this, Clone_class);
+    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__["default"])(this, Clone_class);
     _this2 = _callSuper(this, Clone_class);
-    _this2.Base_layers = new _core_base_layers_js__WEBPACK_IMPORTED_MODULE_8__["default"]();
-    _this2.Layer_raster = new _modules_layer_raster_js__WEBPACK_IMPORTED_MODULE_9__["default"]();
+    _this2.Base_layers = new _core_base_layers_js__WEBPACK_IMPORTED_MODULE_10__["default"]();
+    _this2.Layer_raster = new _modules_layer_raster_js__WEBPACK_IMPORTED_MODULE_11__["default"]();
     _this2.ctx = ctx;
     _this2.name = 'clone';
     _this2.tmpCanvas = null;
@@ -36060,8 +36126,8 @@ var Clone_class = /*#__PURE__*/function (_Base_tools_class) {
     _this2.pressTimer = null;
     return _this2;
   }
-  (0,_babel_runtime_helpers_inherits__WEBPACK_IMPORTED_MODULE_4__["default"])(Clone_class, _Base_tools_class);
-  return (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__["default"])(Clone_class, [{
+  (0,_babel_runtime_helpers_inherits__WEBPACK_IMPORTED_MODULE_5__["default"])(Clone_class, _Base_tools_class);
+  return (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__["default"])(Clone_class, [{
     key: "load",
     value: function load() {
       var _this = this;
@@ -36100,7 +36166,7 @@ var Clone_class = /*#__PURE__*/function (_Base_tools_class) {
     key: "dragStart",
     value: function dragStart(event) {
       var _this = this;
-      if (_config_js__WEBPACK_IMPORTED_MODULE_6__["default"].TOOL.name != _this.name) return;
+      if (_config_js__WEBPACK_IMPORTED_MODULE_8__["default"].TOOL.name != _this.name) return;
       _this.mousedown(event);
       var mouse = this.get_mouse_info(event);
       if (mouse.click_valid == true) {
@@ -36114,7 +36180,7 @@ var Clone_class = /*#__PURE__*/function (_Base_tools_class) {
     key: "dragMove",
     value: function dragMove(event) {
       var _this = this;
-      if (_config_js__WEBPACK_IMPORTED_MODULE_6__["default"].TOOL.name != _this.name) return;
+      if (_config_js__WEBPACK_IMPORTED_MODULE_8__["default"].TOOL.name != _this.name) return;
       _this.mousemove(event);
 
       //mouse cursor
@@ -36127,7 +36193,7 @@ var Clone_class = /*#__PURE__*/function (_Base_tools_class) {
     key: "dragEnd",
     value: function dragEnd(event) {
       var _this = this;
-      if (_config_js__WEBPACK_IMPORTED_MODULE_6__["default"].TOOL.name != _this.name) return;
+      if (_config_js__WEBPACK_IMPORTED_MODULE_8__["default"].TOOL.name != _this.name) return;
       _this.mouseup(event);
       clearTimeout(this.pressTimer);
     }
@@ -36146,120 +36212,241 @@ var Clone_class = /*#__PURE__*/function (_Base_tools_class) {
     }
   }, {
     key: "mouseRightClick",
-    value: function mouseRightClick(e) {
-      if (_config_js__WEBPACK_IMPORTED_MODULE_6__["default"].TOOL.name != this.name) return;
-      var mouse = this.get_mouse_info(e);
-      var params = this.getParams();
-      if (e.which == 3 && mouse.valid == true) {
-        e.preventDefault();
+    value: function () {
+      var _mouseRightClick = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_6___default().mark(function _callee(e) {
+        var mouse, params, ready, mouse_x, mouse_y;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_6___default().wrap(function (_context) {
+          while (1) switch (_context.prev = _context.next) {
+            case 0:
+              if (!(_config_js__WEBPACK_IMPORTED_MODULE_8__["default"].TOOL.name != this.name)) {
+                _context.next = 1;
+                break;
+              }
+              return _context.abrupt("return");
+            case 1:
+              mouse = this.get_mouse_info(e);
+              params = this.getParams();
+              if (e.which == 3 && mouse.valid == true) {
+                e.preventDefault();
+              }
+              if (!(params.source_layer.value == 'Previous' && _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.type === null)) {
+                _context.next = 2;
+                break;
+              }
+              _context.next = 2;
+              return this.Layer_raster.raster();
+            case 2:
+              if (!(_config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.type != 'image' || _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.is_vector == true)) {
+                _context.next = 4;
+                break;
+              }
+              _context.next = 3;
+              return this.rasterize_active_layer('cloned');
+            case 3:
+              ready = _context.sent;
+              if (!(ready == false)) {
+                _context.next = 4;
+                break;
+              }
+              return _context.abrupt("return");
+            case 4:
+              if (!(_config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.rotate || 0 > 0)) {
+                _context.next = 5;
+                break;
+              }
+              _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_12___default().error('Erase on rotate object is disabled. Please rasterize first.');
+              return _context.abrupt("return");
+            case 5:
+              if (e.which == 3 && mouse.valid == true) {
+                //right click - save coords
+                mouse_x = this.adaptSize(mouse.x, 'width');
+                mouse_y = this.adaptSize(mouse.y, 'height');
+                this.clone_coords = {
+                  x: mouse_x,
+                  y: mouse_y
+                };
+                _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_12___default().success('Source coordinates saved.');
+              }
+            case 6:
+            case "end":
+              return _context.stop();
+          }
+        }, _callee, this);
+      }));
+      function mouseRightClick(_x) {
+        return _mouseRightClick.apply(this, arguments);
       }
-      if (params.source_layer.value == 'Previous' && _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.type === null) {
-        this.Layer_raster.raster();
-      }
-      if (_config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.type != 'image') {
-        _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10___default().error('This layer must contain an image. Please convert it to raster to apply this tool.');
-        return;
-      }
-      if (_config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.rotate || 0 > 0) {
-        _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10___default().error('Erase on rotate object is disabled. Please rasterize first.');
-        return;
-      }
-      if (e.which == 3 && mouse.valid == true) {
-        //right click - save coords
-
-        var mouse_x = this.adaptSize(mouse.x, 'width');
-        var mouse_y = this.adaptSize(mouse.y, 'height');
-        this.clone_coords = {
-          x: mouse_x,
-          y: mouse_y
-        };
-        _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10___default().success('Source coordinates saved.');
-      }
-    }
+      return mouseRightClick;
+    }()
   }, {
     key: "mouseLongClick",
-    value: function mouseLongClick() {
-      var params = this.getParams();
-      var mouse = this.get_mouse_info();
-      if (params.source_layer.value == 'Previous' && _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.type === null) {
-        this.Layer_raster.raster();
+    value: function () {
+      var _mouseLongClick = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_6___default().mark(function _callee2() {
+        var params, mouse, ready, mouse_x, mouse_y;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_6___default().wrap(function (_context2) {
+          while (1) switch (_context2.prev = _context2.next) {
+            case 0:
+              params = this.getParams();
+              mouse = this.get_mouse_info();
+              if (!(params.source_layer.value == 'Previous' && _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.type === null)) {
+                _context2.next = 1;
+                break;
+              }
+              _context2.next = 1;
+              return this.Layer_raster.raster();
+            case 1:
+              if (!(_config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.type != 'image' || _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.is_vector == true)) {
+                _context2.next = 3;
+                break;
+              }
+              _context2.next = 2;
+              return this.rasterize_active_layer('cloned');
+            case 2:
+              ready = _context2.sent;
+              if (!(ready == false)) {
+                _context2.next = 3;
+                break;
+              }
+              return _context2.abrupt("return");
+            case 3:
+              if (!(_config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.rotate || 0 > 0)) {
+                _context2.next = 4;
+                break;
+              }
+              _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_12___default().error('Erase on rotate object is disabled. Please rasterize first.');
+              return _context2.abrupt("return");
+            case 4:
+              mouse_x = this.adaptSize(mouse.x, 'width');
+              mouse_y = this.adaptSize(mouse.y, 'height');
+              this.clone_coords = {
+                x: mouse_x,
+                y: mouse_y
+              };
+              _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_12___default().success('Source coordinates saved.');
+            case 5:
+            case "end":
+              return _context2.stop();
+          }
+        }, _callee2, this);
+      }));
+      function mouseLongClick() {
+        return _mouseLongClick.apply(this, arguments);
       }
-      if (_config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.type != 'image') {
-        _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10___default().error('This layer must contain an image. Please convert it to raster to apply this tool.');
-        return;
-      }
-      if (_config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.rotate || 0 > 0) {
-        _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10___default().error('Erase on rotate object is disabled. Please rasterize first.');
-        return;
-      }
-      var mouse_x = this.adaptSize(mouse.x, 'width');
-      var mouse_y = this.adaptSize(mouse.y, 'height');
-      this.clone_coords = {
-        x: mouse_x,
-        y: mouse_y
-      };
-      _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10___default().success('Source coordinates saved.');
-    }
+      return mouseLongClick;
+    }()
   }, {
     key: "mousedown",
-    value: function mousedown(e) {
-      this.started = false;
-      var mouse = this.get_mouse_info(e);
-      var params = this.getParams();
-      var layer = _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer;
-      var previous_layer = this.Base_layers.find_previous(_config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.id);
-      if (mouse.click_valid == false) {
-        return;
-      }
-      if (params.source_layer.value == 'Previous' && _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.type === null) {
-        this.Layer_raster.raster();
-      }
-      if (_config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.type != 'image') {
-        _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10___default().error('This layer must contain an image. Please convert it to raster to apply this tool.');
-        return;
-      }
-      if (_config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.rotate || 0 > 0) {
-        _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10___default().error('Erase on rotate object is disabled. Please rasterize first.');
-        return;
-      }
-      if (this.clone_coords === null) {
-        _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10___default().error('Source is empty, right click on image or use long press to save source position.');
-        return;
-      }
-      if (layer.width != layer.width_original || layer.height != layer.height_original) {
-        _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10___default().error('Clone tool disabled for resized image. Please rasterize first.');
-        return;
-      }
-      if (params.source_layer.value == 'Previous' && (previous_layer.width != previous_layer.width_original || previous_layer.height != previous_layer.height_original)) {
-        _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10___default().error('Clone tool disabled for resized image. Please rasterize first.');
-        return;
-      }
-      if (params.source_layer.value == 'Previous') {
-        if (previous_layer == null) {
-          _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10___default().error('Can not find previous layer.');
-          return;
-        }
-        if (previous_layer.type != 'image') {
-          _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10___default().error('Previous layer must be image, convert it to raster to apply this tool.');
-          return;
-        }
-      }
-      this.started = true;
+    value: function () {
+      var _mousedown = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_6___default().mark(function _callee3(e) {
+        var mouse, params, layer, previous_layer, ready;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_6___default().wrap(function (_context3) {
+          while (1) switch (_context3.prev = _context3.next) {
+            case 0:
+              this.started = false;
+              this.pointer_down = true;
+              mouse = this.get_mouse_info(e);
+              params = this.getParams();
+              layer = _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer;
+              previous_layer = this.Base_layers.find_previous(_config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.id);
+              if (!(mouse.click_valid == false)) {
+                _context3.next = 1;
+                break;
+              }
+              return _context3.abrupt("return");
+            case 1:
+              if (!(params.source_layer.value == 'Previous' && _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.type === null)) {
+                _context3.next = 2;
+                break;
+              }
+              _context3.next = 2;
+              return this.Layer_raster.raster();
+            case 2:
+              if (!(_config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.type != 'image' || _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.is_vector == true)) {
+                _context3.next = 4;
+                break;
+              }
+              _context3.next = 3;
+              return this.rasterize_active_layer('cloned');
+            case 3:
+              ready = _context3.sent;
+              if (!(ready == false)) {
+                _context3.next = 4;
+                break;
+              }
+              return _context3.abrupt("return");
+            case 4:
+              if (!(_config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.rotate || 0 > 0)) {
+                _context3.next = 5;
+                break;
+              }
+              _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_12___default().error('Erase on rotate object is disabled. Please rasterize first.');
+              return _context3.abrupt("return");
+            case 5:
+              if (!(this.clone_coords === null)) {
+                _context3.next = 6;
+                break;
+              }
+              _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_12___default().error('Source is empty, right click on image or use long press to save source position.');
+              return _context3.abrupt("return");
+            case 6:
+              if (!(layer.width != layer.width_original || layer.height != layer.height_original)) {
+                _context3.next = 7;
+                break;
+              }
+              _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_12___default().error('Clone tool disabled for resized image. Please rasterize first.');
+              return _context3.abrupt("return");
+            case 7:
+              if (!(params.source_layer.value == 'Previous' && (previous_layer.width != previous_layer.width_original || previous_layer.height != previous_layer.height_original))) {
+                _context3.next = 8;
+                break;
+              }
+              _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_12___default().error('Clone tool disabled for resized image. Please rasterize first.');
+              return _context3.abrupt("return");
+            case 8:
+              if (!(params.source_layer.value == 'Previous')) {
+                _context3.next = 10;
+                break;
+              }
+              if (!(previous_layer == null)) {
+                _context3.next = 9;
+                break;
+              }
+              _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_12___default().error('Can not find previous layer.');
+              return _context3.abrupt("return");
+            case 9:
+              if (!(previous_layer.type != 'image')) {
+                _context3.next = 10;
+                break;
+              }
+              _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_12___default().error('Previous layer must be image, convert it to raster to apply this tool.');
+              return _context3.abrupt("return");
+            case 10:
+              this.started = true;
 
-      //get canvas from layer
-      this.tmpCanvas = document.createElement('canvas');
-      this.tmpCanvasCtx = this.tmpCanvas.getContext("2d");
-      this.tmpCanvas.width = _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.width_original;
-      this.tmpCanvas.height = _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.height_original;
-      this.tmpCanvasCtx.drawImage(_config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.link, 0, 0);
+              //get canvas from layer
+              this.tmpCanvas = document.createElement('canvas');
+              this.tmpCanvasCtx = this.tmpCanvas.getContext("2d");
+              this.tmpCanvas.width = _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.width_original;
+              this.tmpCanvas.height = _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.height_original;
+              this.tmpCanvasCtx.drawImage(_config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.link, 0, 0);
 
-      //clone
-      this.clone_general(this.tmpCanvas, this.tmpCanvas, 'click', mouse);
+              //clone
+              this.clone_general(this.tmpCanvas, this.tmpCanvas, 'click', mouse);
 
-      //register tmp canvas for progress redraw
-      _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.link_canvas = this.tmpCanvas;
-      _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].need_render = true;
-    }
+              //register tmp canvas for progress redraw
+              _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.link_canvas = this.tmpCanvas;
+              _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].need_render = true;
+            case 11:
+            case "end":
+              return _context3.stop();
+          }
+        }, _callee3, this);
+      }));
+      function mousedown(_x2) {
+        return _mousedown.apply(this, arguments);
+      }
+      return mousedown;
+    }()
   }, {
     key: "mousemove",
     value: function mousemove(e) {
@@ -36277,16 +36464,18 @@ var Clone_class = /*#__PURE__*/function (_Base_tools_class) {
       this.clone_general(this.tmpCanvas, this.tmpCanvas, 'move', mouse);
 
       //draw draft preview
-      _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].need_render = true;
+      _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].need_render = true;
     }
   }, {
     key: "mouseup",
     value: function mouseup(e) {
+      //cleared before the started check: mousedown may still be awaiting a rasterize
+      this.pointer_down = false;
       if (this.started == false) {
         return;
       }
-      delete _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.link_canvas;
-      _app_js__WEBPACK_IMPORTED_MODULE_5__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_5__["default"].Actions.Bundle_action('clone_tool', 'Clone Tool', [new _app_js__WEBPACK_IMPORTED_MODULE_5__["default"].Actions.Update_layer_image_action(this.tmpCanvas)]));
+      delete _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.link_canvas;
+      _app_js__WEBPACK_IMPORTED_MODULE_7__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_7__["default"].Actions.Bundle_action('clone_tool', 'Clone Tool', [new _app_js__WEBPACK_IMPORTED_MODULE_7__["default"].Actions.Update_layer_image_action(this.tmpCanvas)]));
 
       //decrease memory
       this.tmpCanvas.width = 1;
@@ -36298,8 +36487,8 @@ var Clone_class = /*#__PURE__*/function (_Base_tools_class) {
     key: "clone_general",
     value: function clone_general(canvas_from, canvas_to, type, mouse) {
       var params = this.getParams();
-      var mouse_x = Math.round(mouse.x) - _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.x;
-      var mouse_y = Math.round(mouse.y) - _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.y;
+      var mouse_x = Math.round(mouse.x) - _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.x;
+      var mouse_y = Math.round(mouse.y) - _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.y;
       var half = Math.round(params.size / 2);
 
       //adapt to origin size
@@ -36326,9 +36515,9 @@ var Clone_class = /*#__PURE__*/function (_Base_tools_class) {
         ctx_source.clip();
       }
       if (params.source_layer.value == 'Previous') {
-        var previous_layer = this.Base_layers.find_previous(_config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.id);
-        x_from = Math.round(this.clone_coords.x - (mouse.click_x - mouse_x)) - previous_layer.x + _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.x;
-        y_from = Math.round(this.clone_coords.y - (mouse.click_y - mouse_y)) - previous_layer.y + _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.y;
+        var previous_layer = this.Base_layers.find_previous(_config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.id);
+        x_from = Math.round(this.clone_coords.x - (mouse.click_x - mouse_x)) - previous_layer.x + _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.x;
+        y_from = Math.round(this.clone_coords.y - (mouse.click_y - mouse_y)) - previous_layer.y + _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.y;
         ctx_source.drawImage(previous_layer.link, x_from - half, y_from - half, w, h, 0, 0, w, h);
       } else {
         ctx_source.drawImage(canvas_from, x_from - half, y_from - half, w, h, 0, 0, w, h);
@@ -36350,7 +36539,7 @@ var Clone_class = /*#__PURE__*/function (_Base_tools_class) {
       canvas_to.getContext("2d").drawImage(canvas_source, mouse_x - half, mouse_y - half);
     }
   }]);
-}(_core_base_tools_js__WEBPACK_IMPORTED_MODULE_7__["default"]);
+}(_core_base_tools_js__WEBPACK_IMPORTED_MODULE_9__["default"]);
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Clone_class);
 
 /***/ },
@@ -36714,25 +36903,30 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
-/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
-/* harmony import */ var _babel_runtime_helpers_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/possibleConstructorReturn */ "./node_modules/@babel/runtime/helpers/esm/possibleConstructorReturn.js");
-/* harmony import */ var _babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @babel/runtime/helpers/getPrototypeOf */ "./node_modules/@babel/runtime/helpers/esm/getPrototypeOf.js");
-/* harmony import */ var _babel_runtime_helpers_inherits__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @babel/runtime/helpers/inherits */ "./node_modules/@babel/runtime/helpers/esm/inherits.js");
-/* harmony import */ var _app_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./../app.js */ "./src/js/app.js");
-/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./../config.js */ "./src/js/config.js");
-/* harmony import */ var _core_base_tools_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./../core/base-tools.js */ "./src/js/core/base-tools.js");
-/* harmony import */ var _core_base_layers_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./../core/base-layers.js */ "./src/js/core/base-layers.js");
-/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./../../../node_modules/alertifyjs/build/alertify.min.js */ "./node_modules/alertifyjs/build/alertify.min.js");
-/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(_node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_9__);
-/* harmony import */ var _libs_imagefilters_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./../libs/imagefilters.js */ "./src/js/libs/imagefilters.js");
-/* harmony import */ var _libs_helpers_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./../libs/helpers.js */ "./src/js/libs/helpers.js");
+/* harmony import */ var _babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ "./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js");
+/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
+/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
+/* harmony import */ var _babel_runtime_helpers_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @babel/runtime/helpers/possibleConstructorReturn */ "./node_modules/@babel/runtime/helpers/esm/possibleConstructorReturn.js");
+/* harmony import */ var _babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @babel/runtime/helpers/getPrototypeOf */ "./node_modules/@babel/runtime/helpers/esm/getPrototypeOf.js");
+/* harmony import */ var _babel_runtime_helpers_inherits__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @babel/runtime/helpers/inherits */ "./node_modules/@babel/runtime/helpers/esm/inherits.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var _app_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./../app.js */ "./src/js/app.js");
+/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./../config.js */ "./src/js/config.js");
+/* harmony import */ var _core_base_tools_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./../core/base-tools.js */ "./src/js/core/base-tools.js");
+/* harmony import */ var _core_base_layers_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./../core/base-layers.js */ "./src/js/core/base-layers.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./../../../node_modules/alertifyjs/build/alertify.min.js */ "./node_modules/alertifyjs/build/alertify.min.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_11___default = /*#__PURE__*/__webpack_require__.n(_node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_11__);
+/* harmony import */ var _libs_imagefilters_js__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./../libs/imagefilters.js */ "./src/js/libs/imagefilters.js");
+/* harmony import */ var _libs_helpers_js__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./../libs/helpers.js */ "./src/js/libs/helpers.js");
 
 
 
 
 
-function _callSuper(t, o, e) { return o = (0,_babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_3__["default"])(o), (0,_babel_runtime_helpers_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_2__["default"])(t, _isNativeReflectConstruct() ? Reflect.construct(o, e || [], (0,_babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_3__["default"])(t).constructor) : o.apply(t, e)); }
+
+
+function _callSuper(t, o, e) { return o = (0,_babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_4__["default"])(o), (0,_babel_runtime_helpers_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_3__["default"])(t, _isNativeReflectConstruct() ? Reflect.construct(o, e || [], (0,_babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_4__["default"])(t).constructor) : o.apply(t, e)); }
 function _isNativeReflectConstruct() { try { var t = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); } catch (t) {} return (_isNativeReflectConstruct = function _isNativeReflectConstruct() { return !!t; })(); }
 
 
@@ -36744,19 +36938,20 @@ function _isNativeReflectConstruct() { try { var t = !Boolean.prototype.valueOf.
 var Desaturate_class = /*#__PURE__*/function (_Base_tools_class) {
   function Desaturate_class(ctx) {
     var _this;
-    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__["default"])(this, Desaturate_class);
+    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__["default"])(this, Desaturate_class);
     _this = _callSuper(this, Desaturate_class);
-    _this.Base_layers = new _core_base_layers_js__WEBPACK_IMPORTED_MODULE_8__["default"]();
-    _this.Helper = new _libs_helpers_js__WEBPACK_IMPORTED_MODULE_11__["default"]();
+    _this.Base_layers = new _core_base_layers_js__WEBPACK_IMPORTED_MODULE_10__["default"]();
+    _this.Helper = new _libs_helpers_js__WEBPACK_IMPORTED_MODULE_13__["default"]();
     _this.ctx = ctx;
     _this.name = 'desaturate';
     _this.tmpCanvas = null;
     _this.tmpCanvasCtx = null;
     _this.started = false;
+    _this.pointer_down = false;
     return _this;
   }
-  (0,_babel_runtime_helpers_inherits__WEBPACK_IMPORTED_MODULE_4__["default"])(Desaturate_class, _Base_tools_class);
-  return (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__["default"])(Desaturate_class, [{
+  (0,_babel_runtime_helpers_inherits__WEBPACK_IMPORTED_MODULE_5__["default"])(Desaturate_class, _Base_tools_class);
+  return (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__["default"])(Desaturate_class, [{
     key: "load",
     value: function load() {
       this.default_events();
@@ -36764,7 +36959,7 @@ var Desaturate_class = /*#__PURE__*/function (_Base_tools_class) {
   }, {
     key: "default_dragMove",
     value: function default_dragMove(event) {
-      if (_config_js__WEBPACK_IMPORTED_MODULE_6__["default"].TOOL.name != this.name) return;
+      if (_config_js__WEBPACK_IMPORTED_MODULE_8__["default"].TOOL.name != this.name) return;
       this.mousemove(event);
 
       //mouse cursor
@@ -36774,36 +36969,88 @@ var Desaturate_class = /*#__PURE__*/function (_Base_tools_class) {
     }
   }, {
     key: "mousedown",
-    value: function mousedown(e) {
-      this.started = false;
-      var mouse = this.get_mouse_info(e);
-      var params = this.getParams();
-      if (mouse.click_valid == false) {
-        return;
+    value: function () {
+      var _mousedown = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_6___default().mark(function _callee(e) {
+        var mouse, params, ready;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_6___default().wrap(function (_context) {
+          while (1) switch (_context.prev = _context.next) {
+            case 0:
+              this.started = false;
+              this.pointer_down = true;
+              mouse = this.get_mouse_info(e);
+              params = this.getParams();
+              if (!(mouse.click_valid == false)) {
+                _context.next = 1;
+                break;
+              }
+              return _context.abrupt("return");
+            case 1:
+              if (!(_config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.type != 'image' || _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.is_vector == true)) {
+                _context.next = 4;
+                break;
+              }
+              _context.next = 2;
+              return this.rasterize_active_layer('desaturated');
+            case 2:
+              ready = _context.sent;
+              if (!(ready == false)) {
+                _context.next = 3;
+                break;
+              }
+              return _context.abrupt("return");
+            case 3:
+              if (!(this.pointer_down == false)) {
+                _context.next = 4;
+                break;
+              }
+              //released while converting - apply the click and commit it, rather than leaving a
+              //stroke that silently did nothing
+              this.begin_stroke(mouse, params);
+              return _context.abrupt("return", this.mouseup(e));
+            case 4:
+              if (!(_config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.rotate || 0 > 0)) {
+                _context.next = 5;
+                break;
+              }
+              _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_11___default().error('Erase on rotate object is disabled. Please rasterize first.');
+              return _context.abrupt("return");
+            case 5:
+              this.begin_stroke(mouse, params);
+            case 6:
+            case "end":
+              return _context.stop();
+          }
+        }, _callee, this);
+      }));
+      function mousedown(_x) {
+        return _mousedown.apply(this, arguments);
       }
-      if (_config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.type != 'image') {
-        _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_9___default().error('This layer must contain an image. Please convert it to raster to apply this tool.');
-        return;
-      }
-      if (_config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.rotate || 0 > 0) {
-        _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_9___default().error('Erase on rotate object is disabled. Please rasterize first.');
-        return;
-      }
+      return mousedown;
+    }()
+    /**
+     * Take a working copy of the layer image and apply the first dab to it.
+     *
+     * @param {object} mouse
+     * @param {object} params
+     */
+  }, {
+    key: "begin_stroke",
+    value: function begin_stroke(mouse, params) {
       this.started = true;
 
       //get canvas from layer
       this.tmpCanvas = document.createElement('canvas');
       this.tmpCanvasCtx = this.tmpCanvas.getContext("2d");
-      this.tmpCanvas.width = _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.width_original;
-      this.tmpCanvas.height = _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.height_original;
-      this.tmpCanvasCtx.drawImage(_config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.link, 0, 0);
+      this.tmpCanvas.width = _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.width_original;
+      this.tmpCanvas.height = _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.height_original;
+      this.tmpCanvasCtx.drawImage(_config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.link, 0, 0);
 
       //do desaturate
       this.desaturate_general('click', mouse, params.size, params.anti_aliasing);
 
       //register tmp canvas for faster redraw
-      _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.link_canvas = this.tmpCanvas;
-      _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].need_render = true;
+      _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.link_canvas = this.tmpCanvas;
+      _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].need_render = true;
     }
   }, {
     key: "mousemove",
@@ -36822,16 +37069,19 @@ var Desaturate_class = /*#__PURE__*/function (_Base_tools_class) {
       this.desaturate_general('move', mouse, params.size, params.anti_aliasing);
 
       //draw draft preview
-      _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].need_render = true;
+      _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].need_render = true;
     }
   }, {
     key: "mouseup",
     value: function mouseup(e) {
+      //cleared before the started check: mousedown may still be awaiting a rasterize and needs
+      //to know the button has already been released
+      this.pointer_down = false;
       if (this.started == false) {
         return;
       }
-      delete _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.link_canvas;
-      _app_js__WEBPACK_IMPORTED_MODULE_5__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_5__["default"].Actions.Bundle_action('desaturate_tool', 'Desaturate Tool', [new _app_js__WEBPACK_IMPORTED_MODULE_5__["default"].Actions.Update_layer_image_action(this.tmpCanvas)]));
+      delete _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.link_canvas;
+      _app_js__WEBPACK_IMPORTED_MODULE_7__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_7__["default"].Actions.Bundle_action('desaturate_tool', 'Desaturate Tool', [new _app_js__WEBPACK_IMPORTED_MODULE_7__["default"].Actions.Update_layer_image_action(this.tmpCanvas)]));
 
       //decrease memory
       this.tmpCanvas.width = 1;
@@ -36843,8 +37093,8 @@ var Desaturate_class = /*#__PURE__*/function (_Base_tools_class) {
     key: "desaturate_general",
     value: function desaturate_general(type, mouse, size, anti_aliasing) {
       var ctx = this.tmpCanvasCtx;
-      var mouse_x = Math.round(mouse.x) - _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.x;
-      var mouse_y = Math.round(mouse.y) - _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.y;
+      var mouse_x = Math.round(mouse.x) - _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.x;
+      var mouse_y = Math.round(mouse.y) - _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.y;
 
       //adapt to origin size
       mouse_x = this.adaptSize(mouse_x, 'width');
@@ -36862,11 +37112,11 @@ var Desaturate_class = /*#__PURE__*/function (_Base_tools_class) {
       mouse_x = Math.round(mouse_x);
       mouse_y = Math.round(mouse_y);
       var imageData = ctx.getImageData(center_x, center_y, size_w, size_h);
-      var filtered = _libs_imagefilters_js__WEBPACK_IMPORTED_MODULE_10__["default"].GrayScale(imageData); //add effect
+      var filtered = _libs_imagefilters_js__WEBPACK_IMPORTED_MODULE_12__["default"].GrayScale(imageData); //add effect
       this.Helper.image_round(this.tmpCanvasCtx, mouse_x, mouse_y, size_w, size_h, filtered, anti_aliasing);
     }
   }]);
-}(_core_base_tools_js__WEBPACK_IMPORTED_MODULE_7__["default"]);
+}(_core_base_tools_js__WEBPACK_IMPORTED_MODULE_9__["default"]);
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Desaturate_class);
 
 /***/ },
@@ -43571,25 +43821,30 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
-/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
-/* harmony import */ var _babel_runtime_helpers_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/possibleConstructorReturn */ "./node_modules/@babel/runtime/helpers/esm/possibleConstructorReturn.js");
-/* harmony import */ var _babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @babel/runtime/helpers/getPrototypeOf */ "./node_modules/@babel/runtime/helpers/esm/getPrototypeOf.js");
-/* harmony import */ var _babel_runtime_helpers_inherits__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @babel/runtime/helpers/inherits */ "./node_modules/@babel/runtime/helpers/esm/inherits.js");
-/* harmony import */ var _app_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./../app.js */ "./src/js/app.js");
-/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./../config.js */ "./src/js/config.js");
-/* harmony import */ var _core_base_tools_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./../core/base-tools.js */ "./src/js/core/base-tools.js");
-/* harmony import */ var _core_base_layers_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./../core/base-layers.js */ "./src/js/core/base-layers.js");
-/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./../../../node_modules/alertifyjs/build/alertify.min.js */ "./node_modules/alertifyjs/build/alertify.min.js");
-/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(_node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_9__);
-/* harmony import */ var _libs_imagefilters_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./../libs/imagefilters.js */ "./src/js/libs/imagefilters.js");
-/* harmony import */ var _libs_helpers_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./../libs/helpers.js */ "./src/js/libs/helpers.js");
+/* harmony import */ var _babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ "./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js");
+/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
+/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
+/* harmony import */ var _babel_runtime_helpers_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @babel/runtime/helpers/possibleConstructorReturn */ "./node_modules/@babel/runtime/helpers/esm/possibleConstructorReturn.js");
+/* harmony import */ var _babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @babel/runtime/helpers/getPrototypeOf */ "./node_modules/@babel/runtime/helpers/esm/getPrototypeOf.js");
+/* harmony import */ var _babel_runtime_helpers_inherits__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @babel/runtime/helpers/inherits */ "./node_modules/@babel/runtime/helpers/esm/inherits.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var _app_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./../app.js */ "./src/js/app.js");
+/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./../config.js */ "./src/js/config.js");
+/* harmony import */ var _core_base_tools_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./../core/base-tools.js */ "./src/js/core/base-tools.js");
+/* harmony import */ var _core_base_layers_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./../core/base-layers.js */ "./src/js/core/base-layers.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./../../../node_modules/alertifyjs/build/alertify.min.js */ "./node_modules/alertifyjs/build/alertify.min.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_11___default = /*#__PURE__*/__webpack_require__.n(_node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_11__);
+/* harmony import */ var _libs_imagefilters_js__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./../libs/imagefilters.js */ "./src/js/libs/imagefilters.js");
+/* harmony import */ var _libs_helpers_js__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./../libs/helpers.js */ "./src/js/libs/helpers.js");
 
 
 
 
 
-function _callSuper(t, o, e) { return o = (0,_babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_3__["default"])(o), (0,_babel_runtime_helpers_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_2__["default"])(t, _isNativeReflectConstruct() ? Reflect.construct(o, e || [], (0,_babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_3__["default"])(t).constructor) : o.apply(t, e)); }
+
+
+function _callSuper(t, o, e) { return o = (0,_babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_4__["default"])(o), (0,_babel_runtime_helpers_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_3__["default"])(t, _isNativeReflectConstruct() ? Reflect.construct(o, e || [], (0,_babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_4__["default"])(t).constructor) : o.apply(t, e)); }
 function _isNativeReflectConstruct() { try { var t = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); } catch (t) {} return (_isNativeReflectConstruct = function _isNativeReflectConstruct() { return !!t; })(); }
 
 
@@ -43601,19 +43856,20 @@ function _isNativeReflectConstruct() { try { var t = !Boolean.prototype.valueOf.
 var Sharpen_class = /*#__PURE__*/function (_Base_tools_class) {
   function Sharpen_class(ctx) {
     var _this;
-    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__["default"])(this, Sharpen_class);
+    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__["default"])(this, Sharpen_class);
     _this = _callSuper(this, Sharpen_class);
-    _this.Base_layers = new _core_base_layers_js__WEBPACK_IMPORTED_MODULE_8__["default"]();
-    _this.Helper = new _libs_helpers_js__WEBPACK_IMPORTED_MODULE_11__["default"]();
+    _this.Base_layers = new _core_base_layers_js__WEBPACK_IMPORTED_MODULE_10__["default"]();
+    _this.Helper = new _libs_helpers_js__WEBPACK_IMPORTED_MODULE_13__["default"]();
     _this.ctx = ctx;
     _this.name = 'sharpen';
     _this.tmpCanvas = null;
     _this.tmpCanvasCtx = null;
     _this.started = false;
+    _this.pointer_down = false;
     return _this;
   }
-  (0,_babel_runtime_helpers_inherits__WEBPACK_IMPORTED_MODULE_4__["default"])(Sharpen_class, _Base_tools_class);
-  return (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__["default"])(Sharpen_class, [{
+  (0,_babel_runtime_helpers_inherits__WEBPACK_IMPORTED_MODULE_5__["default"])(Sharpen_class, _Base_tools_class);
+  return (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__["default"])(Sharpen_class, [{
     key: "load",
     value: function load() {
       this.default_events();
@@ -43621,7 +43877,7 @@ var Sharpen_class = /*#__PURE__*/function (_Base_tools_class) {
   }, {
     key: "default_dragMove",
     value: function default_dragMove(event) {
-      if (_config_js__WEBPACK_IMPORTED_MODULE_6__["default"].TOOL.name != this.name) return;
+      if (_config_js__WEBPACK_IMPORTED_MODULE_8__["default"].TOOL.name != this.name) return;
       this.mousemove(event);
 
       //mouse cursor
@@ -43631,36 +43887,88 @@ var Sharpen_class = /*#__PURE__*/function (_Base_tools_class) {
     }
   }, {
     key: "mousedown",
-    value: function mousedown(e) {
-      this.started = false;
-      var mouse = this.get_mouse_info(e);
-      var params = this.getParams();
-      if (mouse.click_valid == false) {
-        return;
+    value: function () {
+      var _mousedown = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_6___default().mark(function _callee(e) {
+        var mouse, params, ready;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_6___default().wrap(function (_context) {
+          while (1) switch (_context.prev = _context.next) {
+            case 0:
+              this.started = false;
+              this.pointer_down = true;
+              mouse = this.get_mouse_info(e);
+              params = this.getParams();
+              if (!(mouse.click_valid == false)) {
+                _context.next = 1;
+                break;
+              }
+              return _context.abrupt("return");
+            case 1:
+              if (!(_config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.type != 'image' || _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.is_vector == true)) {
+                _context.next = 4;
+                break;
+              }
+              _context.next = 2;
+              return this.rasterize_active_layer('sharpened');
+            case 2:
+              ready = _context.sent;
+              if (!(ready == false)) {
+                _context.next = 3;
+                break;
+              }
+              return _context.abrupt("return");
+            case 3:
+              if (!(this.pointer_down == false)) {
+                _context.next = 4;
+                break;
+              }
+              //released while converting - apply the click and commit it, rather than leaving a
+              //stroke that silently did nothing
+              this.begin_stroke(mouse, params);
+              return _context.abrupt("return", this.mouseup(e));
+            case 4:
+              if (!(_config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.rotate || 0 > 0)) {
+                _context.next = 5;
+                break;
+              }
+              _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_11___default().error('Erase on rotate object is disabled. Please rasterize first.');
+              return _context.abrupt("return");
+            case 5:
+              this.begin_stroke(mouse, params);
+            case 6:
+            case "end":
+              return _context.stop();
+          }
+        }, _callee, this);
+      }));
+      function mousedown(_x) {
+        return _mousedown.apply(this, arguments);
       }
-      if (_config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.type != 'image') {
-        _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_9___default().error('This layer must contain an image. Please convert it to raster to apply this tool.');
-        return;
-      }
-      if (_config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.rotate || 0 > 0) {
-        _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_9___default().error('Erase on rotate object is disabled. Please rasterize first.');
-        return;
-      }
+      return mousedown;
+    }()
+    /**
+     * Take a working copy of the layer image and apply the first dab to it.
+     *
+     * @param {object} mouse
+     * @param {object} params
+     */
+  }, {
+    key: "begin_stroke",
+    value: function begin_stroke(mouse, params) {
       this.started = true;
 
       //get canvas from layer
       this.tmpCanvas = document.createElement('canvas');
       this.tmpCanvasCtx = this.tmpCanvas.getContext("2d");
-      this.tmpCanvas.width = _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.width_original;
-      this.tmpCanvas.height = _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.height_original;
-      this.tmpCanvasCtx.drawImage(_config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.link, 0, 0);
+      this.tmpCanvas.width = _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.width_original;
+      this.tmpCanvas.height = _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.height_original;
+      this.tmpCanvasCtx.drawImage(_config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.link, 0, 0);
 
       //do sharpen
       this.sharpen_general('click', mouse, params.size);
 
       //register tmp canvas for faster redraw
-      _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.link_canvas = this.tmpCanvas;
-      _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].need_render = true;
+      _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.link_canvas = this.tmpCanvas;
+      _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].need_render = true;
     }
   }, {
     key: "mousemove",
@@ -43679,16 +43987,19 @@ var Sharpen_class = /*#__PURE__*/function (_Base_tools_class) {
       this.sharpen_general('move', mouse, params.size);
 
       //draw draft preview
-      _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].need_render = true;
+      _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].need_render = true;
     }
   }, {
     key: "mouseup",
     value: function mouseup(e) {
+      //cleared before the started check: mousedown may still be awaiting a rasterize and needs
+      //to know the button has already been released
+      this.pointer_down = false;
       if (this.started == false) {
         return;
       }
-      delete _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.link_canvas;
-      _app_js__WEBPACK_IMPORTED_MODULE_5__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_5__["default"].Actions.Bundle_action('sharpen_tool', 'Sharpen Tool', [new _app_js__WEBPACK_IMPORTED_MODULE_5__["default"].Actions.Update_layer_image_action(this.tmpCanvas)]));
+      delete _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.link_canvas;
+      _app_js__WEBPACK_IMPORTED_MODULE_7__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_7__["default"].Actions.Bundle_action('sharpen_tool', 'Sharpen Tool', [new _app_js__WEBPACK_IMPORTED_MODULE_7__["default"].Actions.Update_layer_image_action(this.tmpCanvas)]));
 
       //decrease memory
       this.tmpCanvas.width = 1;
@@ -43700,8 +44011,8 @@ var Sharpen_class = /*#__PURE__*/function (_Base_tools_class) {
     key: "sharpen_general",
     value: function sharpen_general(type, mouse, size) {
       var ctx = this.tmpCanvasCtx;
-      var mouse_x = Math.round(mouse.x) - _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.x;
-      var mouse_y = Math.round(mouse.y) - _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.y;
+      var mouse_x = Math.round(mouse.x) - _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.x;
+      var mouse_y = Math.round(mouse.y) - _config_js__WEBPACK_IMPORTED_MODULE_8__["default"].layer.y;
 
       //adapt to origin size
       mouse_x = this.adaptSize(mouse_x, 'width');
@@ -43723,11 +44034,11 @@ var Sharpen_class = /*#__PURE__*/function (_Base_tools_class) {
         power = power / 10;
       }
       var imageData = ctx.getImageData(center_x, center_y, size_w, size_h);
-      var filtered = _libs_imagefilters_js__WEBPACK_IMPORTED_MODULE_10__["default"].Sharpen(imageData, power); //add effect
+      var filtered = _libs_imagefilters_js__WEBPACK_IMPORTED_MODULE_12__["default"].Sharpen(imageData, power); //add effect
       this.Helper.image_round(this.tmpCanvasCtx, mouse_x, mouse_y, size_w, size_h, filtered);
     }
   }]);
-}(_core_base_tools_js__WEBPACK_IMPORTED_MODULE_7__["default"]);
+}(_core_base_tools_js__WEBPACK_IMPORTED_MODULE_9__["default"]);
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Sharpen_class);
 
 /***/ },
