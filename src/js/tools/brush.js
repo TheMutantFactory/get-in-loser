@@ -2,6 +2,7 @@ import app from './../app.js';
 import config from './../config.js';
 import Base_tools_class from './../core/base-tools.js';
 import Base_layers_class from './../core/base-layers.js';
+import {nib_origin, stroke_nibs} from './../core/pixel-paint.js';
 
 class Brush_class extends Base_tools_class {
 
@@ -340,6 +341,12 @@ class Brush_class extends Base_tools_class {
 		if (layer.data.length == 0)
 			return;
 
+		if (config.PIXEL_MODE) {
+			//A brush stroke is a vector path with round caps. That is the right brush and the
+			//wrong one for pixel art, where a pixel is painted or it is not.
+			return this.render_pixel(ctx, layer);
+		}
+
 		var params = layer.params;
 		var size = params.size;
 
@@ -407,6 +414,72 @@ class Brush_class extends Base_tools_class {
 		}
 
 		ctx.translate(-layer.x, -layer.y);
+		ctx.restore();
+	}
+
+	/**
+	 * Pixel mode: the same stroke, plotted as whole pixels.
+	 *
+	 * Square nib, hard edges, no anti-aliasing and no round caps. Gaps between reported mouse
+	 * points are filled with a connected Bresenham run, so a fast stroke has no holes - the thing
+	 * a round-capped path was hiding.
+	 *
+	 * @param {object} ctx
+	 * @param {object} layer
+	 */
+	render_pixel(ctx, layer) {
+		var params = layer.params;
+		var size = params.size;
+
+		ctx.save();
+		ctx.fillStyle = layer.color;
+		//belt and braces: nothing here should be able to produce a soft edge
+		ctx.imageSmoothingEnabled = false;
+
+		//NO ctx.translate(layer.x, layer.y). A layer origin is a float - check_dimensions derives
+		//it from the stroke's bounding box - so translating by it shifts every integer fillRect
+		//onto a fractional device coordinate and the canvas anti-aliases the edges back in. The
+		//offset is added per point instead, so it is the FINAL coordinate that gets snapped.
+		var origin_x = layer.x;
+		var origin_y = layer.y;
+
+		var data = this.check_legacy_format(layer.data);
+
+		for (var k = 0; k < data.length; k++) {
+			var group_data = data[k];
+			var previous = null;
+
+			for (var i = 0; i < group_data.length; i++) {
+				var point = group_data[i];
+
+				if (point === null) {
+					//break in the stroke
+					previous = null;
+					continue;
+				}
+
+				//per-point size when pressure is on, the tool size otherwise
+				var point_size = params.pressure && point[2] != undefined ? point[2] : size;
+
+				if (previous === null) {
+					var nib = nib_origin(origin_x + point[0], origin_y + point[1], point_size);
+					ctx.fillRect(nib.x, nib.y, nib.size, nib.size);
+				}
+				else {
+					var nibs = stroke_nibs(
+						origin_x + previous[0], origin_y + previous[1],
+						origin_x + point[0], origin_y + point[1],
+						point_size
+					);
+					for (var j = 0; j < nibs.length; j++) {
+						ctx.fillRect(nibs[j].x, nibs[j].y, nibs[j].size, nibs[j].size);
+					}
+				}
+
+				previous = point;
+			}
+		}
+
 		ctx.restore();
 	}
 

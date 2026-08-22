@@ -3,6 +3,7 @@ import config from './../config.js';
 import Base_tools_class from './../core/base-tools.js';
 import Base_layers_class from './../core/base-layers.js';
 import alertify from './../../../node_modules/alertifyjs/build/alertify.min.js';
+import {nib_origin, stroke_nibs} from './../core/pixel-paint.js';
 
 class Erase_class extends Base_tools_class {
 
@@ -132,6 +133,13 @@ class Erase_class extends Base_tools_class {
 	}
 
 	erase_general(ctx, type, mouse, size, strict, is_circle, is_touch) {
+		if (config.PIXEL_MODE) {
+			//A circular nib with a soft edge subtracts PART of a pixel's alpha, which leaves a
+			//ghost and reads as the eraser not working. In pixel mode a pixel is cleared or it is
+			//left alone.
+			return this.erase_pixel(ctx, type, mouse, size, is_touch);
+		}
+
 		var mouse_x = Math.round(mouse.x) - config.layer.x;
 		var mouse_y = Math.round(mouse.y) - config.layer.y;
 		var alpha = config.ALPHA;
@@ -203,5 +211,63 @@ class Erase_class extends Base_tools_class {
 		}
 	}
 
+	/**
+	 * Pixel mode: clear whole pixels, all of the alpha, none of the neighbours.
+	 *
+	 * Square nib regardless of the circle setting, and full alpha regardless of the strict setting
+	 * - both of those exist to soften the edge, which is the thing that made this look broken.
+	 *
+	 * @param {object} ctx
+	 * @param {string} type 'click' or 'move'
+	 * @param {object} mouse
+	 * @param {int} size
+	 * @param {boolean} is_touch
+	 */
+	erase_pixel(ctx, type, mouse, size, is_touch) {
+		var layer = config.layer;
+
+		//mousedown scaled this context by width_original/width so layer coordinates land on the
+		//original image. That scale is a float on any resized layer, and a scaled integer is not
+		//an integer - so the transform is reset and the scaling done here, where the result can be
+		//snapped afterwards. On an unresized layer both factors are 1 and this changes nothing.
+		var scale_x = layer.width ? layer.width_original / layer.width : 1;
+		var scale_y = layer.height ? layer.height_original / layer.height : 1;
+		if (!isFinite(scale_x) || scale_x <= 0) scale_x = 1;
+		if (!isFinite(scale_y) || scale_y <= 0) scale_y = 1;
+
+		var to_image_x = (v) => (v - layer.x) * scale_x;
+		var to_image_y = (v) => (v - layer.y) * scale_y;
+
+		ctx.save();
+		ctx.setTransform(1, 0, 0, 1, 0, 0);
+		ctx.globalCompositeOperation = 'destination-out';
+		//opaque: destination-out removes as much alpha as it lays down, so anything less than 1
+		//leaves the pixel partly painted - which is the ghost that read as "it does not erase"
+		ctx.fillStyle = 'rgba(255, 255, 255, 1)';
+		ctx.imageSmoothingEnabled = false;
+
+		var x = to_image_x(mouse.x);
+		var y = to_image_y(mouse.y);
+		var nib_size = Math.max(1, Math.round(size * scale_x));
+		var has_last = mouse.last_x !== false && mouse.last_x != null
+			&& mouse.last_y !== false && mouse.last_y != null;
+
+		if (type === 'move' && has_last && is_touch !== true) {
+			//fill the gap a fast drag leaves between reported points
+			var nibs = stroke_nibs(
+				to_image_x(mouse.last_x), to_image_y(mouse.last_y), x, y, nib_size
+			);
+			for (var i = 0; i < nibs.length; i++) {
+				ctx.fillRect(nibs[i].x, nibs[i].y, nibs[i].size, nibs[i].size);
+			}
+		}
+		else {
+			var nib = nib_origin(x, y, nib_size);
+			ctx.fillRect(nib.x, nib.y, nib.size, nib.size);
+		}
+
+		ctx.restore();
+	}
 }
+
 export default Erase_class;

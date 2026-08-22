@@ -14167,6 +14167,149 @@ function grid_line_positions(state) {
 
 /***/ },
 
+/***/ "./src/js/core/pixel-paint.js"
+/*!************************************!*\
+  !*** ./src/js/core/pixel-paint.js ***!
+  \************************************/
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   MAX_LINE_PIXELS: () => (/* binding */ MAX_LINE_PIXELS),
+/* harmony export */   MIN_NIB: () => (/* binding */ MIN_NIB),
+/* harmony export */   line_pixels: () => (/* binding */ line_pixels),
+/* harmony export */   nib_origin: () => (/* binding */ nib_origin),
+/* harmony export */   snap: () => (/* binding */ snap),
+/* harmony export */   stroke_nibs: () => (/* binding */ stroke_nibs)
+/* harmony export */ });
+/*
+ * get-in-loser - derivative of miniPaint (https://github.com/viliusle/miniPaint)
+ *
+ * Whole-pixel plotting for the painting tools in pixel mode. Pure - see tests/pixel-paint.test.js.
+ *
+ * WHY THIS EXISTS. Pixel mode originally only changed how the canvas was SAMPLED (nearest
+ * neighbour) and drew a grid over it. No tool consulted it. The pencil looked correct because it
+ * has always plotted with fillRect on integer coordinates; the brush and eraser are vector tools -
+ * stroked paths with round caps at float coordinates - so in pixel mode the brush laid down
+ * feathered sub-pixel coverage and the eraser subtracted PART of a pixel's alpha, which reads as
+ * not erasing at all. Reported from the app itself, with a screenshot that showed "PENCIL" snapped
+ * to the grid next to a smooth anti-aliased "Brush".
+ *
+ * A pixel is either painted or it is not. Everything here works in whole pixels so a tool cannot
+ * produce partial coverage even by accident.
+ */
+
+/** A nib is at least one pixel; a zero-size nib paints nothing and reads as a broken tool. */
+var MIN_NIB = 1;
+
+/** Guard against a pathological line eating the frame. Far beyond any real canvas diagonal. */
+var MAX_LINE_PIXELS = 20000;
+
+/**
+ * The pixel a float coordinate falls inside.
+ *
+ * Math.floor, not Math.round: a canvas pixel spans [n, n+1), so the point 3.7 is inside pixel 3.
+ * Rounding would put it in pixel 4 and shift every stroke half a pixel down and right.
+ *
+ * @param {number} value
+ * @returns {number}
+ */
+function snap(value) {
+  return Math.floor(value);
+}
+
+/**
+ * Top left corner of a square nib centred on a point, in whole pixels.
+ *
+ * Even sizes cannot be centred exactly, so they sit one pixel up and left of centre - consistent
+ * for every stroke, which matters more than which way it leans.
+ *
+ * @param {number} x
+ * @param {number} y
+ * @param {number} size nib width in pixels
+ * @returns {object} keys: x, y, size
+ */
+function nib_origin(x, y, size) {
+  var s = Math.max(MIN_NIB, Math.round(size) || MIN_NIB);
+  var half = Math.floor((s - 1) / 2);
+  return {
+    x: snap(x) - half,
+    y: snap(y) - half,
+    size: s
+  };
+}
+
+/**
+ * Every whole pixel along a line, endpoints included - Bresenham.
+ *
+ * The tools need this because a mouse moving quickly reports points several pixels apart, and the
+ * gap has to be filled. Bresenham gives a CONNECTED run: consecutive pixels always touch, so a
+ * fast stroke has no holes. Sampling a line by distance (what the pencil does) both skips pixels
+ * and plots some twice.
+ *
+ * @param {number} from_x
+ * @param {number} from_y
+ * @param {number} to_x
+ * @param {number} to_y
+ * @param {number} limit optional cap on the number of pixels returned
+ * @returns {array} [{x, y}] in order, from -> to
+ */
+function line_pixels(from_x, from_y, to_x, to_y, limit) {
+  var max = limit != undefined ? limit : MAX_LINE_PIXELS;
+  var x0 = snap(from_x);
+  var y0 = snap(from_y);
+  var x1 = snap(to_x);
+  var y1 = snap(to_y);
+  if (!isFinite(x0) || !isFinite(y0) || !isFinite(x1) || !isFinite(y1)) {
+    return [];
+  }
+  var dx = Math.abs(x1 - x0);
+  var dy = -Math.abs(y1 - y0);
+  var step_x = x0 < x1 ? 1 : -1;
+  var step_y = y0 < y1 ? 1 : -1;
+  var error = dx + dy;
+  var pixels = [];
+  while (pixels.length < max) {
+    pixels.push({
+      x: x0,
+      y: y0
+    });
+    if (x0 === x1 && y0 === y1) {
+      break;
+    }
+    var doubled = 2 * error;
+    if (doubled >= dy) {
+      error += dy;
+      x0 += step_x;
+    }
+    if (doubled <= dx) {
+      error += dx;
+      y0 += step_y;
+    }
+  }
+  return pixels;
+}
+
+/**
+ * The nibs to paint for a stroke from one point to another.
+ *
+ * @param {number} from_x
+ * @param {number} from_y
+ * @param {number} to_x
+ * @param {number} to_y
+ * @param {number} size
+ * @returns {array} [{x, y, size}] top left corners, ready for fillRect
+ */
+function stroke_nibs(from_x, from_y, to_x, to_y, size) {
+  return line_pixels(from_x, from_y, to_x, to_y).map(function (p) {
+    return nib_origin(p.x, p.y, size);
+  });
+}
+
+
+/***/ },
+
 /***/ "./src/js/libs/canvastotiff.js"
 /*!*************************************!*\
   !*** ./src/js/libs/canvastotiff.js ***!
@@ -35062,6 +35205,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./../config.js */ "./src/js/config.js");
 /* harmony import */ var _core_base_tools_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./../core/base-tools.js */ "./src/js/core/base-tools.js");
 /* harmony import */ var _core_base_layers_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./../core/base-layers.js */ "./src/js/core/base-layers.js");
+/* harmony import */ var _core_pixel_paint_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./../core/pixel-paint.js */ "./src/js/core/pixel-paint.js");
 
 
 
@@ -35069,6 +35213,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function _callSuper(t, o, e) { return o = (0,_babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_3__["default"])(o), (0,_babel_runtime_helpers_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_2__["default"])(t, _isNativeReflectConstruct() ? Reflect.construct(o, e || [], (0,_babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_3__["default"])(t).constructor) : o.apply(t, e)); }
 function _isNativeReflectConstruct() { try { var t = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); } catch (t) {} return (_isNativeReflectConstruct = function _isNativeReflectConstruct() { return !!t; })(); }
+
 
 
 
@@ -35372,6 +35517,11 @@ var Brush_class = /*#__PURE__*/function (_Base_tools_class) {
     key: "render",
     value: function render(ctx, layer) {
       if (layer.data.length == 0) return;
+      if (_config_js__WEBPACK_IMPORTED_MODULE_6__["default"].PIXEL_MODE) {
+        //A brush stroke is a vector path with round caps. That is the right brush and the
+        //wrong one for pixel art, where a pixel is painted or it is not.
+        return this.render_pixel(ctx, layer);
+      }
       var params = layer.params;
       var size = params.size;
 
@@ -35430,6 +35580,61 @@ var Brush_class = /*#__PURE__*/function (_Base_tools_class) {
         }
       }
       ctx.translate(-layer.x, -layer.y);
+      ctx.restore();
+    }
+
+    /**
+     * Pixel mode: the same stroke, plotted as whole pixels.
+     *
+     * Square nib, hard edges, no anti-aliasing and no round caps. Gaps between reported mouse
+     * points are filled with a connected Bresenham run, so a fast stroke has no holes - the thing
+     * a round-capped path was hiding.
+     *
+     * @param {object} ctx
+     * @param {object} layer
+     */
+  }, {
+    key: "render_pixel",
+    value: function render_pixel(ctx, layer) {
+      var params = layer.params;
+      var size = params.size;
+      ctx.save();
+      ctx.fillStyle = layer.color;
+      //belt and braces: nothing here should be able to produce a soft edge
+      ctx.imageSmoothingEnabled = false;
+
+      //NO ctx.translate(layer.x, layer.y). A layer origin is a float - check_dimensions derives
+      //it from the stroke's bounding box - so translating by it shifts every integer fillRect
+      //onto a fractional device coordinate and the canvas anti-aliases the edges back in. The
+      //offset is added per point instead, so it is the FINAL coordinate that gets snapped.
+      var origin_x = layer.x;
+      var origin_y = layer.y;
+      var data = this.check_legacy_format(layer.data);
+      for (var k = 0; k < data.length; k++) {
+        var group_data = data[k];
+        var previous = null;
+        for (var i = 0; i < group_data.length; i++) {
+          var point = group_data[i];
+          if (point === null) {
+            //break in the stroke
+            previous = null;
+            continue;
+          }
+
+          //per-point size when pressure is on, the tool size otherwise
+          var point_size = params.pressure && point[2] != undefined ? point[2] : size;
+          if (previous === null) {
+            var nib = (0,_core_pixel_paint_js__WEBPACK_IMPORTED_MODULE_9__.nib_origin)(origin_x + point[0], origin_y + point[1], point_size);
+            ctx.fillRect(nib.x, nib.y, nib.size, nib.size);
+          } else {
+            var nibs = (0,_core_pixel_paint_js__WEBPACK_IMPORTED_MODULE_9__.stroke_nibs)(origin_x + previous[0], origin_y + previous[1], origin_x + point[0], origin_y + point[1], point_size);
+            for (var j = 0; j < nibs.length; j++) {
+              ctx.fillRect(nibs[j].x, nibs[j].y, nibs[j].size, nibs[j].size);
+            }
+          }
+          previous = point;
+        }
+      }
       ctx.restore();
     }
 
@@ -36611,6 +36816,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _core_base_layers_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./../core/base-layers.js */ "./src/js/core/base-layers.js");
 /* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./../../../node_modules/alertifyjs/build/alertify.min.js */ "./node_modules/alertifyjs/build/alertify.min.js");
 /* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(_node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_9__);
+/* harmony import */ var _core_pixel_paint_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./../core/pixel-paint.js */ "./src/js/core/pixel-paint.js");
 
 
 
@@ -36618,6 +36824,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function _callSuper(t, o, e) { return o = (0,_babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_3__["default"])(o), (0,_babel_runtime_helpers_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_2__["default"])(t, _isNativeReflectConstruct() ? Reflect.construct(o, e || [], (0,_babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_3__["default"])(t).constructor) : o.apply(t, e)); }
 function _isNativeReflectConstruct() { try { var t = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); } catch (t) {} return (_isNativeReflectConstruct = function _isNativeReflectConstruct() { return !!t; })(); }
+
 
 
 
@@ -36745,6 +36952,12 @@ var Erase_class = /*#__PURE__*/function (_Base_tools_class) {
   }, {
     key: "erase_general",
     value: function erase_general(ctx, type, mouse, size, strict, is_circle, is_touch) {
+      if (_config_js__WEBPACK_IMPORTED_MODULE_6__["default"].PIXEL_MODE) {
+        //A circular nib with a soft edge subtracts PART of a pixel's alpha, which leaves a
+        //ghost and reads as the eraser not working. In pixel mode a pixel is cleared or it is
+        //left alone.
+        return this.erase_pixel(ctx, type, mouse, size, is_touch);
+      }
       var mouse_x = Math.round(mouse.x) - _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.x;
       var mouse_y = Math.round(mouse.y) - _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer.y;
       var alpha = _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].ALPHA;
@@ -36797,6 +37010,61 @@ var Erase_class = /*#__PURE__*/function (_Base_tools_class) {
         ctx.stroke();
         ctx.restore();
       }
+    }
+
+    /**
+     * Pixel mode: clear whole pixels, all of the alpha, none of the neighbours.
+     *
+     * Square nib regardless of the circle setting, and full alpha regardless of the strict setting
+     * - both of those exist to soften the edge, which is the thing that made this look broken.
+     *
+     * @param {object} ctx
+     * @param {string} type 'click' or 'move'
+     * @param {object} mouse
+     * @param {int} size
+     * @param {boolean} is_touch
+     */
+  }, {
+    key: "erase_pixel",
+    value: function erase_pixel(ctx, type, mouse, size, is_touch) {
+      var layer = _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layer;
+
+      //mousedown scaled this context by width_original/width so layer coordinates land on the
+      //original image. That scale is a float on any resized layer, and a scaled integer is not
+      //an integer - so the transform is reset and the scaling done here, where the result can be
+      //snapped afterwards. On an unresized layer both factors are 1 and this changes nothing.
+      var scale_x = layer.width ? layer.width_original / layer.width : 1;
+      var scale_y = layer.height ? layer.height_original / layer.height : 1;
+      if (!isFinite(scale_x) || scale_x <= 0) scale_x = 1;
+      if (!isFinite(scale_y) || scale_y <= 0) scale_y = 1;
+      var to_image_x = function to_image_x(v) {
+        return (v - layer.x) * scale_x;
+      };
+      var to_image_y = function to_image_y(v) {
+        return (v - layer.y) * scale_y;
+      };
+      ctx.save();
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.globalCompositeOperation = 'destination-out';
+      //opaque: destination-out removes as much alpha as it lays down, so anything less than 1
+      //leaves the pixel partly painted - which is the ghost that read as "it does not erase"
+      ctx.fillStyle = 'rgba(255, 255, 255, 1)';
+      ctx.imageSmoothingEnabled = false;
+      var x = to_image_x(mouse.x);
+      var y = to_image_y(mouse.y);
+      var nib_size = Math.max(1, Math.round(size * scale_x));
+      var has_last = mouse.last_x !== false && mouse.last_x != null && mouse.last_y !== false && mouse.last_y != null;
+      if (type === 'move' && has_last && is_touch !== true) {
+        //fill the gap a fast drag leaves between reported points
+        var nibs = (0,_core_pixel_paint_js__WEBPACK_IMPORTED_MODULE_10__.stroke_nibs)(to_image_x(mouse.last_x), to_image_y(mouse.last_y), x, y, nib_size);
+        for (var i = 0; i < nibs.length; i++) {
+          ctx.fillRect(nibs[i].x, nibs[i].y, nibs[i].size, nibs[i].size);
+        }
+      } else {
+        var nib = (0,_core_pixel_paint_js__WEBPACK_IMPORTED_MODULE_10__.nib_origin)(x, y, nib_size);
+        ctx.fillRect(nib.x, nib.y, nib.size, nib.size);
+      }
+      ctx.restore();
     }
   }]);
 }(_core_base_tools_js__WEBPACK_IMPORTED_MODULE_7__["default"]);
