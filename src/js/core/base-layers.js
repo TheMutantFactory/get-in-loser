@@ -11,6 +11,7 @@ import Image_trim_class from "./../modules/image/trim.js";
 import View_ruler_class from "./../modules/view/ruler.js";
 import zoomView from "./../libs/zoomView.js";
 import Helper_class from "./../libs/helpers.js";
+import { calc_preview_scale } from "./gui/preview-geometry.js";
 import alertify from "./../../../node_modules/alertifyjs/build/alertify.min.js";
 
 var instance = null;
@@ -148,11 +149,17 @@ class Base_layers_class {
 			}
 
 			if (this.last_zoom != config.ZOOM) {
-				//change zoom
+				//change zoom.
+				//zoomView.constrain() can move the scale on its own (it grows the
+				//scale so the image never gets smaller than the canvas), so the
+				//step has to be measured against the scale actually in use.
+				//Measuring it against config.ZOOM instead would apply the change
+				//twice - which is what made drawing land in the wrong place once
+				//zoomed in far enough for pixel work.
 				zoomView.scaleAt(
 					this.Base_gui.GUI_preview.zoom_data.x,
 					this.Base_gui.GUI_preview.zoom_data.y,
-					config.ZOOM / this.last_zoom
+					config.ZOOM / zoomView.getScale()
 				);
 			} else if (this.Base_gui.GUI_preview.zoom_data.move_pos != null) {
 				//move visible window
@@ -182,6 +189,9 @@ class Base_layers_class {
 
 			//grid
 			this.Base_gui.draw_grid(this.ctx);
+
+			//pixel grid
+			this.Base_gui.draw_pixel_grid(this.ctx);
 
 			//guides
 			this.Base_gui.draw_guides(this.ctx);
@@ -342,18 +352,25 @@ class Base_layers_class {
 	}
 
 	render_preview(layers) {
-		var w = this.Base_gui.GUI_preview.PREVIEW_SIZE.w;
-		var h = this.Base_gui.GUI_preview.PREVIEW_SIZE.h;
+		var preview_size = this.Base_gui.GUI_preview.PREVIEW_SIZE;
+		var w = preview_size.w;
+		var h = preview_size.h;
+
+		//uniform on both axes, otherwise the preview is stretched
+		var scale = calc_preview_scale(config.WIDTH, config.HEIGHT, preview_size);
+
+		//resizing the preview canvas replaces its context, so take the current one
+		this.ctx_preview = this.Base_gui.GUI_preview.get_context();
 
 		this.ctx_preview.save();
 		this.ctx_preview.clearRect(0, 0, w, h);
 
 		const newCanvas = this.create_new_canvas(this.ctx_preview);
-		newCanvas.getContext("2d").scale(w / config.WIDTH, h / config.HEIGHT);
+		newCanvas.getContext("2d").scale(scale.x, scale.y);
 		this.render_objects(this.ctx_preview, newCanvas, layers, () => {
 			this.ctx_preview.save();
 			//prepare scale
-			this.ctx_preview.scale(w / config.WIDTH, h / config.HEIGHT);
+			this.ctx_preview.scale(scale.x, scale.y);
 		});
 
 		this.ctx_preview.restore();

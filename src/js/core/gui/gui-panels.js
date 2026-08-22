@@ -1,0 +1,390 @@
+/*
+ * get-in-loser - derivative of miniPaint (https://github.com/viliusle/miniPaint)
+ *
+ * Right sidebar panel manager: pinning (sticky headers), reordering with
+ * buttons and drag & drop, and persistence of both.
+ */
+
+import Helper_class from './../../libs/helpers.js';
+
+var instance = null;
+
+var controls_template = `
+	<span class="panel_controls">
+		<button type="button" class="panel_control panel_pin" title="Pin panel" aria-pressed="false">
+			<span class="sr_only">Pin panel</span>
+			<svg width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+				<path d="M9.5 1a.5.5 0 0 0 0 1h.5v3.2l1.7 2.1a1 1 0 0 1 .2.6V8a.5.5 0 0 1-.5.5H8.5V14a.5.5 0 0 1-1 0V8.5H4.6A.5.5 0 0 1 4.1 8v-.1a1 1 0 0 1 .2-.6L6 5.2V2h.5a.5.5 0 0 0 0-1h-3z"/>
+			</svg>
+		</button>
+		<button type="button" class="panel_control panel_move_up" title="Move panel up">
+			<span class="sr_only">Move panel up</span>
+			<svg width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+				<path d="M8 4l4.5 5h-9z"/>
+			</svg>
+		</button>
+		<button type="button" class="panel_control panel_move_down" title="Move panel down">
+			<span class="sr_only">Move panel down</span>
+			<svg width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+				<path d="M8 12L3.5 7h9z"/>
+			</svg>
+		</button>
+		<span class="panel_control panel_drag_handle" title="Drag to reorder" aria-hidden="true">
+			<svg width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+				<circle cx="6" cy="4" r="1.3"/><circle cx="10" cy="4" r="1.3"/>
+				<circle cx="6" cy="8" r="1.3"/><circle cx="10" cy="8" r="1.3"/>
+				<circle cx="6" cy="12" r="1.3"/><circle cx="10" cy="12" r="1.3"/>
+			</svg>
+		</span>
+	</span>
+`;
+
+/**
+ * GUI class responsible for arranging the blocks on the right sidebar
+ */
+class GUI_panels_class {
+
+	constructor(GUI_class) {
+		//singleton
+		if (instance) {
+			return instance;
+		}
+		instance = this;
+
+		if (GUI_class != undefined) {
+			this.GUI = GUI_class;
+		}
+
+		this.Helper = new Helper_class();
+
+		this.sidebar = null;
+		this.dragged_panel = null;
+	}
+
+	render_main_panels() {
+		this.sidebar = document.getElementById('sidebar_right');
+		if (this.sidebar == null) {
+			return;
+		}
+
+		var panels = this.get_panels();
+		for (var i = 0; i < panels.length; i++) {
+			this.prepare_panel(panels[i]);
+		}
+
+		this.restore_order();
+		this.restore_pinned();
+
+		this.set_events();
+		this.update_layout();
+	}
+
+	/**
+	 * @returns {array} panel elements in their current display order
+	 */
+	get_panels() {
+		if (this.sidebar == null) {
+			return [];
+		}
+
+		return Array.prototype.slice.call(
+			this.sidebar.querySelectorAll(':scope > .block[data-panel]')
+		);
+	}
+
+	get_panel_name(panel) {
+		return panel.dataset.panel;
+	}
+
+	/**
+	 * adds the control buttons and drag attributes to a single panel
+	 *
+	 * @param {HTMLElement} panel
+	 */
+	prepare_panel(panel) {
+		var header = panel.querySelector('h2');
+		if (header == null || header.querySelector('.panel_controls') != null) {
+			return;
+		}
+
+		header.classList.add('panel_header');
+		header.setAttribute('draggable', 'true');
+		header.insertAdjacentHTML('beforeend', controls_template);
+	}
+
+	set_events() {
+		var _this = this;
+
+		this.sidebar.addEventListener('click', function (event) {
+			var button = event.target.closest ? event.target.closest('.panel_control') : null;
+			if (button == null || !_this.sidebar.contains(button)) {
+				return;
+			}
+
+			//never let the header collapse toggle fire as well
+			event.preventDefault();
+			event.stopPropagation();
+
+			var panel = button.closest('.block[data-panel]');
+			if (panel == null) {
+				return;
+			}
+
+			if (button.classList.contains('panel_pin')) {
+				_this.toggle_pin(panel);
+			}
+			else if (button.classList.contains('panel_move_up')) {
+				_this.move(panel, -1);
+			}
+			else if (button.classList.contains('panel_move_down')) {
+				_this.move(panel, +1);
+			}
+		}, true);
+
+		this.sidebar.addEventListener('dragstart', function (event) {
+			var header = event.target.closest ? event.target.closest('.panel_header') : null;
+			if (header == null) {
+				return;
+			}
+
+			_this.dragged_panel = header.closest('.block[data-panel]');
+			if (_this.dragged_panel == null) {
+				return;
+			}
+
+			_this.dragged_panel.classList.add('dragging');
+			event.dataTransfer.effectAllowed = 'move';
+			//firefox needs data to start a drag
+			event.dataTransfer.setData('text/plain', _this.get_panel_name(_this.dragged_panel));
+		}, false);
+
+		this.sidebar.addEventListener('dragover', function (event) {
+			if (_this.dragged_panel == null) {
+				return;
+			}
+			event.preventDefault();
+			event.dataTransfer.dropEffect = 'move';
+
+			var target = _this.find_drop_target(event.clientY);
+			if (target == null || target == _this.dragged_panel) {
+				return;
+			}
+
+			var panels = _this.get_panels();
+			var dragged_index = panels.indexOf(_this.dragged_panel);
+			var target_index = panels.indexOf(target);
+
+			if (dragged_index < target_index) {
+				target.after(_this.dragged_panel);
+			}
+			else {
+				target.before(_this.dragged_panel);
+			}
+
+			_this.update_layout();
+		}, false);
+
+		this.sidebar.addEventListener('drop', function (event) {
+			if (_this.dragged_panel == null) {
+				return;
+			}
+			event.preventDefault();
+		}, false);
+
+		this.sidebar.addEventListener('dragend', function (event) {
+			if (_this.dragged_panel == null) {
+				return;
+			}
+
+			_this.dragged_panel.classList.remove('dragging');
+			_this.dragged_panel = null;
+			_this.save_order();
+			_this.update_layout();
+		}, false);
+
+		//collapsing a panel changes how much room the pinned ones need
+		this.sidebar.addEventListener('click', function (event) {
+			if (event.target.closest && event.target.closest('.panel_header') != null) {
+				window.setTimeout(function () {
+					_this.update_layout();
+				}, 0);
+			}
+		}, false);
+
+		window.addEventListener('resize', function () {
+			_this.update_layout();
+		}, false);
+	}
+
+	/**
+	 * finds the panel the pointer is currently over
+	 *
+	 * @param {number} pointer_y
+	 * @returns {HTMLElement|null}
+	 */
+	find_drop_target(pointer_y) {
+		var panels = this.get_panels();
+
+		for (var i = 0; i < panels.length; i++) {
+			var rect = panels[i].getBoundingClientRect();
+			if (pointer_y >= rect.top && pointer_y <= rect.bottom) {
+				return panels[i];
+			}
+		}
+
+		//above the first / below the last panel
+		if (panels.length > 0) {
+			if (pointer_y < panels[0].getBoundingClientRect().top) {
+				return panels[0];
+			}
+			return panels[panels.length - 1];
+		}
+
+		return null;
+	}
+
+	/**
+	 * moves a panel up (-1) or down (+1)
+	 *
+	 * @param {HTMLElement} panel
+	 * @param {number} direction
+	 */
+	move(panel, direction) {
+		var panels = this.get_panels();
+		var index = panels.indexOf(panel);
+		var target_index = index + direction;
+
+		if (index < 0 || target_index < 0 || target_index >= panels.length) {
+			return false;
+		}
+
+		if (direction < 0) {
+			panels[target_index].before(panel);
+		}
+		else {
+			panels[target_index].after(panel);
+		}
+
+		this.save_order();
+		this.update_layout();
+
+		return true;
+	}
+
+	/**
+	 * @param {HTMLElement} panel
+	 * @param {boolean} state omit to toggle
+	 */
+	toggle_pin(panel, state) {
+		var pinned = state != undefined ? state : !panel.classList.contains('pinned');
+
+		panel.classList.toggle('pinned', pinned);
+
+		var button = panel.querySelector('.panel_pin');
+		if (button != null) {
+			button.setAttribute('aria-pressed', pinned ? 'true' : 'false');
+			button.setAttribute('title', pinned ? 'Unpin panel' : 'Pin panel');
+		}
+
+		this.save_pinned();
+		this.update_layout();
+
+		return pinned;
+	}
+
+	/**
+	 * Pinned panels stick to the top of the sidebar. When more than one is
+	 * pinned they stack instead of covering each other, so every pinned panel
+	 * needs its own offset.
+	 */
+	update_layout() {
+		var panels = this.get_panels();
+		var offset = 0;
+
+		for (var i = 0; i < panels.length; i++) {
+			var panel = panels[i];
+
+			//first and last panel get their move button disabled
+			var up = panel.querySelector('.panel_move_up');
+			var down = panel.querySelector('.panel_move_down');
+			if (up != null) {
+				up.disabled = (i === 0);
+			}
+			if (down != null) {
+				down.disabled = (i === panels.length - 1);
+			}
+
+			if (panel.classList.contains('pinned')) {
+				panel.style.top = offset + 'px';
+				//stacking order so an earlier pinned panel stays on top
+				panel.style.zIndex = 100 - i;
+				offset += panel.getBoundingClientRect().height;
+			}
+			else {
+				panel.style.top = '';
+				panel.style.zIndex = '';
+			}
+		}
+	}
+
+	save_order() {
+		var names = this.get_panels().map((panel) => this.get_panel_name(panel));
+
+		this.Helper.setCookie('panel_order', names.join(','));
+	}
+
+	restore_order() {
+		var saved = this.Helper.getCookie('panel_order');
+		if (saved == null || saved === '') {
+			return false;
+		}
+
+		var names = String(saved).split(',');
+		var panels = this.get_panels();
+		var by_name = {};
+		for (var i = 0; i < panels.length; i++) {
+			by_name[this.get_panel_name(panels[i])] = panels[i];
+		}
+
+		//append in saved order, unknown/new panels keep their markup position
+		for (var j = 0; j < names.length; j++) {
+			var panel = by_name[names[j]];
+			if (panel != undefined) {
+				this.sidebar.appendChild(panel);
+				delete by_name[names[j]];
+			}
+		}
+		for (var name in by_name) {
+			this.sidebar.appendChild(by_name[name]);
+		}
+
+		return true;
+	}
+
+	save_pinned() {
+		var names = this.get_panels()
+			.filter((panel) => panel.classList.contains('pinned'))
+			.map((panel) => this.get_panel_name(panel));
+
+		this.Helper.setCookie('panel_pinned', names.join(','));
+	}
+
+	restore_pinned() {
+		var saved = this.Helper.getCookie('panel_pinned');
+		if (saved == null) {
+			//preview pinned by default - it is the panel most worth keeping in view
+			saved = 'preview';
+		}
+
+		var names = String(saved).split(',');
+		var panels = this.get_panels();
+
+		for (var i = 0; i < panels.length; i++) {
+			var is_pinned = names.indexOf(this.get_panel_name(panels[i])) > -1;
+			this.toggle_pin(panels[i], is_pinned);
+		}
+	}
+
+}
+
+export default GUI_panels_class;

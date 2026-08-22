@@ -46,6 +46,9 @@ const zoomView = (() => {
 			return bounds;
 		},
 		getScale() {
+			if (dirty) {
+				this.update();
+			}
 			return scale;
 		},
 		getMaxScale() {

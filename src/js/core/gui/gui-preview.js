@@ -5,13 +5,21 @@
 
 import config from './../../config.js';
 import Base_layers_class from './../base-layers.js';
+import {
+	PREVIEW_BOX,
+	calc_preview_size,
+	calc_active_zone,
+	calc_zoom_position,
+} from './preview-geometry.js';
 
 var instance = null;
 
 var template = `
 	<div class="canvas_preview_wrapper">
-		<div class="transparent-grid" id="canvas_preview_background"></div>
-		<canvas width="176" height="100" class="transparent" id="canvas_preview"></canvas>
+		<div class="canvas_preview_inner" id="canvas_preview_inner">
+			<div class="transparent-grid" id="canvas_preview_background"></div>
+			<canvas width="176" height="176" class="transparent" id="canvas_preview"></canvas>
+		</div>
 	</div>
 	<div class="canvas_preview_details">
 		<div class="details">
@@ -37,8 +45,11 @@ class GUI_preview_class {
 		instance = this;
 		document.getElementById('toggle_preview').innerHTML = template;
 
-		// preview mini window size on right sidebar
-		this.PREVIEW_SIZE = {w: 176, h: 100};
+		// maximum area the preview canvas may use on the right sidebar
+		this.PREVIEW_BOX = {w: PREVIEW_BOX.w, h: PREVIEW_BOX.h};
+
+		// actual preview canvas size - always matches the canvas aspect ratio
+		this.PREVIEW_SIZE = {w: PREVIEW_BOX.w, h: PREVIEW_BOX.h};
 
 		this.canvas_offset = {x: 0, y: 0};
 
@@ -54,6 +65,18 @@ class GUI_preview_class {
 			this.GUI = GUI_class;
 		}
 		this.Base_layers = new Base_layers_class();
+	}
+
+	/**
+	 * @returns {canvas.context} preview canvas context, recreated whenever the
+	 *   preview canvas is resized
+	 */
+	get_context() {
+		if (this.canvas_preview == null) {
+			this.canvas_preview = document.getElementById('canvas_preview').getContext('2d');
+		}
+
+		return this.canvas_preview;
 	}
 
 	render_main_preview() {
@@ -155,10 +178,53 @@ class GUI_preview_class {
 	}
 
 	prepare_canvas() {
+		this.update_preview_size();
+
 		this.canvas_preview.webkitImageSmoothingEnabled = false;
 		this.canvas_preview.msImageSmoothingEnabled = false;
 		this.canvas_preview.imageSmoothingEnabled = false;
 		this.GUI.render_canvas_background('canvas_preview', 8);
+	}
+
+	/**
+	 * Resizes the preview canvas so it has the same aspect ratio as the main
+	 * canvas. Called whenever the canvas dimensions change.
+	 */
+	update_preview_size() {
+		var size = calc_preview_size(config.WIDTH, config.HEIGHT, this.PREVIEW_BOX);
+
+		if (size.w == this.PREVIEW_SIZE.w && size.h == this.PREVIEW_SIZE.h) {
+			//nothing changed
+			return false;
+		}
+
+		this.PREVIEW_SIZE.w = size.w;
+		this.PREVIEW_SIZE.h = size.h;
+
+		var canvas = document.getElementById('canvas_preview');
+		if (canvas == null) {
+			return false;
+		}
+
+		canvas.width = size.w;
+		canvas.height = size.h;
+
+		//keep the transparency grid behind the canvas exactly the same size
+		var inner = document.getElementById('canvas_preview_inner');
+		if (inner != null) {
+			inner.style.width = size.w + 'px';
+			inner.style.height = size.h + 'px';
+		}
+
+		//context state is lost after a canvas resize
+		this.canvas_preview = canvas.getContext('2d');
+		this.canvas_preview.webkitImageSmoothingEnabled = false;
+		this.canvas_preview.msImageSmoothingEnabled = false;
+		this.canvas_preview.imageSmoothingEnabled = false;
+
+		config.need_render = true;
+
+		return true;
 	}
 
 	render_preview_active_zone() {
@@ -167,29 +233,21 @@ class GUI_preview_class {
 				.getContext("2d");
 		}
 
-		//active zone
-		var visible_w = config.visible_width / config.ZOOM;
-		var visible_h = config.visible_height / config.ZOOM;
-
-		var mini_rect_w = this.PREVIEW_SIZE.w * visible_w / config.WIDTH;
-		var mini_rect_h = this.PREVIEW_SIZE.h * visible_h / config.HEIGHT;
-
 		var start_pos = this.Base_layers.get_world_coords(0, 0);
-		var mini_rect_x = start_pos.x / config.WIDTH * this.PREVIEW_SIZE.w;
-		var mini_rect_y = start_pos.y / config.HEIGHT * this.PREVIEW_SIZE.h;
 
-		//validate
-		mini_rect_x = Math.max(0, mini_rect_x);
-		mini_rect_y = Math.max(0, mini_rect_y);
-		mini_rect_w = Math.min(this.PREVIEW_SIZE.w - 1, mini_rect_w);
-		mini_rect_h = Math.min(this.PREVIEW_SIZE.h - 1, mini_rect_h);
-		if (mini_rect_x + mini_rect_w > this.PREVIEW_SIZE.w)
-			mini_rect_x = this.PREVIEW_SIZE.w - mini_rect_w;
-		if (mini_rect_y + mini_rect_h > this.PREVIEW_SIZE.h)
-			mini_rect_y = this.PREVIEW_SIZE.h - mini_rect_h;
+		var zone = calc_active_zone({
+			image_width: config.WIDTH,
+			image_height: config.HEIGHT,
+			preview_width: this.PREVIEW_SIZE.w,
+			preview_height: this.PREVIEW_SIZE.h,
+			visible_width: config.visible_width,
+			visible_height: config.visible_height,
+			zoom: config.ZOOM,
+			world_x: start_pos.x,
+			world_y: start_pos.y,
+		});
 
-		if (mini_rect_x == 0 && mini_rect_y == 0 && mini_rect_w == this.PREVIEW_SIZE.w - 1
-			&& mini_rect_h == this.PREVIEW_SIZE.h - 1) {
+		if (zone == null) {
 			//everything is visible
 			return;
 		}
@@ -198,10 +256,10 @@ class GUI_preview_class {
 		this.canvas_preview.lineWidth = 1;
 		this.canvas_preview.beginPath();
 		this.canvas_preview.rect(
-			Math.round(mini_rect_x) + 0.5,
-			Math.round(mini_rect_y) + 0.5,
-			mini_rect_w,
-			mini_rect_h
+			Math.round(zone.x) + 0.5,
+			Math.round(zone.y) + 0.5,
+			zone.w,
+			zone.h
 			);
 		this.canvas_preview.fillStyle = "rgba(0, 255, 0, 0.3)";
 		this.canvas_preview.strokeStyle = "#00ff00";
@@ -316,18 +374,22 @@ class GUI_preview_class {
 			mouse_y = event.pageY - this.canvas_offset.y;
 		}
 
-		var visible_w = config.visible_width / config.ZOOM;
-		var visible_h = config.visible_height / config.ZOOM;
-		var mini_w = this.PREVIEW_SIZE.w * visible_w / config.WIDTH;
-		var mini_h = this.PREVIEW_SIZE.h * visible_h / config.HEIGHT;
-
-		var change_x = (mouse_x - mini_w / 2) / this.PREVIEW_SIZE.w * config.WIDTH;
-		var change_y = (mouse_y - mini_h / 2) / this.PREVIEW_SIZE.h * config.HEIGHT;
+		var change = calc_zoom_position({
+			mouse_x: mouse_x,
+			mouse_y: mouse_y,
+			image_width: config.WIDTH,
+			image_height: config.HEIGHT,
+			preview_width: this.PREVIEW_SIZE.w,
+			preview_height: this.PREVIEW_SIZE.h,
+			visible_width: config.visible_width,
+			visible_height: config.visible_height,
+			zoom: config.ZOOM,
+		});
 
 		var zoom_data = this.zoom_data;
 		zoom_data.move_pos = {};
-		zoom_data.move_pos.x = change_x;
-		zoom_data.move_pos.y = change_y;
+		zoom_data.move_pos.x = change.x;
+		zoom_data.move_pos.y = change.y;
 
 		config.need_render = true;
 	}

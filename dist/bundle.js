@@ -4934,6 +4934,44 @@ var menuDefinition = [{
     target: 'image/histogram.histogram'
   }]
 }, {
+  name: 'Pixel',
+  children: [{
+    name: 'New Pixel Canvas',
+    ellipsis: true,
+    target: 'tools/pixel.new_canvas'
+  }, {
+    name: 'Canvas Size in Pixels',
+    ellipsis: true,
+    target: 'tools/pixel.size'
+  }, {
+    divider: true
+  }, {
+    name: 'Pixel Mode',
+    target: 'tools/pixel.pixel_mode'
+  }, {
+    name: 'Pixel Grid',
+    target: 'tools/pixel.grid'
+  }, {
+    name: 'Zoom to Fit',
+    target: 'tools/pixel.zoom_to_fit'
+  }, {
+    divider: true
+  }, {
+    name: 'Palette',
+    children: [{
+      name: 'Load Palette',
+      ellipsis: true,
+      target: 'tools/palettes.load'
+    }, {
+      name: 'Import Palette',
+      ellipsis: true,
+      target: 'tools/palettes.import_palette'
+    }, {
+      name: 'Export Palette',
+      target: 'tools/palettes.export_palette'
+    }]
+  }]
+}, {
   name: 'Layer',
   children: [{
     name: 'New',
@@ -5356,6 +5394,11 @@ config.guides = [];
 config.ruler_active = false;
 config.enable_autoresize_by_default = true;
 
+//pixel edit mode
+config.PIXEL_MODE = false;
+config.PIXEL_GRID = true;
+config.palette = null;
+
 //requires styles in reset.css
 config.themes = ['yonce', 'classic', 'dark', 'light', 'green'];
 
@@ -5772,23 +5815,29 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _base_layers_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./base-layers.js */ "./src/js/core/base-layers.js");
 /* harmony import */ var _gui_gui_tools_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./gui/gui-tools.js */ "./src/js/core/gui/gui-tools.js");
 /* harmony import */ var _gui_gui_preview_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./gui/gui-preview.js */ "./src/js/core/gui/gui-preview.js");
-/* harmony import */ var _gui_gui_colors_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./gui/gui-colors.js */ "./src/js/core/gui/gui-colors.js");
-/* harmony import */ var _gui_gui_layers_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./gui/gui-layers.js */ "./src/js/core/gui/gui-layers.js");
-/* harmony import */ var _gui_gui_information_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./gui/gui-information.js */ "./src/js/core/gui/gui-information.js");
-/* harmony import */ var _gui_gui_details_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./gui/gui-details.js */ "./src/js/core/gui/gui-details.js");
-/* harmony import */ var _gui_gui_menu_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./gui/gui-menu.js */ "./src/js/core/gui/gui-menu.js");
-/* harmony import */ var _modules_tools_translate_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./../modules/tools/translate.js */ "./src/js/modules/tools/translate.js");
-/* harmony import */ var _modules_tools_settings_js__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./../modules/tools/settings.js */ "./src/js/modules/tools/settings.js");
-/* harmony import */ var _libs_helpers_js__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./../libs/helpers.js */ "./src/js/libs/helpers.js");
-/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./../../../node_modules/alertifyjs/build/alertify.min.js */ "./node_modules/alertifyjs/build/alertify.min.js");
-/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_14___default = /*#__PURE__*/__webpack_require__.n(_node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_14__);
-/* harmony import */ var _libs_smart_folder_js__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./../libs/smart_folder.js */ "./src/js/libs/smart_folder.js");
+/* harmony import */ var _gui_gui_panels_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./gui/gui-panels.js */ "./src/js/core/gui/gui-panels.js");
+/* harmony import */ var _gui_gui_palette_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./gui/gui-palette.js */ "./src/js/core/gui/gui-palette.js");
+/* harmony import */ var _pixel_grid_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./pixel-grid.js */ "./src/js/core/pixel-grid.js");
+/* harmony import */ var _gui_gui_colors_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./gui/gui-colors.js */ "./src/js/core/gui/gui-colors.js");
+/* harmony import */ var _gui_gui_layers_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./gui/gui-layers.js */ "./src/js/core/gui/gui-layers.js");
+/* harmony import */ var _gui_gui_information_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./gui/gui-information.js */ "./src/js/core/gui/gui-information.js");
+/* harmony import */ var _gui_gui_details_js__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./gui/gui-details.js */ "./src/js/core/gui/gui-details.js");
+/* harmony import */ var _gui_gui_menu_js__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./gui/gui-menu.js */ "./src/js/core/gui/gui-menu.js");
+/* harmony import */ var _modules_tools_translate_js__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./../modules/tools/translate.js */ "./src/js/modules/tools/translate.js");
+/* harmony import */ var _modules_tools_settings_js__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./../modules/tools/settings.js */ "./src/js/modules/tools/settings.js");
+/* harmony import */ var _libs_helpers_js__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./../libs/helpers.js */ "./src/js/libs/helpers.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./../../../node_modules/alertifyjs/build/alertify.min.js */ "./node_modules/alertifyjs/build/alertify.min.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_17___default = /*#__PURE__*/__webpack_require__.n(_node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_17__);
+/* harmony import */ var _libs_smart_folder_js__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./../libs/smart_folder.js */ "./src/js/libs/smart_folder.js");
 
 
 /*
  * miniPaint - https://github.com/viliusle/miniPaint
  * author: Vilius L.
  */
+
+
+
 
 
 
@@ -5817,7 +5866,7 @@ var Base_gui_class = /*#__PURE__*/function () {
       return instance;
     }
     instance = this;
-    this.Helper = new _libs_helpers_js__WEBPACK_IMPORTED_MODULE_13__["default"]();
+    this.Helper = new _libs_helpers_js__WEBPACK_IMPORTED_MODULE_16__["default"]();
     this.Base_layers = new _base_layers_js__WEBPACK_IMPORTED_MODULE_3__["default"]();
 
     //last used menu id
@@ -5839,13 +5888,15 @@ var Base_gui_class = /*#__PURE__*/function () {
     ];
     this.GUI_tools = new _gui_gui_tools_js__WEBPACK_IMPORTED_MODULE_4__["default"](this);
     this.GUI_preview = new _gui_gui_preview_js__WEBPACK_IMPORTED_MODULE_5__["default"](this);
-    this.GUI_colors = new _gui_gui_colors_js__WEBPACK_IMPORTED_MODULE_6__["default"](this);
-    this.GUI_layers = new _gui_gui_layers_js__WEBPACK_IMPORTED_MODULE_7__["default"](this);
-    this.GUI_information = new _gui_gui_information_js__WEBPACK_IMPORTED_MODULE_8__["default"](this);
-    this.GUI_details = new _gui_gui_details_js__WEBPACK_IMPORTED_MODULE_9__["default"](this);
-    this.GUI_menu = new _gui_gui_menu_js__WEBPACK_IMPORTED_MODULE_10__["default"]();
-    this.Tools_translate = new _modules_tools_translate_js__WEBPACK_IMPORTED_MODULE_11__["default"]();
-    this.Tools_settings = new _modules_tools_settings_js__WEBPACK_IMPORTED_MODULE_12__["default"]();
+    this.GUI_panels = new _gui_gui_panels_js__WEBPACK_IMPORTED_MODULE_6__["default"](this);
+    this.GUI_colors = new _gui_gui_colors_js__WEBPACK_IMPORTED_MODULE_9__["default"](this);
+    this.GUI_palette = new _gui_gui_palette_js__WEBPACK_IMPORTED_MODULE_7__["default"](this);
+    this.GUI_layers = new _gui_gui_layers_js__WEBPACK_IMPORTED_MODULE_10__["default"](this);
+    this.GUI_information = new _gui_gui_information_js__WEBPACK_IMPORTED_MODULE_11__["default"](this);
+    this.GUI_details = new _gui_gui_details_js__WEBPACK_IMPORTED_MODULE_12__["default"](this);
+    this.GUI_menu = new _gui_gui_menu_js__WEBPACK_IMPORTED_MODULE_13__["default"]();
+    this.Tools_translate = new _modules_tools_translate_js__WEBPACK_IMPORTED_MODULE_14__["default"]();
+    this.Tools_settings = new _modules_tools_settings_js__WEBPACK_IMPORTED_MODULE_15__["default"]();
     this.modules = {};
   }
   return (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__["default"])(Base_gui_class, [{
@@ -5856,8 +5907,8 @@ var Base_gui_class = /*#__PURE__*/function () {
       this.render_main_gui();
       this.init_service_worker();
       //smart folder: header toggle + reconnect a previously-enabled folder
-      _libs_smart_folder_js__WEBPACK_IMPORTED_MODULE_15__["default"].init_toggle();
-      _libs_smart_folder_js__WEBPACK_IMPORTED_MODULE_15__["default"].restore();
+      _libs_smart_folder_js__WEBPACK_IMPORTED_MODULE_18__["default"].init_toggle();
+      _libs_smart_folder_js__WEBPACK_IMPORTED_MODULE_18__["default"].restore();
 
       //right-click the hand in the logo -> icon licence / source page
       if (this.modules['help/icon_license']) {
@@ -5929,11 +5980,13 @@ var Base_gui_class = /*#__PURE__*/function () {
       this.GUI_tools.render_main_tools();
       this.GUI_preview.render_main_preview();
       this.GUI_colors.render_main_colors();
+      this.GUI_palette.render_main_palette();
       this.GUI_layers.render_main_layers();
       this.GUI_information.render_main_information();
       this.GUI_details.render_main_details();
       this.GUI_menu.render_main();
       this.load_saved_changes();
+      this.GUI_panels.render_main_panels();
       this.set_events();
       this.load_translations();
     }
@@ -5964,11 +6017,11 @@ var Base_gui_class = /*#__PURE__*/function () {
 
         //call module
         if (_this2.modules[module] == undefined) {
-          _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_14___default().error('Modules class not found: ' + module);
+          _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_17___default().error('Modules class not found: ' + module);
           return;
         }
         if (_this2.modules[module][function_name] == undefined) {
-          _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_14___default().error('Module function not found. ' + module + '.' + function_name);
+          _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_17___default().error('Module function not found. ' + module + '.' + function_name);
           return;
         }
         _this2.modules[module][function_name](param);
@@ -6035,12 +6088,20 @@ var Base_gui_class = /*#__PURE__*/function () {
       canvas.height = h;
       _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].visible_width = w;
       _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].visible_height = h;
-      if (_config_js__WEBPACK_IMPORTED_MODULE_2__["default"].ZOOM >= 1) {
+      if (_config_js__WEBPACK_IMPORTED_MODULE_2__["default"].ZOOM >= 1 || _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].PIXEL_MODE) {
+        //pixel mode never interpolates, otherwise pixel art turns to mush
         ctx.imageSmoothingEnabled = false;
       } else {
         ctx.imageSmoothingEnabled = true;
       }
       this.render_canvas_background('canvas_minipaint');
+
+      //keep the sidebar preview in sync with the canvas aspect ratio
+      this.GUI_preview.update_preview_size();
+      this.render_canvas_background('canvas_preview', 8);
+
+      //the information block otherwise only refreshes on mouse move
+      this.GUI_information.show_size();
 
       //change wrapper dimensions
       document.getElementById('canvas_wrapper').style.width = w + 'px';
@@ -6162,6 +6223,72 @@ var Base_gui_class = /*#__PURE__*/function () {
         ctx.lineTo(width, 0.5 + i);
         ctx.stroke();
       }
+    }
+
+    /**
+     * draws a 1px grid over every image pixel - only useful when zoomed in far
+     * enough that image pixels are large on screen.
+     *
+     * @param {canvas.context} ctx
+     * @returns {boolean} whether anything was drawn
+     */
+  }, {
+    key: "draw_pixel_grid",
+    value: function draw_pixel_grid(ctx) {
+      var state = {
+        pixel_mode: _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].PIXEL_MODE,
+        grid_enabled: _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].PIXEL_GRID,
+        zoom: _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].ZOOM,
+        width: _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].WIDTH,
+        height: _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].HEIGHT
+      };
+      if ((0,_pixel_grid_js__WEBPACK_IMPORTED_MODULE_8__.should_draw_pixel_grid)(state) == false) {
+        return false;
+      }
+
+      //image coordinate sitting at the top left corner of the visible canvas
+      var origin = this.Base_layers.get_world_coords(0, 0);
+      var vertical = (0,_pixel_grid_js__WEBPACK_IMPORTED_MODULE_8__.grid_line_positions)({
+        count: _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].WIDTH,
+        zoom: _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].ZOOM,
+        origin: origin.x,
+        screen_size: ctx.canvas.width
+      });
+      var horizontal = (0,_pixel_grid_js__WEBPACK_IMPORTED_MODULE_8__.grid_line_positions)({
+        count: _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].HEIGHT,
+        zoom: _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].ZOOM,
+        origin: origin.y,
+        screen_size: ctx.canvas.height
+      });
+      if (vertical.length == 0 && horizontal.length == 0) {
+        return false;
+      }
+      var minor = 'rgba(128, 128, 128, 0.35)';
+      var major = 'rgba(0, 0, 0, 0.4)';
+      ctx.save();
+      //the transform mid render loop is not the plain zoom matrix, so draw in
+      //screen pixels instead of image coordinates
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.globalAlpha = 1;
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.filter = 'none';
+      ctx.lineWidth = 1;
+      for (var i = 0; i < vertical.length; i++) {
+        ctx.strokeStyle = vertical[i].major ? major : minor;
+        ctx.beginPath();
+        ctx.moveTo(vertical[i].position, 0);
+        ctx.lineTo(vertical[i].position, ctx.canvas.height);
+        ctx.stroke();
+      }
+      for (var j = 0; j < horizontal.length; j++) {
+        ctx.strokeStyle = horizontal[j].major ? major : minor;
+        ctx.beginPath();
+        ctx.moveTo(0, horizontal[j].position);
+        ctx.lineTo(ctx.canvas.width, horizontal[j].position);
+        ctx.stroke();
+      }
+      ctx.restore();
+      return true;
     }
   }, {
     key: "draw_guides",
@@ -6476,8 +6603,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _modules_view_ruler_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./../modules/view/ruler.js */ "./src/js/modules/view/ruler.js");
 /* harmony import */ var _libs_zoomView_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./../libs/zoomView.js */ "./src/js/libs/zoomView.js");
 /* harmony import */ var _libs_helpers_js__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./../libs/helpers.js */ "./src/js/libs/helpers.js");
-/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./../../../node_modules/alertifyjs/build/alertify.min.js */ "./node_modules/alertifyjs/build/alertify.min.js");
-/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_13___default = /*#__PURE__*/__webpack_require__.n(_node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_13__);
+/* harmony import */ var _gui_preview_geometry_js__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./gui/preview-geometry.js */ "./src/js/core/gui/preview-geometry.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./../../../node_modules/alertifyjs/build/alertify.min.js */ "./node_modules/alertifyjs/build/alertify.min.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_14___default = /*#__PURE__*/__webpack_require__.n(_node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_14__);
 
 
 
@@ -6489,6 +6617,7 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
  * miniPaint - https://github.com/viliusle/miniPaint
  * author: Vilius L.
  */
+
 
 
 
@@ -6620,8 +6749,14 @@ var Base_layers_class = /*#__PURE__*/function () {
           console.log("Rendering...");
         }
         if (this.last_zoom != _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].ZOOM) {
-          //change zoom
-          _libs_zoomView_js__WEBPACK_IMPORTED_MODULE_11__["default"].scaleAt(this.Base_gui.GUI_preview.zoom_data.x, this.Base_gui.GUI_preview.zoom_data.y, _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].ZOOM / this.last_zoom);
+          //change zoom.
+          //zoomView.constrain() can move the scale on its own (it grows the
+          //scale so the image never gets smaller than the canvas), so the
+          //step has to be measured against the scale actually in use.
+          //Measuring it against config.ZOOM instead would apply the change
+          //twice - which is what made drawing land in the wrong place once
+          //zoomed in far enough for pixel work.
+          _libs_zoomView_js__WEBPACK_IMPORTED_MODULE_11__["default"].scaleAt(this.Base_gui.GUI_preview.zoom_data.x, this.Base_gui.GUI_preview.zoom_data.y, _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].ZOOM / _libs_zoomView_js__WEBPACK_IMPORTED_MODULE_11__["default"].getScale());
         } else if (this.Base_gui.GUI_preview.zoom_data.move_pos != null) {
           //move visible window
           var pos = this.Base_gui.GUI_preview.zoom_data.move_pos;
@@ -6644,6 +6779,9 @@ var Base_layers_class = /*#__PURE__*/function () {
         //grid
         this.Base_gui.draw_grid(this.ctx);
 
+        //pixel grid
+        this.Base_gui.draw_pixel_grid(this.ctx);
+
         //guides
         this.Base_gui.draw_guides(this.ctx);
 
@@ -6662,7 +6800,7 @@ var Base_layers_class = /*#__PURE__*/function () {
         this.Base_gui.GUI_details.render_details();
         this.View_ruler.render_ruler();
         if (this.render_success === false) {
-          _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_13___default().error("Rendered with errors.");
+          _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_14___default().error("Rendered with errors.");
         }
       }
       requestAnimationFrame(function () {
@@ -6792,16 +6930,23 @@ var Base_layers_class = /*#__PURE__*/function () {
     key: "render_preview",
     value: function render_preview(layers) {
       var _this3 = this;
-      var w = this.Base_gui.GUI_preview.PREVIEW_SIZE.w;
-      var h = this.Base_gui.GUI_preview.PREVIEW_SIZE.h;
+      var preview_size = this.Base_gui.GUI_preview.PREVIEW_SIZE;
+      var w = preview_size.w;
+      var h = preview_size.h;
+
+      //uniform on both axes, otherwise the preview is stretched
+      var scale = (0,_gui_preview_geometry_js__WEBPACK_IMPORTED_MODULE_13__.calc_preview_scale)(_config_js__WEBPACK_IMPORTED_MODULE_6__["default"].WIDTH, _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].HEIGHT, preview_size);
+
+      //resizing the preview canvas replaces its context, so take the current one
+      this.ctx_preview = this.Base_gui.GUI_preview.get_context();
       this.ctx_preview.save();
       this.ctx_preview.clearRect(0, 0, w, h);
       var newCanvas = this.create_new_canvas(this.ctx_preview);
-      newCanvas.getContext("2d").scale(w / _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].WIDTH, h / _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].HEIGHT);
+      newCanvas.getContext("2d").scale(scale.x, scale.y);
       this.render_objects(this.ctx_preview, newCanvas, layers, function () {
         _this3.ctx_preview.save();
         //prepare scale
-        _this3.ctx_preview.scale(w / _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].WIDTH, h / _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].HEIGHT);
+        _this3.ctx_preview.scale(scale.x, scale.y);
       });
       this.ctx_preview.restore();
       this.Base_gui.GUI_preview.render_preview_active_zone();
@@ -6991,7 +7136,7 @@ var Base_layers_class = /*#__PURE__*/function () {
           return _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].layers[i];
         }
       }
-      _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_13___default().error("Error: can not find layer with id:" + id);
+      _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_14___default().error("Error: can not find layer with id:" + id);
       return null;
     }
 
@@ -11519,6 +11664,10 @@ var GUI_information_class = /*#__PURE__*/function () {
       if (force == undefined && this.last_width == _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].WIDTH && this.last_height == _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].HEIGHT) {
         return;
       }
+      if (document.getElementById('mouse_info_size') == null) {
+        //block not rendered yet
+        return;
+      }
       var width = this.Helper.get_user_unit(_config_js__WEBPACK_IMPORTED_MODULE_2__["default"].WIDTH, this.units, this.resolution);
       var height = this.Helper.get_user_unit(_config_js__WEBPACK_IMPORTED_MODULE_2__["default"].HEIGHT, this.units, this.resolution);
       document.getElementById('mouse_info_size').innerHTML = width + ' x ' + height;
@@ -12217,6 +12366,520 @@ var GUI_menu_class = /*#__PURE__*/function () {
 
 /***/ },
 
+/***/ "./src/js/core/gui/gui-palette.js"
+/*!****************************************!*\
+  !*** ./src/js/core/gui/gui-palette.js ***!
+  \****************************************/
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
+/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
+/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../../config.js */ "./src/js/config.js");
+/* harmony import */ var _modules_tools_palettes_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./../../modules/tools/palettes.js */ "./src/js/modules/tools/palettes.js");
+
+
+/*
+ * get-in-loser - derivative of miniPaint (https://github.com/viliusle/miniPaint)
+ *
+ * Renders the Palette block on the right sidebar.
+ */
+
+
+
+var instance = null;
+var template = "\n\t<div class=\"block_section\">\n\t\t<div class=\"ui_input_group\">\n\t\t\t<select id=\"palette_select\" aria-label=\"Palette\"></select>\n\t\t</div>\n\t</div>\n\t<div class=\"block_section\">\n\t\t<div class=\"palette_colors\" id=\"palette_colors\"></div>\n\t</div>\n\t<div class=\"block_section palette_meta\" id=\"palette_meta\"></div>\n\t<div class=\"block_section\">\n\t\t<div class=\"details\">\n\t\t\t<button type=\"button\" class=\"layer_add trn\" id=\"palette_import\" title=\"Import a palette from a JSON file\">Import</button>\n\t\t\t<button type=\"button\" class=\"layer_add trn\" id=\"palette_export\" title=\"Save the current palette as a JSON file\">Export</button>\n\t\t</div>\n\t</div>\n";
+
+/**
+ * GUI class responsible for rendering the palette block on right sidebar
+ */
+var GUI_palette_class = /*#__PURE__*/function () {
+  function GUI_palette_class(GUI_class) {
+    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__["default"])(this, GUI_palette_class);
+    //singleton
+    if (instance) {
+      return instance;
+    }
+    instance = this;
+    if (GUI_class != undefined) {
+      this.GUI = GUI_class;
+    }
+    this.Tools_palettes = new _modules_tools_palettes_js__WEBPACK_IMPORTED_MODULE_3__["default"]();
+  }
+  return (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__["default"])(GUI_palette_class, [{
+    key: "render_main_palette",
+    value: function render_main_palette() {
+      var target = document.getElementById('toggle_palette');
+      if (target == null) {
+        return;
+      }
+      target.innerHTML = template;
+      this.set_events();
+      this.render_palette();
+    }
+  }, {
+    key: "set_events",
+    value: function set_events() {
+      var _this = this;
+      document.getElementById('palette_select').addEventListener('change', function () {
+        var palette = _this.Tools_palettes.find(this.value);
+        if (palette != null) {
+          _this.Tools_palettes.set_active(palette);
+        }
+      }, false);
+      document.getElementById('palette_import').addEventListener('click', function () {
+        _this.Tools_palettes.import_palette();
+      }, false);
+      document.getElementById('palette_export').addEventListener('click', function () {
+        _this.Tools_palettes.export_palette();
+      }, false);
+      document.getElementById('palette_colors').addEventListener('click', function (event) {
+        var swatch = event.target.closest('.palette_color');
+        if (swatch == null) {
+          return;
+        }
+        _this.select_color(swatch.dataset.hex);
+      }, false);
+      document.getElementById('palette_colors').addEventListener('keydown', function (event) {
+        if (event.key != 'Enter' && event.key != ' ') {
+          return;
+        }
+        var swatch = event.target.closest('.palette_color');
+        if (swatch == null) {
+          return;
+        }
+        event.preventDefault();
+        _this.select_color(swatch.dataset.hex);
+      }, false);
+    }
+
+    /**
+     * @param {string} hex
+     */
+  }, {
+    key: "select_color",
+    value: function select_color(hex) {
+      if (hex == undefined) {
+        return;
+      }
+      this.GUI.GUI_colors.set_color({
+        hex: hex
+      });
+      this.render_active_color();
+    }
+  }, {
+    key: "render_palette",
+    value: function render_palette() {
+      var select = document.getElementById('palette_select');
+      if (select == null) {
+        //panel not rendered yet
+        return;
+      }
+      var palettes = this.Tools_palettes.get_all();
+      var active = this.Tools_palettes.get_active();
+      select.innerHTML = palettes.map(function (palette) {
+        return '<option value="' + palette.name.replace(/"/g, '&quot;') + '">' + palette.name + ' (' + palette.colors.length + ')</option>';
+      }).join('');
+      if (active != null) {
+        select.value = active.name;
+      }
+      var container = document.getElementById('palette_colors');
+      if (active == null) {
+        container.innerHTML = '<span class="text_muted trn">No palette loaded.</span>';
+        document.getElementById('palette_meta').innerHTML = '';
+        return;
+      }
+      container.innerHTML = active.colors.map(function (hex) {
+        return '<button type="button" class="palette_color" data-hex="' + hex + '" title="' + hex + '" style="background-color:' + hex + '">' + '<span class="sr_only">' + hex + '</span></button>';
+      }).join('');
+      var meta = [];
+      if (active.author) meta.push(active.author);
+      if (active.license) meta.push(active.license);
+      document.getElementById('palette_meta').innerHTML = meta.length > 0 ? '<span class="text_muted">' + meta.join(' &middot; ') + '</span>' : '';
+      this.render_active_color();
+    }
+
+    /**
+     * highlights the palette entry matching the current colour
+     */
+  }, {
+    key: "render_active_color",
+    value: function render_active_color() {
+      var container = document.getElementById('palette_colors');
+      if (container == null) {
+        return;
+      }
+      var current = String(_config_js__WEBPACK_IMPORTED_MODULE_2__["default"].COLOR).toLowerCase();
+      var swatches = container.querySelectorAll('.palette_color');
+      for (var i = 0; i < swatches.length; i++) {
+        swatches[i].classList.toggle('active', swatches[i].dataset.hex === current);
+      }
+    }
+  }]);
+}();
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (GUI_palette_class);
+
+/***/ },
+
+/***/ "./src/js/core/gui/gui-panels.js"
+/*!***************************************!*\
+  !*** ./src/js/core/gui/gui-panels.js ***!
+  \***************************************/
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
+/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
+/* harmony import */ var _libs_helpers_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../../libs/helpers.js */ "./src/js/libs/helpers.js");
+
+
+/*
+ * get-in-loser - derivative of miniPaint (https://github.com/viliusle/miniPaint)
+ *
+ * Right sidebar panel manager: pinning (sticky headers), reordering with
+ * buttons and drag & drop, and persistence of both.
+ */
+
+
+var instance = null;
+var controls_template = "\n\t<span class=\"panel_controls\">\n\t\t<button type=\"button\" class=\"panel_control panel_pin\" title=\"Pin panel\" aria-pressed=\"false\">\n\t\t\t<span class=\"sr_only\">Pin panel</span>\n\t\t\t<svg width=\"1em\" height=\"1em\" viewBox=\"0 0 16 16\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\">\n\t\t\t\t<path d=\"M9.5 1a.5.5 0 0 0 0 1h.5v3.2l1.7 2.1a1 1 0 0 1 .2.6V8a.5.5 0 0 1-.5.5H8.5V14a.5.5 0 0 1-1 0V8.5H4.6A.5.5 0 0 1 4.1 8v-.1a1 1 0 0 1 .2-.6L6 5.2V2h.5a.5.5 0 0 0 0-1h-3z\"/>\n\t\t\t</svg>\n\t\t</button>\n\t\t<button type=\"button\" class=\"panel_control panel_move_up\" title=\"Move panel up\">\n\t\t\t<span class=\"sr_only\">Move panel up</span>\n\t\t\t<svg width=\"1em\" height=\"1em\" viewBox=\"0 0 16 16\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\">\n\t\t\t\t<path d=\"M8 4l4.5 5h-9z\"/>\n\t\t\t</svg>\n\t\t</button>\n\t\t<button type=\"button\" class=\"panel_control panel_move_down\" title=\"Move panel down\">\n\t\t\t<span class=\"sr_only\">Move panel down</span>\n\t\t\t<svg width=\"1em\" height=\"1em\" viewBox=\"0 0 16 16\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\">\n\t\t\t\t<path d=\"M8 12L3.5 7h9z\"/>\n\t\t\t</svg>\n\t\t</button>\n\t\t<span class=\"panel_control panel_drag_handle\" title=\"Drag to reorder\" aria-hidden=\"true\">\n\t\t\t<svg width=\"1em\" height=\"1em\" viewBox=\"0 0 16 16\" fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\">\n\t\t\t\t<circle cx=\"6\" cy=\"4\" r=\"1.3\"/><circle cx=\"10\" cy=\"4\" r=\"1.3\"/>\n\t\t\t\t<circle cx=\"6\" cy=\"8\" r=\"1.3\"/><circle cx=\"10\" cy=\"8\" r=\"1.3\"/>\n\t\t\t\t<circle cx=\"6\" cy=\"12\" r=\"1.3\"/><circle cx=\"10\" cy=\"12\" r=\"1.3\"/>\n\t\t\t</svg>\n\t\t</span>\n\t</span>\n";
+
+/**
+ * GUI class responsible for arranging the blocks on the right sidebar
+ */
+var GUI_panels_class = /*#__PURE__*/function () {
+  function GUI_panels_class(GUI_class) {
+    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__["default"])(this, GUI_panels_class);
+    //singleton
+    if (instance) {
+      return instance;
+    }
+    instance = this;
+    if (GUI_class != undefined) {
+      this.GUI = GUI_class;
+    }
+    this.Helper = new _libs_helpers_js__WEBPACK_IMPORTED_MODULE_2__["default"]();
+    this.sidebar = null;
+    this.dragged_panel = null;
+  }
+  return (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__["default"])(GUI_panels_class, [{
+    key: "render_main_panels",
+    value: function render_main_panels() {
+      this.sidebar = document.getElementById('sidebar_right');
+      if (this.sidebar == null) {
+        return;
+      }
+      var panels = this.get_panels();
+      for (var i = 0; i < panels.length; i++) {
+        this.prepare_panel(panels[i]);
+      }
+      this.restore_order();
+      this.restore_pinned();
+      this.set_events();
+      this.update_layout();
+    }
+
+    /**
+     * @returns {array} panel elements in their current display order
+     */
+  }, {
+    key: "get_panels",
+    value: function get_panels() {
+      if (this.sidebar == null) {
+        return [];
+      }
+      return Array.prototype.slice.call(this.sidebar.querySelectorAll(':scope > .block[data-panel]'));
+    }
+  }, {
+    key: "get_panel_name",
+    value: function get_panel_name(panel) {
+      return panel.dataset.panel;
+    }
+
+    /**
+     * adds the control buttons and drag attributes to a single panel
+     *
+     * @param {HTMLElement} panel
+     */
+  }, {
+    key: "prepare_panel",
+    value: function prepare_panel(panel) {
+      var header = panel.querySelector('h2');
+      if (header == null || header.querySelector('.panel_controls') != null) {
+        return;
+      }
+      header.classList.add('panel_header');
+      header.setAttribute('draggable', 'true');
+      header.insertAdjacentHTML('beforeend', controls_template);
+    }
+  }, {
+    key: "set_events",
+    value: function set_events() {
+      var _this = this;
+      this.sidebar.addEventListener('click', function (event) {
+        var button = event.target.closest ? event.target.closest('.panel_control') : null;
+        if (button == null || !_this.sidebar.contains(button)) {
+          return;
+        }
+
+        //never let the header collapse toggle fire as well
+        event.preventDefault();
+        event.stopPropagation();
+        var panel = button.closest('.block[data-panel]');
+        if (panel == null) {
+          return;
+        }
+        if (button.classList.contains('panel_pin')) {
+          _this.toggle_pin(panel);
+        } else if (button.classList.contains('panel_move_up')) {
+          _this.move(panel, -1);
+        } else if (button.classList.contains('panel_move_down')) {
+          _this.move(panel, +1);
+        }
+      }, true);
+      this.sidebar.addEventListener('dragstart', function (event) {
+        var header = event.target.closest ? event.target.closest('.panel_header') : null;
+        if (header == null) {
+          return;
+        }
+        _this.dragged_panel = header.closest('.block[data-panel]');
+        if (_this.dragged_panel == null) {
+          return;
+        }
+        _this.dragged_panel.classList.add('dragging');
+        event.dataTransfer.effectAllowed = 'move';
+        //firefox needs data to start a drag
+        event.dataTransfer.setData('text/plain', _this.get_panel_name(_this.dragged_panel));
+      }, false);
+      this.sidebar.addEventListener('dragover', function (event) {
+        if (_this.dragged_panel == null) {
+          return;
+        }
+        event.preventDefault();
+        event.dataTransfer.dropEffect = 'move';
+        var target = _this.find_drop_target(event.clientY);
+        if (target == null || target == _this.dragged_panel) {
+          return;
+        }
+        var panels = _this.get_panels();
+        var dragged_index = panels.indexOf(_this.dragged_panel);
+        var target_index = panels.indexOf(target);
+        if (dragged_index < target_index) {
+          target.after(_this.dragged_panel);
+        } else {
+          target.before(_this.dragged_panel);
+        }
+        _this.update_layout();
+      }, false);
+      this.sidebar.addEventListener('drop', function (event) {
+        if (_this.dragged_panel == null) {
+          return;
+        }
+        event.preventDefault();
+      }, false);
+      this.sidebar.addEventListener('dragend', function (event) {
+        if (_this.dragged_panel == null) {
+          return;
+        }
+        _this.dragged_panel.classList.remove('dragging');
+        _this.dragged_panel = null;
+        _this.save_order();
+        _this.update_layout();
+      }, false);
+
+      //collapsing a panel changes how much room the pinned ones need
+      this.sidebar.addEventListener('click', function (event) {
+        if (event.target.closest && event.target.closest('.panel_header') != null) {
+          window.setTimeout(function () {
+            _this.update_layout();
+          }, 0);
+        }
+      }, false);
+      window.addEventListener('resize', function () {
+        _this.update_layout();
+      }, false);
+    }
+
+    /**
+     * finds the panel the pointer is currently over
+     *
+     * @param {number} pointer_y
+     * @returns {HTMLElement|null}
+     */
+  }, {
+    key: "find_drop_target",
+    value: function find_drop_target(pointer_y) {
+      var panels = this.get_panels();
+      for (var i = 0; i < panels.length; i++) {
+        var rect = panels[i].getBoundingClientRect();
+        if (pointer_y >= rect.top && pointer_y <= rect.bottom) {
+          return panels[i];
+        }
+      }
+
+      //above the first / below the last panel
+      if (panels.length > 0) {
+        if (pointer_y < panels[0].getBoundingClientRect().top) {
+          return panels[0];
+        }
+        return panels[panels.length - 1];
+      }
+      return null;
+    }
+
+    /**
+     * moves a panel up (-1) or down (+1)
+     *
+     * @param {HTMLElement} panel
+     * @param {number} direction
+     */
+  }, {
+    key: "move",
+    value: function move(panel, direction) {
+      var panels = this.get_panels();
+      var index = panels.indexOf(panel);
+      var target_index = index + direction;
+      if (index < 0 || target_index < 0 || target_index >= panels.length) {
+        return false;
+      }
+      if (direction < 0) {
+        panels[target_index].before(panel);
+      } else {
+        panels[target_index].after(panel);
+      }
+      this.save_order();
+      this.update_layout();
+      return true;
+    }
+
+    /**
+     * @param {HTMLElement} panel
+     * @param {boolean} state omit to toggle
+     */
+  }, {
+    key: "toggle_pin",
+    value: function toggle_pin(panel, state) {
+      var pinned = state != undefined ? state : !panel.classList.contains('pinned');
+      panel.classList.toggle('pinned', pinned);
+      var button = panel.querySelector('.panel_pin');
+      if (button != null) {
+        button.setAttribute('aria-pressed', pinned ? 'true' : 'false');
+        button.setAttribute('title', pinned ? 'Unpin panel' : 'Pin panel');
+      }
+      this.save_pinned();
+      this.update_layout();
+      return pinned;
+    }
+
+    /**
+     * Pinned panels stick to the top of the sidebar. When more than one is
+     * pinned they stack instead of covering each other, so every pinned panel
+     * needs its own offset.
+     */
+  }, {
+    key: "update_layout",
+    value: function update_layout() {
+      var panels = this.get_panels();
+      var offset = 0;
+      for (var i = 0; i < panels.length; i++) {
+        var panel = panels[i];
+
+        //first and last panel get their move button disabled
+        var up = panel.querySelector('.panel_move_up');
+        var down = panel.querySelector('.panel_move_down');
+        if (up != null) {
+          up.disabled = i === 0;
+        }
+        if (down != null) {
+          down.disabled = i === panels.length - 1;
+        }
+        if (panel.classList.contains('pinned')) {
+          panel.style.top = offset + 'px';
+          //stacking order so an earlier pinned panel stays on top
+          panel.style.zIndex = 100 - i;
+          offset += panel.getBoundingClientRect().height;
+        } else {
+          panel.style.top = '';
+          panel.style.zIndex = '';
+        }
+      }
+    }
+  }, {
+    key: "save_order",
+    value: function save_order() {
+      var _this2 = this;
+      var names = this.get_panels().map(function (panel) {
+        return _this2.get_panel_name(panel);
+      });
+      this.Helper.setCookie('panel_order', names.join(','));
+    }
+  }, {
+    key: "restore_order",
+    value: function restore_order() {
+      var saved = this.Helper.getCookie('panel_order');
+      if (saved == null || saved === '') {
+        return false;
+      }
+      var names = String(saved).split(',');
+      var panels = this.get_panels();
+      var by_name = {};
+      for (var i = 0; i < panels.length; i++) {
+        by_name[this.get_panel_name(panels[i])] = panels[i];
+      }
+
+      //append in saved order, unknown/new panels keep their markup position
+      for (var j = 0; j < names.length; j++) {
+        var panel = by_name[names[j]];
+        if (panel != undefined) {
+          this.sidebar.appendChild(panel);
+          delete by_name[names[j]];
+        }
+      }
+      for (var name in by_name) {
+        this.sidebar.appendChild(by_name[name]);
+      }
+      return true;
+    }
+  }, {
+    key: "save_pinned",
+    value: function save_pinned() {
+      var _this3 = this;
+      var names = this.get_panels().filter(function (panel) {
+        return panel.classList.contains('pinned');
+      }).map(function (panel) {
+        return _this3.get_panel_name(panel);
+      });
+      this.Helper.setCookie('panel_pinned', names.join(','));
+    }
+  }, {
+    key: "restore_pinned",
+    value: function restore_pinned() {
+      var saved = this.Helper.getCookie('panel_pinned');
+      if (saved == null) {
+        //preview pinned by default - it is the panel most worth keeping in view
+        saved = 'preview';
+      }
+      var names = String(saved).split(',');
+      var panels = this.get_panels();
+      for (var i = 0; i < panels.length; i++) {
+        var is_pinned = names.indexOf(this.get_panel_name(panels[i])) > -1;
+        this.toggle_pin(panels[i], is_pinned);
+      }
+    }
+  }]);
+}();
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (GUI_panels_class);
+
+/***/ },
+
 /***/ "./src/js/core/gui/gui-preview.js"
 /*!****************************************!*\
   !*** ./src/js/core/gui/gui-preview.js ***!
@@ -12235,6 +12898,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3__);
 /* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./../../config.js */ "./src/js/config.js");
 /* harmony import */ var _base_layers_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./../base-layers.js */ "./src/js/core/base-layers.js");
+/* harmony import */ var _preview_geometry_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./preview-geometry.js */ "./src/js/core/gui/preview-geometry.js");
 
 
 
@@ -12246,8 +12910,9 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
 var instance = null;
-var template = "\n\t<div class=\"canvas_preview_wrapper\">\n\t\t<div class=\"transparent-grid\" id=\"canvas_preview_background\"></div>\n\t\t<canvas width=\"176\" height=\"100\" class=\"transparent\" id=\"canvas_preview\"></canvas>\n\t</div>\n\t<div class=\"canvas_preview_details\">\n\t\t<div class=\"details\">\n\t\t\t<button title=\"Zoom out\" class=\"layer_add trn\" id=\"zoom_less\"\">-</button>\n\t\t\t<button title=\"Reset zoom level\"  class=\"layer_add trn\" id=\"zoom_100\">100%</button>\n\t\t\t<button title=\"Zoom in\" class=\"layer_add trn\" id=\"zoom_more\"\">+</button>\n\t\t\t<button title=\"Fit window\" class=\"layer_add trn\" id=\"zoom_fit\">Fit</button>\n\t\t</div>\n\t\t<input id=\"zoom_range\" type=\"range\" value=\"100\" min=\"50\" max=\"1000\" step=\"50\" />\n\t</div>\n";
+var template = "\n\t<div class=\"canvas_preview_wrapper\">\n\t\t<div class=\"canvas_preview_inner\" id=\"canvas_preview_inner\">\n\t\t\t<div class=\"transparent-grid\" id=\"canvas_preview_background\"></div>\n\t\t\t<canvas width=\"176\" height=\"176\" class=\"transparent\" id=\"canvas_preview\"></canvas>\n\t\t</div>\n\t</div>\n\t<div class=\"canvas_preview_details\">\n\t\t<div class=\"details\">\n\t\t\t<button title=\"Zoom out\" class=\"layer_add trn\" id=\"zoom_less\"\">-</button>\n\t\t\t<button title=\"Reset zoom level\"  class=\"layer_add trn\" id=\"zoom_100\">100%</button>\n\t\t\t<button title=\"Zoom in\" class=\"layer_add trn\" id=\"zoom_more\"\">+</button>\n\t\t\t<button title=\"Fit window\" class=\"layer_add trn\" id=\"zoom_fit\">Fit</button>\n\t\t</div>\n\t\t<input id=\"zoom_range\" type=\"range\" value=\"100\" min=\"50\" max=\"1000\" step=\"50\" />\n\t</div>\n";
 
 /**
  * GUI class responsible for rendering preview on right sidebar
@@ -12262,10 +12927,16 @@ var GUI_preview_class = /*#__PURE__*/function () {
     instance = this;
     document.getElementById('toggle_preview').innerHTML = template;
 
-    // preview mini window size on right sidebar
+    // maximum area the preview canvas may use on the right sidebar
+    this.PREVIEW_BOX = {
+      w: _preview_geometry_js__WEBPACK_IMPORTED_MODULE_6__.PREVIEW_BOX.w,
+      h: _preview_geometry_js__WEBPACK_IMPORTED_MODULE_6__.PREVIEW_BOX.h
+    };
+
+    // actual preview canvas size - always matches the canvas aspect ratio
     this.PREVIEW_SIZE = {
-      w: 176,
-      h: 100
+      w: _preview_geometry_js__WEBPACK_IMPORTED_MODULE_6__.PREVIEW_BOX.w,
+      h: _preview_geometry_js__WEBPACK_IMPORTED_MODULE_6__.PREVIEW_BOX.h
     };
     this.canvas_offset = {
       x: 0,
@@ -12283,7 +12954,20 @@ var GUI_preview_class = /*#__PURE__*/function () {
     }
     this.Base_layers = new _base_layers_js__WEBPACK_IMPORTED_MODULE_5__["default"]();
   }
+
+  /**
+   * @returns {canvas.context} preview canvas context, recreated whenever the
+   *   preview canvas is resized
+   */
   return (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__["default"])(GUI_preview_class, [{
+    key: "get_context",
+    value: function get_context() {
+      if (this.canvas_preview == null) {
+        this.canvas_preview = document.getElementById('canvas_preview').getContext('2d');
+      }
+      return this.canvas_preview;
+    }
+  }, {
     key: "render_main_preview",
     value: function render_main_preview() {
       this.canvas_preview = document.getElementById("canvas_preview").getContext("2d");
@@ -12375,10 +13059,48 @@ var GUI_preview_class = /*#__PURE__*/function () {
   }, {
     key: "prepare_canvas",
     value: function prepare_canvas() {
+      this.update_preview_size();
       this.canvas_preview.webkitImageSmoothingEnabled = false;
       this.canvas_preview.msImageSmoothingEnabled = false;
       this.canvas_preview.imageSmoothingEnabled = false;
       this.GUI.render_canvas_background('canvas_preview', 8);
+    }
+
+    /**
+     * Resizes the preview canvas so it has the same aspect ratio as the main
+     * canvas. Called whenever the canvas dimensions change.
+     */
+  }, {
+    key: "update_preview_size",
+    value: function update_preview_size() {
+      var size = (0,_preview_geometry_js__WEBPACK_IMPORTED_MODULE_6__.calc_preview_size)(_config_js__WEBPACK_IMPORTED_MODULE_4__["default"].WIDTH, _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].HEIGHT, this.PREVIEW_BOX);
+      if (size.w == this.PREVIEW_SIZE.w && size.h == this.PREVIEW_SIZE.h) {
+        //nothing changed
+        return false;
+      }
+      this.PREVIEW_SIZE.w = size.w;
+      this.PREVIEW_SIZE.h = size.h;
+      var canvas = document.getElementById('canvas_preview');
+      if (canvas == null) {
+        return false;
+      }
+      canvas.width = size.w;
+      canvas.height = size.h;
+
+      //keep the transparency grid behind the canvas exactly the same size
+      var inner = document.getElementById('canvas_preview_inner');
+      if (inner != null) {
+        inner.style.width = size.w + 'px';
+        inner.style.height = size.h + 'px';
+      }
+
+      //context state is lost after a canvas resize
+      this.canvas_preview = canvas.getContext('2d');
+      this.canvas_preview.webkitImageSmoothingEnabled = false;
+      this.canvas_preview.msImageSmoothingEnabled = false;
+      this.canvas_preview.imageSmoothingEnabled = false;
+      _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].need_render = true;
+      return true;
     }
   }, {
     key: "render_preview_active_zone",
@@ -12386,24 +13108,19 @@ var GUI_preview_class = /*#__PURE__*/function () {
       if (this.canvas_preview == undefined) {
         this.canvas_preview = document.getElementById("canvas_preview").getContext("2d");
       }
-
-      //active zone
-      var visible_w = _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].visible_width / _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].ZOOM;
-      var visible_h = _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].visible_height / _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].ZOOM;
-      var mini_rect_w = this.PREVIEW_SIZE.w * visible_w / _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].WIDTH;
-      var mini_rect_h = this.PREVIEW_SIZE.h * visible_h / _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].HEIGHT;
       var start_pos = this.Base_layers.get_world_coords(0, 0);
-      var mini_rect_x = start_pos.x / _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].WIDTH * this.PREVIEW_SIZE.w;
-      var mini_rect_y = start_pos.y / _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].HEIGHT * this.PREVIEW_SIZE.h;
-
-      //validate
-      mini_rect_x = Math.max(0, mini_rect_x);
-      mini_rect_y = Math.max(0, mini_rect_y);
-      mini_rect_w = Math.min(this.PREVIEW_SIZE.w - 1, mini_rect_w);
-      mini_rect_h = Math.min(this.PREVIEW_SIZE.h - 1, mini_rect_h);
-      if (mini_rect_x + mini_rect_w > this.PREVIEW_SIZE.w) mini_rect_x = this.PREVIEW_SIZE.w - mini_rect_w;
-      if (mini_rect_y + mini_rect_h > this.PREVIEW_SIZE.h) mini_rect_y = this.PREVIEW_SIZE.h - mini_rect_h;
-      if (mini_rect_x == 0 && mini_rect_y == 0 && mini_rect_w == this.PREVIEW_SIZE.w - 1 && mini_rect_h == this.PREVIEW_SIZE.h - 1) {
+      var zone = (0,_preview_geometry_js__WEBPACK_IMPORTED_MODULE_6__.calc_active_zone)({
+        image_width: _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].WIDTH,
+        image_height: _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].HEIGHT,
+        preview_width: this.PREVIEW_SIZE.w,
+        preview_height: this.PREVIEW_SIZE.h,
+        visible_width: _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].visible_width,
+        visible_height: _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].visible_height,
+        zoom: _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].ZOOM,
+        world_x: start_pos.x,
+        world_y: start_pos.y
+      });
+      if (zone == null) {
         //everything is visible
         return;
       }
@@ -12411,7 +13128,7 @@ var GUI_preview_class = /*#__PURE__*/function () {
       //draw selected area in preview canvas
       this.canvas_preview.lineWidth = 1;
       this.canvas_preview.beginPath();
-      this.canvas_preview.rect(Math.round(mini_rect_x) + 0.5, Math.round(mini_rect_y) + 0.5, mini_rect_w, mini_rect_h);
+      this.canvas_preview.rect(Math.round(zone.x) + 0.5, Math.round(zone.y) + 0.5, zone.w, zone.h);
       this.canvas_preview.fillStyle = "rgba(0, 255, 0, 0.3)";
       this.canvas_preview.strokeStyle = "#00ff00";
       this.canvas_preview.fill();
@@ -12530,16 +13247,21 @@ var GUI_preview_class = /*#__PURE__*/function () {
         mouse_x = event.pageX - this.canvas_offset.x;
         mouse_y = event.pageY - this.canvas_offset.y;
       }
-      var visible_w = _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].visible_width / _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].ZOOM;
-      var visible_h = _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].visible_height / _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].ZOOM;
-      var mini_w = this.PREVIEW_SIZE.w * visible_w / _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].WIDTH;
-      var mini_h = this.PREVIEW_SIZE.h * visible_h / _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].HEIGHT;
-      var change_x = (mouse_x - mini_w / 2) / this.PREVIEW_SIZE.w * _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].WIDTH;
-      var change_y = (mouse_y - mini_h / 2) / this.PREVIEW_SIZE.h * _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].HEIGHT;
+      var change = (0,_preview_geometry_js__WEBPACK_IMPORTED_MODULE_6__.calc_zoom_position)({
+        mouse_x: mouse_x,
+        mouse_y: mouse_y,
+        image_width: _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].WIDTH,
+        image_height: _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].HEIGHT,
+        preview_width: this.PREVIEW_SIZE.w,
+        preview_height: this.PREVIEW_SIZE.h,
+        visible_width: _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].visible_width,
+        visible_height: _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].visible_height,
+        zoom: _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].ZOOM
+      });
       var zoom_data = this.zoom_data;
       zoom_data.move_pos = {};
-      zoom_data.move_pos.x = change_x;
-      zoom_data.move_pos.y = change_y;
+      zoom_data.move_pos.x = change.x;
+      zoom_data.move_pos.y = change.y;
       _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].need_render = true;
     }
 
@@ -12978,6 +13700,269 @@ var GUI_tools_class = /*#__PURE__*/function () {
   }]);
 }();
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (GUI_tools_class);
+
+/***/ },
+
+/***/ "./src/js/core/gui/preview-geometry.js"
+/*!*********************************************!*\
+  !*** ./src/js/core/gui/preview-geometry.js ***!
+  \*********************************************/
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   PREVIEW_BOX: () => (/* binding */ PREVIEW_BOX),
+/* harmony export */   calc_active_zone: () => (/* binding */ calc_active_zone),
+/* harmony export */   calc_preview_scale: () => (/* binding */ calc_preview_scale),
+/* harmony export */   calc_preview_size: () => (/* binding */ calc_preview_size),
+/* harmony export */   calc_zoom_position: () => (/* binding */ calc_zoom_position)
+/* harmony export */ });
+/*
+ * get-in-loser - derivative of miniPaint (https://github.com/viliusle/miniPaint)
+ *
+ * Pure geometry helpers for the sidebar preview window.
+ *
+ * These are kept free of DOM/config access so they can be unit tested. See
+ * tests/preview-geometry.test.js.
+ */
+
+/**
+ * Maximum area the preview canvas may occupy inside the right sidebar.
+ * The preview canvas is fitted inside this box while keeping the image
+ * aspect ratio, so it never gets stretched.
+ */
+var PREVIEW_BOX = {
+  w: 176,
+  h: 176
+};
+
+/**
+ * Calculates preview canvas dimensions that fit inside the given box while
+ * preserving the aspect ratio of the image.
+ *
+ * @param {number} image_width
+ * @param {number} image_height
+ * @param {object} box keys: w, h. Defaults to PREVIEW_BOX.
+ * @returns {object} keys: w, h (integers, >= 1)
+ */
+function calc_preview_size(image_width, image_height, box) {
+  box = box || PREVIEW_BOX;
+  var box_w = Math.max(1, Math.floor(box.w));
+  var box_h = Math.max(1, Math.floor(box.h));
+  if (!(image_width > 0) || !(image_height > 0)) {
+    //no usable image dimensions - fall back to the full box
+    return {
+      w: box_w,
+      h: box_h
+    };
+  }
+  var scale = Math.min(box_w / image_width, box_h / image_height);
+  var w = Math.max(1, Math.min(box_w, Math.round(image_width * scale)));
+  var h = Math.max(1, Math.min(box_h, Math.round(image_height * scale)));
+  return {
+    w: w,
+    h: h
+  };
+}
+
+/**
+ * Scale factors used to draw the image into the preview canvas.
+ * Both axes always get the same factor - that is what keeps the preview
+ * undistorted.
+ *
+ * @param {number} image_width
+ * @param {number} image_height
+ * @param {object} preview_size keys: w, h
+ * @returns {object} keys: x, y
+ */
+function calc_preview_scale(image_width, image_height, preview_size) {
+  if (!(image_width > 0) || !(image_height > 0)) {
+    return {
+      x: 1,
+      y: 1
+    };
+  }
+  var scale = Math.min(preview_size.w / image_width, preview_size.h / image_height);
+  return {
+    x: scale,
+    y: scale
+  };
+}
+
+/**
+ * Calculates the rectangle highlighting the currently visible part of the
+ * image inside the preview canvas.
+ *
+ * @param {object} state keys:
+ *   image_width, image_height - canvas dimensions in pixels
+ *   preview_width, preview_height - preview canvas dimensions in pixels
+ *   visible_width, visible_height - visible area on screen in pixels
+ *   zoom - current zoom level (1 = 100%)
+ *   world_x, world_y - image coordinates of the top left visible pixel
+ * @returns {object|null} keys x, y, w, h. null when everything is visible.
+ */
+function calc_active_zone(state) {
+  var preview_w = state.preview_width;
+  var preview_h = state.preview_height;
+  if (!(state.image_width > 0) || !(state.image_height > 0) || !(state.zoom > 0)) {
+    return null;
+  }
+  var visible_w = state.visible_width / state.zoom;
+  var visible_h = state.visible_height / state.zoom;
+  var w = preview_w * visible_w / state.image_width;
+  var h = preview_h * visible_h / state.image_height;
+  var x = state.world_x / state.image_width * preview_w;
+  var y = state.world_y / state.image_height * preview_h;
+
+  //validate
+  x = Math.max(0, x);
+  y = Math.max(0, y);
+  w = Math.min(preview_w - 1, w);
+  h = Math.min(preview_h - 1, h);
+  if (x + w > preview_w) x = preview_w - w;
+  if (y + h > preview_h) y = preview_h - h;
+  if (x == 0 && y == 0 && w == preview_w - 1 && h == preview_h - 1) {
+    //everything is visible
+    return null;
+  }
+  return {
+    x: x,
+    y: y,
+    w: w,
+    h: h
+  };
+}
+
+/**
+ * Converts a click/touch inside the preview canvas into the image offset the
+ * visible window should move to.
+ *
+ * @param {object} state keys:
+ *   mouse_x, mouse_y - position inside the preview canvas
+ *   image_width, image_height, preview_width, preview_height
+ *   visible_width, visible_height, zoom
+ * @returns {object} keys: x, y (image coordinates)
+ */
+function calc_zoom_position(state) {
+  var visible_w = state.visible_width / state.zoom;
+  var visible_h = state.visible_height / state.zoom;
+  var mini_w = state.preview_width * visible_w / state.image_width;
+  var mini_h = state.preview_height * visible_h / state.image_height;
+  return {
+    x: (state.mouse_x - mini_w / 2) / state.preview_width * state.image_width,
+    y: (state.mouse_y - mini_h / 2) / state.preview_height * state.image_height
+  };
+}
+
+
+/***/ },
+
+/***/ "./src/js/core/pixel-grid.js"
+/*!***********************************!*\
+  !*** ./src/js/core/pixel-grid.js ***!
+  \***********************************/
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   MAJOR_EVERY: () => (/* binding */ MAJOR_EVERY),
+/* harmony export */   MAX_LINES: () => (/* binding */ MAX_LINES),
+/* harmony export */   MIN_ZOOM: () => (/* binding */ MIN_ZOOM),
+/* harmony export */   grid_line_positions: () => (/* binding */ grid_line_positions),
+/* harmony export */   is_major_line: () => (/* binding */ is_major_line),
+/* harmony export */   should_draw_pixel_grid: () => (/* binding */ should_draw_pixel_grid)
+/* harmony export */ });
+/*
+ * get-in-loser - derivative of miniPaint (https://github.com/viliusle/miniPaint)
+ *
+ * Pure helpers deciding when and where the per-pixel grid is drawn. See
+ * tests/pixel-grid.test.js.
+ *
+ * Positions are returned in screen pixels rather than image coordinates: the
+ * canvas transform in the middle of the render loop is not the plain zoom
+ * matrix, so the grid is drawn with the transform reset.
+ */
+
+/** below this zoom level pixel grid lines would be thicker than the pixels */
+var MIN_ZOOM = 6;
+
+/** drawing more lines than this costs more than the grid is worth */
+var MAX_LINES = 4000;
+
+/** every Nth line is drawn stronger, to make counting pixels easier */
+var MAJOR_EVERY = 8;
+
+/**
+ * @param {object} state keys: pixel_mode, grid_enabled, zoom, width, height
+ * @param {object} options optional overrides for MIN_ZOOM / MAX_LINES
+ * @returns {boolean}
+ */
+function should_draw_pixel_grid(state, options) {
+  options = options || {};
+  var min_zoom = options.min_zoom != undefined ? options.min_zoom : MIN_ZOOM;
+  var max_lines = options.max_lines != undefined ? options.max_lines : MAX_LINES;
+  if (!state.pixel_mode || !state.grid_enabled) {
+    return false;
+  }
+  if (!(state.zoom >= min_zoom)) {
+    return false;
+  }
+  if (!(state.width > 0) || !(state.height > 0)) {
+    return false;
+  }
+  if (state.width + state.height > max_lines) {
+    return false;
+  }
+  return true;
+}
+
+/**
+ * @param {number} index
+ * @param {number} major_every
+ * @returns {boolean} true when this line should be drawn stronger
+ */
+function is_major_line(index, major_every) {
+  major_every = major_every || MAJOR_EVERY;
+  return index % major_every === 0;
+}
+
+/**
+ * Screen positions of the grid lines along one axis. Lines that fall outside
+ * the visible canvas are left out, so a zoomed in corner of a large image only
+ * costs the lines actually on screen.
+ *
+ * @param {object} state keys:
+ *   count - number of image pixels along this axis
+ *   zoom - current zoom level
+ *   origin - image coordinate shown at screen position 0
+ *   screen_size - size of the visible canvas along this axis, in pixels
+ *   major_every - optional, defaults to MAJOR_EVERY
+ * @returns {array} [{index, position, major}] - position is a half pixel
+ *   offset so the 1px line lands on a whole device pixel
+ */
+function grid_line_positions(state) {
+  var lines = [];
+  if (!(state.count > 0) || !(state.zoom > 0)) {
+    return lines;
+  }
+  var origin = state.origin || 0;
+  for (var i = 1; i < state.count; i++) {
+    var position = Math.round((i - origin) * state.zoom) + 0.5;
+    if (position < 0 || position > state.screen_size) {
+      //off screen
+      continue;
+    }
+    lines.push({
+      index: i,
+      position: position,
+      major: is_major_line(i, state.major_every)
+    });
+  }
+  return lines;
+}
+
 
 /***/ },
 
@@ -17531,6 +18516,301 @@ ImageFilters.Twril = function (srcImageData, centerX, centerY, radius, angle, ed
 
 /***/ },
 
+/***/ "./src/js/libs/palette-parser.js"
+/*!***************************************!*\
+  !*** ./src/js/libs/palette-parser.js ***!
+  \***************************************/
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   MAX_COLORS: () => (/* binding */ MAX_COLORS),
+/* harmony export */   nearest_color: () => (/* binding */ nearest_color),
+/* harmony export */   normalize_color: () => (/* binding */ normalize_color),
+/* harmony export */   parse_palette: () => (/* binding */ parse_palette),
+/* harmony export */   stringify_palette: () => (/* binding */ stringify_palette)
+/* harmony export */ });
+/* harmony import */ var _babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/typeof */ "./node_modules/@babel/runtime/helpers/esm/typeof.js");
+
+/*
+ * get-in-loser - derivative of miniPaint (https://github.com/viliusle/miniPaint)
+ *
+ * Tolerant parser for JSON colour palettes. Kept free of DOM/config access so
+ * it can be unit tested - see tests/palette-parser.test.js.
+ */
+
+var MAX_COLORS = 512;
+
+/**
+ * @param {number} value
+ * @returns {string} two digit lowercase hex
+ */
+function to_hex_pair(value) {
+  var clamped = Math.max(0, Math.min(255, Math.round(value)));
+  return ('0' + clamped.toString(16)).slice(-2);
+}
+
+/**
+ * Normalizes a single colour into '#rrggbb'.
+ *
+ * Accepts '#abc', 'abc', '#aabbcc', 'aabbcc', '#aabbccdd' (alpha dropped),
+ * [r, g, b], {r, g, b} and {hex|color|value|hexcode: ...}.
+ *
+ * @param {*} color
+ * @returns {string|null} null when the value is not a usable colour
+ */
+function normalize_color(color) {
+  if (color == null) {
+    return null;
+  }
+  if (Array.isArray(color)) {
+    if (color.length < 3) {
+      return null;
+    }
+    for (var i = 0; i < 3; i++) {
+      if (typeof color[i] != 'number' || isNaN(color[i])) {
+        return null;
+      }
+    }
+    return '#' + to_hex_pair(color[0]) + to_hex_pair(color[1]) + to_hex_pair(color[2]);
+  }
+  if ((0,_babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_0__["default"])(color) == 'object') {
+    var keys = ['hex', 'color', 'colour', 'value', 'hexcode'];
+    for (var k = 0; k < keys.length; k++) {
+      if (color[keys[k]] != undefined) {
+        return normalize_color(color[keys[k]]);
+      }
+    }
+    if (typeof color.r == 'number' && typeof color.g == 'number' && typeof color.b == 'number') {
+      return normalize_color([color.r, color.g, color.b]);
+    }
+    return null;
+  }
+  if (typeof color != 'string') {
+    return null;
+  }
+  var hex = color.trim().replace(/^#/, '');
+  if (/^[0-9a-f]{3}$/i.test(hex)) {
+    hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+  }
+  //drop alpha if present
+  if (/^[0-9a-f]{8}$/i.test(hex)) {
+    hex = hex.substring(0, 6);
+  }
+  if (!/^[0-9a-f]{6}$/i.test(hex)) {
+    return null;
+  }
+  return '#' + hex.toLowerCase();
+}
+
+/**
+ * Finds the colour list inside an arbitrary palette object.
+ *
+ * @param {*} data
+ * @returns {array}
+ */
+function find_color_list(data) {
+  if (Array.isArray(data)) {
+    return data;
+  }
+  if (data == null || (0,_babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_0__["default"])(data) != 'object') {
+    return [];
+  }
+  var keys = ['colors', 'colours', 'palette', 'swatches'];
+  for (var i = 0; i < keys.length; i++) {
+    if (Array.isArray(data[keys[i]])) {
+      return data[keys[i]];
+    }
+  }
+  return [];
+}
+
+/**
+ * Parses a palette definition into the shape used by the app.
+ *
+ * @param {object|array|string} data parsed JSON or a raw JSON string
+ * @param {object} defaults optional fallbacks, e.g. {name: 'file.json'}
+ * @returns {object} keys: name, author, source, license, colors (array of '#rrggbb')
+ * @throws {Error} when the data contains no usable colours
+ */
+function parse_palette(data, defaults) {
+  defaults = defaults || {};
+  if (typeof data == 'string') {
+    try {
+      data = JSON.parse(data);
+    } catch (e) {
+      throw new Error('Palette is not valid JSON.');
+    }
+  }
+  var raw_colors = find_color_list(data);
+  var colors = [];
+  var seen = {};
+  for (var i = 0; i < raw_colors.length && colors.length < MAX_COLORS; i++) {
+    var hex = normalize_color(raw_colors[i]);
+    if (hex == null || seen[hex] === true) {
+      continue;
+    }
+    seen[hex] = true;
+    colors.push(hex);
+  }
+  if (colors.length == 0) {
+    throw new Error('Palette contains no usable colors.');
+  }
+  var meta = data != null && (0,_babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_0__["default"])(data) == 'object' && !Array.isArray(data) ? data : {};
+  return {
+    name: String(meta.name || defaults.name || 'Palette'),
+    author: meta.author != undefined ? String(meta.author) : null,
+    source: meta.source != undefined ? String(meta.source) : null,
+    license: meta.license != undefined ? String(meta.license) : null,
+    colors: colors
+  };
+}
+
+/**
+ * Serializes a palette back to the canonical JSON format.
+ *
+ * @param {object} palette
+ * @returns {string}
+ */
+function stringify_palette(palette) {
+  var out = {
+    name: palette.name
+  };
+  if (palette.author) out.author = palette.author;
+  if (palette.source) out.source = palette.source;
+  if (palette.license) out.license = palette.license;
+  out.colors = palette.colors;
+  return JSON.stringify(out, null, '\t');
+}
+
+/**
+ * Finds the palette colour closest to the given one, using a weighted RGB
+ * distance that roughly matches how the eye judges "close".
+ *
+ * @param {string} hex
+ * @param {array} colors array of '#rrggbb'
+ * @returns {string|null}
+ */
+function nearest_color(hex, colors) {
+  var target = normalize_color(hex);
+  if (target == null || !colors || colors.length == 0) {
+    return null;
+  }
+  var tr = parseInt(target.substring(1, 3), 16);
+  var tg = parseInt(target.substring(3, 5), 16);
+  var tb = parseInt(target.substring(5, 7), 16);
+  var best = null;
+  var best_distance = Infinity;
+  for (var i = 0; i < colors.length; i++) {
+    var candidate = normalize_color(colors[i]);
+    if (candidate == null) {
+      continue;
+    }
+    var dr = tr - parseInt(candidate.substring(1, 3), 16);
+    var dg = tg - parseInt(candidate.substring(3, 5), 16);
+    var db = tb - parseInt(candidate.substring(5, 7), 16);
+
+    //weights approximate human luminance sensitivity
+    var distance = 2 * dr * dr + 4 * dg * dg + 3 * db * db;
+    if (distance < best_distance) {
+      best_distance = distance;
+      best = candidate;
+    }
+  }
+  return best;
+}
+
+
+/***/ },
+
+/***/ "./src/js/libs/pixel-size.js"
+/*!***********************************!*\
+  !*** ./src/js/libs/pixel-size.js ***!
+  \***********************************/
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   MAX_PIXEL_SIZE: () => (/* binding */ MAX_PIXEL_SIZE),
+/* harmony export */   PIXEL_PRESETS: () => (/* binding */ PIXEL_PRESETS),
+/* harmony export */   get_preset_labels: () => (/* binding */ get_preset_labels),
+/* harmony export */   parse_preset: () => (/* binding */ parse_preset),
+/* harmony export */   resolve_size: () => (/* binding */ resolve_size)
+/* harmony export */ });
+/*
+ * get-in-loser - derivative of miniPaint (https://github.com/viliusle/miniPaint)
+ *
+ * Pure size helpers for pixel edit mode. Unlike the regular canvas size
+ * dialogs these never convert units - a pixel is a pixel. See
+ * tests/pixel-size.test.js.
+ */
+
+/** largest canvas pixel mode will create, as a guard against typos */
+var MAX_PIXEL_SIZE = 10000;
+
+/**
+ * Common pixel art canvas sizes. The first entry is the size this editor is
+ * mostly used for.
+ */
+var PIXEL_PRESETS = [[16, 24, 'tall sprite'], [16, 16, 'icon'], [8, 8, 'tile'], [32, 32, 'sprite'], [32, 48, 'tall sprite'], [64, 64, 'portrait'], [128, 128, 'scene'], [160, 144, 'Game Boy screen'], [256, 240, 'NES screen']];
+
+/**
+ * @param {array} presets defaults to PIXEL_PRESETS
+ * @returns {array} ['Custom', '16x24 - tall sprite', ...]
+ */
+function get_preset_labels(presets) {
+  presets = presets || PIXEL_PRESETS;
+  return ['Custom'].concat(presets.map(function (preset) {
+    return preset[0] + 'x' + preset[1] + ' - ' + preset[2];
+  }));
+}
+
+/**
+ * @param {string} label
+ * @returns {object|null} keys: w, h
+ */
+function parse_preset(label) {
+  if (label == undefined || label == 'Custom') {
+    return null;
+  }
+  var dimensions = String(label).split(' ')[0].split('x');
+  var w = parseInt(dimensions[0], 10);
+  var h = parseInt(dimensions[1], 10);
+  if (isNaN(w) || isNaN(h)) {
+    return null;
+  }
+  return {
+    w: w,
+    h: h
+  };
+}
+
+/**
+ * Reads width/height out of dialog params, preferring the preset when one is
+ * picked.
+ *
+ * @param {object} params keys: width, height, preset
+ * @returns {object|null} keys: w, h. null when the input is unusable.
+ */
+function resolve_size(params) {
+  params = params || {};
+  var preset = parse_preset(params.preset);
+  var w = preset != null ? preset.w : parseInt(params.width, 10);
+  var h = preset != null ? preset.h : parseInt(params.height, 10);
+  if (isNaN(w) || isNaN(h) || w < 1 || h < 1) {
+    return null;
+  }
+  return {
+    w: Math.min(w, MAX_PIXEL_SIZE),
+    h: Math.min(h, MAX_PIXEL_SIZE)
+  };
+}
+
+
+/***/ },
+
 /***/ "./src/js/libs/popup.js"
 /*!******************************!*\
   !*** ./src/js/libs/popup.js ***!
@@ -19119,6 +20399,9 @@ var zoomView = function () {
       return bounds;
     },
     getScale: function getScale() {
+      if (dirty) {
+        this.update();
+      }
       return scale;
     },
     getMaxScale: function getMaxScale() {
@@ -27605,13 +28888,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
 /* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
-/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../../config.js */ "./src/js/config.js");
-/* harmony import */ var _core_base_layers_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./../../core/base-layers.js */ "./src/js/core/base-layers.js");
-/* harmony import */ var _libs_color_thief_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./../../libs/color-thief.js */ "./src/js/libs/color-thief.js");
-/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./../../../../node_modules/alertifyjs/build/alertify.min.js */ "./node_modules/alertifyjs/build/alertify.min.js");
-/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var _libs_popup_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./../../libs/popup.js */ "./src/js/libs/popup.js");
-/* harmony import */ var _libs_helpers_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./../../libs/helpers.js */ "./src/js/libs/helpers.js");
+/* harmony import */ var _app_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../../app.js */ "./src/js/app.js");
+/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./../../config.js */ "./src/js/config.js");
+/* harmony import */ var _core_base_layers_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./../../core/base-layers.js */ "./src/js/core/base-layers.js");
+/* harmony import */ var _libs_color_thief_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./../../libs/color-thief.js */ "./src/js/libs/color-thief.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./../../../../node_modules/alertifyjs/build/alertify.min.js */ "./node_modules/alertifyjs/build/alertify.min.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(_node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var _libs_popup_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./../../libs/popup.js */ "./src/js/libs/popup.js");
+/* harmony import */ var _libs_helpers_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./../../libs/helpers.js */ "./src/js/libs/helpers.js");
+
 
 
 
@@ -27623,43 +28908,133 @@ __webpack_require__.r(__webpack_exports__);
 var Image_color_class = /*#__PURE__*/function () {
   function Image_color_class() {
     (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__["default"])(this, Image_color_class);
-    this.Base_layers = new _core_base_layers_js__WEBPACK_IMPORTED_MODULE_3__["default"]();
-    this.alertify = new _libs_color_thief_js__WEBPACK_IMPORTED_MODULE_4__["default"]();
-    this.POP = new _libs_popup_js__WEBPACK_IMPORTED_MODULE_6__["default"]();
-    this.Helper = new _libs_helpers_js__WEBPACK_IMPORTED_MODULE_7__["default"]();
+    this.Base_layers = new _core_base_layers_js__WEBPACK_IMPORTED_MODULE_4__["default"]();
+    this.ColorThief = new _libs_color_thief_js__WEBPACK_IMPORTED_MODULE_5__["default"]();
+    this.POP = new _libs_popup_js__WEBPACK_IMPORTED_MODULE_7__["default"]();
+    this.Helper = new _libs_helpers_js__WEBPACK_IMPORTED_MODULE_8__["default"]();
+    this.original_palette = [];
   }
   return (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__["default"])(Image_color_class, [{
     key: "palette",
     value: function palette() {
-      if (_config_js__WEBPACK_IMPORTED_MODULE_2__["default"].layer.type != 'image') {
-        _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_5___default().error('This layer must contain an image. Please convert it to raster to apply this tool.');
+      var _this = this;
+      if (_config_js__WEBPACK_IMPORTED_MODULE_3__["default"].layer.type != 'image') {
+        _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_6___default().error('This layer must contain an image. Please convert it to raster to apply this tool.');
         return;
       }
-      var palette = this.alertify.getPalette(_config_js__WEBPACK_IMPORTED_MODULE_2__["default"].layer.link);
-      var dominant = this.alertify.getColor(_config_js__WEBPACK_IMPORTED_MODULE_2__["default"].layer.link);
+      var palette = this.ColorThief.getPalette(_config_js__WEBPACK_IMPORTED_MODULE_3__["default"].layer.link);
+      var dominant = this.ColorThief.getColor(_config_js__WEBPACK_IMPORTED_MODULE_3__["default"].layer.link);
       dominant = this.Helper.rgbToHex(dominant[0], dominant[1], dominant[2]);
+      this.original_palette = [];
       var settings = {
         title: 'Palette',
+        preview: true,
+        on_change: function on_change(params, canvas_preview, w, h) {
+          var img = canvas_preview.getImageData(0, 0, w, h);
+          var data = _this.remap_palette(img, params);
+          canvas_preview.putImageData(data, 0, 0);
+        },
         params: [{
           title: "Dominant color:",
           html: this.generate_color_box(dominant, 200)
-        }]
+        }, {
+          name: "mode",
+          title: "Mode:",
+          values: ['Shift - preserve shading', 'Replace - exact colors']
+        }],
+        on_finish: function on_finish(params) {
+          _this.execute(params);
+        }
       };
       for (var i in palette) {
         var rgb = this.Helper.rgbToHex(palette[i][0], palette[i][1], palette[i][2]);
         i = parseInt(i);
+        this.original_palette.push({
+          r: palette[i][0],
+          g: palette[i][1],
+          b: palette[i][2]
+        });
         settings.params.push({
+          name: "color_" + i,
           title: "Color #" + (i + 1) + ":",
-          html: this.generate_color_box(rgb, 100)
+          value: rgb,
+          type: 'color'
         });
       }
       this.POP.show(settings);
     }
   }, {
+    key: "execute",
+    value: function execute(params) {
+      //get canvas from layer
+      var canvas = this.Base_layers.convert_layer_to_canvas(null, true);
+      var ctx = canvas.getContext("2d");
+
+      //change data
+      var img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      var data = this.remap_palette(img, params);
+      ctx.putImageData(data, 0, 0);
+
+      //save
+      return _app_js__WEBPACK_IMPORTED_MODULE_2__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_2__["default"].Actions.Update_layer_image_action(canvas));
+    }
+  }, {
+    key: "remap_palette",
+    value: function remap_palette(data, params) {
+      var old_palette = this.original_palette;
+      var p_n = old_palette.length;
+      var replace = params.mode != undefined && params.mode.indexOf('Replace') == 0;
+
+      //collect edited colors and their deltas from the originals
+      var new_palette = [];
+      var deltas = [];
+      var changed = false;
+      for (var m = 0; m < p_n; m++) {
+        new_palette[m] = this.Helper.hexToRgb(params["color_" + m]);
+        deltas[m] = {
+          r: new_palette[m].r - old_palette[m].r,
+          g: new_palette[m].g - old_palette[m].g,
+          b: new_palette[m].b - old_palette[m].b
+        };
+        if (deltas[m].r != 0 || deltas[m].g != 0 || deltas[m].b != 0) changed = true;
+      }
+      if (changed == false && replace == false) return data;
+      var imgData = data.data;
+      for (var k = 0; k < imgData.length; k += 4) {
+        if (imgData[k + 3] == 0) continue; //transparent
+
+        //find closest original palette color
+        var index1 = 0;
+        var min = 999999;
+        for (var m = 0; m < p_n; m++) {
+          var diff = Math.abs(old_palette[m].r - imgData[k]) + Math.abs(old_palette[m].g - imgData[k + 1]) + Math.abs(old_palette[m].b - imgData[k + 2]);
+          if (diff < min) {
+            min = diff;
+            index1 = m;
+          }
+        }
+        if (replace == true) {
+          //quantize to the edited palette color exactly
+          imgData[k] = new_palette[index1].r;
+          imgData[k + 1] = new_palette[index1].g;
+          imgData[k + 2] = new_palette[index1].b;
+        } else {
+          var delta = deltas[index1];
+          if (delta.r == 0 && delta.g == 0 && delta.b == 0) continue;
+
+          //shift by the edited color's delta, keeping shading
+          imgData[k] = Math.max(0, Math.min(255, imgData[k] + delta.r));
+          imgData[k + 1] = Math.max(0, Math.min(255, imgData[k + 1] + delta.g));
+          imgData[k + 2] = Math.max(0, Math.min(255, imgData[k + 2] + delta.b));
+        }
+      }
+      return data;
+    }
+  }, {
     key: "generate_color_box",
     value: function generate_color_box(color, width) {
       var html = '';
-      html += '<input style="width:100px;margin-right:10px;" type="text" value="' + color + '" />';
+      html += '<input style="width:100px;margin-right:10px;" type="text" value="' + color + '" readonly="readonly" />';
       html += '<span style="display:inline-block;width:' + width + 'px;height:21px;margin-bottom:-6px;border:1px solid black;background-color:' + color + '"></span>';
       return html;
     }
@@ -30397,6 +31772,555 @@ var Tools_keypoints_class = /*#__PURE__*/function () {
   }]);
 }();
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Tools_keypoints_class);
+
+/***/ },
+
+/***/ "./src/js/modules/tools/palettes.js"
+/*!******************************************!*\
+  !*** ./src/js/modules/tools/palettes.js ***!
+  \******************************************/
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
+/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
+/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../../config.js */ "./src/js/config.js");
+/* harmony import */ var _core_base_gui_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./../../core/base-gui.js */ "./src/js/core/base-gui.js");
+/* harmony import */ var _libs_popup_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./../../libs/popup.js */ "./src/js/libs/popup.js");
+/* harmony import */ var _libs_helpers_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./../../libs/helpers.js */ "./src/js/libs/helpers.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./../../../../node_modules/alertifyjs/build/alertify.min.js */ "./node_modules/alertifyjs/build/alertify.min.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(_node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var _libs_palette_parser_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./../../libs/palette-parser.js */ "./src/js/libs/palette-parser.js");
+
+
+/*
+ * get-in-loser - derivative of miniPaint (https://github.com/viliusle/miniPaint)
+ *
+ * Colour palette management: bundled JSON palettes, runtime import/export and
+ * the currently active palette.
+ */
+
+
+
+
+
+
+
+var instance = null;
+
+/** used on first run, when no palette has been chosen yet */
+var DEFAULT_PALETTE = 'sweetie-16';
+
+/**
+ * Loads every .json file in /src/palettes at build time.
+ */
+function load_bundled_palettes() {
+  var palettes = [];
+  var context = __webpack_require__("./src/palettes sync \\.json$");
+  context.keys().sort().forEach(function (key) {
+    var file = key.replace('./', '');
+    try {
+      var palette = (0,_libs_palette_parser_js__WEBPACK_IMPORTED_MODULE_7__.parse_palette)(context(key), {
+        name: file.replace(/\.json$/, '')
+      });
+      palette.id = file.replace(/\.json$/, '');
+      palette.bundled = true;
+      palettes.push(palette);
+    } catch (e) {
+      console.warn('Could not load bundled palette ' + file + ': ' + e.message);
+    }
+  });
+  return palettes;
+}
+var Tools_palettes_class = /*#__PURE__*/function () {
+  function Tools_palettes_class() {
+    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__["default"])(this, Tools_palettes_class);
+    //singleton
+    if (instance) {
+      return instance;
+    }
+    instance = this;
+    this.Base_gui = new _core_base_gui_js__WEBPACK_IMPORTED_MODULE_3__["default"]();
+    this.POP = new _libs_popup_js__WEBPACK_IMPORTED_MODULE_4__["default"]();
+    this.Helper = new _libs_helpers_js__WEBPACK_IMPORTED_MODULE_5__["default"]();
+    this.palettes = load_bundled_palettes();
+
+    //restore the palette used last time, if it is still around
+    var saved = this.Helper.getCookie('palette');
+    var active = saved != null ? this.find(saved) : null;
+    if (active == null) {
+      //a compact 16 colour palette is a friendlier starting point than
+      //whatever happens to sort first
+      active = this.find(DEFAULT_PALETTE) || this.palettes[0] || null;
+    }
+    _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].palette = active;
+  }
+
+  /**
+   * @returns {array} every known palette
+   */
+  return (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__["default"])(Tools_palettes_class, [{
+    key: "get_all",
+    value: function get_all() {
+      return this.palettes;
+    }
+
+    /**
+     * @returns {object|null} the palette currently in use
+     */
+  }, {
+    key: "get_active",
+    value: function get_active() {
+      return _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].palette;
+    }
+
+    /**
+     * @param {string} id
+     * @returns {object|null}
+     */
+  }, {
+    key: "find",
+    value: function find(id) {
+      for (var i = 0; i < this.palettes.length; i++) {
+        if (this.palettes[i].id == id || this.palettes[i].name == id) {
+          return this.palettes[i];
+        }
+      }
+      return null;
+    }
+
+    /**
+     * @param {object} palette
+     */
+  }, {
+    key: "set_active",
+    value: function set_active(palette) {
+      if (palette == null) {
+        return false;
+      }
+      _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].palette = palette;
+      if (palette.bundled === true) {
+        this.Helper.setCookie('palette', palette.id);
+      }
+      this.Base_gui.GUI_palette.render_palette();
+      return true;
+    }
+
+    /**
+     * adds a palette that was imported at runtime and makes it active
+     *
+     * @param {object} palette
+     */
+  }, {
+    key: "add",
+    value: function add(palette) {
+      palette.id = palette.name;
+
+      //replace a previous import with the same name
+      var existing = this.find(palette.id);
+      if (existing != null && existing.bundled !== true) {
+        this.palettes.splice(this.palettes.indexOf(existing), 1);
+      }
+      this.palettes.push(palette);
+      this.set_active(palette);
+      return palette;
+    }
+
+    /**
+     * menu: Pixel > Palette > Load Palette
+     */
+  }, {
+    key: "load",
+    value: function load() {
+      var _this = this;
+      var names = this.palettes.map(function (palette) {
+        return palette.name;
+      });
+      var active = this.get_active();
+      if (names.length == 0) {
+        _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_6___default().error('No palettes available.');
+        return;
+      }
+      var settings = {
+        title: 'Load Palette',
+        params: [{
+          name: 'palette',
+          title: 'Palette:',
+          type: 'select',
+          value: active != null ? active.name : names[0],
+          values: names
+        }],
+        on_finish: function on_finish(params) {
+          var palette = _this.find(params.palette);
+          if (palette == null) {
+            _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_6___default().error('Palette not found.');
+            return;
+          }
+          _this.set_active(palette);
+          _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_6___default().success('Palette "' + palette.name + '" loaded (' + palette.colors.length + ' colors).');
+        }
+      };
+      this.POP.show(settings);
+    }
+
+    /**
+     * menu: Pixel > Palette > Import Palette
+     */
+  }, {
+    key: "import_palette",
+    value: function import_palette() {
+      var _this = this;
+      var input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.json,application/json';
+      input.addEventListener('change', function () {
+        var file = this.files[0];
+        if (file == undefined) {
+          return;
+        }
+        var reader = new FileReader();
+        reader.onload = function (event) {
+          try {
+            var palette = (0,_libs_palette_parser_js__WEBPACK_IMPORTED_MODULE_7__.parse_palette)(event.target.result, {
+              name: file.name.replace(/\.json$/i, '')
+            });
+            _this.add(palette);
+            _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_6___default().success('Palette "' + palette.name + '" imported (' + palette.colors.length + ' colors).');
+          } catch (e) {
+            _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_6___default().error('Could not import palette: ' + e.message);
+          }
+        };
+        reader.onerror = function () {
+          _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_6___default().error('Could not read the palette file.');
+        };
+        reader.readAsText(file);
+      }, false);
+      input.click();
+    }
+
+    /**
+     * menu: Pixel > Palette > Export Palette
+     */
+  }, {
+    key: "export_palette",
+    value: function export_palette() {
+      var palette = this.get_active();
+      if (palette == null) {
+        _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_6___default().error('No palette is loaded.');
+        return;
+      }
+      var blob = new Blob([(0,_libs_palette_parser_js__WEBPACK_IMPORTED_MODULE_7__.stringify_palette)(palette)], {
+        type: 'application/json'
+      });
+      var link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = palette.name.replace(/[^a-z0-9\-_ ]/gi, '') + '.json';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(link.href);
+    }
+
+    /**
+     * snaps the current colour to the closest one in the active palette
+     *
+     * @param {string} hex
+     * @returns {string} unchanged when no palette is active
+     */
+  }, {
+    key: "snap_to_palette",
+    value: function snap_to_palette(hex) {
+      var palette = this.get_active();
+      if (palette == null) {
+        return hex;
+      }
+      var snapped = (0,_libs_palette_parser_js__WEBPACK_IMPORTED_MODULE_7__.nearest_color)(hex, palette.colors);
+      return snapped != null ? snapped : hex;
+    }
+  }]);
+}();
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Tools_palettes_class);
+
+/***/ },
+
+/***/ "./src/js/modules/tools/pixel.js"
+/*!***************************************!*\
+  !*** ./src/js/modules/tools/pixel.js ***!
+  \***************************************/
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ "./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js");
+/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
+/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _app_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./../../app.js */ "./src/js/app.js");
+/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./../../config.js */ "./src/js/config.js");
+/* harmony import */ var _core_base_gui_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./../../core/base-gui.js */ "./src/js/core/base-gui.js");
+/* harmony import */ var _core_base_layers_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./../../core/base-layers.js */ "./src/js/core/base-layers.js");
+/* harmony import */ var _libs_popup_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./../../libs/popup.js */ "./src/js/libs/popup.js");
+/* harmony import */ var _libs_helpers_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./../../libs/helpers.js */ "./src/js/libs/helpers.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./../../../../node_modules/alertifyjs/build/alertify.min.js */ "./node_modules/alertifyjs/build/alertify.min.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(_node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10__);
+/* harmony import */ var _libs_pixel_size_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./../../libs/pixel-size.js */ "./src/js/libs/pixel-size.js");
+
+
+
+
+/*
+ * get-in-loser - derivative of miniPaint (https://github.com/viliusle/miniPaint)
+ *
+ * Pixel edit mode: small canvases measured in pixels, nearest-neighbour
+ * rendering and a per-pixel grid overlay.
+ */
+
+
+
+
+
+
+
+
+
+var instance = null;
+var Tools_pixel_class = /*#__PURE__*/function () {
+  function Tools_pixel_class() {
+    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__["default"])(this, Tools_pixel_class);
+    //singleton
+    if (instance) {
+      return instance;
+    }
+    instance = this;
+    this.Base_gui = new _core_base_gui_js__WEBPACK_IMPORTED_MODULE_6__["default"]();
+    this.Base_layers = new _core_base_layers_js__WEBPACK_IMPORTED_MODULE_7__["default"]();
+    this.POP = new _libs_popup_js__WEBPACK_IMPORTED_MODULE_8__["default"]();
+    this.Helper = new _libs_helpers_js__WEBPACK_IMPORTED_MODULE_9__["default"]();
+    this.PRESETS = _libs_pixel_size_js__WEBPACK_IMPORTED_MODULE_11__.PIXEL_PRESETS;
+
+    //restore from the previous session
+    _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].PIXEL_MODE = this.Helper.getCookie('pixel_mode') === true;
+    _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].PIXEL_GRID = this.Helper.getCookie('pixel_grid') !== false;
+  }
+
+  /**
+   * @returns {array} ['Custom', '16x24 - tall sprite', ...]
+   */
+  return (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__["default"])(Tools_pixel_class, [{
+    key: "get_preset_labels",
+    value: function get_preset_labels() {
+      return (0,_libs_pixel_size_js__WEBPACK_IMPORTED_MODULE_11__.get_preset_labels)(this.PRESETS);
+    }
+
+    /**
+     * @param {string} label
+     * @returns {object|null} keys: w, h
+     */
+  }, {
+    key: "parse_preset",
+    value: function parse_preset(label) {
+      return (0,_libs_pixel_size_js__WEBPACK_IMPORTED_MODULE_11__.parse_preset)(label);
+    }
+
+    /**
+     * @param {object} params
+     * @returns {object|null} keys: w, h. null when the input is unusable.
+     */
+  }, {
+    key: "resolve_size",
+    value: function resolve_size(params) {
+      return (0,_libs_pixel_size_js__WEBPACK_IMPORTED_MODULE_11__.resolve_size)(params);
+    }
+
+    /**
+     * menu: Pixel > New Pixel Canvas
+     */
+  }, {
+    key: "new_canvas",
+    value: function new_canvas() {
+      var _this = this;
+      var settings = {
+        title: 'New Pixel Canvas',
+        params: [{
+          name: 'width',
+          title: 'Width:',
+          value: 16,
+          comment: 'px'
+        }, {
+          name: 'height',
+          title: 'Height:',
+          value: 24,
+          comment: 'px'
+        }, {
+          name: 'preset',
+          title: 'Preset:',
+          type: 'select',
+          values: this.get_preset_labels()
+        }, {
+          name: 'transparency',
+          title: 'Transparent:',
+          value: true
+        }],
+        on_finish: function on_finish(params) {
+          _this.new_canvas_handler(params);
+        }
+      };
+      this.POP.show(settings);
+    }
+  }, {
+    key: "new_canvas_handler",
+    value: function () {
+      var _new_canvas_handler = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().mark(function _callee(params) {
+        var size, transparency;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().wrap(function (_context) {
+          while (1) switch (_context.prev = _context.next) {
+            case 0:
+              size = this.resolve_size(params);
+              if (!(size == null)) {
+                _context.next = 1;
+                break;
+              }
+              _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10___default().error('Enter a width and height of at least 1 pixel.');
+              return _context.abrupt("return");
+            case 1:
+              transparency = !!params.transparency;
+              _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].Actions.Bundle_action('new_pixel_canvas', 'New Pixel Canvas', [new _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].Actions.Refresh_action_attributes_action('undo'), new _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].Actions.Prepare_canvas_action('undo'), new _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].Actions.Update_config_action({
+                TRANSPARENCY: transparency,
+                WIDTH: size.w,
+                HEIGHT: size.h,
+                ALPHA: 255,
+                mouse: {},
+                visible_width: null,
+                visible_height: null
+              }), new _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].Actions.Prepare_canvas_action('do'), new _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].Actions.Refresh_action_attributes_action('do'), new _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].Actions.Reset_layers_action(), new _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].Actions.Init_canvas_zoom_action(), new _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].Actions.Insert_layer_action({})]));
+              this.Helper.setCookie('transparency', transparency ? 1 : 0);
+
+              //wait for the DOM to settle before measuring for the zoom
+              _context.next = 2;
+              return new Promise(function (r) {
+                return setTimeout(r, 10);
+              });
+            case 2:
+              this.set_pixel_mode(true, true);
+              this.zoom_to_fit();
+              _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10___default().success('New ' + size.w + ' x ' + size.h + ' px canvas.');
+            case 3:
+            case "end":
+              return _context.stop();
+          }
+        }, _callee, this);
+      }));
+      function new_canvas_handler(_x) {
+        return _new_canvas_handler.apply(this, arguments);
+      }
+      return new_canvas_handler;
+    }()
+    /**
+     * menu: Pixel > Canvas Size in Pixels
+     */
+  }, {
+    key: "size",
+    value: function size() {
+      var _this = this;
+      var settings = {
+        title: 'Canvas Size (pixels)',
+        params: [{
+          name: 'width',
+          title: 'Width:',
+          value: _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].WIDTH,
+          comment: 'px'
+        }, {
+          name: 'height',
+          title: 'Height:',
+          value: _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].HEIGHT,
+          comment: 'px'
+        }, {
+          name: 'preset',
+          title: 'Preset:',
+          type: 'select',
+          values: this.get_preset_labels()
+        }],
+        on_finish: function on_finish(params) {
+          _this.size_handler(params);
+        }
+      };
+      this.POP.show(settings);
+    }
+  }, {
+    key: "size_handler",
+    value: function size_handler(params) {
+      var size = this.resolve_size(params);
+      if (size == null) {
+        _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10___default().error('Enter a width and height of at least 1 pixel.');
+        return;
+      }
+      _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].Actions.Bundle_action('set_pixel_size', 'Set Pixel Canvas Size', [new _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].Actions.Prepare_canvas_action('undo'), new _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].Actions.Update_config_action({
+        WIDTH: size.w,
+        HEIGHT: size.h
+      }), new _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].Actions.Prepare_canvas_action('do')]));
+      this.zoom_to_fit();
+      _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10___default().success('Canvas is now ' + size.w + ' x ' + size.h + ' px.');
+    }
+
+    /**
+     * menu: Pixel > Pixel Mode
+     */
+  }, {
+    key: "pixel_mode",
+    value: function pixel_mode() {
+      this.set_pixel_mode(!_config_js__WEBPACK_IMPORTED_MODULE_5__["default"].PIXEL_MODE);
+    }
+
+    /**
+     * @param {boolean} enabled
+     * @param {boolean} quiet skip the notification
+     */
+  }, {
+    key: "set_pixel_mode",
+    value: function set_pixel_mode(enabled, quiet) {
+      _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].PIXEL_MODE = !!enabled;
+      this.Helper.setCookie('pixel_mode', _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].PIXEL_MODE);
+      document.body.classList.toggle('pixel_mode', _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].PIXEL_MODE);
+      this.Base_gui.prepare_canvas();
+      _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].need_render = true;
+      if (quiet !== true) {
+        _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10___default().success('Pixel mode ' + (_config_js__WEBPACK_IMPORTED_MODULE_5__["default"].PIXEL_MODE ? 'on' : 'off') + '.');
+      }
+      return _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].PIXEL_MODE;
+    }
+
+    /**
+     * menu: Pixel > Pixel Grid
+     */
+  }, {
+    key: "grid",
+    value: function grid() {
+      _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].PIXEL_GRID = !_config_js__WEBPACK_IMPORTED_MODULE_5__["default"].PIXEL_GRID;
+      this.Helper.setCookie('pixel_grid', _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].PIXEL_GRID);
+      _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].need_render = true;
+      _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10___default().success('Pixel grid ' + (_config_js__WEBPACK_IMPORTED_MODULE_5__["default"].PIXEL_GRID ? 'on' : 'off') + '.');
+      return _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].PIXEL_GRID;
+    }
+
+    /**
+     * menu: Pixel > Zoom to Fit
+     */
+  }, {
+    key: "zoom_to_fit",
+    value: function zoom_to_fit() {
+      this.Base_gui.GUI_preview.zoom_auto();
+    }
+  }]);
+}();
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Tools_pixel_class);
 
 /***/ },
 
@@ -43341,7 +45265,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, ".wrapper{\n\tdisplay: -ms-grid;\n\tdisplay: grid;\n\tmargin: 0;\n\tposition: fixed; /* dont change it, vh does not work on mobiles with bottom footer */\n\ttop: 30px;\n\tright: 0;\n\tleft: 0;\n\tbottom: 5px;\n\theight: auto;\n\toverflow: hidden;\n\n\t-ms-grid-rows: auto 1fr;\n\tgrid-template-rows: auto 1fr;\n\t-ms-grid-columns: auto 1fr auto;\n\tgrid-template-columns: auto 1fr auto;\n\n\tgrid-template-areas:\n\t\t\"submenu submenu submenu\"\n\t\t\"sidebar_left main sidebar_right\";\n}\n.trn{}\n.toggle{\n\tcursor: pointer;\n}\n.hidden{\n\tdisplay:none;\n}\n.center{\n\ttext-align: center;\n}\n.pointer{\n\tcursor: pointer;\n}\n.clear{\n\tclear:both;\n}\n.displayBlock{\n\tdisplay: block;\n}\n.bold{\n\tfont-weight: bold;\n}\n.left{\n\tfloat: left;\n}\n.right{\n\tfloat: right;\n}\n.grey{\n\tcolor:grey;\n}\n.noselect {\n\t-webkit-touch-callout: none; /* iOS Safari */\n    -webkit-user-select: none; /* Safari */\n\t-khtml-user-select: none; /* Konqueror HTML */\n\t-moz-user-select: none; /* Firefox */\n\t-ms-user-select: none; /* Internet Explorer/Edge */\n\tuser-select: none; /* Non-prefixed version */\n}\n.block{\n\tposition: relative;\n\tbackground-color: rgba(255, 255, 255, 0.2);\n\tbackground-color: var(--block-background-color);\n\tborder: 1px solid rgba(0, 0, 0, 0.5);\n\tborder: 1px solid var(--border-color);\n\tmargin-bottom: 10px;\n\tuser-select: none;\n\tborder-radius: 4px;\n}\n.sidebar_right .block{\n\tbackground-color: #68727b;\n\tbackground-color: var(--block-background-color);\n\tborder-bottom: none;\n\tbox-shadow: 0 -2px 0 0 var(--header-background-color) inset;\n}\n.block:last-child{\n\tmargin-bottom: 0;\n}\n.block h2{\n\tposition: relative;\n\tpadding: 2px 5px 2px 6px;\n\tmargin: 0;\n\tfont-size: 110%;\n\tbackground-color: rgba(255, 255, 255, 0.3);\n\tbackground-color: var(--header-background-color);\n\tborder-bottom: #555;\n\tborder-radius: 4px 4px 0 0;\n}\n.block.toggled h2, .block h2.toggled:after{\n\tborder: none;\n}\n.block h2.toggle:before{\n\t/* icon */\n\tposition:absolute;\n\tcontent:'';\n\twidth: 0;\n\theight: 0;\n\tright: 10px;\n\ttop: 10px;\n\tborder-style: solid;\n\tborder-width: 0 4px 5px 4px;\n\tborder-color: transparent transparent var(--text-color-muted) transparent;\n}\n.block h2.toggled:before{\n\t/* icon */\n\tborder-width: 5px 4px 0 4px;\n\tborder-color: var(--text-color-muted) transparent transparent transparent;\n}\n.block .content{\n\tpadding: 7.5px 5px;\n}\n.block_section {\n    margin: .75rem 0;\n}\n.block_section:first-child {\n    margin-top: 0;\n}\n.block_section:last-child {\n    margin-bottom: 0;\n}\n.error{\n\tpadding:20px;\n\tmargin:10px;\n\tborder:1px solid #ff0000;\n\tbackground-color:#ffffff;\n\twidth:500px;\n\tfont-weight:bold;\n}\n\n/* color chooser */\nbody .sp-replacer{\n\twidth: 100%;\n\theight: 40px;\n}\nbody .sp-preview{\n\twidth: calc(100% - 20px);\n\theight: 100%;\n}\n\n/* ========== header ======================================================== */\n\n.logo{\n\tdisplay: inline-block;\n\theight: 30px;\n\twhite-space: nowrap;\n\tpadding: 5px;\n\tmargin: 5px;\n\t/* responsive: scales with the viewport, bounded to fit the header */\n\tfont-size: clamp(15px, 1.4vw, 18px);\n\tline-height: 1;\n\ttext-decoration: none;\n\tfont-weight: bold;\n\tcolor: #ffffff;\n\tcolor: var(--text-color);\n}\n.logo_ch{\n\t/* each letter is independently bob-able (LFO) via JS transforms */\n\tdisplay: inline-block;\n\twill-change: transform;\n}\n.logo_l{\n\t/* the finger-L hand stands in for the \"l\" in loser; em-sized so it scales\n\t   with the text, vertical-align tuned to sit centered on the text */\n\tdisplay: inline-block;\n\twidth: 1.15em;\n\theight: 1.15em;\n\tmargin: 0 0.03em;\n\tvertical-align: -0.26em;\n\tbackground: url('images/logo.png') no-repeat center center;\n\tbackground-size: contain;\n\timage-rendering: pixelated;\n\tfilter: var(--mobile-menu-toggle-filter);\n\twill-change: transform;\n}\n/* yonce whimsy: the icon + \"oser\" fade white (top) -> petal pink (bottom) */\nbody.theme-yonce .logo_grad{\n\tbackground: linear-gradient(to bottom, #ffffff 12%, var(--yc-petal-pink) 92%);\n\t-webkit-background-clip: text;\n\tbackground-clip: text;\n\t-webkit-text-fill-color: transparent;\n\tcolor: transparent;\n}\nbody.theme-yonce .logo_l{\n\t/* fill the hand shape with the same gradient (mask by the logo alpha) */\n\tbackground: linear-gradient(to bottom, #ffffff 12%, var(--yc-petal-pink) 92%);\n\t-webkit-mask: url('images/logo.png') no-repeat center / contain;\n\tmask: url('images/logo.png') no-repeat center / contain;\n\tfilter: none;\n}\n/* smart folder toggle, sits to the right of the logo */\n.smart_folder_toggle{\n\tdisplay: inline-flex;\n\talign-items: center;\n\tjustify-content: center;\n\twidth: 26px;\n\theight: 26px;\n\tpadding: 0;\n\tmargin: 5px 0 5px 4px;\n\tvertical-align: middle;\n\tbackground-color: transparent;\n\tborder: 1px solid transparent;\n\tbox-shadow: none;\n\tborder-radius: var(--button-border-radius);\n\tcolor: var(--text-color-muted);\n\tcursor: pointer;\n}\n.smart_folder_toggle > svg{\n\tdisplay: block;\n\twidth: 16px;\n\theight: 16px;\n}\n.smart_folder_toggle:hover{\n\tbackground-color: var(--input-background-color-hover);\n\tcolor: var(--text-color);\n}\n.smart_folder_toggle[aria-pressed=\"true\"]{\n\tcolor: var(--background-color-active);\n\tborder-color: var(--border-color);\n\tbackground-color: transparent;\n}\n.smart_folder_toggle[aria-pressed=\"true\"]:hover{\n\tbackground-color: var(--input-background-color-hover);\n}\n.about-logo{\n\tmargin-left:22%;\n}\n.about-name{\n\tfont-size: 17px;\n\tfont-weight:bold;\n}\n.undo_button {\n\tdisplay: none;\n\twidth: 50px;\n\theight: 50px;\n\ttop: 0;\n\tborder: 0;\n\toutline: none;\n\tcursor: pointer;\n\tfilter: var(--mobile-menu-toggle-filter);\n\tbackground: url(images/icons/undo.svg) no-repeat center center;\n\tbackground-size: auto 25px;\n\tmargin-left: 10px;\n}\n.undo_button:hover {\n\tbackground-color: transparent;\n}\n@media screen and (max-width: 700px){\n\t.undo_button {\n\t\tdisplay: block;\n\t}\n}\n\n/* ========== sub-header ==================================================== */\n\n.submenu{\n\t-ms-grid-row: 1;\n\t-ms-grid-column: 1;\n\t-ms-grid-column-span: 3;\n\tgrid-area: submenu;\n\tdisplay: flex;\n\tflex-direction: row;\n\talign-items: center;\n\tbackground-color: rgba(255, 255, 255, 0.2);\n\tbackground-color: var(--section-background-color);\n\toverflow: hidden;\n\tmargin-bottom: 5px;\n}\n.attributes{\n\tdisplay: flex;\n\tflex-wrap: nowrap;\n\tbackground-color: var(--area-background-color);\n\twidth: calc(100% - 125px);\n\tmargin-top: 5px;\n\tmargin-bottom: 5px !important;\n\tpadding: 3px 10px 3px 10px;\n\tborder: 0;\n\toverflow-x: auto;\n\toverflow-y: hidden;\n\twhite-space: nowrap;\n\tmin-height: 30px;\n}\n.attributes .item{\n\tdisplay: inline-flex;\n\talign-items: center;\n\tmargin-right: 20px;\n}\n.attributes .item > label {\n\tmargin: 0 .5rem 0 0;\n}\n.attributes input[type=\"number\"]{\n\twidth: 60px;\n\tmargin-right: 5px;\n}\n.attributes input[type=\"color\"] {\n\tcursor: pointer;\n\tpadding: 0;\n\tborder: .2rem solid var(--input-background-color);\n\twidth: 3rem;\n}\n.attributes .item > button:not(.ui_icon_button){\n\tdisplay: inline-block;\n\tpadding: 3px 10px;\n}\n\n/* ========== left sidebar ================================================== */\n\n.sidebar_left{\n\t-ms-grid-row: 2;\n\t-ms-grid-column: 1;\n\tgrid-area: sidebar_left;\n\tdisplay: flex;\n\tflex-direction: row;\n\tflex-wrap: wrap;\n\tbackground-color: var(--section-background-color);\n\tpadding: 0 5px 5px 0;\n\tmargin-right: 5px;\n\toverflow: hidden;\n\talign-self: start;\n\twidth: 40px;\n\toverflow-y: auto;\n\tmax-height: 100%;\n}\n.sidebar_left .item{\n\tposition: relative;\n\tdisplay:block;\n\tbackground-color: var(--area-background-color);\n\theight: 25px;\n\twidth: 30px;\n\tmargin: 5px 0 0 5px;\n\toverflow: hidden;\n\tcursor: pointer;\n}\n.sidebar_left .item:after{\n\tposition: absolute;\n\tcontent: '';\n\tleft:0;\n\ttop:0;\n\tbottom:0;\n\tright:0;\n\tfilter: var(--menu-icons-filter);\n\tbackground-position: center center;\n\tbackground-repeat: no-repeat;\n\tbackground-size: 20px 20px;\n}\n.sidebar_left .item:hover{\n\tbackground-color: var(--background-color-hover);\n}\n.sidebar_left .item.active{\n\tbackground-color: var(--background-color-active);\n\tcolor: var(--text-color-active);\n}\n.sidebar_left .item.active:after{\n\tfilter: var(--menu-icons-filter-active);\n}\n\n/*\nIMPORTANT: any new icon should also must be added on /service-worker.js + its version should be updated - FEATURE DISABLED\n */\n.sidebar_left .select:after{ background-image: url('images/icons/select.svg'); }\n.sidebar_left .selection:after{ background-image: url('images/icons/selection.svg'); }\n.sidebar_left .brush:after{ background-image: url('images/icons/brush.svg'); }\n.sidebar_left .pencil:after{ background-image: url('images/icons/pencil.svg'); }\n.sidebar_left .pick_color:after{ background-image: url('images/icons/pick_color.svg'); }\n.sidebar_left .erase:after{ background-image: url('images/icons/erase.svg'); }\n.sidebar_left .magic_erase:after{ background-image: url('images/icons/magic_erase.svg'); }\n.sidebar_left .fill:after{ background-image: url('images/icons/fill.svg'); }\n.sidebar_left .media:after{ background-image: url('images/icons/media.svg'); }\n.sidebar_left .shape:after{ background-image: url('images/icons/shape.svg'); }\n.sidebar_left .text:after{ background-image: url('images/icons/text.svg'); background-size: 16px auto; }\n/* the gradient icon is a colour PNG, so it opts out of the invert filter -\n   but it still has to obey the theme tint (black in dark, green in green) */\n.sidebar_left .gradient:after{ background-image: url('images/icons/gradient.png'); background-size: 18px 12px; filter: var(--canvas-filter, none); }\n.sidebar_left .clone:after{ background-image: url('images/icons/clone.svg'); }\n.sidebar_left .crop:after{ background-image: url('images/icons/crop.svg'); }\n.sidebar_left .blur:after{ background-image: url('images/icons/blur.svg'); }\n.sidebar_left .sharpen:after{ background-image: url('images/icons/sharpen.svg'); }\n.sidebar_left .desaturate:after{ background-image: url('images/icons/desaturate.svg'); }\n.sidebar_left .bulge_pinch:after{ background-image: url('images/icons/bulge_pinch.svg'); }\n.sidebar_left .animation:after{ background-image: url('images/icons/animation.svg'); }\n\n@media screen and (max-width:550px){\n\t#sidebar_left{\n\t\tleft: -110px;\n\t}\n}\n\n/* ========== right sidebar ================================================= */\n\n.sidebar_right{\n\t-ms-grid-row: 2;\n\t-ms-grid-column: 3;\n\tgrid-area: sidebar_right;\n\tz-index: 2;\n\tdisplay: flex;\n\tflex-direction: column;\n\ttransition: 0.2s;\n\toverflow-x: hidden;\n\toverflow-y: scroll;\n\tmargin: 0 5px;\n\twidth: 200px;\n}\n.sidebar_right.active{\n\tright: 0 !important;\n}\n.sidebar_right .block.layers{\n\tflex: 1;\n}\n.sidebar_right .block.layers .content{\n\tpadding-bottom: 25px;\n}\n\n/* preview */\n.canvas_preview_wrapper{\n\tposition:relative;\n\theight:100px;\n\tmargin: 5px 5px 10px 5px;\n}\n.canvas_preview_details{\n\tpadding: 0 5px;\n}\n.canvas_preview_details button{\n\tmargin: 0;\n}\n.preview canvas{\n\tcursor: pointer;\n}\n.details input{\n\tpadding: 5px 10px;\n}\n\n/* color */\n.color_area{\n\tborder: 1px solid #444;\n\twidth: calc(100% - 10px);\n\theight: 40px;\n\tcursor: pointer;\n\tmargin: 5px;\n}\n\n/* layers */\n.layers_list{\n\tmargin-top: 10px;\n}\n.layers_arrow{\n\tdisplay:inline-block;\n\tfloat:right;\n\tmargin-left:5px;\n\tpadding:1px 8px;\n\tborder:1px solid #444;\n\tborder-color: var(--border-color);\n\ttext-decoration:none;\n\tcolor:var(--text-color);\n\tfont-size: 14px;\n}\n.layer_add{\n\tdisplay:inline-block;\n\tpadding:1px 8px;\n\tmargin-right: 10px;\n\tbackground-color: #419147;\n\tbackground-color: var(--input-background-color);\n\tborder:1px solid #444;\n\tborder-color: var(--input-border-color);\n\tcolor: var(--input-text-color);\n\tcursor:pointer;\n\ttext-decoration:none;\n\tfont-size: 18px;\n\tfont-weight: bold;\n}\n/* Layers header buttons (D, R, move arrows) match the themed input fields too */\n.layer_duplicate, .layer_raster, .layers_arrow{\n\tbackground-color: var(--input-background-color);\n\tcolor: var(--input-text-color);\n\tborder-color: var(--input-border-color);\n}\n/* Shared hover for all these control buttons (preview zoom + layer buttons) */\n.layer_add:hover, .layer_duplicate:hover, .layer_raster:hover, .layers_arrow:hover{\n\tbackground-color: var(--input-background-color-hover);\n}\n.layers_list .item{\n\tmargin-bottom:2px;\n\tdisplay: flex;\n\tflex-wrap: wrap;\n\talign-items: center;\n}\n.layers_list .item > .clear{\n\tdisplay: none;\n}\n.layers_list .layer_name{\n\tdisplay:block;\n\tpadding:1px 5px 3px 5px;\n\t/* flex-basis 0 so a long name never pushes the icons/delete onto new lines;\n\t   it grows to fill the row and truncates with the ellipsis below. */\n\tflex: 1 1 0;\n\tmin-width: 0;\n\ttext-align: left;\n\toverflow:hidden;\n\ttext-overflow: ellipsis;\n\tbackground-color:#989898;\n\tbackground-color: var(--input-background-color);\n\tborder:1px solid #393939;\n\tborder-color: var(--input-border-color);\n\tborder-radius:3px;\n\tcursor:pointer;\n\tfont-size: 18px;\n\tfont-weight: bold;\n\tline-height: 1.4;\n\tcolor:var(--text-color);\n\twhite-space: nowrap;\n}\n.layers_list .item.shorter .layer_name{\n\twidth: auto;\n}\n.layers_list .item.active .layer_name{\n\tbackground-color: var(--input-background-color-hover);\n\tborder-color: var(--border-color);\n\tcolor: var(--input-text-color);\n}\n.layers_list .arrow_down{\n\tposition: relative;\n\tfloat:left;\n\tmargin-right: 5px;\n\twidth:10px;\n\theight:19px;\n\topacity: 0.4;\n}\n.layers_list .arrow_down:after{\n\tposition: absolute;\n\tcontent: '';\n\tleft:0;\n\ttop:0;\n\tbottom:0;\n\tright:0;\n\tfilter: var(--menu-icons-filter);\n\tbackground: url('images/icons/arrow-down.svg') no-repeat center center;\n\tbackground-size: 12px auto;\n}\n.layers_list .visibility{\n\tposition: relative;\n\tfloat:left;\n\tcursor:pointer;\n\tpadding:0px 3px 0px 3px;\n\tmargin-right: 5px;\n\twidth:20px;\n\theight:19px;\n\topacity:0.1;\n\tborder: none;\n\tbackground: transparent;\n\tbox-shadow: none;\n}\n.layers_list .visibility:after{\n\tposition: absolute;\n\tcontent: '';\n\tleft:0;\n\ttop:0;\n\tbottom:0;\n\tright:0;\n\tfilter: var(--menu-icons-filter);\n\tbackground: url('images/icons/view.svg') no-repeat center center;\n\tbackground-size: 18px auto;\n}\n.layers_list .visible{ opacity:0.4; }\n.layers_list .delete{\n\tfloat:right;\n\torder: 1;\n\tcursor:pointer;\n\tpadding:0px 3px 0px 3px;\n\twidth:12px;\n\theight:19px;\n\tmargin-left: 5px;\n\t/* delete \"x\" tinted to the tool-selection color via alpha mask */\n\tbackground-color: var(--background-color-active);\n\t-webkit-mask: url(images/icons/delete.svg) no-repeat center / 10px 10px;\n\tmask: url(images/icons/delete.svg) no-repeat center / 10px 10px;\n\tborder: none;\n\tbox-shadow: none;\n}\n/* shared right-click context menu (layers panel, logo hand) */\n.context_menu{\n\tposition: fixed;\n\tz-index: 9999;\n\tmin-width: 140px;\n\tbackground-color: var(--menu-background-color);\n\tborder: 1px solid var(--border-color);\n\tborder-radius: 4px;\n\tbox-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);\n\tpadding: 4px 0;\n}\n.context_menu .context_menu_item{\n\tdisplay: block;\n\twidth: 100%;\n\ttext-align: left;\n\tbackground: transparent;\n\tborder: none;\n\tbox-shadow: none;\n\tborder-radius: 0;\n\tcolor: var(--menu-text-color);\n\tpadding: 6px 16px;\n\tfont-size: 14px;\n\tfont-weight: normal;\n\twhite-space: nowrap;\n\tcursor: pointer;\n}\n.context_menu .context_menu_item:hover{\n\tbackground-color: var(--background-color-active);\n\tcolor: var(--text-color-active);\n}\n.context_menu .context_menu_divider{\n\theight: 1px;\n\tmargin: 4px 0;\n\tbackground-color: var(--border-color);\n\topacity: 0.5;\n}\n\n/* icon licence dialog */\n/* the popup is a fixed 500px, so the facts get the full width and the\n   artwork sits in a header row rather than stealing a column */\n.icon_license_head{\n\tdisplay: flex;\n\tgap: 14px;\n\talign-items: center;\n\tmargin-bottom: 14px;\n}\n.icon_license_art{\n\tflex: 0 0 auto;\n\twidth: 64px;\n\theight: 64px;\n\tborder-radius: 10px;\n}\n.icon_license_attribution{\n\tmargin: 0;\n\tfont-size: 17px;\n\tfont-weight: bold;\n\tline-height: 1.35;\n\tcolor: var(--text-color);\n}\n.icon_license_facts{\n\tdisplay: grid;\n\tgrid-template-columns: max-content 1fr;\n\tgap: 6px 14px;\n\tmargin: 0 0 12px;\n}\n.icon_license_facts dt{\n\tcolor: var(--text-color-soft, var(--text-color));\n\topacity: 0.75;\n\tfont-size: 14px;\n}\n.icon_license_facts dd{\n\tmargin: 0;\n\tfont-size: 14px;\n\tcolor: var(--text-color);\n}\n.icon_license_muted{\n\topacity: 0.7;\n}\n.icon_license_note{\n\tmargin: 0;\n\tfont-size: 13px;\n\tline-height: 1.5;\n\topacity: 0.85;\n\tborder-top: 1px solid var(--border-color);\n\tpadding-top: 10px;\n}\n\n/* filters */\n.layers_list .filters{\n\tmargin-bottom: 5px;\n\torder: 2;\n\tflex: 0 0 100%;\n}\n.layers_list .filter{\n\tmargin-bottom: 2px;\n\tmargin-left: 30px;\n\topacity: 0.7;\n}\n.layers_list .filter .layer_name{\n\tposition: relative;\n}\n.layers_list .filter .layer_name:after{\n\tposition:absolute;\n\tcontent:\"fx\";\n\tright: -4px;\n\ttop:1px;\n\tbottom:0;\n\twidth: 20px;\n}\n.sidebar_right .label{\n\tdisplay: inline-block;\n}\n.info .toggle.toggled{\n\tmargin-bottom: -3px;\n}\n.block.details .row{\n\tclear:both;\n\tmargin-bottom: 4px;\n\tmin-height: 23px;\n}\n.block.details input[type=\"number\"]{\n\twidth: 70px;\n\tpadding: 3px 5px;\n\tfloat: right;\n}\n.block.details .ui_color_input{\n\twidth: 70px;\n\tfloat: right;\n}\n.block.details .ui_color_input input{\n\twidth: 100%;\n\theight: 23px;\n}\n.block.details button.ui_toggle_button{\n\twidth: 90px;\n\tfloat: right;\n}\n.block.details select{\n\twidth: calc(100% - 70px);\n\theight: 23px;\n\tfloat: right;\n}\n.block.details button{\n\twidth: calc(100% - 70px);\n\theight: 23px;\n\tborder: 1px solid #444;\n}\n.block.details button.reset{\n\tposition: relative;\n\twidth: 25px;\n\tfloat: right;\n\tmargin-right: 3px;\n\toverflow: hidden;\n\topacity: 0.5;\n\tcolor: transparent;\n}\n.block.details button.reset:after{\n\tposition: absolute;\n\tcontent: '';\n\tleft:0;\n\ttop:0;\n\tbottom:0;\n\tright:0;\n\tbackground: url(images/icons/refresh.svg) no-repeat center center;\n\tbackground-size: auto 14px;\n\tfilter: var(--menu-icons-filter);\n}\n.block.details button.active{\n\tbackground-color: var(--background-color-active);\n\tcolor: var(--text-color-active);\n}\n.details-content{\n\theight: 206px;\n\toverflow-y: auto;\n}\n\n@media screen and (max-width:700px){\n\tbody{\n\t\tpadding-top:50px;\n\t}\n\t.wrapper{\n\t\ttop: 50px;\n\t}\n\t.sidebar_left{\n\t\tposition: absolute;\n\t\tleft: -90px;\n\t\tbackground: var(--background);\n\t}\n\t.sidebar_left.active{\n\t\tbox-shadow: -5px 0px 10px 0px rgba(0,0,0,0.75);\n\t\tleft: 0;\n\t\tz-index: 3;\n\t}\n\t.sidebar_right{\n\t\tposition: absolute;\n\t\theight: 100%;\n\t\tright: -210px;\n\t\tbackground: var(--background);\n\t}\n\t.sidebar_right.active{\n\t\tbox-shadow: -5px 0px 10px 0px rgba(0,0,0,0.75);\n\t\tright: 0;\n\t\tmargin-right: 0;\n\t}\n}\n\n/* ========== content ======================================================= */\n\n.ruler_left{\n\tdisplay: none;\n\tposition: absolute;\n\tleft:0;\n\ttop: 20px;\n\tbackground-color: #ccc;\n}\n.ruler_top{\n\tdisplay: none;\n\tposition: absolute;\n\tleft: 20px;\n\ttop:0;\n\tbackground-color: #ccc;\n}\n.middle_area{\n\tposition: relative;\n\t-ms-grid-row: 2;\n\t-ms-grid-column: 2;\n\tgrid-area: main;\n}\n.main_wrapper{\n\tposition:absolute;\n\ttop:0;\n\tright:0;\n\tbottom:0;\n\tleft:0;\n\toverflow: hidden;\n\tdisplay: flex;\n\tjustify-content: center;\n\talign-items: center;\n}\n.middle_area.has-ruler .main_wrapper{\n\ttop: 20px;\n\tleft: 20px;\n}\n.canvas_wrapper{\n\tposition:relative;\n}\n.canvas_wrapper canvas{\n\tposition: absolute;\n\tbox-sizing: content-box;\n\tfont-kerning: normal !important;\n}\n.loaded .canvas_wrapper canvas{\n\tborder: 1px solid var(--border-color);\n}\n#mouse{\n\tposition:absolute;\n\tpointer-events:none;\n\twidth:10px;\n\theight:10px;\n\tz-index:10;\n}\n#mouse.rect{\n\tborder:1px solid rgba(0,0,0,0.5);\n}\n#mouse.circle{\n\tborder:1px solid rgba(0,0,0,0.5);\n\tborder-radius:50%;\n}\n.transparent-grid{\n\twidth: 100%;\n\theight: 100%;\n\tposition: absolute;\n\tpointer-events: none;\n\t/*background: url(images/icons/grid.png) repeat top left;*/\n\tbackground: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAQElEQVQ4T2N89+7dfwYigKCgIBGqGBgYRw3EGU6jYYgzaIZAsvn//z9ROeX9+/fE5ZRRA3GG02gY4s4pgz7ZAAAnSWvHPkHXaAAAAABJRU5ErkJggg==') repeat top left;\n\tz-index:1;\n\timage-rendering: pixelated; /* disable antialiasing */\n}\n.transparent-grid.white{\n\tbackground:white;\n}\n.transparent-grid.green{\n\tbackground: #5be471;\n}\n.transparent-grid.grey{\n\tbackground: #dfdfdf;\n}\ncanvas{\n\tposition:relative;\n\tz-index:2;\n}\n#canvas_back{\n\tposition: absolute;\n\tbackground-color:#ffffff;\n\toutline: none;\n}\n#canvas_grid{\n\tpointer-events:none;\n}\n.group{\n\tborder:1px solid #999999;\n\tmargin: 5px 0px 5px 0px;\n\tpadding:5px 8px;\n}\n.flex-container{\n\tdisplay: flex;\n\tflex-wrap: wrap;\n}\n.flex-container .item{\n\tflex: auto;\n\tmargin: 2px 0;\n\twidth: 150px;\n}\n.flex-container .item:empty{\n\theight: 0;\n\tborder: none;\n}\n/* Colors panel toggle icons: white, not the pressed-state cyan\n   (setting the active-text var whitens both the icon and its underline) */\n#toggle_color_picker_section_button,\n#toggle_color_channels_section_button,\n#toggle_color_swatches_section_button{\n\t--button-text-color-active: var(--text-color);\n\tcolor: var(--text-color);\n}\n\n/* Error / notification popups: readable, styled like the (grape) layer panels */\n.alertify-notifier{\n\tcolor: var(--text-color);\n}\n.alertify-notifier .ajs-message{\n\tbackground: var(--block-background-color) !important;\n\tcolor: var(--text-color) !important;\n\tborder: 1px solid var(--border-color);\n\tborder-radius: 4px;\n\tbox-shadow: 0 3px 12px rgba(0, 0, 0, 0.5);\n\ttext-shadow: none;\n}\n.alertify-notifier .ajs-message.ajs-error{\n\tbackground: var(--block-background-color) !important;\n\tborder-left: 4px solid var(--text-color-red);\n}\n.alertify-notifier .ajs-message.ajs-success{\n\tbackground: var(--block-background-color) !important;\n\tborder-left: 4px solid var(--text-color-green);\n}\n.alertify-notifier .ajs-message.ajs-warning{\n\tbackground: var(--block-background-color) !important;\n\tborder-left: 4px solid var(--text-color-blue);\n}\n.effectsPreview{\n\tcursor: pointer;\n\tbackground-color: #ddd;\n}\n\n@media screen and (max-width:550px){\n\t.canvas_wrapper{\n\t\tmargin-left: 0px;\n\t}\n}\n@media screen and (max-height: 690px){\n\t.sidebar_left{\n\t\twidth: 75px;\n\t}\n}\n@media screen and (max-height:450px){\n\t.sidebar_left{\n\t\twidth: 88px;\n\t}\n}\n\n/* ========== dialogs ======================================================= */\n\n#dialog_color_picker_group {\n\twidth: 60%;\n}\n#dialog_color_channel_group {\n\twidth: 40%;\n\tmargin-left: 1rem;\n}\n\n@media screen and (max-width: 450px) {\n\t#dialog_color_picker .ui_flex_group {\n\t\tflex-wrap: wrap;\n\t}\n\t#dialog_color_picker_group {\n\t\twidth: 100%;\n\t}\n\t#dialog_color_channel_group {\n\t\twidth: 100%;\n\t\tmargin-left: 0;\n\t\tmargin-top: 1rem;\n\t}\n}", "",{"version":3,"sources":["webpack://./src/css/layout.css"],"names":[],"mappings":"AAAA;CACC,iBAAiB;CACjB,aAAa;CACb,SAAS;CACT,eAAe,EAAE,mEAAmE;CACpF,SAAS;CACT,QAAQ;CACR,OAAO;CACP,WAAW;CACX,YAAY;CACZ,gBAAgB;;CAEhB,uBAAuB;CACvB,4BAA4B;CAC5B,+BAA+B;CAC/B,oCAAoC;;CAEpC;;mCAEkC;AACnC;AACA,KAAK;AACL;CACC,eAAe;AAChB;AACA;CACC,YAAY;AACb;AACA;CACC,kBAAkB;AACnB;AACA;CACC,eAAe;AAChB;AACA;CACC,UAAU;AACX;AACA;CACC,cAAc;AACf;AACA;CACC,iBAAiB;AAClB;AACA;CACC,WAAW;AACZ;AACA;CACC,YAAY;AACb;AACA;CACC,UAAU;AACX;AACA;CACC,2BAA2B,EAAE,eAAe;IACzC,yBAAyB,EAAE,WAAW;CACzC,wBAAwB,EAAE,mBAAmB;CAC7C,sBAAsB,EAAE,YAAY;CACpC,qBAAqB,EAAE,2BAA2B;CAClD,iBAAiB,EAAE,yBAAyB;AAC7C;AACA;CACC,kBAAkB;CAClB,0CAA0C;CAC1C,+CAA+C;CAC/C,oCAAoC;CACpC,qCAAqC;CACrC,mBAAmB;CACnB,iBAAiB;CACjB,kBAAkB;AACnB;AACA;CACC,yBAAyB;CACzB,+CAA+C;CAC/C,mBAAmB;CACnB,2DAA2D;AAC5D;AACA;CACC,gBAAgB;AACjB;AACA;CACC,kBAAkB;CAClB,wBAAwB;CACxB,SAAS;CACT,eAAe;CACf,0CAA0C;CAC1C,gDAAgD;CAChD,mBAAmB;CACnB,0BAA0B;AAC3B;AACA;CACC,YAAY;AACb;AACA;CACC,SAAS;CACT,iBAAiB;CACjB,UAAU;CACV,QAAQ;CACR,SAAS;CACT,WAAW;CACX,SAAS;CACT,mBAAmB;CACnB,2BAA2B;CAC3B,yEAAyE;AAC1E;AACA;CACC,SAAS;CACT,2BAA2B;CAC3B,yEAAyE;AAC1E;AACA;CACC,kBAAkB;AACnB;AACA;IACI,gBAAgB;AACpB;AACA;IACI,aAAa;AACjB;AACA;IACI,gBAAgB;AACpB;AACA;CACC,YAAY;CACZ,WAAW;CACX,wBAAwB;CACxB,wBAAwB;CACxB,WAAW;CACX,gBAAgB;AACjB;;AAEA,kBAAkB;AAClB;CACC,WAAW;CACX,YAAY;AACb;AACA;CACC,wBAAwB;CACxB,YAAY;AACb;;AAEA,+EAA+E;;AAE/E;CACC,qBAAqB;CACrB,YAAY;CACZ,mBAAmB;CACnB,YAAY;CACZ,WAAW;CACX,oEAAoE;CACpE,mCAAmC;CACnC,cAAc;CACd,qBAAqB;CACrB,iBAAiB;CACjB,cAAc;CACd,wBAAwB;AACzB;AACA;CACC,kEAAkE;CAClE,qBAAqB;CACrB,sBAAsB;AACvB;AACA;CACC;qEACoE;CACpE,qBAAqB;CACrB,aAAa;CACb,cAAc;CACd,gBAAgB;CAChB,uBAAuB;CACvB,0DAA0D;CAC1D,wBAAwB;CACxB,0BAA0B;CAC1B,wCAAwC;CACxC,sBAAsB;AACvB;AACA,4EAA4E;AAC5E;CACC,6EAA6E;CAC7E,6BAA6B;CAC7B,qBAAqB;CACrB,oCAAoC;CACpC,kBAAkB;AACnB;AACA;CACC,wEAAwE;CACxE,6EAA6E;CAC7E,+DAA+D;CAC/D,uDAAuD;CACvD,YAAY;AACb;AACA,uDAAuD;AACvD;CACC,oBAAoB;CACpB,mBAAmB;CACnB,uBAAuB;CACvB,WAAW;CACX,YAAY;CACZ,UAAU;CACV,qBAAqB;CACrB,sBAAsB;CACtB,6BAA6B;CAC7B,6BAA6B;CAC7B,gBAAgB;CAChB,0CAA0C;CAC1C,8BAA8B;CAC9B,eAAe;AAChB;AACA;CACC,cAAc;CACd,WAAW;CACX,YAAY;AACb;AACA;CACC,qDAAqD;CACrD,wBAAwB;AACzB;AACA;CACC,qCAAqC;CACrC,iCAAiC;CACjC,6BAA6B;AAC9B;AACA;CACC,qDAAqD;AACtD;AACA;CACC,eAAe;AAChB;AACA;CACC,eAAe;CACf,gBAAgB;AACjB;AACA;CACC,aAAa;CACb,WAAW;CACX,YAAY;CACZ,MAAM;CACN,SAAS;CACT,aAAa;CACb,eAAe;CACf,wCAAwC;CACxC,8DAA8D;CAC9D,0BAA0B;CAC1B,iBAAiB;AAClB;AACA;CACC,6BAA6B;AAC9B;AACA;CACC;EACC,cAAc;CACf;AACD;;AAEA,+EAA+E;;AAE/E;CACC,eAAe;CACf,kBAAkB;CAClB,uBAAuB;CACvB,kBAAkB;CAClB,aAAa;CACb,mBAAmB;CACnB,mBAAmB;CACnB,0CAA0C;CAC1C,iDAAiD;CACjD,gBAAgB;CAChB,kBAAkB;AACnB;AACA;CACC,aAAa;CACb,iBAAiB;CACjB,8CAA8C;CAC9C,yBAAyB;CACzB,eAAe;CACf,6BAA6B;CAC7B,0BAA0B;CAC1B,SAAS;CACT,gBAAgB;CAChB,kBAAkB;CAClB,mBAAmB;CACnB,gBAAgB;AACjB;AACA;CACC,oBAAoB;CACpB,mBAAmB;CACnB,kBAAkB;AACnB;AACA;CACC,mBAAmB;AACpB;AACA;CACC,WAAW;CACX,iBAAiB;AAClB;AACA;CACC,eAAe;CACf,UAAU;CACV,iDAAiD;CACjD,WAAW;AACZ;AACA;CACC,qBAAqB;CACrB,iBAAiB;AAClB;;AAEA,+EAA+E;;AAE/E;CACC,eAAe;CACf,kBAAkB;CAClB,uBAAuB;CACvB,aAAa;CACb,mBAAmB;CACnB,eAAe;CACf,iDAAiD;CACjD,oBAAoB;CACpB,iBAAiB;CACjB,gBAAgB;CAChB,iBAAiB;CACjB,WAAW;CACX,gBAAgB;CAChB,gBAAgB;AACjB;AACA;CACC,kBAAkB;CAClB,aAAa;CACb,8CAA8C;CAC9C,YAAY;CACZ,WAAW;CACX,mBAAmB;CACnB,gBAAgB;CAChB,eAAe;AAChB;AACA;CACC,kBAAkB;CAClB,WAAW;CACX,MAAM;CACN,KAAK;CACL,QAAQ;CACR,OAAO;CACP,gCAAgC;CAChC,kCAAkC;CAClC,4BAA4B;CAC5B,0BAA0B;AAC3B;AACA;CACC,+CAA+C;AAChD;AACA;CACC,gDAAgD;CAChD,+BAA+B;AAChC;AACA;CACC,uCAAuC;AACxC;;AAEA;;EAEE;AACF,6BAA6B,gDAAgD,EAAE;AAC/E,gCAAgC,mDAAmD,EAAE;AACrF,4BAA4B,+CAA+C,EAAE;AAC7E,6BAA6B,gDAAgD,EAAE;AAC/E,iCAAiC,oDAAoD,EAAE;AACvF,4BAA4B,+CAA+C,EAAE;AAC7E,kCAAkC,qDAAqD,EAAE;AACzF,2BAA2B,8CAA8C,EAAE;AAC3E,4BAA4B,+CAA+C,EAAE;AAC7E,4BAA4B,+CAA+C,EAAE;AAC7E,2BAA2B,8CAA8C,EAAE,0BAA0B,EAAE;AACvG;4EAC4E;AAC5E,+BAA+B,kDAAkD,EAAE,0BAA0B,EAAE,kCAAkC,EAAE;AACnJ,4BAA4B,+CAA+C,EAAE;AAC7E,2BAA2B,8CAA8C,EAAE;AAC3E,2BAA2B,8CAA8C,EAAE;AAC3E,8BAA8B,iDAAiD,EAAE;AACjF,iCAAiC,oDAAoD,EAAE;AACvF,kCAAkC,qDAAqD,EAAE;AACzF,gCAAgC,mDAAmD,EAAE;;AAErF;CACC;EACC,YAAY;CACb;AACD;;AAEA,+EAA+E;;AAE/E;CACC,eAAe;CACf,kBAAkB;CAClB,wBAAwB;CACxB,UAAU;CACV,aAAa;CACb,sBAAsB;CACtB,gBAAgB;CAChB,kBAAkB;CAClB,kBAAkB;CAClB,aAAa;CACb,YAAY;AACb;AACA;CACC,mBAAmB;AACpB;AACA;CACC,OAAO;AACR;AACA;CACC,oBAAoB;AACrB;;AAEA,YAAY;AACZ;CACC,iBAAiB;CACjB,YAAY;CACZ,wBAAwB;AACzB;AACA;CACC,cAAc;AACf;AACA;CACC,SAAS;AACV;AACA;CACC,eAAe;AAChB;AACA;CACC,iBAAiB;AAClB;;AAEA,UAAU;AACV;CACC,sBAAsB;CACtB,wBAAwB;CACxB,YAAY;CACZ,eAAe;CACf,WAAW;AACZ;;AAEA,WAAW;AACX;CACC,gBAAgB;AACjB;AACA;CACC,oBAAoB;CACpB,WAAW;CACX,eAAe;CACf,eAAe;CACf,qBAAqB;CACrB,iCAAiC;CACjC,oBAAoB;CACpB,uBAAuB;CACvB,eAAe;AAChB;AACA;CACC,oBAAoB;CACpB,eAAe;CACf,kBAAkB;CAClB,yBAAyB;CACzB,+CAA+C;CAC/C,qBAAqB;CACrB,uCAAuC;CACvC,8BAA8B;CAC9B,cAAc;CACd,oBAAoB;CACpB,eAAe;CACf,iBAAiB;AAClB;AACA,gFAAgF;AAChF;CACC,+CAA+C;CAC/C,8BAA8B;CAC9B,uCAAuC;AACxC;AACA,8EAA8E;AAC9E;CACC,qDAAqD;AACtD;AACA;CACC,iBAAiB;CACjB,aAAa;CACb,eAAe;CACf,mBAAmB;AACpB;AACA;CACC,aAAa;AACd;AACA;CACC,aAAa;CACb,uBAAuB;CACvB;qEACoE;CACpE,WAAW;CACX,YAAY;CACZ,gBAAgB;CAChB,eAAe;CACf,uBAAuB;CACvB,wBAAwB;CACxB,+CAA+C;CAC/C,wBAAwB;CACxB,uCAAuC;CACvC,iBAAiB;CACjB,cAAc;CACd,eAAe;CACf,iBAAiB;CACjB,gBAAgB;CAChB,uBAAuB;CACvB,mBAAmB;AACpB;AACA;CACC,WAAW;AACZ;AACA;CACC,qDAAqD;CACrD,iCAAiC;CACjC,8BAA8B;AAC/B;AACA;CACC,kBAAkB;CAClB,UAAU;CACV,iBAAiB;CACjB,UAAU;CACV,WAAW;CACX,YAAY;AACb;AACA;CACC,kBAAkB;CAClB,WAAW;CACX,MAAM;CACN,KAAK;CACL,QAAQ;CACR,OAAO;CACP,gCAAgC;CAChC,sEAAsE;CACtE,0BAA0B;AAC3B;AACA;CACC,kBAAkB;CAClB,UAAU;CACV,cAAc;CACd,uBAAuB;CACvB,iBAAiB;CACjB,UAAU;CACV,WAAW;CACX,WAAW;CACX,YAAY;CACZ,uBAAuB;CACvB,gBAAgB;AACjB;AACA;CACC,kBAAkB;CAClB,WAAW;CACX,MAAM;CACN,KAAK;CACL,QAAQ;CACR,OAAO;CACP,gCAAgC;CAChC,gEAAgE;CAChE,0BAA0B;AAC3B;AACA,uBAAuB,WAAW,EAAE;AACpC;CACC,WAAW;CACX,QAAQ;CACR,cAAc;CACd,uBAAuB;CACvB,UAAU;CACV,WAAW;CACX,gBAAgB;CAChB,iEAAiE;CACjE,gDAAgD;CAChD,uEAAuE;CACvE,+DAA+D;CAC/D,YAAY;CACZ,gBAAgB;AACjB;AACA,8DAA8D;AAC9D;CACC,eAAe;CACf,aAAa;CACb,gBAAgB;CAChB,8CAA8C;CAC9C,qCAAqC;CACrC,kBAAkB;CAClB,0CAA0C;CAC1C,cAAc;AACf;AACA;CACC,cAAc;CACd,WAAW;CACX,gBAAgB;CAChB,uBAAuB;CACvB,YAAY;CACZ,gBAAgB;CAChB,gBAAgB;CAChB,6BAA6B;CAC7B,iBAAiB;CACjB,eAAe;CACf,mBAAmB;CACnB,mBAAmB;CACnB,eAAe;AAChB;AACA;CACC,gDAAgD;CAChD,+BAA+B;AAChC;AACA;CACC,WAAW;CACX,aAAa;CACb,qCAAqC;CACrC,YAAY;AACb;;AAEA,wBAAwB;AACxB;+DAC+D;AAC/D;CACC,aAAa;CACb,SAAS;CACT,mBAAmB;CACnB,mBAAmB;AACpB;AACA;CACC,cAAc;CACd,WAAW;CACX,YAAY;CACZ,mBAAmB;AACpB;AACA;CACC,SAAS;CACT,eAAe;CACf,iBAAiB;CACjB,iBAAiB;CACjB,wBAAwB;AACzB;AACA;CACC,aAAa;CACb,sCAAsC;CACtC,aAAa;CACb,gBAAgB;AACjB;AACA;CACC,gDAAgD;CAChD,aAAa;CACb,eAAe;AAChB;AACA;CACC,SAAS;CACT,eAAe;CACf,wBAAwB;AACzB;AACA;CACC,YAAY;AACb;AACA;CACC,SAAS;CACT,eAAe;CACf,gBAAgB;CAChB,aAAa;CACb,yCAAyC;CACzC,iBAAiB;AAClB;;AAEA,YAAY;AACZ;CACC,kBAAkB;CAClB,QAAQ;CACR,cAAc;AACf;AACA;CACC,kBAAkB;CAClB,iBAAiB;CACjB,YAAY;AACb;AACA;CACC,kBAAkB;AACnB;AACA;CACC,iBAAiB;CACjB,YAAY;CACZ,WAAW;CACX,OAAO;CACP,QAAQ;CACR,WAAW;AACZ;AACA;CACC,qBAAqB;AACtB;AACA;CACC,mBAAmB;AACpB;AACA;CACC,UAAU;CACV,kBAAkB;CAClB,gBAAgB;AACjB;AACA;CACC,WAAW;CACX,gBAAgB;CAChB,YAAY;AACb;AACA;CACC,WAAW;CACX,YAAY;AACb;AACA;CACC,WAAW;CACX,YAAY;AACb;AACA;CACC,WAAW;CACX,YAAY;AACb;AACA;CACC,wBAAwB;CACxB,YAAY;CACZ,YAAY;AACb;AACA;CACC,wBAAwB;CACxB,YAAY;CACZ,sBAAsB;AACvB;AACA;CACC,kBAAkB;CAClB,WAAW;CACX,YAAY;CACZ,iBAAiB;CACjB,gBAAgB;CAChB,YAAY;CACZ,kBAAkB;AACnB;AACA;CACC,kBAAkB;CAClB,WAAW;CACX,MAAM;CACN,KAAK;CACL,QAAQ;CACR,OAAO;CACP,iEAAiE;CACjE,0BAA0B;CAC1B,gCAAgC;AACjC;AACA;CACC,gDAAgD;CAChD,+BAA+B;AAChC;AACA;CACC,aAAa;CACb,gBAAgB;AACjB;;AAEA;CACC;EACC,gBAAgB;CACjB;CACA;EACC,SAAS;CACV;CACA;EACC,kBAAkB;EAClB,WAAW;EACX,6BAA6B;CAC9B;CACA;EACC,8CAA8C;EAC9C,OAAO;EACP,UAAU;CACX;CACA;EACC,kBAAkB;EAClB,YAAY;EACZ,aAAa;EACb,6BAA6B;CAC9B;CACA;EACC,8CAA8C;EAC9C,QAAQ;EACR,eAAe;CAChB;AACD;;AAEA,+EAA+E;;AAE/E;CACC,aAAa;CACb,kBAAkB;CAClB,MAAM;CACN,SAAS;CACT,sBAAsB;AACvB;AACA;CACC,aAAa;CACb,kBAAkB;CAClB,UAAU;CACV,KAAK;CACL,sBAAsB;AACvB;AACA;CACC,kBAAkB;CAClB,eAAe;CACf,kBAAkB;CAClB,eAAe;AAChB;AACA;CACC,iBAAiB;CACjB,KAAK;CACL,OAAO;CACP,QAAQ;CACR,MAAM;CACN,gBAAgB;CAChB,aAAa;CACb,uBAAuB;CACvB,mBAAmB;AACpB;AACA;CACC,SAAS;CACT,UAAU;AACX;AACA;CACC,iBAAiB;AAClB;AACA;CACC,kBAAkB;CAClB,uBAAuB;CACvB,+BAA+B;AAChC;AACA;CACC,qCAAqC;AACtC;AACA;CACC,iBAAiB;CACjB,mBAAmB;CACnB,UAAU;CACV,WAAW;CACX,UAAU;AACX;AACA;CACC,gCAAgC;AACjC;AACA;CACC,gCAAgC;CAChC,iBAAiB;AAClB;AACA;CACC,WAAW;CACX,YAAY;CACZ,kBAAkB;CAClB,oBAAoB;CACpB,0DAA0D;CAC1D,6NAA6N;CAC7N,SAAS;CACT,0BAA0B,EAAE,yBAAyB;AACtD;AACA;CACC,gBAAgB;AACjB;AACA;CACC,mBAAmB;AACpB;AACA;CACC,mBAAmB;AACpB;AACA;CACC,iBAAiB;CACjB,SAAS;AACV;AACA;CACC,kBAAkB;CAClB,wBAAwB;CACxB,aAAa;AACd;AACA;CACC,mBAAmB;AACpB;AACA;CACC,wBAAwB;CACxB,uBAAuB;CACvB,eAAe;AAChB;AACA;CACC,aAAa;CACb,eAAe;AAChB;AACA;CACC,UAAU;CACV,aAAa;CACb,YAAY;AACb;AACA;CACC,SAAS;CACT,YAAY;AACb;AACA;0EAC0E;AAC1E;;;CAGC,6CAA6C;CAC7C,wBAAwB;AACzB;;AAEA,gFAAgF;AAChF;CACC,wBAAwB;AACzB;AACA;CACC,oDAAoD;CACpD,mCAAmC;CACnC,qCAAqC;CACrC,kBAAkB;CAClB,yCAAyC;CACzC,iBAAiB;AAClB;AACA;CACC,oDAAoD;CACpD,4CAA4C;AAC7C;AACA;CACC,oDAAoD;CACpD,8CAA8C;AAC/C;AACA;CACC,oDAAoD;CACpD,6CAA6C;AAC9C;AACA;CACC,eAAe;CACf,sBAAsB;AACvB;;AAEA;CACC;EACC,gBAAgB;CACjB;AACD;AACA;CACC;EACC,WAAW;CACZ;AACD;AACA;CACC;EACC,WAAW;CACZ;AACD;;AAEA,+EAA+E;;AAE/E;CACC,UAAU;AACX;AACA;CACC,UAAU;CACV,iBAAiB;AAClB;;AAEA;CACC;EACC,eAAe;CAChB;CACA;EACC,WAAW;CACZ;CACA;EACC,WAAW;EACX,cAAc;EACd,gBAAgB;CACjB;AACD","sourcesContent":[".wrapper{\n\tdisplay: -ms-grid;\n\tdisplay: grid;\n\tmargin: 0;\n\tposition: fixed; /* dont change it, vh does not work on mobiles with bottom footer */\n\ttop: 30px;\n\tright: 0;\n\tleft: 0;\n\tbottom: 5px;\n\theight: auto;\n\toverflow: hidden;\n\n\t-ms-grid-rows: auto 1fr;\n\tgrid-template-rows: auto 1fr;\n\t-ms-grid-columns: auto 1fr auto;\n\tgrid-template-columns: auto 1fr auto;\n\n\tgrid-template-areas:\n\t\t\"submenu submenu submenu\"\n\t\t\"sidebar_left main sidebar_right\";\n}\n.trn{}\n.toggle{\n\tcursor: pointer;\n}\n.hidden{\n\tdisplay:none;\n}\n.center{\n\ttext-align: center;\n}\n.pointer{\n\tcursor: pointer;\n}\n.clear{\n\tclear:both;\n}\n.displayBlock{\n\tdisplay: block;\n}\n.bold{\n\tfont-weight: bold;\n}\n.left{\n\tfloat: left;\n}\n.right{\n\tfloat: right;\n}\n.grey{\n\tcolor:grey;\n}\n.noselect {\n\t-webkit-touch-callout: none; /* iOS Safari */\n    -webkit-user-select: none; /* Safari */\n\t-khtml-user-select: none; /* Konqueror HTML */\n\t-moz-user-select: none; /* Firefox */\n\t-ms-user-select: none; /* Internet Explorer/Edge */\n\tuser-select: none; /* Non-prefixed version */\n}\n.block{\n\tposition: relative;\n\tbackground-color: rgba(255, 255, 255, 0.2);\n\tbackground-color: var(--block-background-color);\n\tborder: 1px solid rgba(0, 0, 0, 0.5);\n\tborder: 1px solid var(--border-color);\n\tmargin-bottom: 10px;\n\tuser-select: none;\n\tborder-radius: 4px;\n}\n.sidebar_right .block{\n\tbackground-color: #68727b;\n\tbackground-color: var(--block-background-color);\n\tborder-bottom: none;\n\tbox-shadow: 0 -2px 0 0 var(--header-background-color) inset;\n}\n.block:last-child{\n\tmargin-bottom: 0;\n}\n.block h2{\n\tposition: relative;\n\tpadding: 2px 5px 2px 6px;\n\tmargin: 0;\n\tfont-size: 110%;\n\tbackground-color: rgba(255, 255, 255, 0.3);\n\tbackground-color: var(--header-background-color);\n\tborder-bottom: #555;\n\tborder-radius: 4px 4px 0 0;\n}\n.block.toggled h2, .block h2.toggled:after{\n\tborder: none;\n}\n.block h2.toggle:before{\n\t/* icon */\n\tposition:absolute;\n\tcontent:'';\n\twidth: 0;\n\theight: 0;\n\tright: 10px;\n\ttop: 10px;\n\tborder-style: solid;\n\tborder-width: 0 4px 5px 4px;\n\tborder-color: transparent transparent var(--text-color-muted) transparent;\n}\n.block h2.toggled:before{\n\t/* icon */\n\tborder-width: 5px 4px 0 4px;\n\tborder-color: var(--text-color-muted) transparent transparent transparent;\n}\n.block .content{\n\tpadding: 7.5px 5px;\n}\n.block_section {\n    margin: .75rem 0;\n}\n.block_section:first-child {\n    margin-top: 0;\n}\n.block_section:last-child {\n    margin-bottom: 0;\n}\n.error{\n\tpadding:20px;\n\tmargin:10px;\n\tborder:1px solid #ff0000;\n\tbackground-color:#ffffff;\n\twidth:500px;\n\tfont-weight:bold;\n}\n\n/* color chooser */\nbody .sp-replacer{\n\twidth: 100%;\n\theight: 40px;\n}\nbody .sp-preview{\n\twidth: calc(100% - 20px);\n\theight: 100%;\n}\n\n/* ========== header ======================================================== */\n\n.logo{\n\tdisplay: inline-block;\n\theight: 30px;\n\twhite-space: nowrap;\n\tpadding: 5px;\n\tmargin: 5px;\n\t/* responsive: scales with the viewport, bounded to fit the header */\n\tfont-size: clamp(15px, 1.4vw, 18px);\n\tline-height: 1;\n\ttext-decoration: none;\n\tfont-weight: bold;\n\tcolor: #ffffff;\n\tcolor: var(--text-color);\n}\n.logo_ch{\n\t/* each letter is independently bob-able (LFO) via JS transforms */\n\tdisplay: inline-block;\n\twill-change: transform;\n}\n.logo_l{\n\t/* the finger-L hand stands in for the \"l\" in loser; em-sized so it scales\n\t   with the text, vertical-align tuned to sit centered on the text */\n\tdisplay: inline-block;\n\twidth: 1.15em;\n\theight: 1.15em;\n\tmargin: 0 0.03em;\n\tvertical-align: -0.26em;\n\tbackground: url('images/logo.png') no-repeat center center;\n\tbackground-size: contain;\n\timage-rendering: pixelated;\n\tfilter: var(--mobile-menu-toggle-filter);\n\twill-change: transform;\n}\n/* yonce whimsy: the icon + \"oser\" fade white (top) -> petal pink (bottom) */\nbody.theme-yonce .logo_grad{\n\tbackground: linear-gradient(to bottom, #ffffff 12%, var(--yc-petal-pink) 92%);\n\t-webkit-background-clip: text;\n\tbackground-clip: text;\n\t-webkit-text-fill-color: transparent;\n\tcolor: transparent;\n}\nbody.theme-yonce .logo_l{\n\t/* fill the hand shape with the same gradient (mask by the logo alpha) */\n\tbackground: linear-gradient(to bottom, #ffffff 12%, var(--yc-petal-pink) 92%);\n\t-webkit-mask: url('images/logo.png') no-repeat center / contain;\n\tmask: url('images/logo.png') no-repeat center / contain;\n\tfilter: none;\n}\n/* smart folder toggle, sits to the right of the logo */\n.smart_folder_toggle{\n\tdisplay: inline-flex;\n\talign-items: center;\n\tjustify-content: center;\n\twidth: 26px;\n\theight: 26px;\n\tpadding: 0;\n\tmargin: 5px 0 5px 4px;\n\tvertical-align: middle;\n\tbackground-color: transparent;\n\tborder: 1px solid transparent;\n\tbox-shadow: none;\n\tborder-radius: var(--button-border-radius);\n\tcolor: var(--text-color-muted);\n\tcursor: pointer;\n}\n.smart_folder_toggle > svg{\n\tdisplay: block;\n\twidth: 16px;\n\theight: 16px;\n}\n.smart_folder_toggle:hover{\n\tbackground-color: var(--input-background-color-hover);\n\tcolor: var(--text-color);\n}\n.smart_folder_toggle[aria-pressed=\"true\"]{\n\tcolor: var(--background-color-active);\n\tborder-color: var(--border-color);\n\tbackground-color: transparent;\n}\n.smart_folder_toggle[aria-pressed=\"true\"]:hover{\n\tbackground-color: var(--input-background-color-hover);\n}\n.about-logo{\n\tmargin-left:22%;\n}\n.about-name{\n\tfont-size: 17px;\n\tfont-weight:bold;\n}\n.undo_button {\n\tdisplay: none;\n\twidth: 50px;\n\theight: 50px;\n\ttop: 0;\n\tborder: 0;\n\toutline: none;\n\tcursor: pointer;\n\tfilter: var(--mobile-menu-toggle-filter);\n\tbackground: url(images/icons/undo.svg) no-repeat center center;\n\tbackground-size: auto 25px;\n\tmargin-left: 10px;\n}\n.undo_button:hover {\n\tbackground-color: transparent;\n}\n@media screen and (max-width: 700px){\n\t.undo_button {\n\t\tdisplay: block;\n\t}\n}\n\n/* ========== sub-header ==================================================== */\n\n.submenu{\n\t-ms-grid-row: 1;\n\t-ms-grid-column: 1;\n\t-ms-grid-column-span: 3;\n\tgrid-area: submenu;\n\tdisplay: flex;\n\tflex-direction: row;\n\talign-items: center;\n\tbackground-color: rgba(255, 255, 255, 0.2);\n\tbackground-color: var(--section-background-color);\n\toverflow: hidden;\n\tmargin-bottom: 5px;\n}\n.attributes{\n\tdisplay: flex;\n\tflex-wrap: nowrap;\n\tbackground-color: var(--area-background-color);\n\twidth: calc(100% - 125px);\n\tmargin-top: 5px;\n\tmargin-bottom: 5px !important;\n\tpadding: 3px 10px 3px 10px;\n\tborder: 0;\n\toverflow-x: auto;\n\toverflow-y: hidden;\n\twhite-space: nowrap;\n\tmin-height: 30px;\n}\n.attributes .item{\n\tdisplay: inline-flex;\n\talign-items: center;\n\tmargin-right: 20px;\n}\n.attributes .item > label {\n\tmargin: 0 .5rem 0 0;\n}\n.attributes input[type=\"number\"]{\n\twidth: 60px;\n\tmargin-right: 5px;\n}\n.attributes input[type=\"color\"] {\n\tcursor: pointer;\n\tpadding: 0;\n\tborder: .2rem solid var(--input-background-color);\n\twidth: 3rem;\n}\n.attributes .item > button:not(.ui_icon_button){\n\tdisplay: inline-block;\n\tpadding: 3px 10px;\n}\n\n/* ========== left sidebar ================================================== */\n\n.sidebar_left{\n\t-ms-grid-row: 2;\n\t-ms-grid-column: 1;\n\tgrid-area: sidebar_left;\n\tdisplay: flex;\n\tflex-direction: row;\n\tflex-wrap: wrap;\n\tbackground-color: var(--section-background-color);\n\tpadding: 0 5px 5px 0;\n\tmargin-right: 5px;\n\toverflow: hidden;\n\talign-self: start;\n\twidth: 40px;\n\toverflow-y: auto;\n\tmax-height: 100%;\n}\n.sidebar_left .item{\n\tposition: relative;\n\tdisplay:block;\n\tbackground-color: var(--area-background-color);\n\theight: 25px;\n\twidth: 30px;\n\tmargin: 5px 0 0 5px;\n\toverflow: hidden;\n\tcursor: pointer;\n}\n.sidebar_left .item:after{\n\tposition: absolute;\n\tcontent: '';\n\tleft:0;\n\ttop:0;\n\tbottom:0;\n\tright:0;\n\tfilter: var(--menu-icons-filter);\n\tbackground-position: center center;\n\tbackground-repeat: no-repeat;\n\tbackground-size: 20px 20px;\n}\n.sidebar_left .item:hover{\n\tbackground-color: var(--background-color-hover);\n}\n.sidebar_left .item.active{\n\tbackground-color: var(--background-color-active);\n\tcolor: var(--text-color-active);\n}\n.sidebar_left .item.active:after{\n\tfilter: var(--menu-icons-filter-active);\n}\n\n/*\nIMPORTANT: any new icon should also must be added on /service-worker.js + its version should be updated - FEATURE DISABLED\n */\n.sidebar_left .select:after{ background-image: url('images/icons/select.svg'); }\n.sidebar_left .selection:after{ background-image: url('images/icons/selection.svg'); }\n.sidebar_left .brush:after{ background-image: url('images/icons/brush.svg'); }\n.sidebar_left .pencil:after{ background-image: url('images/icons/pencil.svg'); }\n.sidebar_left .pick_color:after{ background-image: url('images/icons/pick_color.svg'); }\n.sidebar_left .erase:after{ background-image: url('images/icons/erase.svg'); }\n.sidebar_left .magic_erase:after{ background-image: url('images/icons/magic_erase.svg'); }\n.sidebar_left .fill:after{ background-image: url('images/icons/fill.svg'); }\n.sidebar_left .media:after{ background-image: url('images/icons/media.svg'); }\n.sidebar_left .shape:after{ background-image: url('images/icons/shape.svg'); }\n.sidebar_left .text:after{ background-image: url('images/icons/text.svg'); background-size: 16px auto; }\n/* the gradient icon is a colour PNG, so it opts out of the invert filter -\n   but it still has to obey the theme tint (black in dark, green in green) */\n.sidebar_left .gradient:after{ background-image: url('images/icons/gradient.png'); background-size: 18px 12px; filter: var(--canvas-filter, none); }\n.sidebar_left .clone:after{ background-image: url('images/icons/clone.svg'); }\n.sidebar_left .crop:after{ background-image: url('images/icons/crop.svg'); }\n.sidebar_left .blur:after{ background-image: url('images/icons/blur.svg'); }\n.sidebar_left .sharpen:after{ background-image: url('images/icons/sharpen.svg'); }\n.sidebar_left .desaturate:after{ background-image: url('images/icons/desaturate.svg'); }\n.sidebar_left .bulge_pinch:after{ background-image: url('images/icons/bulge_pinch.svg'); }\n.sidebar_left .animation:after{ background-image: url('images/icons/animation.svg'); }\n\n@media screen and (max-width:550px){\n\t#sidebar_left{\n\t\tleft: -110px;\n\t}\n}\n\n/* ========== right sidebar ================================================= */\n\n.sidebar_right{\n\t-ms-grid-row: 2;\n\t-ms-grid-column: 3;\n\tgrid-area: sidebar_right;\n\tz-index: 2;\n\tdisplay: flex;\n\tflex-direction: column;\n\ttransition: 0.2s;\n\toverflow-x: hidden;\n\toverflow-y: scroll;\n\tmargin: 0 5px;\n\twidth: 200px;\n}\n.sidebar_right.active{\n\tright: 0 !important;\n}\n.sidebar_right .block.layers{\n\tflex: 1;\n}\n.sidebar_right .block.layers .content{\n\tpadding-bottom: 25px;\n}\n\n/* preview */\n.canvas_preview_wrapper{\n\tposition:relative;\n\theight:100px;\n\tmargin: 5px 5px 10px 5px;\n}\n.canvas_preview_details{\n\tpadding: 0 5px;\n}\n.canvas_preview_details button{\n\tmargin: 0;\n}\n.preview canvas{\n\tcursor: pointer;\n}\n.details input{\n\tpadding: 5px 10px;\n}\n\n/* color */\n.color_area{\n\tborder: 1px solid #444;\n\twidth: calc(100% - 10px);\n\theight: 40px;\n\tcursor: pointer;\n\tmargin: 5px;\n}\n\n/* layers */\n.layers_list{\n\tmargin-top: 10px;\n}\n.layers_arrow{\n\tdisplay:inline-block;\n\tfloat:right;\n\tmargin-left:5px;\n\tpadding:1px 8px;\n\tborder:1px solid #444;\n\tborder-color: var(--border-color);\n\ttext-decoration:none;\n\tcolor:var(--text-color);\n\tfont-size: 14px;\n}\n.layer_add{\n\tdisplay:inline-block;\n\tpadding:1px 8px;\n\tmargin-right: 10px;\n\tbackground-color: #419147;\n\tbackground-color: var(--input-background-color);\n\tborder:1px solid #444;\n\tborder-color: var(--input-border-color);\n\tcolor: var(--input-text-color);\n\tcursor:pointer;\n\ttext-decoration:none;\n\tfont-size: 18px;\n\tfont-weight: bold;\n}\n/* Layers header buttons (D, R, move arrows) match the themed input fields too */\n.layer_duplicate, .layer_raster, .layers_arrow{\n\tbackground-color: var(--input-background-color);\n\tcolor: var(--input-text-color);\n\tborder-color: var(--input-border-color);\n}\n/* Shared hover for all these control buttons (preview zoom + layer buttons) */\n.layer_add:hover, .layer_duplicate:hover, .layer_raster:hover, .layers_arrow:hover{\n\tbackground-color: var(--input-background-color-hover);\n}\n.layers_list .item{\n\tmargin-bottom:2px;\n\tdisplay: flex;\n\tflex-wrap: wrap;\n\talign-items: center;\n}\n.layers_list .item > .clear{\n\tdisplay: none;\n}\n.layers_list .layer_name{\n\tdisplay:block;\n\tpadding:1px 5px 3px 5px;\n\t/* flex-basis 0 so a long name never pushes the icons/delete onto new lines;\n\t   it grows to fill the row and truncates with the ellipsis below. */\n\tflex: 1 1 0;\n\tmin-width: 0;\n\ttext-align: left;\n\toverflow:hidden;\n\ttext-overflow: ellipsis;\n\tbackground-color:#989898;\n\tbackground-color: var(--input-background-color);\n\tborder:1px solid #393939;\n\tborder-color: var(--input-border-color);\n\tborder-radius:3px;\n\tcursor:pointer;\n\tfont-size: 18px;\n\tfont-weight: bold;\n\tline-height: 1.4;\n\tcolor:var(--text-color);\n\twhite-space: nowrap;\n}\n.layers_list .item.shorter .layer_name{\n\twidth: auto;\n}\n.layers_list .item.active .layer_name{\n\tbackground-color: var(--input-background-color-hover);\n\tborder-color: var(--border-color);\n\tcolor: var(--input-text-color);\n}\n.layers_list .arrow_down{\n\tposition: relative;\n\tfloat:left;\n\tmargin-right: 5px;\n\twidth:10px;\n\theight:19px;\n\topacity: 0.4;\n}\n.layers_list .arrow_down:after{\n\tposition: absolute;\n\tcontent: '';\n\tleft:0;\n\ttop:0;\n\tbottom:0;\n\tright:0;\n\tfilter: var(--menu-icons-filter);\n\tbackground: url('images/icons/arrow-down.svg') no-repeat center center;\n\tbackground-size: 12px auto;\n}\n.layers_list .visibility{\n\tposition: relative;\n\tfloat:left;\n\tcursor:pointer;\n\tpadding:0px 3px 0px 3px;\n\tmargin-right: 5px;\n\twidth:20px;\n\theight:19px;\n\topacity:0.1;\n\tborder: none;\n\tbackground: transparent;\n\tbox-shadow: none;\n}\n.layers_list .visibility:after{\n\tposition: absolute;\n\tcontent: '';\n\tleft:0;\n\ttop:0;\n\tbottom:0;\n\tright:0;\n\tfilter: var(--menu-icons-filter);\n\tbackground: url('images/icons/view.svg') no-repeat center center;\n\tbackground-size: 18px auto;\n}\n.layers_list .visible{ opacity:0.4; }\n.layers_list .delete{\n\tfloat:right;\n\torder: 1;\n\tcursor:pointer;\n\tpadding:0px 3px 0px 3px;\n\twidth:12px;\n\theight:19px;\n\tmargin-left: 5px;\n\t/* delete \"x\" tinted to the tool-selection color via alpha mask */\n\tbackground-color: var(--background-color-active);\n\t-webkit-mask: url(images/icons/delete.svg) no-repeat center / 10px 10px;\n\tmask: url(images/icons/delete.svg) no-repeat center / 10px 10px;\n\tborder: none;\n\tbox-shadow: none;\n}\n/* shared right-click context menu (layers panel, logo hand) */\n.context_menu{\n\tposition: fixed;\n\tz-index: 9999;\n\tmin-width: 140px;\n\tbackground-color: var(--menu-background-color);\n\tborder: 1px solid var(--border-color);\n\tborder-radius: 4px;\n\tbox-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);\n\tpadding: 4px 0;\n}\n.context_menu .context_menu_item{\n\tdisplay: block;\n\twidth: 100%;\n\ttext-align: left;\n\tbackground: transparent;\n\tborder: none;\n\tbox-shadow: none;\n\tborder-radius: 0;\n\tcolor: var(--menu-text-color);\n\tpadding: 6px 16px;\n\tfont-size: 14px;\n\tfont-weight: normal;\n\twhite-space: nowrap;\n\tcursor: pointer;\n}\n.context_menu .context_menu_item:hover{\n\tbackground-color: var(--background-color-active);\n\tcolor: var(--text-color-active);\n}\n.context_menu .context_menu_divider{\n\theight: 1px;\n\tmargin: 4px 0;\n\tbackground-color: var(--border-color);\n\topacity: 0.5;\n}\n\n/* icon licence dialog */\n/* the popup is a fixed 500px, so the facts get the full width and the\n   artwork sits in a header row rather than stealing a column */\n.icon_license_head{\n\tdisplay: flex;\n\tgap: 14px;\n\talign-items: center;\n\tmargin-bottom: 14px;\n}\n.icon_license_art{\n\tflex: 0 0 auto;\n\twidth: 64px;\n\theight: 64px;\n\tborder-radius: 10px;\n}\n.icon_license_attribution{\n\tmargin: 0;\n\tfont-size: 17px;\n\tfont-weight: bold;\n\tline-height: 1.35;\n\tcolor: var(--text-color);\n}\n.icon_license_facts{\n\tdisplay: grid;\n\tgrid-template-columns: max-content 1fr;\n\tgap: 6px 14px;\n\tmargin: 0 0 12px;\n}\n.icon_license_facts dt{\n\tcolor: var(--text-color-soft, var(--text-color));\n\topacity: 0.75;\n\tfont-size: 14px;\n}\n.icon_license_facts dd{\n\tmargin: 0;\n\tfont-size: 14px;\n\tcolor: var(--text-color);\n}\n.icon_license_muted{\n\topacity: 0.7;\n}\n.icon_license_note{\n\tmargin: 0;\n\tfont-size: 13px;\n\tline-height: 1.5;\n\topacity: 0.85;\n\tborder-top: 1px solid var(--border-color);\n\tpadding-top: 10px;\n}\n\n/* filters */\n.layers_list .filters{\n\tmargin-bottom: 5px;\n\torder: 2;\n\tflex: 0 0 100%;\n}\n.layers_list .filter{\n\tmargin-bottom: 2px;\n\tmargin-left: 30px;\n\topacity: 0.7;\n}\n.layers_list .filter .layer_name{\n\tposition: relative;\n}\n.layers_list .filter .layer_name:after{\n\tposition:absolute;\n\tcontent:\"fx\";\n\tright: -4px;\n\ttop:1px;\n\tbottom:0;\n\twidth: 20px;\n}\n.sidebar_right .label{\n\tdisplay: inline-block;\n}\n.info .toggle.toggled{\n\tmargin-bottom: -3px;\n}\n.block.details .row{\n\tclear:both;\n\tmargin-bottom: 4px;\n\tmin-height: 23px;\n}\n.block.details input[type=\"number\"]{\n\twidth: 70px;\n\tpadding: 3px 5px;\n\tfloat: right;\n}\n.block.details .ui_color_input{\n\twidth: 70px;\n\tfloat: right;\n}\n.block.details .ui_color_input input{\n\twidth: 100%;\n\theight: 23px;\n}\n.block.details button.ui_toggle_button{\n\twidth: 90px;\n\tfloat: right;\n}\n.block.details select{\n\twidth: calc(100% - 70px);\n\theight: 23px;\n\tfloat: right;\n}\n.block.details button{\n\twidth: calc(100% - 70px);\n\theight: 23px;\n\tborder: 1px solid #444;\n}\n.block.details button.reset{\n\tposition: relative;\n\twidth: 25px;\n\tfloat: right;\n\tmargin-right: 3px;\n\toverflow: hidden;\n\topacity: 0.5;\n\tcolor: transparent;\n}\n.block.details button.reset:after{\n\tposition: absolute;\n\tcontent: '';\n\tleft:0;\n\ttop:0;\n\tbottom:0;\n\tright:0;\n\tbackground: url(images/icons/refresh.svg) no-repeat center center;\n\tbackground-size: auto 14px;\n\tfilter: var(--menu-icons-filter);\n}\n.block.details button.active{\n\tbackground-color: var(--background-color-active);\n\tcolor: var(--text-color-active);\n}\n.details-content{\n\theight: 206px;\n\toverflow-y: auto;\n}\n\n@media screen and (max-width:700px){\n\tbody{\n\t\tpadding-top:50px;\n\t}\n\t.wrapper{\n\t\ttop: 50px;\n\t}\n\t.sidebar_left{\n\t\tposition: absolute;\n\t\tleft: -90px;\n\t\tbackground: var(--background);\n\t}\n\t.sidebar_left.active{\n\t\tbox-shadow: -5px 0px 10px 0px rgba(0,0,0,0.75);\n\t\tleft: 0;\n\t\tz-index: 3;\n\t}\n\t.sidebar_right{\n\t\tposition: absolute;\n\t\theight: 100%;\n\t\tright: -210px;\n\t\tbackground: var(--background);\n\t}\n\t.sidebar_right.active{\n\t\tbox-shadow: -5px 0px 10px 0px rgba(0,0,0,0.75);\n\t\tright: 0;\n\t\tmargin-right: 0;\n\t}\n}\n\n/* ========== content ======================================================= */\n\n.ruler_left{\n\tdisplay: none;\n\tposition: absolute;\n\tleft:0;\n\ttop: 20px;\n\tbackground-color: #ccc;\n}\n.ruler_top{\n\tdisplay: none;\n\tposition: absolute;\n\tleft: 20px;\n\ttop:0;\n\tbackground-color: #ccc;\n}\n.middle_area{\n\tposition: relative;\n\t-ms-grid-row: 2;\n\t-ms-grid-column: 2;\n\tgrid-area: main;\n}\n.main_wrapper{\n\tposition:absolute;\n\ttop:0;\n\tright:0;\n\tbottom:0;\n\tleft:0;\n\toverflow: hidden;\n\tdisplay: flex;\n\tjustify-content: center;\n\talign-items: center;\n}\n.middle_area.has-ruler .main_wrapper{\n\ttop: 20px;\n\tleft: 20px;\n}\n.canvas_wrapper{\n\tposition:relative;\n}\n.canvas_wrapper canvas{\n\tposition: absolute;\n\tbox-sizing: content-box;\n\tfont-kerning: normal !important;\n}\n.loaded .canvas_wrapper canvas{\n\tborder: 1px solid var(--border-color);\n}\n#mouse{\n\tposition:absolute;\n\tpointer-events:none;\n\twidth:10px;\n\theight:10px;\n\tz-index:10;\n}\n#mouse.rect{\n\tborder:1px solid rgba(0,0,0,0.5);\n}\n#mouse.circle{\n\tborder:1px solid rgba(0,0,0,0.5);\n\tborder-radius:50%;\n}\n.transparent-grid{\n\twidth: 100%;\n\theight: 100%;\n\tposition: absolute;\n\tpointer-events: none;\n\t/*background: url(images/icons/grid.png) repeat top left;*/\n\tbackground: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAQElEQVQ4T2N89+7dfwYigKCgIBGqGBgYRw3EGU6jYYgzaIZAsvn//z9ROeX9+/fE5ZRRA3GG02gY4s4pgz7ZAAAnSWvHPkHXaAAAAABJRU5ErkJggg==') repeat top left;\n\tz-index:1;\n\timage-rendering: pixelated; /* disable antialiasing */\n}\n.transparent-grid.white{\n\tbackground:white;\n}\n.transparent-grid.green{\n\tbackground: #5be471;\n}\n.transparent-grid.grey{\n\tbackground: #dfdfdf;\n}\ncanvas{\n\tposition:relative;\n\tz-index:2;\n}\n#canvas_back{\n\tposition: absolute;\n\tbackground-color:#ffffff;\n\toutline: none;\n}\n#canvas_grid{\n\tpointer-events:none;\n}\n.group{\n\tborder:1px solid #999999;\n\tmargin: 5px 0px 5px 0px;\n\tpadding:5px 8px;\n}\n.flex-container{\n\tdisplay: flex;\n\tflex-wrap: wrap;\n}\n.flex-container .item{\n\tflex: auto;\n\tmargin: 2px 0;\n\twidth: 150px;\n}\n.flex-container .item:empty{\n\theight: 0;\n\tborder: none;\n}\n/* Colors panel toggle icons: white, not the pressed-state cyan\n   (setting the active-text var whitens both the icon and its underline) */\n#toggle_color_picker_section_button,\n#toggle_color_channels_section_button,\n#toggle_color_swatches_section_button{\n\t--button-text-color-active: var(--text-color);\n\tcolor: var(--text-color);\n}\n\n/* Error / notification popups: readable, styled like the (grape) layer panels */\n.alertify-notifier{\n\tcolor: var(--text-color);\n}\n.alertify-notifier .ajs-message{\n\tbackground: var(--block-background-color) !important;\n\tcolor: var(--text-color) !important;\n\tborder: 1px solid var(--border-color);\n\tborder-radius: 4px;\n\tbox-shadow: 0 3px 12px rgba(0, 0, 0, 0.5);\n\ttext-shadow: none;\n}\n.alertify-notifier .ajs-message.ajs-error{\n\tbackground: var(--block-background-color) !important;\n\tborder-left: 4px solid var(--text-color-red);\n}\n.alertify-notifier .ajs-message.ajs-success{\n\tbackground: var(--block-background-color) !important;\n\tborder-left: 4px solid var(--text-color-green);\n}\n.alertify-notifier .ajs-message.ajs-warning{\n\tbackground: var(--block-background-color) !important;\n\tborder-left: 4px solid var(--text-color-blue);\n}\n.effectsPreview{\n\tcursor: pointer;\n\tbackground-color: #ddd;\n}\n\n@media screen and (max-width:550px){\n\t.canvas_wrapper{\n\t\tmargin-left: 0px;\n\t}\n}\n@media screen and (max-height: 690px){\n\t.sidebar_left{\n\t\twidth: 75px;\n\t}\n}\n@media screen and (max-height:450px){\n\t.sidebar_left{\n\t\twidth: 88px;\n\t}\n}\n\n/* ========== dialogs ======================================================= */\n\n#dialog_color_picker_group {\n\twidth: 60%;\n}\n#dialog_color_channel_group {\n\twidth: 40%;\n\tmargin-left: 1rem;\n}\n\n@media screen and (max-width: 450px) {\n\t#dialog_color_picker .ui_flex_group {\n\t\tflex-wrap: wrap;\n\t}\n\t#dialog_color_picker_group {\n\t\twidth: 100%;\n\t}\n\t#dialog_color_channel_group {\n\t\twidth: 100%;\n\t\tmargin-left: 0;\n\t\tmargin-top: 1rem;\n\t}\n}"],"sourceRoot":""}]);
+___CSS_LOADER_EXPORT___.push([module.id, ".wrapper{\n\tdisplay: -ms-grid;\n\tdisplay: grid;\n\tmargin: 0;\n\tposition: fixed; /* dont change it, vh does not work on mobiles with bottom footer */\n\ttop: 30px;\n\tright: 0;\n\tleft: 0;\n\tbottom: 5px;\n\theight: auto;\n\toverflow: hidden;\n\n\t-ms-grid-rows: auto 1fr;\n\tgrid-template-rows: auto 1fr;\n\t-ms-grid-columns: auto 1fr auto;\n\tgrid-template-columns: auto 1fr auto;\n\n\tgrid-template-areas:\n\t\t\"submenu submenu submenu\"\n\t\t\"sidebar_left main sidebar_right\";\n}\n.trn{}\n.toggle{\n\tcursor: pointer;\n}\n.hidden{\n\tdisplay:none;\n}\n.center{\n\ttext-align: center;\n}\n.pointer{\n\tcursor: pointer;\n}\n.clear{\n\tclear:both;\n}\n.displayBlock{\n\tdisplay: block;\n}\n.bold{\n\tfont-weight: bold;\n}\n.left{\n\tfloat: left;\n}\n.right{\n\tfloat: right;\n}\n.grey{\n\tcolor:grey;\n}\n.noselect {\n\t-webkit-touch-callout: none; /* iOS Safari */\n    -webkit-user-select: none; /* Safari */\n\t-khtml-user-select: none; /* Konqueror HTML */\n\t-moz-user-select: none; /* Firefox */\n\t-ms-user-select: none; /* Internet Explorer/Edge */\n\tuser-select: none; /* Non-prefixed version */\n}\n.block{\n\tposition: relative;\n\tbackground-color: rgba(255, 255, 255, 0.2);\n\tbackground-color: var(--block-background-color);\n\tborder: 1px solid rgba(0, 0, 0, 0.5);\n\tborder: 1px solid var(--border-color);\n\tmargin-bottom: 10px;\n\tuser-select: none;\n\tborder-radius: 4px;\n}\n.sidebar_right .block{\n\tbackground-color: #68727b;\n\tbackground-color: var(--block-background-color);\n\tborder-bottom: none;\n\tbox-shadow: 0 -2px 0 0 var(--header-background-color) inset;\n}\n.block:last-child{\n\tmargin-bottom: 0;\n}\n.block h2{\n\tposition: relative;\n\tpadding: 2px 5px 2px 6px;\n\tmargin: 0;\n\tfont-size: 110%;\n\tbackground-color: rgba(255, 255, 255, 0.3);\n\tbackground-color: var(--header-background-color);\n\tborder-bottom: #555;\n\tborder-radius: 4px 4px 0 0;\n}\n.block.toggled h2, .block h2.toggled:after{\n\tborder: none;\n}\n.block h2.toggle:before{\n\t/* icon */\n\tposition:absolute;\n\tcontent:'';\n\twidth: 0;\n\theight: 0;\n\tright: 10px;\n\ttop: 10px;\n\tborder-style: solid;\n\tborder-width: 0 4px 5px 4px;\n\tborder-color: transparent transparent var(--text-color-muted) transparent;\n}\n.block h2.toggled:before{\n\t/* icon */\n\tborder-width: 5px 4px 0 4px;\n\tborder-color: var(--text-color-muted) transparent transparent transparent;\n}\n.block .content{\n\tpadding: 7.5px 5px;\n}\n.block_section {\n    margin: .75rem 0;\n}\n.block_section:first-child {\n    margin-top: 0;\n}\n.block_section:last-child {\n    margin-bottom: 0;\n}\n.error{\n\tpadding:20px;\n\tmargin:10px;\n\tborder:1px solid #ff0000;\n\tbackground-color:#ffffff;\n\twidth:500px;\n\tfont-weight:bold;\n}\n\n/* color chooser */\nbody .sp-replacer{\n\twidth: 100%;\n\theight: 40px;\n}\nbody .sp-preview{\n\twidth: calc(100% - 20px);\n\theight: 100%;\n}\n\n/* ========== header ======================================================== */\n\n.logo{\n\tdisplay: inline-block;\n\theight: 30px;\n\twhite-space: nowrap;\n\tpadding: 5px;\n\tmargin: 5px;\n\t/* responsive: scales with the viewport, bounded to fit the header */\n\tfont-size: clamp(15px, 1.4vw, 18px);\n\tline-height: 1;\n\ttext-decoration: none;\n\tfont-weight: bold;\n\tcolor: #ffffff;\n\tcolor: var(--text-color);\n}\n.logo_ch{\n\t/* each letter is independently bob-able (LFO) via JS transforms */\n\tdisplay: inline-block;\n\twill-change: transform;\n}\n.logo_l{\n\t/* the finger-L hand stands in for the \"l\" in loser; em-sized so it scales\n\t   with the text, vertical-align tuned to sit centered on the text */\n\tdisplay: inline-block;\n\twidth: 1.15em;\n\theight: 1.15em;\n\tmargin: 0 0.03em;\n\tvertical-align: -0.26em;\n\tbackground: url('images/logo.png') no-repeat center center;\n\tbackground-size: contain;\n\timage-rendering: pixelated;\n\tfilter: var(--mobile-menu-toggle-filter);\n\twill-change: transform;\n}\n/* yonce whimsy: the icon + \"oser\" fade white (top) -> petal pink (bottom) */\nbody.theme-yonce .logo_grad{\n\tbackground: linear-gradient(to bottom, #ffffff 12%, var(--yc-petal-pink) 92%);\n\t-webkit-background-clip: text;\n\tbackground-clip: text;\n\t-webkit-text-fill-color: transparent;\n\tcolor: transparent;\n}\nbody.theme-yonce .logo_l{\n\t/* fill the hand shape with the same gradient (mask by the logo alpha) */\n\tbackground: linear-gradient(to bottom, #ffffff 12%, var(--yc-petal-pink) 92%);\n\t-webkit-mask: url('images/logo.png') no-repeat center / contain;\n\tmask: url('images/logo.png') no-repeat center / contain;\n\tfilter: none;\n}\n/* smart folder toggle, sits to the right of the logo */\n.smart_folder_toggle{\n\tdisplay: inline-flex;\n\talign-items: center;\n\tjustify-content: center;\n\twidth: 26px;\n\theight: 26px;\n\tpadding: 0;\n\tmargin: 5px 0 5px 4px;\n\tvertical-align: middle;\n\tbackground-color: transparent;\n\tborder: 1px solid transparent;\n\tbox-shadow: none;\n\tborder-radius: var(--button-border-radius);\n\tcolor: var(--text-color-muted);\n\tcursor: pointer;\n}\n.smart_folder_toggle > svg{\n\tdisplay: block;\n\twidth: 16px;\n\theight: 16px;\n}\n.smart_folder_toggle:hover{\n\tbackground-color: var(--input-background-color-hover);\n\tcolor: var(--text-color);\n}\n.smart_folder_toggle[aria-pressed=\"true\"]{\n\tcolor: var(--background-color-active);\n\tborder-color: var(--border-color);\n\tbackground-color: transparent;\n}\n.smart_folder_toggle[aria-pressed=\"true\"]:hover{\n\tbackground-color: var(--input-background-color-hover);\n}\n.about-logo{\n\tmargin-left:22%;\n}\n.about-name{\n\tfont-size: 17px;\n\tfont-weight:bold;\n}\n.undo_button {\n\tdisplay: none;\n\twidth: 50px;\n\theight: 50px;\n\ttop: 0;\n\tborder: 0;\n\toutline: none;\n\tcursor: pointer;\n\tfilter: var(--mobile-menu-toggle-filter);\n\tbackground: url(images/icons/undo.svg) no-repeat center center;\n\tbackground-size: auto 25px;\n\tmargin-left: 10px;\n}\n.undo_button:hover {\n\tbackground-color: transparent;\n}\n@media screen and (max-width: 700px){\n\t.undo_button {\n\t\tdisplay: block;\n\t}\n}\n\n/* ========== sub-header ==================================================== */\n\n.submenu{\n\t-ms-grid-row: 1;\n\t-ms-grid-column: 1;\n\t-ms-grid-column-span: 3;\n\tgrid-area: submenu;\n\tdisplay: flex;\n\tflex-direction: row;\n\talign-items: center;\n\tbackground-color: rgba(255, 255, 255, 0.2);\n\tbackground-color: var(--section-background-color);\n\toverflow: hidden;\n\tmargin-bottom: 5px;\n}\n.attributes{\n\tdisplay: flex;\n\tflex-wrap: nowrap;\n\tbackground-color: var(--area-background-color);\n\twidth: calc(100% - 125px);\n\tmargin-top: 5px;\n\tmargin-bottom: 5px !important;\n\tpadding: 3px 10px 3px 10px;\n\tborder: 0;\n\toverflow-x: auto;\n\toverflow-y: hidden;\n\twhite-space: nowrap;\n\tmin-height: 30px;\n}\n.attributes .item{\n\tdisplay: inline-flex;\n\talign-items: center;\n\tmargin-right: 20px;\n}\n.attributes .item > label {\n\tmargin: 0 .5rem 0 0;\n}\n.attributes input[type=\"number\"]{\n\twidth: 60px;\n\tmargin-right: 5px;\n}\n.attributes input[type=\"color\"] {\n\tcursor: pointer;\n\tpadding: 0;\n\tborder: .2rem solid var(--input-background-color);\n\twidth: 3rem;\n}\n.attributes .item > button:not(.ui_icon_button){\n\tdisplay: inline-block;\n\tpadding: 3px 10px;\n}\n\n/* ========== left sidebar ================================================== */\n\n.sidebar_left{\n\t-ms-grid-row: 2;\n\t-ms-grid-column: 1;\n\tgrid-area: sidebar_left;\n\tdisplay: flex;\n\tflex-direction: row;\n\tflex-wrap: wrap;\n\tbackground-color: var(--section-background-color);\n\tpadding: 0 5px 5px 0;\n\tmargin-right: 5px;\n\toverflow: hidden;\n\talign-self: start;\n\twidth: 40px;\n\toverflow-y: auto;\n\tmax-height: 100%;\n}\n.sidebar_left .item{\n\tposition: relative;\n\tdisplay:block;\n\tbackground-color: var(--area-background-color);\n\theight: 25px;\n\twidth: 30px;\n\tmargin: 5px 0 0 5px;\n\toverflow: hidden;\n\tcursor: pointer;\n}\n.sidebar_left .item:after{\n\tposition: absolute;\n\tcontent: '';\n\tleft:0;\n\ttop:0;\n\tbottom:0;\n\tright:0;\n\tfilter: var(--menu-icons-filter);\n\tbackground-position: center center;\n\tbackground-repeat: no-repeat;\n\tbackground-size: 20px 20px;\n}\n.sidebar_left .item:hover{\n\tbackground-color: var(--background-color-hover);\n}\n.sidebar_left .item.active{\n\tbackground-color: var(--background-color-active);\n\tcolor: var(--text-color-active);\n}\n.sidebar_left .item.active:after{\n\tfilter: var(--menu-icons-filter-active);\n}\n\n/*\nIMPORTANT: any new icon should also must be added on /service-worker.js + its version should be updated - FEATURE DISABLED\n */\n.sidebar_left .select:after{ background-image: url('images/icons/select.svg'); }\n.sidebar_left .selection:after{ background-image: url('images/icons/selection.svg'); }\n.sidebar_left .brush:after{ background-image: url('images/icons/brush.svg'); }\n.sidebar_left .pencil:after{ background-image: url('images/icons/pencil.svg'); }\n.sidebar_left .pick_color:after{ background-image: url('images/icons/pick_color.svg'); }\n.sidebar_left .erase:after{ background-image: url('images/icons/erase.svg'); }\n.sidebar_left .magic_erase:after{ background-image: url('images/icons/magic_erase.svg'); }\n.sidebar_left .fill:after{ background-image: url('images/icons/fill.svg'); }\n.sidebar_left .media:after{ background-image: url('images/icons/media.svg'); }\n.sidebar_left .shape:after{ background-image: url('images/icons/shape.svg'); }\n.sidebar_left .text:after{ background-image: url('images/icons/text.svg'); background-size: 16px auto; }\n/* the gradient icon is a colour PNG, so it opts out of the invert filter -\n   but it still has to obey the theme tint (black in dark, green in green) */\n.sidebar_left .gradient:after{ background-image: url('images/icons/gradient.png'); background-size: 18px 12px; filter: var(--canvas-filter, none); }\n.sidebar_left .clone:after{ background-image: url('images/icons/clone.svg'); }\n.sidebar_left .crop:after{ background-image: url('images/icons/crop.svg'); }\n.sidebar_left .blur:after{ background-image: url('images/icons/blur.svg'); }\n.sidebar_left .sharpen:after{ background-image: url('images/icons/sharpen.svg'); }\n.sidebar_left .desaturate:after{ background-image: url('images/icons/desaturate.svg'); }\n.sidebar_left .bulge_pinch:after{ background-image: url('images/icons/bulge_pinch.svg'); }\n.sidebar_left .animation:after{ background-image: url('images/icons/animation.svg'); }\n\n@media screen and (max-width:550px){\n\t#sidebar_left{\n\t\tleft: -110px;\n\t}\n}\n\n/* ========== right sidebar ================================================= */\n\n.sidebar_right{\n\t-ms-grid-row: 2;\n\t-ms-grid-column: 3;\n\tgrid-area: sidebar_right;\n\tz-index: 2;\n\tdisplay: flex;\n\tflex-direction: column;\n\ttransition: 0.2s;\n\toverflow-x: hidden;\n\toverflow-y: scroll;\n\tmargin: 0 5px;\n\twidth: 200px;\n}\n.sidebar_right.active{\n\tright: 0 !important;\n}\n.sidebar_right .block.layers:last-child{\n\tflex: 1;\n}\n\n/* ---------- sidebar panels: pin + reorder ---------- */\n\n.sidebar_right .block.pinned{\n\tposition: -webkit-sticky;\n\tposition: sticky;\n\ttop: 0;\n}\n.sidebar_right .block.pinned > h2{\n\tbox-shadow: 0 1px 0 0 var(--border-color);\n}\n.sidebar_right .block.dragging{\n\topacity: 0.5;\n}\n.block h2.panel_header{\n\tpadding-right: 80px;\n\tcursor: pointer;\n\twhite-space: nowrap;\n\toverflow: hidden;\n\ttext-overflow: ellipsis;\n}\n.block h2.panel_header.toggle:before{\n\t/* collapse arrow sits left of the panel controls */\n\tright: 68px;\n}\n.panel_controls{\n\tposition: absolute;\n\ttop: 0;\n\tright: 2px;\n\theight: 100%;\n\tdisplay: flex;\n\talign-items: center;\n}\n.panel_control{\n\tdisplay: flex;\n\talign-items: center;\n\tjustify-content: center;\n\twidth: 16px;\n\theight: 16px;\n\tpadding: 0;\n\tmargin: 0;\n\tborder: none;\n\tborder-radius: 3px;\n\tbackground: none;\n\tcolor: var(--text-color-muted);\n\tfont-size: 13px;\n\tline-height: 1;\n\tcursor: pointer;\n}\n.panel_control:hover{\n\tbackground-color: rgba(255, 255, 255, 0.18);\n\tcolor: var(--text-color);\n}\n.panel_control:focus-visible{\n\toutline: 1px solid var(--text-color);\n\toutline-offset: -1px;\n}\n.panel_control[disabled]{\n\topacity: 0.25;\n\tcursor: default;\n\tbackground: none;\n}\n.panel_pin[aria-pressed=\"true\"]{\n\tcolor: #00b8b8;\n\tbackground-color: rgba(0, 184, 184, 0.15);\n}\n.panel_drag_handle{\n\tcursor: grab;\n}\n.block.dragging .panel_drag_handle{\n\tcursor: grabbing;\n}\n\n/* ---------- palette panel ---------- */\n\n.palette_colors{\n\tdisplay: flex;\n\tflex-wrap: wrap;\n\tgap: 2px;\n}\n.palette_color{\n\twidth: 20px;\n\theight: 20px;\n\tpadding: 0;\n\tmargin: 0;\n\tborder: 1px solid rgba(0, 0, 0, 0.55);\n\tborder-radius: 2px;\n\tcursor: pointer;\n}\n.palette_color:hover{\n\ttransform: scale(1.15);\n}\n.palette_color.active{\n\toutline: 2px solid #ffffff;\n\toutline-offset: -3px;\n\tbox-shadow: 0 0 0 1px #000000;\n}\n.palette_meta{\n\tfont-size: 90%;\n}\n.palette .details button{\n\tmargin: 0 3px 0 0;\n}\n#palette_select{\n\twidth: 100%;\n}\n.sidebar_right .block.layers .content{\n\tpadding-bottom: 25px;\n}\n\n/* preview */\n.canvas_preview_wrapper{\n\tdisplay: flex;\n\tjustify-content: center;\n\talign-items: center;\n\tmargin: 5px 5px 10px 5px;\n}\n.canvas_preview_inner{\n\tposition: relative;\n\tline-height: 0;\n\twidth: 176px;\n\theight: 176px;\n}\n.canvas_preview_details{\n\tpadding: 0 5px;\n}\n.canvas_preview_details button{\n\tmargin: 0;\n}\n.preview canvas{\n\tcursor: pointer;\n}\n.details input{\n\tpadding: 5px 10px;\n}\n\n/* color */\n.color_area{\n\tborder: 1px solid #444;\n\twidth: calc(100% - 10px);\n\theight: 40px;\n\tcursor: pointer;\n\tmargin: 5px;\n}\n\n/* layers */\n.layers_list{\n\tmargin-top: 10px;\n}\n.layers_arrow{\n\tdisplay:inline-block;\n\tfloat:right;\n\tmargin-left:5px;\n\tpadding:1px 8px;\n\tborder:1px solid #444;\n\tborder-color: var(--border-color);\n\ttext-decoration:none;\n\tcolor:var(--text-color);\n\tfont-size: 14px;\n}\n.layer_add{\n\tdisplay:inline-block;\n\tpadding:1px 8px;\n\tmargin-right: 10px;\n\tbackground-color: #419147;\n\tbackground-color: var(--input-background-color);\n\tborder:1px solid #444;\n\tborder-color: var(--input-border-color);\n\tcolor: var(--input-text-color);\n\tcursor:pointer;\n\ttext-decoration:none;\n\tfont-size: 18px;\n\tfont-weight: bold;\n}\n/* Layers header buttons (D, R, move arrows) match the themed input fields too */\n.layer_duplicate, .layer_raster, .layers_arrow{\n\tbackground-color: var(--input-background-color);\n\tcolor: var(--input-text-color);\n\tborder-color: var(--input-border-color);\n}\n/* Shared hover for all these control buttons (preview zoom + layer buttons) */\n.layer_add:hover, .layer_duplicate:hover, .layer_raster:hover, .layers_arrow:hover{\n\tbackground-color: var(--input-background-color-hover);\n}\n.layers_list .item{\n\tmargin-bottom:2px;\n\tdisplay: flex;\n\tflex-wrap: wrap;\n\talign-items: center;\n}\n.layers_list .item > .clear{\n\tdisplay: none;\n}\n.layers_list .layer_name{\n\tdisplay:block;\n\tpadding:1px 5px 3px 5px;\n\t/* flex-basis 0 so a long name never pushes the icons/delete onto new lines;\n\t   it grows to fill the row and truncates with the ellipsis below. */\n\tflex: 1 1 0;\n\tmin-width: 0;\n\ttext-align: left;\n\toverflow:hidden;\n\ttext-overflow: ellipsis;\n\tbackground-color:#989898;\n\tbackground-color: var(--input-background-color);\n\tborder:1px solid #393939;\n\tborder-color: var(--input-border-color);\n\tborder-radius:3px;\n\tcursor:pointer;\n\tfont-size: 18px;\n\tfont-weight: bold;\n\tline-height: 1.4;\n\tcolor:var(--text-color);\n\twhite-space: nowrap;\n}\n.layers_list .item.shorter .layer_name{\n\twidth: auto;\n}\n.layers_list .item.active .layer_name{\n\tbackground-color: var(--input-background-color-hover);\n\tborder-color: var(--border-color);\n\tcolor: var(--input-text-color);\n}\n.layers_list .arrow_down{\n\tposition: relative;\n\tfloat:left;\n\tmargin-right: 5px;\n\twidth:10px;\n\theight:19px;\n\topacity: 0.4;\n}\n.layers_list .arrow_down:after{\n\tposition: absolute;\n\tcontent: '';\n\tleft:0;\n\ttop:0;\n\tbottom:0;\n\tright:0;\n\tfilter: var(--menu-icons-filter);\n\tbackground: url('images/icons/arrow-down.svg') no-repeat center center;\n\tbackground-size: 12px auto;\n}\n.layers_list .visibility{\n\tposition: relative;\n\tfloat:left;\n\tcursor:pointer;\n\tpadding:0px 3px 0px 3px;\n\tmargin-right: 5px;\n\twidth:20px;\n\theight:19px;\n\topacity:0.1;\n\tborder: none;\n\tbackground: transparent;\n\tbox-shadow: none;\n}\n.layers_list .visibility:after{\n\tposition: absolute;\n\tcontent: '';\n\tleft:0;\n\ttop:0;\n\tbottom:0;\n\tright:0;\n\tfilter: var(--menu-icons-filter);\n\tbackground: url('images/icons/view.svg') no-repeat center center;\n\tbackground-size: 18px auto;\n}\n.layers_list .visible{ opacity:0.4; }\n.layers_list .delete{\n\tfloat:right;\n\torder: 1;\n\tcursor:pointer;\n\tpadding:0px 3px 0px 3px;\n\twidth:12px;\n\theight:19px;\n\tmargin-left: 5px;\n\t/* delete \"x\" tinted to the tool-selection color via alpha mask */\n\tbackground-color: var(--background-color-active);\n\t-webkit-mask: url(images/icons/delete.svg) no-repeat center / 10px 10px;\n\tmask: url(images/icons/delete.svg) no-repeat center / 10px 10px;\n\tborder: none;\n\tbox-shadow: none;\n}\n/* shared right-click context menu (layers panel, logo hand) */\n.context_menu{\n\tposition: fixed;\n\tz-index: 9999;\n\tmin-width: 140px;\n\tbackground-color: var(--menu-background-color);\n\tborder: 1px solid var(--border-color);\n\tborder-radius: 4px;\n\tbox-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);\n\tpadding: 4px 0;\n}\n.context_menu .context_menu_item{\n\tdisplay: block;\n\twidth: 100%;\n\ttext-align: left;\n\tbackground: transparent;\n\tborder: none;\n\tbox-shadow: none;\n\tborder-radius: 0;\n\tcolor: var(--menu-text-color);\n\tpadding: 6px 16px;\n\tfont-size: 14px;\n\tfont-weight: normal;\n\twhite-space: nowrap;\n\tcursor: pointer;\n}\n.context_menu .context_menu_item:hover{\n\tbackground-color: var(--background-color-active);\n\tcolor: var(--text-color-active);\n}\n.context_menu .context_menu_divider{\n\theight: 1px;\n\tmargin: 4px 0;\n\tbackground-color: var(--border-color);\n\topacity: 0.5;\n}\n\n/* icon licence dialog */\n/* the popup is a fixed 500px, so the facts get the full width and the\n   artwork sits in a header row rather than stealing a column */\n.icon_license_head{\n\tdisplay: flex;\n\tgap: 14px;\n\talign-items: center;\n\tmargin-bottom: 14px;\n}\n.icon_license_art{\n\tflex: 0 0 auto;\n\twidth: 64px;\n\theight: 64px;\n\tborder-radius: 10px;\n}\n.icon_license_attribution{\n\tmargin: 0;\n\tfont-size: 17px;\n\tfont-weight: bold;\n\tline-height: 1.35;\n\tcolor: var(--text-color);\n}\n.icon_license_facts{\n\tdisplay: grid;\n\tgrid-template-columns: max-content 1fr;\n\tgap: 6px 14px;\n\tmargin: 0 0 12px;\n}\n.icon_license_facts dt{\n\tcolor: var(--text-color-soft, var(--text-color));\n\topacity: 0.75;\n\tfont-size: 14px;\n}\n.icon_license_facts dd{\n\tmargin: 0;\n\tfont-size: 14px;\n\tcolor: var(--text-color);\n}\n.icon_license_muted{\n\topacity: 0.7;\n}\n.icon_license_note{\n\tmargin: 0;\n\tfont-size: 13px;\n\tline-height: 1.5;\n\topacity: 0.85;\n\tborder-top: 1px solid var(--border-color);\n\tpadding-top: 10px;\n}\n\n/* filters */\n.layers_list .filters{\n\tmargin-bottom: 5px;\n\torder: 2;\n\tflex: 0 0 100%;\n}\n.layers_list .filter{\n\tmargin-bottom: 2px;\n\tmargin-left: 30px;\n\topacity: 0.7;\n}\n.layers_list .filter .layer_name{\n\tposition: relative;\n}\n.layers_list .filter .layer_name:after{\n\tposition:absolute;\n\tcontent:\"fx\";\n\tright: -4px;\n\ttop:1px;\n\tbottom:0;\n\twidth: 20px;\n}\n.sidebar_right .label{\n\tdisplay: inline-block;\n}\n.info .toggle.toggled{\n\tmargin-bottom: -3px;\n}\n.block.details .row{\n\tclear:both;\n\tmargin-bottom: 4px;\n\tmin-height: 23px;\n}\n.block.details input[type=\"number\"]{\n\twidth: 70px;\n\tpadding: 3px 5px;\n\tfloat: right;\n}\n.block.details .ui_color_input{\n\twidth: 70px;\n\tfloat: right;\n}\n.block.details .ui_color_input input{\n\twidth: 100%;\n\theight: 23px;\n}\n.block.details button.ui_toggle_button{\n\twidth: 90px;\n\tfloat: right;\n}\n.block.details select{\n\twidth: calc(100% - 70px);\n\theight: 23px;\n\tfloat: right;\n}\n.block.details button{\n\twidth: calc(100% - 70px);\n\theight: 23px;\n\tborder: 1px solid #444;\n}\n.block.details button.reset{\n\tposition: relative;\n\twidth: 25px;\n\tfloat: right;\n\tmargin-right: 3px;\n\toverflow: hidden;\n\topacity: 0.5;\n\tcolor: transparent;\n}\n.block.details button.reset:after{\n\tposition: absolute;\n\tcontent: '';\n\tleft:0;\n\ttop:0;\n\tbottom:0;\n\tright:0;\n\tbackground: url(images/icons/refresh.svg) no-repeat center center;\n\tbackground-size: auto 14px;\n\tfilter: var(--menu-icons-filter);\n}\n.block.details button.active{\n\tbackground-color: var(--background-color-active);\n\tcolor: var(--text-color-active);\n}\n.details-content{\n\theight: 206px;\n\toverflow-y: auto;\n}\n\n@media screen and (max-width:700px){\n\tbody{\n\t\tpadding-top:50px;\n\t}\n\t.wrapper{\n\t\ttop: 50px;\n\t}\n\t.sidebar_left{\n\t\tposition: absolute;\n\t\tleft: -90px;\n\t\tbackground: var(--background);\n\t}\n\t.sidebar_left.active{\n\t\tbox-shadow: -5px 0px 10px 0px rgba(0,0,0,0.75);\n\t\tleft: 0;\n\t\tz-index: 3;\n\t}\n\t.sidebar_right{\n\t\tposition: absolute;\n\t\theight: 100%;\n\t\tright: -210px;\n\t\tbackground: var(--background);\n\t}\n\t.sidebar_right.active{\n\t\tbox-shadow: -5px 0px 10px 0px rgba(0,0,0,0.75);\n\t\tright: 0;\n\t\tmargin-right: 0;\n\t}\n}\n\n/* ========== content ======================================================= */\n\n.ruler_left{\n\tdisplay: none;\n\tposition: absolute;\n\tleft:0;\n\ttop: 20px;\n\tbackground-color: #ccc;\n}\n.ruler_top{\n\tdisplay: none;\n\tposition: absolute;\n\tleft: 20px;\n\ttop:0;\n\tbackground-color: #ccc;\n}\n.middle_area{\n\tposition: relative;\n\t-ms-grid-row: 2;\n\t-ms-grid-column: 2;\n\tgrid-area: main;\n}\n.main_wrapper{\n\tposition:absolute;\n\ttop:0;\n\tright:0;\n\tbottom:0;\n\tleft:0;\n\toverflow: hidden;\n\tdisplay: flex;\n\tjustify-content: center;\n\talign-items: center;\n}\n.middle_area.has-ruler .main_wrapper{\n\ttop: 20px;\n\tleft: 20px;\n}\n.canvas_wrapper{\n\tposition:relative;\n}\n.canvas_wrapper canvas{\n\tposition: absolute;\n\tbox-sizing: content-box;\n\tfont-kerning: normal !important;\n}\n.loaded .canvas_wrapper canvas{\n\tborder: 1px solid var(--border-color);\n}\n#mouse{\n\tposition:absolute;\n\tpointer-events:none;\n\twidth:10px;\n\theight:10px;\n\tz-index:10;\n}\n#mouse.rect{\n\tborder:1px solid rgba(0,0,0,0.5);\n}\n#mouse.circle{\n\tborder:1px solid rgba(0,0,0,0.5);\n\tborder-radius:50%;\n}\n.transparent-grid{\n\twidth: 100%;\n\theight: 100%;\n\tposition: absolute;\n\tpointer-events: none;\n\t/*background: url(images/icons/grid.png) repeat top left;*/\n\tbackground: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAQElEQVQ4T2N89+7dfwYigKCgIBGqGBgYRw3EGU6jYYgzaIZAsvn//z9ROeX9+/fE5ZRRA3GG02gY4s4pgz7ZAAAnSWvHPkHXaAAAAABJRU5ErkJggg==') repeat top left;\n\tz-index:1;\n\timage-rendering: pixelated; /* disable antialiasing */\n}\n.transparent-grid.white{\n\tbackground:white;\n}\n.transparent-grid.green{\n\tbackground: #5be471;\n}\n.transparent-grid.grey{\n\tbackground: #dfdfdf;\n}\ncanvas{\n\tposition:relative;\n\tz-index:2;\n}\n#canvas_back{\n\tposition: absolute;\n\tbackground-color:#ffffff;\n\toutline: none;\n}\n#canvas_grid{\n\tpointer-events:none;\n}\n.group{\n\tborder:1px solid #999999;\n\tmargin: 5px 0px 5px 0px;\n\tpadding:5px 8px;\n}\n.flex-container{\n\tdisplay: flex;\n\tflex-wrap: wrap;\n}\n.flex-container .item{\n\tflex: auto;\n\tmargin: 2px 0;\n\twidth: 150px;\n}\n.flex-container .item:empty{\n\theight: 0;\n\tborder: none;\n}\n/* Colors panel toggle icons: white, not the pressed-state cyan\n   (setting the active-text var whitens both the icon and its underline) */\n#toggle_color_picker_section_button,\n#toggle_color_channels_section_button,\n#toggle_color_swatches_section_button{\n\t--button-text-color-active: var(--text-color);\n\tcolor: var(--text-color);\n}\n\n/* Error / notification popups: readable, styled like the (grape) layer panels */\n.alertify-notifier{\n\tcolor: var(--text-color);\n}\n.alertify-notifier .ajs-message{\n\tbackground: var(--block-background-color) !important;\n\tcolor: var(--text-color) !important;\n\tborder: 1px solid var(--border-color);\n\tborder-radius: 4px;\n\tbox-shadow: 0 3px 12px rgba(0, 0, 0, 0.5);\n\ttext-shadow: none;\n}\n.alertify-notifier .ajs-message.ajs-error{\n\tbackground: var(--block-background-color) !important;\n\tborder-left: 4px solid var(--text-color-red);\n}\n.alertify-notifier .ajs-message.ajs-success{\n\tbackground: var(--block-background-color) !important;\n\tborder-left: 4px solid var(--text-color-green);\n}\n.alertify-notifier .ajs-message.ajs-warning{\n\tbackground: var(--block-background-color) !important;\n\tborder-left: 4px solid var(--text-color-blue);\n}\n.effectsPreview{\n\tcursor: pointer;\n\tbackground-color: #ddd;\n}\n\n@media screen and (max-width:550px){\n\t.canvas_wrapper{\n\t\tmargin-left: 0px;\n\t}\n}\n@media screen and (max-height: 690px){\n\t.sidebar_left{\n\t\twidth: 75px;\n\t}\n}\n@media screen and (max-height:450px){\n\t.sidebar_left{\n\t\twidth: 88px;\n\t}\n}\n\n/* ========== dialogs ======================================================= */\n\n#dialog_color_picker_group {\n\twidth: 60%;\n}\n#dialog_color_channel_group {\n\twidth: 40%;\n\tmargin-left: 1rem;\n}\n\n@media screen and (max-width: 450px) {\n\t#dialog_color_picker .ui_flex_group {\n\t\tflex-wrap: wrap;\n\t}\n\t#dialog_color_picker_group {\n\t\twidth: 100%;\n\t}\n\t#dialog_color_channel_group {\n\t\twidth: 100%;\n\t\tmargin-left: 0;\n\t\tmargin-top: 1rem;\n\t}\n}", "",{"version":3,"sources":["webpack://./src/css/layout.css"],"names":[],"mappings":"AAAA;CACC,iBAAiB;CACjB,aAAa;CACb,SAAS;CACT,eAAe,EAAE,mEAAmE;CACpF,SAAS;CACT,QAAQ;CACR,OAAO;CACP,WAAW;CACX,YAAY;CACZ,gBAAgB;;CAEhB,uBAAuB;CACvB,4BAA4B;CAC5B,+BAA+B;CAC/B,oCAAoC;;CAEpC;;mCAEkC;AACnC;AACA,KAAK;AACL;CACC,eAAe;AAChB;AACA;CACC,YAAY;AACb;AACA;CACC,kBAAkB;AACnB;AACA;CACC,eAAe;AAChB;AACA;CACC,UAAU;AACX;AACA;CACC,cAAc;AACf;AACA;CACC,iBAAiB;AAClB;AACA;CACC,WAAW;AACZ;AACA;CACC,YAAY;AACb;AACA;CACC,UAAU;AACX;AACA;CACC,2BAA2B,EAAE,eAAe;IACzC,yBAAyB,EAAE,WAAW;CACzC,wBAAwB,EAAE,mBAAmB;CAC7C,sBAAsB,EAAE,YAAY;CACpC,qBAAqB,EAAE,2BAA2B;CAClD,iBAAiB,EAAE,yBAAyB;AAC7C;AACA;CACC,kBAAkB;CAClB,0CAA0C;CAC1C,+CAA+C;CAC/C,oCAAoC;CACpC,qCAAqC;CACrC,mBAAmB;CACnB,iBAAiB;CACjB,kBAAkB;AACnB;AACA;CACC,yBAAyB;CACzB,+CAA+C;CAC/C,mBAAmB;CACnB,2DAA2D;AAC5D;AACA;CACC,gBAAgB;AACjB;AACA;CACC,kBAAkB;CAClB,wBAAwB;CACxB,SAAS;CACT,eAAe;CACf,0CAA0C;CAC1C,gDAAgD;CAChD,mBAAmB;CACnB,0BAA0B;AAC3B;AACA;CACC,YAAY;AACb;AACA;CACC,SAAS;CACT,iBAAiB;CACjB,UAAU;CACV,QAAQ;CACR,SAAS;CACT,WAAW;CACX,SAAS;CACT,mBAAmB;CACnB,2BAA2B;CAC3B,yEAAyE;AAC1E;AACA;CACC,SAAS;CACT,2BAA2B;CAC3B,yEAAyE;AAC1E;AACA;CACC,kBAAkB;AACnB;AACA;IACI,gBAAgB;AACpB;AACA;IACI,aAAa;AACjB;AACA;IACI,gBAAgB;AACpB;AACA;CACC,YAAY;CACZ,WAAW;CACX,wBAAwB;CACxB,wBAAwB;CACxB,WAAW;CACX,gBAAgB;AACjB;;AAEA,kBAAkB;AAClB;CACC,WAAW;CACX,YAAY;AACb;AACA;CACC,wBAAwB;CACxB,YAAY;AACb;;AAEA,+EAA+E;;AAE/E;CACC,qBAAqB;CACrB,YAAY;CACZ,mBAAmB;CACnB,YAAY;CACZ,WAAW;CACX,oEAAoE;CACpE,mCAAmC;CACnC,cAAc;CACd,qBAAqB;CACrB,iBAAiB;CACjB,cAAc;CACd,wBAAwB;AACzB;AACA;CACC,kEAAkE;CAClE,qBAAqB;CACrB,sBAAsB;AACvB;AACA;CACC;qEACoE;CACpE,qBAAqB;CACrB,aAAa;CACb,cAAc;CACd,gBAAgB;CAChB,uBAAuB;CACvB,0DAA0D;CAC1D,wBAAwB;CACxB,0BAA0B;CAC1B,wCAAwC;CACxC,sBAAsB;AACvB;AACA,4EAA4E;AAC5E;CACC,6EAA6E;CAC7E,6BAA6B;CAC7B,qBAAqB;CACrB,oCAAoC;CACpC,kBAAkB;AACnB;AACA;CACC,wEAAwE;CACxE,6EAA6E;CAC7E,+DAA+D;CAC/D,uDAAuD;CACvD,YAAY;AACb;AACA,uDAAuD;AACvD;CACC,oBAAoB;CACpB,mBAAmB;CACnB,uBAAuB;CACvB,WAAW;CACX,YAAY;CACZ,UAAU;CACV,qBAAqB;CACrB,sBAAsB;CACtB,6BAA6B;CAC7B,6BAA6B;CAC7B,gBAAgB;CAChB,0CAA0C;CAC1C,8BAA8B;CAC9B,eAAe;AAChB;AACA;CACC,cAAc;CACd,WAAW;CACX,YAAY;AACb;AACA;CACC,qDAAqD;CACrD,wBAAwB;AACzB;AACA;CACC,qCAAqC;CACrC,iCAAiC;CACjC,6BAA6B;AAC9B;AACA;CACC,qDAAqD;AACtD;AACA;CACC,eAAe;AAChB;AACA;CACC,eAAe;CACf,gBAAgB;AACjB;AACA;CACC,aAAa;CACb,WAAW;CACX,YAAY;CACZ,MAAM;CACN,SAAS;CACT,aAAa;CACb,eAAe;CACf,wCAAwC;CACxC,8DAA8D;CAC9D,0BAA0B;CAC1B,iBAAiB;AAClB;AACA;CACC,6BAA6B;AAC9B;AACA;CACC;EACC,cAAc;CACf;AACD;;AAEA,+EAA+E;;AAE/E;CACC,eAAe;CACf,kBAAkB;CAClB,uBAAuB;CACvB,kBAAkB;CAClB,aAAa;CACb,mBAAmB;CACnB,mBAAmB;CACnB,0CAA0C;CAC1C,iDAAiD;CACjD,gBAAgB;CAChB,kBAAkB;AACnB;AACA;CACC,aAAa;CACb,iBAAiB;CACjB,8CAA8C;CAC9C,yBAAyB;CACzB,eAAe;CACf,6BAA6B;CAC7B,0BAA0B;CAC1B,SAAS;CACT,gBAAgB;CAChB,kBAAkB;CAClB,mBAAmB;CACnB,gBAAgB;AACjB;AACA;CACC,oBAAoB;CACpB,mBAAmB;CACnB,kBAAkB;AACnB;AACA;CACC,mBAAmB;AACpB;AACA;CACC,WAAW;CACX,iBAAiB;AAClB;AACA;CACC,eAAe;CACf,UAAU;CACV,iDAAiD;CACjD,WAAW;AACZ;AACA;CACC,qBAAqB;CACrB,iBAAiB;AAClB;;AAEA,+EAA+E;;AAE/E;CACC,eAAe;CACf,kBAAkB;CAClB,uBAAuB;CACvB,aAAa;CACb,mBAAmB;CACnB,eAAe;CACf,iDAAiD;CACjD,oBAAoB;CACpB,iBAAiB;CACjB,gBAAgB;CAChB,iBAAiB;CACjB,WAAW;CACX,gBAAgB;CAChB,gBAAgB;AACjB;AACA;CACC,kBAAkB;CAClB,aAAa;CACb,8CAA8C;CAC9C,YAAY;CACZ,WAAW;CACX,mBAAmB;CACnB,gBAAgB;CAChB,eAAe;AAChB;AACA;CACC,kBAAkB;CAClB,WAAW;CACX,MAAM;CACN,KAAK;CACL,QAAQ;CACR,OAAO;CACP,gCAAgC;CAChC,kCAAkC;CAClC,4BAA4B;CAC5B,0BAA0B;AAC3B;AACA;CACC,+CAA+C;AAChD;AACA;CACC,gDAAgD;CAChD,+BAA+B;AAChC;AACA;CACC,uCAAuC;AACxC;;AAEA;;EAEE;AACF,6BAA6B,gDAAgD,EAAE;AAC/E,gCAAgC,mDAAmD,EAAE;AACrF,4BAA4B,+CAA+C,EAAE;AAC7E,6BAA6B,gDAAgD,EAAE;AAC/E,iCAAiC,oDAAoD,EAAE;AACvF,4BAA4B,+CAA+C,EAAE;AAC7E,kCAAkC,qDAAqD,EAAE;AACzF,2BAA2B,8CAA8C,EAAE;AAC3E,4BAA4B,+CAA+C,EAAE;AAC7E,4BAA4B,+CAA+C,EAAE;AAC7E,2BAA2B,8CAA8C,EAAE,0BAA0B,EAAE;AACvG;4EAC4E;AAC5E,+BAA+B,kDAAkD,EAAE,0BAA0B,EAAE,kCAAkC,EAAE;AACnJ,4BAA4B,+CAA+C,EAAE;AAC7E,2BAA2B,8CAA8C,EAAE;AAC3E,2BAA2B,8CAA8C,EAAE;AAC3E,8BAA8B,iDAAiD,EAAE;AACjF,iCAAiC,oDAAoD,EAAE;AACvF,kCAAkC,qDAAqD,EAAE;AACzF,gCAAgC,mDAAmD,EAAE;;AAErF;CACC;EACC,YAAY;CACb;AACD;;AAEA,+EAA+E;;AAE/E;CACC,eAAe;CACf,kBAAkB;CAClB,wBAAwB;CACxB,UAAU;CACV,aAAa;CACb,sBAAsB;CACtB,gBAAgB;CAChB,kBAAkB;CAClB,kBAAkB;CAClB,aAAa;CACb,YAAY;AACb;AACA;CACC,mBAAmB;AACpB;AACA;CACC,OAAO;AACR;;AAEA,wDAAwD;;AAExD;CACC,wBAAwB;CACxB,gBAAgB;CAChB,MAAM;AACP;AACA;CACC,yCAAyC;AAC1C;AACA;CACC,YAAY;AACb;AACA;CACC,mBAAmB;CACnB,eAAe;CACf,mBAAmB;CACnB,gBAAgB;CAChB,uBAAuB;AACxB;AACA;CACC,mDAAmD;CACnD,WAAW;AACZ;AACA;CACC,kBAAkB;CAClB,MAAM;CACN,UAAU;CACV,YAAY;CACZ,aAAa;CACb,mBAAmB;AACpB;AACA;CACC,aAAa;CACb,mBAAmB;CACnB,uBAAuB;CACvB,WAAW;CACX,YAAY;CACZ,UAAU;CACV,SAAS;CACT,YAAY;CACZ,kBAAkB;CAClB,gBAAgB;CAChB,8BAA8B;CAC9B,eAAe;CACf,cAAc;CACd,eAAe;AAChB;AACA;CACC,2CAA2C;CAC3C,wBAAwB;AACzB;AACA;CACC,oCAAoC;CACpC,oBAAoB;AACrB;AACA;CACC,aAAa;CACb,eAAe;CACf,gBAAgB;AACjB;AACA;CACC,cAAc;CACd,yCAAyC;AAC1C;AACA;CACC,YAAY;AACb;AACA;CACC,gBAAgB;AACjB;;AAEA,wCAAwC;;AAExC;CACC,aAAa;CACb,eAAe;CACf,QAAQ;AACT;AACA;CACC,WAAW;CACX,YAAY;CACZ,UAAU;CACV,SAAS;CACT,qCAAqC;CACrC,kBAAkB;CAClB,eAAe;AAChB;AACA;CACC,sBAAsB;AACvB;AACA;CACC,0BAA0B;CAC1B,oBAAoB;CACpB,6BAA6B;AAC9B;AACA;CACC,cAAc;AACf;AACA;CACC,iBAAiB;AAClB;AACA;CACC,WAAW;AACZ;AACA;CACC,oBAAoB;AACrB;;AAEA,YAAY;AACZ;CACC,aAAa;CACb,uBAAuB;CACvB,mBAAmB;CACnB,wBAAwB;AACzB;AACA;CACC,kBAAkB;CAClB,cAAc;CACd,YAAY;CACZ,aAAa;AACd;AACA;CACC,cAAc;AACf;AACA;CACC,SAAS;AACV;AACA;CACC,eAAe;AAChB;AACA;CACC,iBAAiB;AAClB;;AAEA,UAAU;AACV;CACC,sBAAsB;CACtB,wBAAwB;CACxB,YAAY;CACZ,eAAe;CACf,WAAW;AACZ;;AAEA,WAAW;AACX;CACC,gBAAgB;AACjB;AACA;CACC,oBAAoB;CACpB,WAAW;CACX,eAAe;CACf,eAAe;CACf,qBAAqB;CACrB,iCAAiC;CACjC,oBAAoB;CACpB,uBAAuB;CACvB,eAAe;AAChB;AACA;CACC,oBAAoB;CACpB,eAAe;CACf,kBAAkB;CAClB,yBAAyB;CACzB,+CAA+C;CAC/C,qBAAqB;CACrB,uCAAuC;CACvC,8BAA8B;CAC9B,cAAc;CACd,oBAAoB;CACpB,eAAe;CACf,iBAAiB;AAClB;AACA,gFAAgF;AAChF;CACC,+CAA+C;CAC/C,8BAA8B;CAC9B,uCAAuC;AACxC;AACA,8EAA8E;AAC9E;CACC,qDAAqD;AACtD;AACA;CACC,iBAAiB;CACjB,aAAa;CACb,eAAe;CACf,mBAAmB;AACpB;AACA;CACC,aAAa;AACd;AACA;CACC,aAAa;CACb,uBAAuB;CACvB;qEACoE;CACpE,WAAW;CACX,YAAY;CACZ,gBAAgB;CAChB,eAAe;CACf,uBAAuB;CACvB,wBAAwB;CACxB,+CAA+C;CAC/C,wBAAwB;CACxB,uCAAuC;CACvC,iBAAiB;CACjB,cAAc;CACd,eAAe;CACf,iBAAiB;CACjB,gBAAgB;CAChB,uBAAuB;CACvB,mBAAmB;AACpB;AACA;CACC,WAAW;AACZ;AACA;CACC,qDAAqD;CACrD,iCAAiC;CACjC,8BAA8B;AAC/B;AACA;CACC,kBAAkB;CAClB,UAAU;CACV,iBAAiB;CACjB,UAAU;CACV,WAAW;CACX,YAAY;AACb;AACA;CACC,kBAAkB;CAClB,WAAW;CACX,MAAM;CACN,KAAK;CACL,QAAQ;CACR,OAAO;CACP,gCAAgC;CAChC,sEAAsE;CACtE,0BAA0B;AAC3B;AACA;CACC,kBAAkB;CAClB,UAAU;CACV,cAAc;CACd,uBAAuB;CACvB,iBAAiB;CACjB,UAAU;CACV,WAAW;CACX,WAAW;CACX,YAAY;CACZ,uBAAuB;CACvB,gBAAgB;AACjB;AACA;CACC,kBAAkB;CAClB,WAAW;CACX,MAAM;CACN,KAAK;CACL,QAAQ;CACR,OAAO;CACP,gCAAgC;CAChC,gEAAgE;CAChE,0BAA0B;AAC3B;AACA,uBAAuB,WAAW,EAAE;AACpC;CACC,WAAW;CACX,QAAQ;CACR,cAAc;CACd,uBAAuB;CACvB,UAAU;CACV,WAAW;CACX,gBAAgB;CAChB,iEAAiE;CACjE,gDAAgD;CAChD,uEAAuE;CACvE,+DAA+D;CAC/D,YAAY;CACZ,gBAAgB;AACjB;AACA,8DAA8D;AAC9D;CACC,eAAe;CACf,aAAa;CACb,gBAAgB;CAChB,8CAA8C;CAC9C,qCAAqC;CACrC,kBAAkB;CAClB,0CAA0C;CAC1C,cAAc;AACf;AACA;CACC,cAAc;CACd,WAAW;CACX,gBAAgB;CAChB,uBAAuB;CACvB,YAAY;CACZ,gBAAgB;CAChB,gBAAgB;CAChB,6BAA6B;CAC7B,iBAAiB;CACjB,eAAe;CACf,mBAAmB;CACnB,mBAAmB;CACnB,eAAe;AAChB;AACA;CACC,gDAAgD;CAChD,+BAA+B;AAChC;AACA;CACC,WAAW;CACX,aAAa;CACb,qCAAqC;CACrC,YAAY;AACb;;AAEA,wBAAwB;AACxB;+DAC+D;AAC/D;CACC,aAAa;CACb,SAAS;CACT,mBAAmB;CACnB,mBAAmB;AACpB;AACA;CACC,cAAc;CACd,WAAW;CACX,YAAY;CACZ,mBAAmB;AACpB;AACA;CACC,SAAS;CACT,eAAe;CACf,iBAAiB;CACjB,iBAAiB;CACjB,wBAAwB;AACzB;AACA;CACC,aAAa;CACb,sCAAsC;CACtC,aAAa;CACb,gBAAgB;AACjB;AACA;CACC,gDAAgD;CAChD,aAAa;CACb,eAAe;AAChB;AACA;CACC,SAAS;CACT,eAAe;CACf,wBAAwB;AACzB;AACA;CACC,YAAY;AACb;AACA;CACC,SAAS;CACT,eAAe;CACf,gBAAgB;CAChB,aAAa;CACb,yCAAyC;CACzC,iBAAiB;AAClB;;AAEA,YAAY;AACZ;CACC,kBAAkB;CAClB,QAAQ;CACR,cAAc;AACf;AACA;CACC,kBAAkB;CAClB,iBAAiB;CACjB,YAAY;AACb;AACA;CACC,kBAAkB;AACnB;AACA;CACC,iBAAiB;CACjB,YAAY;CACZ,WAAW;CACX,OAAO;CACP,QAAQ;CACR,WAAW;AACZ;AACA;CACC,qBAAqB;AACtB;AACA;CACC,mBAAmB;AACpB;AACA;CACC,UAAU;CACV,kBAAkB;CAClB,gBAAgB;AACjB;AACA;CACC,WAAW;CACX,gBAAgB;CAChB,YAAY;AACb;AACA;CACC,WAAW;CACX,YAAY;AACb;AACA;CACC,WAAW;CACX,YAAY;AACb;AACA;CACC,WAAW;CACX,YAAY;AACb;AACA;CACC,wBAAwB;CACxB,YAAY;CACZ,YAAY;AACb;AACA;CACC,wBAAwB;CACxB,YAAY;CACZ,sBAAsB;AACvB;AACA;CACC,kBAAkB;CAClB,WAAW;CACX,YAAY;CACZ,iBAAiB;CACjB,gBAAgB;CAChB,YAAY;CACZ,kBAAkB;AACnB;AACA;CACC,kBAAkB;CAClB,WAAW;CACX,MAAM;CACN,KAAK;CACL,QAAQ;CACR,OAAO;CACP,iEAAiE;CACjE,0BAA0B;CAC1B,gCAAgC;AACjC;AACA;CACC,gDAAgD;CAChD,+BAA+B;AAChC;AACA;CACC,aAAa;CACb,gBAAgB;AACjB;;AAEA;CACC;EACC,gBAAgB;CACjB;CACA;EACC,SAAS;CACV;CACA;EACC,kBAAkB;EAClB,WAAW;EACX,6BAA6B;CAC9B;CACA;EACC,8CAA8C;EAC9C,OAAO;EACP,UAAU;CACX;CACA;EACC,kBAAkB;EAClB,YAAY;EACZ,aAAa;EACb,6BAA6B;CAC9B;CACA;EACC,8CAA8C;EAC9C,QAAQ;EACR,eAAe;CAChB;AACD;;AAEA,+EAA+E;;AAE/E;CACC,aAAa;CACb,kBAAkB;CAClB,MAAM;CACN,SAAS;CACT,sBAAsB;AACvB;AACA;CACC,aAAa;CACb,kBAAkB;CAClB,UAAU;CACV,KAAK;CACL,sBAAsB;AACvB;AACA;CACC,kBAAkB;CAClB,eAAe;CACf,kBAAkB;CAClB,eAAe;AAChB;AACA;CACC,iBAAiB;CACjB,KAAK;CACL,OAAO;CACP,QAAQ;CACR,MAAM;CACN,gBAAgB;CAChB,aAAa;CACb,uBAAuB;CACvB,mBAAmB;AACpB;AACA;CACC,SAAS;CACT,UAAU;AACX;AACA;CACC,iBAAiB;AAClB;AACA;CACC,kBAAkB;CAClB,uBAAuB;CACvB,+BAA+B;AAChC;AACA;CACC,qCAAqC;AACtC;AACA;CACC,iBAAiB;CACjB,mBAAmB;CACnB,UAAU;CACV,WAAW;CACX,UAAU;AACX;AACA;CACC,gCAAgC;AACjC;AACA;CACC,gCAAgC;CAChC,iBAAiB;AAClB;AACA;CACC,WAAW;CACX,YAAY;CACZ,kBAAkB;CAClB,oBAAoB;CACpB,0DAA0D;CAC1D,6NAA6N;CAC7N,SAAS;CACT,0BAA0B,EAAE,yBAAyB;AACtD;AACA;CACC,gBAAgB;AACjB;AACA;CACC,mBAAmB;AACpB;AACA;CACC,mBAAmB;AACpB;AACA;CACC,iBAAiB;CACjB,SAAS;AACV;AACA;CACC,kBAAkB;CAClB,wBAAwB;CACxB,aAAa;AACd;AACA;CACC,mBAAmB;AACpB;AACA;CACC,wBAAwB;CACxB,uBAAuB;CACvB,eAAe;AAChB;AACA;CACC,aAAa;CACb,eAAe;AAChB;AACA;CACC,UAAU;CACV,aAAa;CACb,YAAY;AACb;AACA;CACC,SAAS;CACT,YAAY;AACb;AACA;0EAC0E;AAC1E;;;CAGC,6CAA6C;CAC7C,wBAAwB;AACzB;;AAEA,gFAAgF;AAChF;CACC,wBAAwB;AACzB;AACA;CACC,oDAAoD;CACpD,mCAAmC;CACnC,qCAAqC;CACrC,kBAAkB;CAClB,yCAAyC;CACzC,iBAAiB;AAClB;AACA;CACC,oDAAoD;CACpD,4CAA4C;AAC7C;AACA;CACC,oDAAoD;CACpD,8CAA8C;AAC/C;AACA;CACC,oDAAoD;CACpD,6CAA6C;AAC9C;AACA;CACC,eAAe;CACf,sBAAsB;AACvB;;AAEA;CACC;EACC,gBAAgB;CACjB;AACD;AACA;CACC;EACC,WAAW;CACZ;AACD;AACA;CACC;EACC,WAAW;CACZ;AACD;;AAEA,+EAA+E;;AAE/E;CACC,UAAU;AACX;AACA;CACC,UAAU;CACV,iBAAiB;AAClB;;AAEA;CACC;EACC,eAAe;CAChB;CACA;EACC,WAAW;CACZ;CACA;EACC,WAAW;EACX,cAAc;EACd,gBAAgB;CACjB;AACD","sourcesContent":[".wrapper{\n\tdisplay: -ms-grid;\n\tdisplay: grid;\n\tmargin: 0;\n\tposition: fixed; /* dont change it, vh does not work on mobiles with bottom footer */\n\ttop: 30px;\n\tright: 0;\n\tleft: 0;\n\tbottom: 5px;\n\theight: auto;\n\toverflow: hidden;\n\n\t-ms-grid-rows: auto 1fr;\n\tgrid-template-rows: auto 1fr;\n\t-ms-grid-columns: auto 1fr auto;\n\tgrid-template-columns: auto 1fr auto;\n\n\tgrid-template-areas:\n\t\t\"submenu submenu submenu\"\n\t\t\"sidebar_left main sidebar_right\";\n}\n.trn{}\n.toggle{\n\tcursor: pointer;\n}\n.hidden{\n\tdisplay:none;\n}\n.center{\n\ttext-align: center;\n}\n.pointer{\n\tcursor: pointer;\n}\n.clear{\n\tclear:both;\n}\n.displayBlock{\n\tdisplay: block;\n}\n.bold{\n\tfont-weight: bold;\n}\n.left{\n\tfloat: left;\n}\n.right{\n\tfloat: right;\n}\n.grey{\n\tcolor:grey;\n}\n.noselect {\n\t-webkit-touch-callout: none; /* iOS Safari */\n    -webkit-user-select: none; /* Safari */\n\t-khtml-user-select: none; /* Konqueror HTML */\n\t-moz-user-select: none; /* Firefox */\n\t-ms-user-select: none; /* Internet Explorer/Edge */\n\tuser-select: none; /* Non-prefixed version */\n}\n.block{\n\tposition: relative;\n\tbackground-color: rgba(255, 255, 255, 0.2);\n\tbackground-color: var(--block-background-color);\n\tborder: 1px solid rgba(0, 0, 0, 0.5);\n\tborder: 1px solid var(--border-color);\n\tmargin-bottom: 10px;\n\tuser-select: none;\n\tborder-radius: 4px;\n}\n.sidebar_right .block{\n\tbackground-color: #68727b;\n\tbackground-color: var(--block-background-color);\n\tborder-bottom: none;\n\tbox-shadow: 0 -2px 0 0 var(--header-background-color) inset;\n}\n.block:last-child{\n\tmargin-bottom: 0;\n}\n.block h2{\n\tposition: relative;\n\tpadding: 2px 5px 2px 6px;\n\tmargin: 0;\n\tfont-size: 110%;\n\tbackground-color: rgba(255, 255, 255, 0.3);\n\tbackground-color: var(--header-background-color);\n\tborder-bottom: #555;\n\tborder-radius: 4px 4px 0 0;\n}\n.block.toggled h2, .block h2.toggled:after{\n\tborder: none;\n}\n.block h2.toggle:before{\n\t/* icon */\n\tposition:absolute;\n\tcontent:'';\n\twidth: 0;\n\theight: 0;\n\tright: 10px;\n\ttop: 10px;\n\tborder-style: solid;\n\tborder-width: 0 4px 5px 4px;\n\tborder-color: transparent transparent var(--text-color-muted) transparent;\n}\n.block h2.toggled:before{\n\t/* icon */\n\tborder-width: 5px 4px 0 4px;\n\tborder-color: var(--text-color-muted) transparent transparent transparent;\n}\n.block .content{\n\tpadding: 7.5px 5px;\n}\n.block_section {\n    margin: .75rem 0;\n}\n.block_section:first-child {\n    margin-top: 0;\n}\n.block_section:last-child {\n    margin-bottom: 0;\n}\n.error{\n\tpadding:20px;\n\tmargin:10px;\n\tborder:1px solid #ff0000;\n\tbackground-color:#ffffff;\n\twidth:500px;\n\tfont-weight:bold;\n}\n\n/* color chooser */\nbody .sp-replacer{\n\twidth: 100%;\n\theight: 40px;\n}\nbody .sp-preview{\n\twidth: calc(100% - 20px);\n\theight: 100%;\n}\n\n/* ========== header ======================================================== */\n\n.logo{\n\tdisplay: inline-block;\n\theight: 30px;\n\twhite-space: nowrap;\n\tpadding: 5px;\n\tmargin: 5px;\n\t/* responsive: scales with the viewport, bounded to fit the header */\n\tfont-size: clamp(15px, 1.4vw, 18px);\n\tline-height: 1;\n\ttext-decoration: none;\n\tfont-weight: bold;\n\tcolor: #ffffff;\n\tcolor: var(--text-color);\n}\n.logo_ch{\n\t/* each letter is independently bob-able (LFO) via JS transforms */\n\tdisplay: inline-block;\n\twill-change: transform;\n}\n.logo_l{\n\t/* the finger-L hand stands in for the \"l\" in loser; em-sized so it scales\n\t   with the text, vertical-align tuned to sit centered on the text */\n\tdisplay: inline-block;\n\twidth: 1.15em;\n\theight: 1.15em;\n\tmargin: 0 0.03em;\n\tvertical-align: -0.26em;\n\tbackground: url('images/logo.png') no-repeat center center;\n\tbackground-size: contain;\n\timage-rendering: pixelated;\n\tfilter: var(--mobile-menu-toggle-filter);\n\twill-change: transform;\n}\n/* yonce whimsy: the icon + \"oser\" fade white (top) -> petal pink (bottom) */\nbody.theme-yonce .logo_grad{\n\tbackground: linear-gradient(to bottom, #ffffff 12%, var(--yc-petal-pink) 92%);\n\t-webkit-background-clip: text;\n\tbackground-clip: text;\n\t-webkit-text-fill-color: transparent;\n\tcolor: transparent;\n}\nbody.theme-yonce .logo_l{\n\t/* fill the hand shape with the same gradient (mask by the logo alpha) */\n\tbackground: linear-gradient(to bottom, #ffffff 12%, var(--yc-petal-pink) 92%);\n\t-webkit-mask: url('images/logo.png') no-repeat center / contain;\n\tmask: url('images/logo.png') no-repeat center / contain;\n\tfilter: none;\n}\n/* smart folder toggle, sits to the right of the logo */\n.smart_folder_toggle{\n\tdisplay: inline-flex;\n\talign-items: center;\n\tjustify-content: center;\n\twidth: 26px;\n\theight: 26px;\n\tpadding: 0;\n\tmargin: 5px 0 5px 4px;\n\tvertical-align: middle;\n\tbackground-color: transparent;\n\tborder: 1px solid transparent;\n\tbox-shadow: none;\n\tborder-radius: var(--button-border-radius);\n\tcolor: var(--text-color-muted);\n\tcursor: pointer;\n}\n.smart_folder_toggle > svg{\n\tdisplay: block;\n\twidth: 16px;\n\theight: 16px;\n}\n.smart_folder_toggle:hover{\n\tbackground-color: var(--input-background-color-hover);\n\tcolor: var(--text-color);\n}\n.smart_folder_toggle[aria-pressed=\"true\"]{\n\tcolor: var(--background-color-active);\n\tborder-color: var(--border-color);\n\tbackground-color: transparent;\n}\n.smart_folder_toggle[aria-pressed=\"true\"]:hover{\n\tbackground-color: var(--input-background-color-hover);\n}\n.about-logo{\n\tmargin-left:22%;\n}\n.about-name{\n\tfont-size: 17px;\n\tfont-weight:bold;\n}\n.undo_button {\n\tdisplay: none;\n\twidth: 50px;\n\theight: 50px;\n\ttop: 0;\n\tborder: 0;\n\toutline: none;\n\tcursor: pointer;\n\tfilter: var(--mobile-menu-toggle-filter);\n\tbackground: url(images/icons/undo.svg) no-repeat center center;\n\tbackground-size: auto 25px;\n\tmargin-left: 10px;\n}\n.undo_button:hover {\n\tbackground-color: transparent;\n}\n@media screen and (max-width: 700px){\n\t.undo_button {\n\t\tdisplay: block;\n\t}\n}\n\n/* ========== sub-header ==================================================== */\n\n.submenu{\n\t-ms-grid-row: 1;\n\t-ms-grid-column: 1;\n\t-ms-grid-column-span: 3;\n\tgrid-area: submenu;\n\tdisplay: flex;\n\tflex-direction: row;\n\talign-items: center;\n\tbackground-color: rgba(255, 255, 255, 0.2);\n\tbackground-color: var(--section-background-color);\n\toverflow: hidden;\n\tmargin-bottom: 5px;\n}\n.attributes{\n\tdisplay: flex;\n\tflex-wrap: nowrap;\n\tbackground-color: var(--area-background-color);\n\twidth: calc(100% - 125px);\n\tmargin-top: 5px;\n\tmargin-bottom: 5px !important;\n\tpadding: 3px 10px 3px 10px;\n\tborder: 0;\n\toverflow-x: auto;\n\toverflow-y: hidden;\n\twhite-space: nowrap;\n\tmin-height: 30px;\n}\n.attributes .item{\n\tdisplay: inline-flex;\n\talign-items: center;\n\tmargin-right: 20px;\n}\n.attributes .item > label {\n\tmargin: 0 .5rem 0 0;\n}\n.attributes input[type=\"number\"]{\n\twidth: 60px;\n\tmargin-right: 5px;\n}\n.attributes input[type=\"color\"] {\n\tcursor: pointer;\n\tpadding: 0;\n\tborder: .2rem solid var(--input-background-color);\n\twidth: 3rem;\n}\n.attributes .item > button:not(.ui_icon_button){\n\tdisplay: inline-block;\n\tpadding: 3px 10px;\n}\n\n/* ========== left sidebar ================================================== */\n\n.sidebar_left{\n\t-ms-grid-row: 2;\n\t-ms-grid-column: 1;\n\tgrid-area: sidebar_left;\n\tdisplay: flex;\n\tflex-direction: row;\n\tflex-wrap: wrap;\n\tbackground-color: var(--section-background-color);\n\tpadding: 0 5px 5px 0;\n\tmargin-right: 5px;\n\toverflow: hidden;\n\talign-self: start;\n\twidth: 40px;\n\toverflow-y: auto;\n\tmax-height: 100%;\n}\n.sidebar_left .item{\n\tposition: relative;\n\tdisplay:block;\n\tbackground-color: var(--area-background-color);\n\theight: 25px;\n\twidth: 30px;\n\tmargin: 5px 0 0 5px;\n\toverflow: hidden;\n\tcursor: pointer;\n}\n.sidebar_left .item:after{\n\tposition: absolute;\n\tcontent: '';\n\tleft:0;\n\ttop:0;\n\tbottom:0;\n\tright:0;\n\tfilter: var(--menu-icons-filter);\n\tbackground-position: center center;\n\tbackground-repeat: no-repeat;\n\tbackground-size: 20px 20px;\n}\n.sidebar_left .item:hover{\n\tbackground-color: var(--background-color-hover);\n}\n.sidebar_left .item.active{\n\tbackground-color: var(--background-color-active);\n\tcolor: var(--text-color-active);\n}\n.sidebar_left .item.active:after{\n\tfilter: var(--menu-icons-filter-active);\n}\n\n/*\nIMPORTANT: any new icon should also must be added on /service-worker.js + its version should be updated - FEATURE DISABLED\n */\n.sidebar_left .select:after{ background-image: url('images/icons/select.svg'); }\n.sidebar_left .selection:after{ background-image: url('images/icons/selection.svg'); }\n.sidebar_left .brush:after{ background-image: url('images/icons/brush.svg'); }\n.sidebar_left .pencil:after{ background-image: url('images/icons/pencil.svg'); }\n.sidebar_left .pick_color:after{ background-image: url('images/icons/pick_color.svg'); }\n.sidebar_left .erase:after{ background-image: url('images/icons/erase.svg'); }\n.sidebar_left .magic_erase:after{ background-image: url('images/icons/magic_erase.svg'); }\n.sidebar_left .fill:after{ background-image: url('images/icons/fill.svg'); }\n.sidebar_left .media:after{ background-image: url('images/icons/media.svg'); }\n.sidebar_left .shape:after{ background-image: url('images/icons/shape.svg'); }\n.sidebar_left .text:after{ background-image: url('images/icons/text.svg'); background-size: 16px auto; }\n/* the gradient icon is a colour PNG, so it opts out of the invert filter -\n   but it still has to obey the theme tint (black in dark, green in green) */\n.sidebar_left .gradient:after{ background-image: url('images/icons/gradient.png'); background-size: 18px 12px; filter: var(--canvas-filter, none); }\n.sidebar_left .clone:after{ background-image: url('images/icons/clone.svg'); }\n.sidebar_left .crop:after{ background-image: url('images/icons/crop.svg'); }\n.sidebar_left .blur:after{ background-image: url('images/icons/blur.svg'); }\n.sidebar_left .sharpen:after{ background-image: url('images/icons/sharpen.svg'); }\n.sidebar_left .desaturate:after{ background-image: url('images/icons/desaturate.svg'); }\n.sidebar_left .bulge_pinch:after{ background-image: url('images/icons/bulge_pinch.svg'); }\n.sidebar_left .animation:after{ background-image: url('images/icons/animation.svg'); }\n\n@media screen and (max-width:550px){\n\t#sidebar_left{\n\t\tleft: -110px;\n\t}\n}\n\n/* ========== right sidebar ================================================= */\n\n.sidebar_right{\n\t-ms-grid-row: 2;\n\t-ms-grid-column: 3;\n\tgrid-area: sidebar_right;\n\tz-index: 2;\n\tdisplay: flex;\n\tflex-direction: column;\n\ttransition: 0.2s;\n\toverflow-x: hidden;\n\toverflow-y: scroll;\n\tmargin: 0 5px;\n\twidth: 200px;\n}\n.sidebar_right.active{\n\tright: 0 !important;\n}\n.sidebar_right .block.layers:last-child{\n\tflex: 1;\n}\n\n/* ---------- sidebar panels: pin + reorder ---------- */\n\n.sidebar_right .block.pinned{\n\tposition: -webkit-sticky;\n\tposition: sticky;\n\ttop: 0;\n}\n.sidebar_right .block.pinned > h2{\n\tbox-shadow: 0 1px 0 0 var(--border-color);\n}\n.sidebar_right .block.dragging{\n\topacity: 0.5;\n}\n.block h2.panel_header{\n\tpadding-right: 80px;\n\tcursor: pointer;\n\twhite-space: nowrap;\n\toverflow: hidden;\n\ttext-overflow: ellipsis;\n}\n.block h2.panel_header.toggle:before{\n\t/* collapse arrow sits left of the panel controls */\n\tright: 68px;\n}\n.panel_controls{\n\tposition: absolute;\n\ttop: 0;\n\tright: 2px;\n\theight: 100%;\n\tdisplay: flex;\n\talign-items: center;\n}\n.panel_control{\n\tdisplay: flex;\n\talign-items: center;\n\tjustify-content: center;\n\twidth: 16px;\n\theight: 16px;\n\tpadding: 0;\n\tmargin: 0;\n\tborder: none;\n\tborder-radius: 3px;\n\tbackground: none;\n\tcolor: var(--text-color-muted);\n\tfont-size: 13px;\n\tline-height: 1;\n\tcursor: pointer;\n}\n.panel_control:hover{\n\tbackground-color: rgba(255, 255, 255, 0.18);\n\tcolor: var(--text-color);\n}\n.panel_control:focus-visible{\n\toutline: 1px solid var(--text-color);\n\toutline-offset: -1px;\n}\n.panel_control[disabled]{\n\topacity: 0.25;\n\tcursor: default;\n\tbackground: none;\n}\n.panel_pin[aria-pressed=\"true\"]{\n\tcolor: #00b8b8;\n\tbackground-color: rgba(0, 184, 184, 0.15);\n}\n.panel_drag_handle{\n\tcursor: grab;\n}\n.block.dragging .panel_drag_handle{\n\tcursor: grabbing;\n}\n\n/* ---------- palette panel ---------- */\n\n.palette_colors{\n\tdisplay: flex;\n\tflex-wrap: wrap;\n\tgap: 2px;\n}\n.palette_color{\n\twidth: 20px;\n\theight: 20px;\n\tpadding: 0;\n\tmargin: 0;\n\tborder: 1px solid rgba(0, 0, 0, 0.55);\n\tborder-radius: 2px;\n\tcursor: pointer;\n}\n.palette_color:hover{\n\ttransform: scale(1.15);\n}\n.palette_color.active{\n\toutline: 2px solid #ffffff;\n\toutline-offset: -3px;\n\tbox-shadow: 0 0 0 1px #000000;\n}\n.palette_meta{\n\tfont-size: 90%;\n}\n.palette .details button{\n\tmargin: 0 3px 0 0;\n}\n#palette_select{\n\twidth: 100%;\n}\n.sidebar_right .block.layers .content{\n\tpadding-bottom: 25px;\n}\n\n/* preview */\n.canvas_preview_wrapper{\n\tdisplay: flex;\n\tjustify-content: center;\n\talign-items: center;\n\tmargin: 5px 5px 10px 5px;\n}\n.canvas_preview_inner{\n\tposition: relative;\n\tline-height: 0;\n\twidth: 176px;\n\theight: 176px;\n}\n.canvas_preview_details{\n\tpadding: 0 5px;\n}\n.canvas_preview_details button{\n\tmargin: 0;\n}\n.preview canvas{\n\tcursor: pointer;\n}\n.details input{\n\tpadding: 5px 10px;\n}\n\n/* color */\n.color_area{\n\tborder: 1px solid #444;\n\twidth: calc(100% - 10px);\n\theight: 40px;\n\tcursor: pointer;\n\tmargin: 5px;\n}\n\n/* layers */\n.layers_list{\n\tmargin-top: 10px;\n}\n.layers_arrow{\n\tdisplay:inline-block;\n\tfloat:right;\n\tmargin-left:5px;\n\tpadding:1px 8px;\n\tborder:1px solid #444;\n\tborder-color: var(--border-color);\n\ttext-decoration:none;\n\tcolor:var(--text-color);\n\tfont-size: 14px;\n}\n.layer_add{\n\tdisplay:inline-block;\n\tpadding:1px 8px;\n\tmargin-right: 10px;\n\tbackground-color: #419147;\n\tbackground-color: var(--input-background-color);\n\tborder:1px solid #444;\n\tborder-color: var(--input-border-color);\n\tcolor: var(--input-text-color);\n\tcursor:pointer;\n\ttext-decoration:none;\n\tfont-size: 18px;\n\tfont-weight: bold;\n}\n/* Layers header buttons (D, R, move arrows) match the themed input fields too */\n.layer_duplicate, .layer_raster, .layers_arrow{\n\tbackground-color: var(--input-background-color);\n\tcolor: var(--input-text-color);\n\tborder-color: var(--input-border-color);\n}\n/* Shared hover for all these control buttons (preview zoom + layer buttons) */\n.layer_add:hover, .layer_duplicate:hover, .layer_raster:hover, .layers_arrow:hover{\n\tbackground-color: var(--input-background-color-hover);\n}\n.layers_list .item{\n\tmargin-bottom:2px;\n\tdisplay: flex;\n\tflex-wrap: wrap;\n\talign-items: center;\n}\n.layers_list .item > .clear{\n\tdisplay: none;\n}\n.layers_list .layer_name{\n\tdisplay:block;\n\tpadding:1px 5px 3px 5px;\n\t/* flex-basis 0 so a long name never pushes the icons/delete onto new lines;\n\t   it grows to fill the row and truncates with the ellipsis below. */\n\tflex: 1 1 0;\n\tmin-width: 0;\n\ttext-align: left;\n\toverflow:hidden;\n\ttext-overflow: ellipsis;\n\tbackground-color:#989898;\n\tbackground-color: var(--input-background-color);\n\tborder:1px solid #393939;\n\tborder-color: var(--input-border-color);\n\tborder-radius:3px;\n\tcursor:pointer;\n\tfont-size: 18px;\n\tfont-weight: bold;\n\tline-height: 1.4;\n\tcolor:var(--text-color);\n\twhite-space: nowrap;\n}\n.layers_list .item.shorter .layer_name{\n\twidth: auto;\n}\n.layers_list .item.active .layer_name{\n\tbackground-color: var(--input-background-color-hover);\n\tborder-color: var(--border-color);\n\tcolor: var(--input-text-color);\n}\n.layers_list .arrow_down{\n\tposition: relative;\n\tfloat:left;\n\tmargin-right: 5px;\n\twidth:10px;\n\theight:19px;\n\topacity: 0.4;\n}\n.layers_list .arrow_down:after{\n\tposition: absolute;\n\tcontent: '';\n\tleft:0;\n\ttop:0;\n\tbottom:0;\n\tright:0;\n\tfilter: var(--menu-icons-filter);\n\tbackground: url('images/icons/arrow-down.svg') no-repeat center center;\n\tbackground-size: 12px auto;\n}\n.layers_list .visibility{\n\tposition: relative;\n\tfloat:left;\n\tcursor:pointer;\n\tpadding:0px 3px 0px 3px;\n\tmargin-right: 5px;\n\twidth:20px;\n\theight:19px;\n\topacity:0.1;\n\tborder: none;\n\tbackground: transparent;\n\tbox-shadow: none;\n}\n.layers_list .visibility:after{\n\tposition: absolute;\n\tcontent: '';\n\tleft:0;\n\ttop:0;\n\tbottom:0;\n\tright:0;\n\tfilter: var(--menu-icons-filter);\n\tbackground: url('images/icons/view.svg') no-repeat center center;\n\tbackground-size: 18px auto;\n}\n.layers_list .visible{ opacity:0.4; }\n.layers_list .delete{\n\tfloat:right;\n\torder: 1;\n\tcursor:pointer;\n\tpadding:0px 3px 0px 3px;\n\twidth:12px;\n\theight:19px;\n\tmargin-left: 5px;\n\t/* delete \"x\" tinted to the tool-selection color via alpha mask */\n\tbackground-color: var(--background-color-active);\n\t-webkit-mask: url(images/icons/delete.svg) no-repeat center / 10px 10px;\n\tmask: url(images/icons/delete.svg) no-repeat center / 10px 10px;\n\tborder: none;\n\tbox-shadow: none;\n}\n/* shared right-click context menu (layers panel, logo hand) */\n.context_menu{\n\tposition: fixed;\n\tz-index: 9999;\n\tmin-width: 140px;\n\tbackground-color: var(--menu-background-color);\n\tborder: 1px solid var(--border-color);\n\tborder-radius: 4px;\n\tbox-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);\n\tpadding: 4px 0;\n}\n.context_menu .context_menu_item{\n\tdisplay: block;\n\twidth: 100%;\n\ttext-align: left;\n\tbackground: transparent;\n\tborder: none;\n\tbox-shadow: none;\n\tborder-radius: 0;\n\tcolor: var(--menu-text-color);\n\tpadding: 6px 16px;\n\tfont-size: 14px;\n\tfont-weight: normal;\n\twhite-space: nowrap;\n\tcursor: pointer;\n}\n.context_menu .context_menu_item:hover{\n\tbackground-color: var(--background-color-active);\n\tcolor: var(--text-color-active);\n}\n.context_menu .context_menu_divider{\n\theight: 1px;\n\tmargin: 4px 0;\n\tbackground-color: var(--border-color);\n\topacity: 0.5;\n}\n\n/* icon licence dialog */\n/* the popup is a fixed 500px, so the facts get the full width and the\n   artwork sits in a header row rather than stealing a column */\n.icon_license_head{\n\tdisplay: flex;\n\tgap: 14px;\n\talign-items: center;\n\tmargin-bottom: 14px;\n}\n.icon_license_art{\n\tflex: 0 0 auto;\n\twidth: 64px;\n\theight: 64px;\n\tborder-radius: 10px;\n}\n.icon_license_attribution{\n\tmargin: 0;\n\tfont-size: 17px;\n\tfont-weight: bold;\n\tline-height: 1.35;\n\tcolor: var(--text-color);\n}\n.icon_license_facts{\n\tdisplay: grid;\n\tgrid-template-columns: max-content 1fr;\n\tgap: 6px 14px;\n\tmargin: 0 0 12px;\n}\n.icon_license_facts dt{\n\tcolor: var(--text-color-soft, var(--text-color));\n\topacity: 0.75;\n\tfont-size: 14px;\n}\n.icon_license_facts dd{\n\tmargin: 0;\n\tfont-size: 14px;\n\tcolor: var(--text-color);\n}\n.icon_license_muted{\n\topacity: 0.7;\n}\n.icon_license_note{\n\tmargin: 0;\n\tfont-size: 13px;\n\tline-height: 1.5;\n\topacity: 0.85;\n\tborder-top: 1px solid var(--border-color);\n\tpadding-top: 10px;\n}\n\n/* filters */\n.layers_list .filters{\n\tmargin-bottom: 5px;\n\torder: 2;\n\tflex: 0 0 100%;\n}\n.layers_list .filter{\n\tmargin-bottom: 2px;\n\tmargin-left: 30px;\n\topacity: 0.7;\n}\n.layers_list .filter .layer_name{\n\tposition: relative;\n}\n.layers_list .filter .layer_name:after{\n\tposition:absolute;\n\tcontent:\"fx\";\n\tright: -4px;\n\ttop:1px;\n\tbottom:0;\n\twidth: 20px;\n}\n.sidebar_right .label{\n\tdisplay: inline-block;\n}\n.info .toggle.toggled{\n\tmargin-bottom: -3px;\n}\n.block.details .row{\n\tclear:both;\n\tmargin-bottom: 4px;\n\tmin-height: 23px;\n}\n.block.details input[type=\"number\"]{\n\twidth: 70px;\n\tpadding: 3px 5px;\n\tfloat: right;\n}\n.block.details .ui_color_input{\n\twidth: 70px;\n\tfloat: right;\n}\n.block.details .ui_color_input input{\n\twidth: 100%;\n\theight: 23px;\n}\n.block.details button.ui_toggle_button{\n\twidth: 90px;\n\tfloat: right;\n}\n.block.details select{\n\twidth: calc(100% - 70px);\n\theight: 23px;\n\tfloat: right;\n}\n.block.details button{\n\twidth: calc(100% - 70px);\n\theight: 23px;\n\tborder: 1px solid #444;\n}\n.block.details button.reset{\n\tposition: relative;\n\twidth: 25px;\n\tfloat: right;\n\tmargin-right: 3px;\n\toverflow: hidden;\n\topacity: 0.5;\n\tcolor: transparent;\n}\n.block.details button.reset:after{\n\tposition: absolute;\n\tcontent: '';\n\tleft:0;\n\ttop:0;\n\tbottom:0;\n\tright:0;\n\tbackground: url(images/icons/refresh.svg) no-repeat center center;\n\tbackground-size: auto 14px;\n\tfilter: var(--menu-icons-filter);\n}\n.block.details button.active{\n\tbackground-color: var(--background-color-active);\n\tcolor: var(--text-color-active);\n}\n.details-content{\n\theight: 206px;\n\toverflow-y: auto;\n}\n\n@media screen and (max-width:700px){\n\tbody{\n\t\tpadding-top:50px;\n\t}\n\t.wrapper{\n\t\ttop: 50px;\n\t}\n\t.sidebar_left{\n\t\tposition: absolute;\n\t\tleft: -90px;\n\t\tbackground: var(--background);\n\t}\n\t.sidebar_left.active{\n\t\tbox-shadow: -5px 0px 10px 0px rgba(0,0,0,0.75);\n\t\tleft: 0;\n\t\tz-index: 3;\n\t}\n\t.sidebar_right{\n\t\tposition: absolute;\n\t\theight: 100%;\n\t\tright: -210px;\n\t\tbackground: var(--background);\n\t}\n\t.sidebar_right.active{\n\t\tbox-shadow: -5px 0px 10px 0px rgba(0,0,0,0.75);\n\t\tright: 0;\n\t\tmargin-right: 0;\n\t}\n}\n\n/* ========== content ======================================================= */\n\n.ruler_left{\n\tdisplay: none;\n\tposition: absolute;\n\tleft:0;\n\ttop: 20px;\n\tbackground-color: #ccc;\n}\n.ruler_top{\n\tdisplay: none;\n\tposition: absolute;\n\tleft: 20px;\n\ttop:0;\n\tbackground-color: #ccc;\n}\n.middle_area{\n\tposition: relative;\n\t-ms-grid-row: 2;\n\t-ms-grid-column: 2;\n\tgrid-area: main;\n}\n.main_wrapper{\n\tposition:absolute;\n\ttop:0;\n\tright:0;\n\tbottom:0;\n\tleft:0;\n\toverflow: hidden;\n\tdisplay: flex;\n\tjustify-content: center;\n\talign-items: center;\n}\n.middle_area.has-ruler .main_wrapper{\n\ttop: 20px;\n\tleft: 20px;\n}\n.canvas_wrapper{\n\tposition:relative;\n}\n.canvas_wrapper canvas{\n\tposition: absolute;\n\tbox-sizing: content-box;\n\tfont-kerning: normal !important;\n}\n.loaded .canvas_wrapper canvas{\n\tborder: 1px solid var(--border-color);\n}\n#mouse{\n\tposition:absolute;\n\tpointer-events:none;\n\twidth:10px;\n\theight:10px;\n\tz-index:10;\n}\n#mouse.rect{\n\tborder:1px solid rgba(0,0,0,0.5);\n}\n#mouse.circle{\n\tborder:1px solid rgba(0,0,0,0.5);\n\tborder-radius:50%;\n}\n.transparent-grid{\n\twidth: 100%;\n\theight: 100%;\n\tposition: absolute;\n\tpointer-events: none;\n\t/*background: url(images/icons/grid.png) repeat top left;*/\n\tbackground: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAQElEQVQ4T2N89+7dfwYigKCgIBGqGBgYRw3EGU6jYYgzaIZAsvn//z9ROeX9+/fE5ZRRA3GG02gY4s4pgz7ZAAAnSWvHPkHXaAAAAABJRU5ErkJggg==') repeat top left;\n\tz-index:1;\n\timage-rendering: pixelated; /* disable antialiasing */\n}\n.transparent-grid.white{\n\tbackground:white;\n}\n.transparent-grid.green{\n\tbackground: #5be471;\n}\n.transparent-grid.grey{\n\tbackground: #dfdfdf;\n}\ncanvas{\n\tposition:relative;\n\tz-index:2;\n}\n#canvas_back{\n\tposition: absolute;\n\tbackground-color:#ffffff;\n\toutline: none;\n}\n#canvas_grid{\n\tpointer-events:none;\n}\n.group{\n\tborder:1px solid #999999;\n\tmargin: 5px 0px 5px 0px;\n\tpadding:5px 8px;\n}\n.flex-container{\n\tdisplay: flex;\n\tflex-wrap: wrap;\n}\n.flex-container .item{\n\tflex: auto;\n\tmargin: 2px 0;\n\twidth: 150px;\n}\n.flex-container .item:empty{\n\theight: 0;\n\tborder: none;\n}\n/* Colors panel toggle icons: white, not the pressed-state cyan\n   (setting the active-text var whitens both the icon and its underline) */\n#toggle_color_picker_section_button,\n#toggle_color_channels_section_button,\n#toggle_color_swatches_section_button{\n\t--button-text-color-active: var(--text-color);\n\tcolor: var(--text-color);\n}\n\n/* Error / notification popups: readable, styled like the (grape) layer panels */\n.alertify-notifier{\n\tcolor: var(--text-color);\n}\n.alertify-notifier .ajs-message{\n\tbackground: var(--block-background-color) !important;\n\tcolor: var(--text-color) !important;\n\tborder: 1px solid var(--border-color);\n\tborder-radius: 4px;\n\tbox-shadow: 0 3px 12px rgba(0, 0, 0, 0.5);\n\ttext-shadow: none;\n}\n.alertify-notifier .ajs-message.ajs-error{\n\tbackground: var(--block-background-color) !important;\n\tborder-left: 4px solid var(--text-color-red);\n}\n.alertify-notifier .ajs-message.ajs-success{\n\tbackground: var(--block-background-color) !important;\n\tborder-left: 4px solid var(--text-color-green);\n}\n.alertify-notifier .ajs-message.ajs-warning{\n\tbackground: var(--block-background-color) !important;\n\tborder-left: 4px solid var(--text-color-blue);\n}\n.effectsPreview{\n\tcursor: pointer;\n\tbackground-color: #ddd;\n}\n\n@media screen and (max-width:550px){\n\t.canvas_wrapper{\n\t\tmargin-left: 0px;\n\t}\n}\n@media screen and (max-height: 690px){\n\t.sidebar_left{\n\t\twidth: 75px;\n\t}\n}\n@media screen and (max-height:450px){\n\t.sidebar_left{\n\t\twidth: 88px;\n\t}\n}\n\n/* ========== dialogs ======================================================= */\n\n#dialog_color_picker_group {\n\twidth: 60%;\n}\n#dialog_color_channel_group {\n\twidth: 40%;\n\tmargin-left: 1rem;\n}\n\n@media screen and (max-width: 450px) {\n\t#dialog_color_picker .ui_flex_group {\n\t\tflex-wrap: wrap;\n\t}\n\t#dialog_color_picker_group {\n\t\twidth: 100%;\n\t}\n\t#dialog_color_channel_group {\n\t\twidth: 100%;\n\t\tmargin-left: 0;\n\t\tmargin-top: 1rem;\n\t}\n}"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -43395,7 +45319,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "#popups:not(:empty) {\n\tposition: absolute;\n\ttop: 0;\n\tleft: 0;\n\tright: 0;\n\tbottom: 0;\n}\n#popups .popup {\n\tposition:fixed;\n\tdisplay:none;\n\ttop: 15vh;\n\tleft: calc(100vw / 2);\n\ttransform: translate(-50%, 0);\n\tbackground-color: #7A838B;\n\tbackground-color: var(--block-background-color);\n\tborder: 1px solid rgba(0, 0, 0, 0.5);\n\tborder: 1px solid var(--border-color);\n\twidth: 90vw;\n\tmax-width: 500px;\n\tmax-height: calc(80vh);\n\tmargin:0px auto 0px auto;\n\tpadding: 4rem 0 5rem 0;\n\tbox-shadow: 0 0 0 4000px rgba(0,0,0,0.3), 0 0 20px rgba(0,0,0,0.5);\n\tz-index: 100;\n\tfont-size: 15px;\n\toverflow: hidden;\n}\n#popups .popup.wide{\n\tmax-width: 840px;\n}\n#popups .popup a{\n\tcolor: var(--link-color);\n}\n#popups .popup h2{\n\tdisplay: block;\n\tposition: absolute;\n\ttop: 0;\n\tleft: 0;\n\tright: 0;\n\tmargin: 0;\n\theight: 4rem;\n\tline-height: 4rem;\n\tpadding: 0 1rem;\n\tfont-size: 2rem;\n\tbackground-color: rgba(255, 255, 255, 0.3);\n\tbackground-color: var(--header-background-color);\n\tz-index: 0;\n\tcursor:move;\n}\n#popups .popup .dialog_content {\n\toverflow-y: auto;\n\tmax-height: calc(80vh - 11rem);\n\tpadding: 1rem;\n}\n#popups .popup .buttons{\n\tposition: absolute;\n\tbackground-color: var(--block-background-color);\n\tbottom: 0;\n\tleft: 0;\n\tright: 0;\n\theight: 5rem;\n\tline-height: 4rem;\n\tmargin: 0;\n\tpadding: .5rem 0;\n\ttext-align: center;\n\tborder-top: 1px solid var(--header-background-color);\n\tz-index: 3;\n}\n#popups .popup .close{\n\tposition: absolute;\n\tright: 0;\n\ttop: 0;\n\tmin-width: 0;\n\tpadding: 5px;\n\tline-height: 0.5;\n\tfont-size: 18px;\n\tmargin-top: 10px;\n\tmargin-right: 10px;\n\tborder: none;\n\tbackground: none;\n\tz-index: 1;\n}\n#popups .popup input[type=\"range\"]{\n\tmargin:0;\n\twidth: 100%;\n}\n#popups .popup table{\n\tbox-sizing: border-box;\n\twidth: 100%;\n}\n#popups .popup td, #popups .popup th{\n\theight: 25px;\n}\n#popups .popup td{\n\tvertical-align: middle;\n}\n#popups .popup th{\n\ttext-align:left;\n\tpadding: 5px 5px 5px 0;\n\twidth: 130px;\n}\n#popups .popup textarea{\n\tcolor: var(--input-text-color);\n\twidth:100%;\n\tborder:1px solid #393939;\n\tpadding-left:5px;\n}\n#popups .popup .button{\n\tmargin: 0 3px;\n\tbackground-color: rgba(255, 255, 255, 0.2);\n\tbackground-color: var(--button-background-color);\n\tmin-width:60px;\n\tborder:1px solid rgba(0, 0, 0, 0.5);\n\tborder:1px solid var(--border-color);\n\tpadding: 5px 10px;\n}\n#popups .popup input[type=\"text\"], #popups .popup input[type=\"number\"], #popups .popup textarea{\n\twidth:100%;\n}\n#popups .popup input[type=\"number\"]{\n\twidth:100px;\n}\n#popups .popup input[type=\"radio\"], #popups .popup input[type=\"checkbox\"]{\n\tmargin-left: 0;\n}\n#popups .popup label span{\n\tcolor:var(--text-color-muted);\n}\n#popups .popup .checkbox label{\n\tmargin-top: 5px;\n\tcolor:var(--text-color-muted);\n}\n#popups .popup .preview_container{\n\tmargin-top:10px;\n\tmargin-bottom:15px;\n\ttext-align: center;\n}\n#popups .popup .preview_canvas_left{\n\tposition:relative;\n\tmargin:0 5px 5px 0;\n\tborder:1px solid #393939;\n\tdisplay: inline-block;\n\tvertical-align: top;\n}\n#popups .popup .preview_canvas_post_back{\n\tposition:absolute;\n\tborder:1px solid #393939;\n\tbackground-color:#ffffff;\n}\n#popups .popup .preview_canvas_post{\n\tposition:relative;\n\tborder:1px solid #393939;\n}\n#popups .popup .canvas_preview_container{\n\tposition:relative;\n\tdisplay: inline-block;\n\tvertical-align: top;\n}\n#popups .popup .radios label{\n\tdisplay: inline-block;\n\tmargin-right: 10px;\n}\n#popups .popup .range_value{\n\tpadding-left:10px;\n\twidth:50px;\n}\n#popups .popup .long_text_value{\n\tfont-size: 14px;\n}\n#popups .popup .preview-item-title{\n\ttext-align: center;\n\tmax-width: 150px;\n}\n#popups .popup .field_comment{\n\tdisplay: inline-block;\n\tmargin-left: 10px;\n\topacity: 0.5;\n}\n\n#popups .popup .selection_card {\n\tbackground: var(--input-background-color);\n\tdisplay: block;\n\twidth: 100%;\n\tpadding: 0;\n\tborder-bottom: 0.1rem solid var(--input-border-color);\n\toverflow: hidden;\n\tposition: relative;\n}\n#popups .popup .selection_card:first-child {\n\tmargin-top: 1rem;\n\tborder-radius: var(--input-border-radius) var(--input-border-radius) 0 0;\n}\n#popups .popup .selection_card:last-child {\n\tborder-radius: 0 0 var(--input-border-radius) var(--input-border-radius);\n\tborder-bottom: none;\n}\n#popups .popup .selection_card > input[type=\"checkbox\"] {\n\tflex-grow: 0;\n\tflex-shrink: 0;\n\tmargin: 0;\n\tcursor: pointer;\n\tposition: absolute;\n\ttop: 50%;\n\tleft: 1.5rem;\n\ttransform: translateY(-50%) scale(1.5);\n}\n#popups .popup .selection_card > input[type=\"checkbox\"] + label {\n\tdisplay: block;\n\twidth: 100%;\n\tflex-grow: 1;\n\tflex-shrink: 1;\n\tmargin: 0;\n\tpadding: 1rem 0.5rem 1rem 5.5rem;\n\tcursor: pointer;\n}\n#popups .popup .selection_card > input[type=\"checkbox\"] + label:hover {\n\tbackground: var(--input-background-color-hover);\n}\n#popups .popup .selection_card .font_preview {\n\tfont-size: 1.8rem;\n\theight: 2.5rem;\n\tline-height: 2.5rem;\n\twhite-space: nowrap;\n}\n\n#popups .popup .pagination {\n\tdisplay: flex;\n\ttext-align: center;\n\tmargin: 1rem 0 0 0;\n}\n#popups .popup .pagination button {\n\tflex-grow: 0;\n\theight: 2.8rem;\n\tline-height: 2.8rem;\n\tborder-radius: 0;\n\tmargin-left: -1px;\n\tmin-width: 3.3rem;\n}\n#popups .popup .pagination button:first-child {\n\tborder-radius: var(--button-border-radius) 0 0 var(--button-border-radius);\n\tmargin-left: auto;\n}\n#popups .popup .pagination button:last-child {\n\tborder-radius: 0 var(--button-border-radius) var(--button-border-radius) 0;\n\tmargin-right: auto;\n}\n\n@media screen and (max-width:500px){\n\t#popups .popup {\n\t\tmax-height: calc(80vh - 20px); /* mobile phones has bottom menu */\n\t}\n\t#popups .popup tr{\n\t\tdisplay: block;\n\t\tmargin-bottom: 10px;\n\t}\n\t#popups .popup td, #popups .popup th{\n\t\tdisplay: block;\n\t\twidth: 100%;\n\t\theight: auto;\n\t\tpadding: 5px;\n\t}\n\t#popups .popup th{\n\t\tpadding: 5px 5px 0px 5px;\n\t}\n\t#popups .popup td{\n\t\tpadding: 5px 5px 5px 5px;\n\t}\n\t#popups .popup .range_value{\n\t\tdisplay: none;\n\t}\n}\n\n/* changelog / markdown viewer */\n.markdown_body{\n\tmax-width: 640px;\n\tmax-height: 62vh;\n\toverflow-y: auto;\n\tpadding-right: 6px;\n\tline-height: 1.5;\n\tfont-size: 14px;\n}\n.markdown_body h1{ font-size: 2rem; margin: 0 0 .3em; }\n.markdown_body h2{ font-size: 1.6rem; margin: 1.1em 0 .3em; color: var(--text-color); }\n.markdown_body h3{ font-size: 1.3rem; margin: .9em 0 .3em; }\n.markdown_body h4{ font-size: 1.1rem; margin: .8em 0 .3em; }\n.markdown_body p{ margin: .4em 0; }\n.markdown_body ul{ margin: .3em 0 .8em 1.3em; padding: 0; }\n.markdown_body li{ margin: .2em 0; }\n.markdown_body strong{ color: var(--text-color); }\n.markdown_body em{ color: var(--text-color-muted); }\n.markdown_body a{ color: var(--link-color); }\n.markdown_body code{\n\tbackground-color: var(--input-background-color);\n\tborder: 1px solid var(--input-group-border-color);\n\tborder-radius: 3px;\n\tpadding: 0 4px;\n\tfont-size: .92em;\n}\n.markdown_body hr{\n\tborder: none;\n\tborder-top: 1px solid var(--border-color);\n\tmargin: 1.1em 0;\n}\nbody.theme-yonce .markdown_body h1,\nbody.theme-yonce .markdown_body h2{\n\tcolor: var(--yc-petal-pink);\n}\n", "",{"version":3,"sources":["webpack://./src/css/popup.css"],"names":[],"mappings":"AAAA;CACC,kBAAkB;CAClB,MAAM;CACN,OAAO;CACP,QAAQ;CACR,SAAS;AACV;AACA;CACC,cAAc;CACd,YAAY;CACZ,SAAS;CACT,qBAAqB;CACrB,6BAA6B;CAC7B,yBAAyB;CACzB,+CAA+C;CAC/C,oCAAoC;CACpC,qCAAqC;CACrC,WAAW;CACX,gBAAgB;CAChB,sBAAsB;CACtB,wBAAwB;CACxB,sBAAsB;CACtB,kEAAkE;CAClE,YAAY;CACZ,eAAe;CACf,gBAAgB;AACjB;AACA;CACC,gBAAgB;AACjB;AACA;CACC,wBAAwB;AACzB;AACA;CACC,cAAc;CACd,kBAAkB;CAClB,MAAM;CACN,OAAO;CACP,QAAQ;CACR,SAAS;CACT,YAAY;CACZ,iBAAiB;CACjB,eAAe;CACf,eAAe;CACf,0CAA0C;CAC1C,gDAAgD;CAChD,UAAU;CACV,WAAW;AACZ;AACA;CACC,gBAAgB;CAChB,8BAA8B;CAC9B,aAAa;AACd;AACA;CACC,kBAAkB;CAClB,+CAA+C;CAC/C,SAAS;CACT,OAAO;CACP,QAAQ;CACR,YAAY;CACZ,iBAAiB;CACjB,SAAS;CACT,gBAAgB;CAChB,kBAAkB;CAClB,oDAAoD;CACpD,UAAU;AACX;AACA;CACC,kBAAkB;CAClB,QAAQ;CACR,MAAM;CACN,YAAY;CACZ,YAAY;CACZ,gBAAgB;CAChB,eAAe;CACf,gBAAgB;CAChB,kBAAkB;CAClB,YAAY;CACZ,gBAAgB;CAChB,UAAU;AACX;AACA;CACC,QAAQ;CACR,WAAW;AACZ;AACA;CACC,sBAAsB;CACtB,WAAW;AACZ;AACA;CACC,YAAY;AACb;AACA;CACC,sBAAsB;AACvB;AACA;CACC,eAAe;CACf,sBAAsB;CACtB,YAAY;AACb;AACA;CACC,8BAA8B;CAC9B,UAAU;CACV,wBAAwB;CACxB,gBAAgB;AACjB;AACA;CACC,aAAa;CACb,0CAA0C;CAC1C,gDAAgD;CAChD,cAAc;CACd,mCAAmC;CACnC,oCAAoC;CACpC,iBAAiB;AAClB;AACA;CACC,UAAU;AACX;AACA;CACC,WAAW;AACZ;AACA;CACC,cAAc;AACf;AACA;CACC,6BAA6B;AAC9B;AACA;CACC,eAAe;CACf,6BAA6B;AAC9B;AACA;CACC,eAAe;CACf,kBAAkB;CAClB,kBAAkB;AACnB;AACA;CACC,iBAAiB;CACjB,kBAAkB;CAClB,wBAAwB;CACxB,qBAAqB;CACrB,mBAAmB;AACpB;AACA;CACC,iBAAiB;CACjB,wBAAwB;CACxB,wBAAwB;AACzB;AACA;CACC,iBAAiB;CACjB,wBAAwB;AACzB;AACA;CACC,iBAAiB;CACjB,qBAAqB;CACrB,mBAAmB;AACpB;AACA;CACC,qBAAqB;CACrB,kBAAkB;AACnB;AACA;CACC,iBAAiB;CACjB,UAAU;AACX;AACA;CACC,eAAe;AAChB;AACA;CACC,kBAAkB;CAClB,gBAAgB;AACjB;AACA;CACC,qBAAqB;CACrB,iBAAiB;CACjB,YAAY;AACb;;AAEA;CACC,yCAAyC;CACzC,cAAc;CACd,WAAW;CACX,UAAU;CACV,qDAAqD;CACrD,gBAAgB;CAChB,kBAAkB;AACnB;AACA;CACC,gBAAgB;CAChB,wEAAwE;AACzE;AACA;CACC,wEAAwE;CACxE,mBAAmB;AACpB;AACA;CACC,YAAY;CACZ,cAAc;CACd,SAAS;CACT,eAAe;CACf,kBAAkB;CAClB,QAAQ;CACR,YAAY;CACZ,sCAAsC;AACvC;AACA;CACC,cAAc;CACd,WAAW;CACX,YAAY;CACZ,cAAc;CACd,SAAS;CACT,gCAAgC;CAChC,eAAe;AAChB;AACA;CACC,+CAA+C;AAChD;AACA;CACC,iBAAiB;CACjB,cAAc;CACd,mBAAmB;CACnB,mBAAmB;AACpB;;AAEA;CACC,aAAa;CACb,kBAAkB;CAClB,kBAAkB;AACnB;AACA;CACC,YAAY;CACZ,cAAc;CACd,mBAAmB;CACnB,gBAAgB;CAChB,iBAAiB;CACjB,iBAAiB;AAClB;AACA;CACC,0EAA0E;CAC1E,iBAAiB;AAClB;AACA;CACC,0EAA0E;CAC1E,kBAAkB;AACnB;;AAEA;CACC;EACC,6BAA6B,EAAE,kCAAkC;CAClE;CACA;EACC,cAAc;EACd,mBAAmB;CACpB;CACA;EACC,cAAc;EACd,WAAW;EACX,YAAY;EACZ,YAAY;CACb;CACA;EACC,wBAAwB;CACzB;CACA;EACC,wBAAwB;CACzB;CACA;EACC,aAAa;CACd;AACD;;AAEA,gCAAgC;AAChC;CACC,gBAAgB;CAChB,gBAAgB;CAChB,gBAAgB;CAChB,kBAAkB;CAClB,gBAAgB;CAChB,eAAe;AAChB;AACA,mBAAmB,eAAe,EAAE,gBAAgB,EAAE;AACtD,mBAAmB,iBAAiB,EAAE,oBAAoB,EAAE,wBAAwB,EAAE;AACtF,mBAAmB,iBAAiB,EAAE,mBAAmB,EAAE;AAC3D,mBAAmB,iBAAiB,EAAE,mBAAmB,EAAE;AAC3D,kBAAkB,cAAc,EAAE;AAClC,mBAAmB,yBAAyB,EAAE,UAAU,EAAE;AAC1D,mBAAmB,cAAc,EAAE;AACnC,uBAAuB,wBAAwB,EAAE;AACjD,mBAAmB,8BAA8B,EAAE;AACnD,kBAAkB,wBAAwB,EAAE;AAC5C;CACC,+CAA+C;CAC/C,iDAAiD;CACjD,kBAAkB;CAClB,cAAc;CACd,gBAAgB;AACjB;AACA;CACC,YAAY;CACZ,yCAAyC;CACzC,eAAe;AAChB;AACA;;CAEC,2BAA2B;AAC5B","sourcesContent":["#popups:not(:empty) {\n\tposition: absolute;\n\ttop: 0;\n\tleft: 0;\n\tright: 0;\n\tbottom: 0;\n}\n#popups .popup {\n\tposition:fixed;\n\tdisplay:none;\n\ttop: 15vh;\n\tleft: calc(100vw / 2);\n\ttransform: translate(-50%, 0);\n\tbackground-color: #7A838B;\n\tbackground-color: var(--block-background-color);\n\tborder: 1px solid rgba(0, 0, 0, 0.5);\n\tborder: 1px solid var(--border-color);\n\twidth: 90vw;\n\tmax-width: 500px;\n\tmax-height: calc(80vh);\n\tmargin:0px auto 0px auto;\n\tpadding: 4rem 0 5rem 0;\n\tbox-shadow: 0 0 0 4000px rgba(0,0,0,0.3), 0 0 20px rgba(0,0,0,0.5);\n\tz-index: 100;\n\tfont-size: 15px;\n\toverflow: hidden;\n}\n#popups .popup.wide{\n\tmax-width: 840px;\n}\n#popups .popup a{\n\tcolor: var(--link-color);\n}\n#popups .popup h2{\n\tdisplay: block;\n\tposition: absolute;\n\ttop: 0;\n\tleft: 0;\n\tright: 0;\n\tmargin: 0;\n\theight: 4rem;\n\tline-height: 4rem;\n\tpadding: 0 1rem;\n\tfont-size: 2rem;\n\tbackground-color: rgba(255, 255, 255, 0.3);\n\tbackground-color: var(--header-background-color);\n\tz-index: 0;\n\tcursor:move;\n}\n#popups .popup .dialog_content {\n\toverflow-y: auto;\n\tmax-height: calc(80vh - 11rem);\n\tpadding: 1rem;\n}\n#popups .popup .buttons{\n\tposition: absolute;\n\tbackground-color: var(--block-background-color);\n\tbottom: 0;\n\tleft: 0;\n\tright: 0;\n\theight: 5rem;\n\tline-height: 4rem;\n\tmargin: 0;\n\tpadding: .5rem 0;\n\ttext-align: center;\n\tborder-top: 1px solid var(--header-background-color);\n\tz-index: 3;\n}\n#popups .popup .close{\n\tposition: absolute;\n\tright: 0;\n\ttop: 0;\n\tmin-width: 0;\n\tpadding: 5px;\n\tline-height: 0.5;\n\tfont-size: 18px;\n\tmargin-top: 10px;\n\tmargin-right: 10px;\n\tborder: none;\n\tbackground: none;\n\tz-index: 1;\n}\n#popups .popup input[type=\"range\"]{\n\tmargin:0;\n\twidth: 100%;\n}\n#popups .popup table{\n\tbox-sizing: border-box;\n\twidth: 100%;\n}\n#popups .popup td, #popups .popup th{\n\theight: 25px;\n}\n#popups .popup td{\n\tvertical-align: middle;\n}\n#popups .popup th{\n\ttext-align:left;\n\tpadding: 5px 5px 5px 0;\n\twidth: 130px;\n}\n#popups .popup textarea{\n\tcolor: var(--input-text-color);\n\twidth:100%;\n\tborder:1px solid #393939;\n\tpadding-left:5px;\n}\n#popups .popup .button{\n\tmargin: 0 3px;\n\tbackground-color: rgba(255, 255, 255, 0.2);\n\tbackground-color: var(--button-background-color);\n\tmin-width:60px;\n\tborder:1px solid rgba(0, 0, 0, 0.5);\n\tborder:1px solid var(--border-color);\n\tpadding: 5px 10px;\n}\n#popups .popup input[type=\"text\"], #popups .popup input[type=\"number\"], #popups .popup textarea{\n\twidth:100%;\n}\n#popups .popup input[type=\"number\"]{\n\twidth:100px;\n}\n#popups .popup input[type=\"radio\"], #popups .popup input[type=\"checkbox\"]{\n\tmargin-left: 0;\n}\n#popups .popup label span{\n\tcolor:var(--text-color-muted);\n}\n#popups .popup .checkbox label{\n\tmargin-top: 5px;\n\tcolor:var(--text-color-muted);\n}\n#popups .popup .preview_container{\n\tmargin-top:10px;\n\tmargin-bottom:15px;\n\ttext-align: center;\n}\n#popups .popup .preview_canvas_left{\n\tposition:relative;\n\tmargin:0 5px 5px 0;\n\tborder:1px solid #393939;\n\tdisplay: inline-block;\n\tvertical-align: top;\n}\n#popups .popup .preview_canvas_post_back{\n\tposition:absolute;\n\tborder:1px solid #393939;\n\tbackground-color:#ffffff;\n}\n#popups .popup .preview_canvas_post{\n\tposition:relative;\n\tborder:1px solid #393939;\n}\n#popups .popup .canvas_preview_container{\n\tposition:relative;\n\tdisplay: inline-block;\n\tvertical-align: top;\n}\n#popups .popup .radios label{\n\tdisplay: inline-block;\n\tmargin-right: 10px;\n}\n#popups .popup .range_value{\n\tpadding-left:10px;\n\twidth:50px;\n}\n#popups .popup .long_text_value{\n\tfont-size: 14px;\n}\n#popups .popup .preview-item-title{\n\ttext-align: center;\n\tmax-width: 150px;\n}\n#popups .popup .field_comment{\n\tdisplay: inline-block;\n\tmargin-left: 10px;\n\topacity: 0.5;\n}\n\n#popups .popup .selection_card {\n\tbackground: var(--input-background-color);\n\tdisplay: block;\n\twidth: 100%;\n\tpadding: 0;\n\tborder-bottom: 0.1rem solid var(--input-border-color);\n\toverflow: hidden;\n\tposition: relative;\n}\n#popups .popup .selection_card:first-child {\n\tmargin-top: 1rem;\n\tborder-radius: var(--input-border-radius) var(--input-border-radius) 0 0;\n}\n#popups .popup .selection_card:last-child {\n\tborder-radius: 0 0 var(--input-border-radius) var(--input-border-radius);\n\tborder-bottom: none;\n}\n#popups .popup .selection_card > input[type=\"checkbox\"] {\n\tflex-grow: 0;\n\tflex-shrink: 0;\n\tmargin: 0;\n\tcursor: pointer;\n\tposition: absolute;\n\ttop: 50%;\n\tleft: 1.5rem;\n\ttransform: translateY(-50%) scale(1.5);\n}\n#popups .popup .selection_card > input[type=\"checkbox\"] + label {\n\tdisplay: block;\n\twidth: 100%;\n\tflex-grow: 1;\n\tflex-shrink: 1;\n\tmargin: 0;\n\tpadding: 1rem 0.5rem 1rem 5.5rem;\n\tcursor: pointer;\n}\n#popups .popup .selection_card > input[type=\"checkbox\"] + label:hover {\n\tbackground: var(--input-background-color-hover);\n}\n#popups .popup .selection_card .font_preview {\n\tfont-size: 1.8rem;\n\theight: 2.5rem;\n\tline-height: 2.5rem;\n\twhite-space: nowrap;\n}\n\n#popups .popup .pagination {\n\tdisplay: flex;\n\ttext-align: center;\n\tmargin: 1rem 0 0 0;\n}\n#popups .popup .pagination button {\n\tflex-grow: 0;\n\theight: 2.8rem;\n\tline-height: 2.8rem;\n\tborder-radius: 0;\n\tmargin-left: -1px;\n\tmin-width: 3.3rem;\n}\n#popups .popup .pagination button:first-child {\n\tborder-radius: var(--button-border-radius) 0 0 var(--button-border-radius);\n\tmargin-left: auto;\n}\n#popups .popup .pagination button:last-child {\n\tborder-radius: 0 var(--button-border-radius) var(--button-border-radius) 0;\n\tmargin-right: auto;\n}\n\n@media screen and (max-width:500px){\n\t#popups .popup {\n\t\tmax-height: calc(80vh - 20px); /* mobile phones has bottom menu */\n\t}\n\t#popups .popup tr{\n\t\tdisplay: block;\n\t\tmargin-bottom: 10px;\n\t}\n\t#popups .popup td, #popups .popup th{\n\t\tdisplay: block;\n\t\twidth: 100%;\n\t\theight: auto;\n\t\tpadding: 5px;\n\t}\n\t#popups .popup th{\n\t\tpadding: 5px 5px 0px 5px;\n\t}\n\t#popups .popup td{\n\t\tpadding: 5px 5px 5px 5px;\n\t}\n\t#popups .popup .range_value{\n\t\tdisplay: none;\n\t}\n}\n\n/* changelog / markdown viewer */\n.markdown_body{\n\tmax-width: 640px;\n\tmax-height: 62vh;\n\toverflow-y: auto;\n\tpadding-right: 6px;\n\tline-height: 1.5;\n\tfont-size: 14px;\n}\n.markdown_body h1{ font-size: 2rem; margin: 0 0 .3em; }\n.markdown_body h2{ font-size: 1.6rem; margin: 1.1em 0 .3em; color: var(--text-color); }\n.markdown_body h3{ font-size: 1.3rem; margin: .9em 0 .3em; }\n.markdown_body h4{ font-size: 1.1rem; margin: .8em 0 .3em; }\n.markdown_body p{ margin: .4em 0; }\n.markdown_body ul{ margin: .3em 0 .8em 1.3em; padding: 0; }\n.markdown_body li{ margin: .2em 0; }\n.markdown_body strong{ color: var(--text-color); }\n.markdown_body em{ color: var(--text-color-muted); }\n.markdown_body a{ color: var(--link-color); }\n.markdown_body code{\n\tbackground-color: var(--input-background-color);\n\tborder: 1px solid var(--input-group-border-color);\n\tborder-radius: 3px;\n\tpadding: 0 4px;\n\tfont-size: .92em;\n}\n.markdown_body hr{\n\tborder: none;\n\tborder-top: 1px solid var(--border-color);\n\tmargin: 1.1em 0;\n}\nbody.theme-yonce .markdown_body h1,\nbody.theme-yonce .markdown_body h2{\n\tcolor: var(--yc-petal-pink);\n}\n"],"sourceRoot":""}]);
+___CSS_LOADER_EXPORT___.push([module.id, "#popups:not(:empty) {\n\tposition: absolute;\n\ttop: 0;\n\tleft: 0;\n\tright: 0;\n\tbottom: 0;\n}\n#popups .popup {\n\tposition:fixed;\n\tdisplay:none;\n\ttop: 15vh;\n\tleft: calc(100vw / 2);\n\ttransform: translate(-50%, 0);\n\tbackground-color: #7A838B;\n\tbackground-color: var(--block-background-color);\n\tborder: 1px solid rgba(0, 0, 0, 0.5);\n\tborder: 1px solid var(--border-color);\n\twidth: 90vw;\n\tmax-width: 500px;\n\tmax-height: calc(80vh);\n\tmargin:0px auto 0px auto;\n\tpadding: 4rem 0 5rem 0;\n\tbox-shadow: 0 0 0 4000px rgba(0,0,0,0.3), 0 0 20px rgba(0,0,0,0.5);\n\tz-index: 100;\n\tfont-size: 15px;\n\toverflow: hidden;\n}\n#popups .popup.wide{\n\tmax-width: 840px;\n}\n#popups .popup a{\n\tcolor: var(--link-color);\n}\n/* the direct child only: this is the dialog's own title bar. Nested h2s\n   (e.g. markdown content in the Changelog dialog) must flow normally. */\n#popups .popup > h2{\n\tdisplay: block;\n\tposition: absolute;\n\ttop: 0;\n\tleft: 0;\n\tright: 0;\n\tmargin: 0;\n\theight: 4rem;\n\tline-height: 4rem;\n\tpadding: 0 1rem;\n\tfont-size: 2rem;\n\tbackground-color: rgba(255, 255, 255, 0.3);\n\tbackground-color: var(--header-background-color);\n\tz-index: 0;\n\tcursor:move;\n}\n#popups .popup .dialog_content {\n\toverflow-y: auto;\n\tmax-height: calc(80vh - 11rem);\n\tpadding: 1rem;\n}\n#popups .popup .buttons{\n\tposition: absolute;\n\tbackground-color: var(--block-background-color);\n\tbottom: 0;\n\tleft: 0;\n\tright: 0;\n\theight: 5rem;\n\tline-height: 4rem;\n\tmargin: 0;\n\tpadding: .5rem 0;\n\ttext-align: center;\n\tborder-top: 1px solid var(--header-background-color);\n\tz-index: 3;\n}\n#popups .popup .close{\n\tposition: absolute;\n\tright: 0;\n\ttop: 0;\n\tmin-width: 0;\n\tpadding: 5px;\n\tline-height: 0.5;\n\tfont-size: 18px;\n\tmargin-top: 10px;\n\tmargin-right: 10px;\n\tborder: none;\n\tbackground: none;\n\tz-index: 1;\n}\n#popups .popup input[type=\"range\"]{\n\tmargin:0;\n\twidth: 100%;\n}\n#popups .popup table{\n\tbox-sizing: border-box;\n\twidth: 100%;\n}\n#popups .popup td, #popups .popup th{\n\theight: 25px;\n}\n#popups .popup td{\n\tvertical-align: middle;\n}\n#popups .popup th{\n\ttext-align:left;\n\tpadding: 5px 5px 5px 0;\n\twidth: 130px;\n}\n#popups .popup textarea{\n\tcolor: var(--input-text-color);\n\twidth:100%;\n\tborder:1px solid #393939;\n\tpadding-left:5px;\n}\n#popups .popup .button{\n\tmargin: 0 3px;\n\tbackground-color: rgba(255, 255, 255, 0.2);\n\tbackground-color: var(--button-background-color);\n\tmin-width:60px;\n\tborder:1px solid rgba(0, 0, 0, 0.5);\n\tborder:1px solid var(--border-color);\n\tpadding: 5px 10px;\n}\n#popups .popup input[type=\"text\"], #popups .popup input[type=\"number\"], #popups .popup textarea{\n\twidth:100%;\n}\n#popups .popup input[type=\"number\"]{\n\twidth:100px;\n}\n#popups .popup input[type=\"radio\"], #popups .popup input[type=\"checkbox\"]{\n\tmargin-left: 0;\n}\n#popups .popup label span{\n\tcolor:var(--text-color-muted);\n}\n#popups .popup .checkbox label{\n\tmargin-top: 5px;\n\tcolor:var(--text-color-muted);\n}\n#popups .popup .preview_container{\n\tmargin-top:10px;\n\tmargin-bottom:15px;\n\ttext-align: center;\n}\n#popups .popup .preview_canvas_left{\n\tposition:relative;\n\tmargin:0 5px 5px 0;\n\tborder:1px solid #393939;\n\tdisplay: inline-block;\n\tvertical-align: top;\n}\n#popups .popup .preview_canvas_post_back{\n\tposition:absolute;\n\tborder:1px solid #393939;\n\tbackground-color:#ffffff;\n}\n#popups .popup .preview_canvas_post{\n\tposition:relative;\n\tborder:1px solid #393939;\n}\n#popups .popup .canvas_preview_container{\n\tposition:relative;\n\tdisplay: inline-block;\n\tvertical-align: top;\n}\n#popups .popup .radios label{\n\tdisplay: inline-block;\n\tmargin-right: 10px;\n}\n#popups .popup .range_value{\n\tpadding-left:10px;\n\twidth:50px;\n}\n#popups .popup .long_text_value{\n\tfont-size: 14px;\n}\n#popups .popup .preview-item-title{\n\ttext-align: center;\n\tmax-width: 150px;\n}\n#popups .popup .field_comment{\n\tdisplay: inline-block;\n\tmargin-left: 10px;\n\topacity: 0.5;\n}\n\n#popups .popup .selection_card {\n\tbackground: var(--input-background-color);\n\tdisplay: block;\n\twidth: 100%;\n\tpadding: 0;\n\tborder-bottom: 0.1rem solid var(--input-border-color);\n\toverflow: hidden;\n\tposition: relative;\n}\n#popups .popup .selection_card:first-child {\n\tmargin-top: 1rem;\n\tborder-radius: var(--input-border-radius) var(--input-border-radius) 0 0;\n}\n#popups .popup .selection_card:last-child {\n\tborder-radius: 0 0 var(--input-border-radius) var(--input-border-radius);\n\tborder-bottom: none;\n}\n#popups .popup .selection_card > input[type=\"checkbox\"] {\n\tflex-grow: 0;\n\tflex-shrink: 0;\n\tmargin: 0;\n\tcursor: pointer;\n\tposition: absolute;\n\ttop: 50%;\n\tleft: 1.5rem;\n\ttransform: translateY(-50%) scale(1.5);\n}\n#popups .popup .selection_card > input[type=\"checkbox\"] + label {\n\tdisplay: block;\n\twidth: 100%;\n\tflex-grow: 1;\n\tflex-shrink: 1;\n\tmargin: 0;\n\tpadding: 1rem 0.5rem 1rem 5.5rem;\n\tcursor: pointer;\n}\n#popups .popup .selection_card > input[type=\"checkbox\"] + label:hover {\n\tbackground: var(--input-background-color-hover);\n}\n#popups .popup .selection_card .font_preview {\n\tfont-size: 1.8rem;\n\theight: 2.5rem;\n\tline-height: 2.5rem;\n\twhite-space: nowrap;\n}\n\n#popups .popup .pagination {\n\tdisplay: flex;\n\ttext-align: center;\n\tmargin: 1rem 0 0 0;\n}\n#popups .popup .pagination button {\n\tflex-grow: 0;\n\theight: 2.8rem;\n\tline-height: 2.8rem;\n\tborder-radius: 0;\n\tmargin-left: -1px;\n\tmin-width: 3.3rem;\n}\n#popups .popup .pagination button:first-child {\n\tborder-radius: var(--button-border-radius) 0 0 var(--button-border-radius);\n\tmargin-left: auto;\n}\n#popups .popup .pagination button:last-child {\n\tborder-radius: 0 var(--button-border-radius) var(--button-border-radius) 0;\n\tmargin-right: auto;\n}\n\n@media screen and (max-width:500px){\n\t#popups .popup {\n\t\tmax-height: calc(80vh - 20px); /* mobile phones has bottom menu */\n\t}\n\t#popups .popup tr{\n\t\tdisplay: block;\n\t\tmargin-bottom: 10px;\n\t}\n\t#popups .popup td, #popups .popup th{\n\t\tdisplay: block;\n\t\twidth: 100%;\n\t\theight: auto;\n\t\tpadding: 5px;\n\t}\n\t#popups .popup th{\n\t\tpadding: 5px 5px 0px 5px;\n\t}\n\t#popups .popup td{\n\t\tpadding: 5px 5px 5px 5px;\n\t}\n\t#popups .popup .range_value{\n\t\tdisplay: none;\n\t}\n}\n\n/* changelog / markdown viewer */\n.markdown_body{\n\tmax-width: 640px;\n\tmax-height: 62vh;\n\toverflow-y: auto;\n\tpadding-right: 6px;\n\tline-height: 1.5;\n\tfont-size: 14px;\n}\n.markdown_body h1{ font-size: 2rem; margin: 0 0 .3em; }\n.markdown_body h2{ font-size: 1.6rem; margin: 1.1em 0 .3em; color: var(--text-color); }\n.markdown_body h3{ font-size: 1.3rem; margin: .9em 0 .3em; }\n.markdown_body h4{ font-size: 1.1rem; margin: .8em 0 .3em; }\n.markdown_body p{ margin: .4em 0; }\n.markdown_body ul{ margin: .3em 0 .8em 1.3em; padding: 0; }\n.markdown_body li{ margin: .2em 0; }\n.markdown_body strong{ color: var(--text-color); }\n.markdown_body em{ color: var(--text-color-muted); }\n.markdown_body a{ color: var(--link-color); }\n.markdown_body code{\n\tbackground-color: var(--input-background-color);\n\tborder: 1px solid var(--input-group-border-color);\n\tborder-radius: 3px;\n\tpadding: 0 4px;\n\tfont-size: .92em;\n}\n.markdown_body hr{\n\tborder: none;\n\tborder-top: 1px solid var(--border-color);\n\tmargin: 1.1em 0;\n}\nbody.theme-yonce .markdown_body h1,\nbody.theme-yonce .markdown_body h2{\n\tcolor: var(--yc-petal-pink);\n}\n", "",{"version":3,"sources":["webpack://./src/css/popup.css"],"names":[],"mappings":"AAAA;CACC,kBAAkB;CAClB,MAAM;CACN,OAAO;CACP,QAAQ;CACR,SAAS;AACV;AACA;CACC,cAAc;CACd,YAAY;CACZ,SAAS;CACT,qBAAqB;CACrB,6BAA6B;CAC7B,yBAAyB;CACzB,+CAA+C;CAC/C,oCAAoC;CACpC,qCAAqC;CACrC,WAAW;CACX,gBAAgB;CAChB,sBAAsB;CACtB,wBAAwB;CACxB,sBAAsB;CACtB,kEAAkE;CAClE,YAAY;CACZ,eAAe;CACf,gBAAgB;AACjB;AACA;CACC,gBAAgB;AACjB;AACA;CACC,wBAAwB;AACzB;AACA;wEACwE;AACxE;CACC,cAAc;CACd,kBAAkB;CAClB,MAAM;CACN,OAAO;CACP,QAAQ;CACR,SAAS;CACT,YAAY;CACZ,iBAAiB;CACjB,eAAe;CACf,eAAe;CACf,0CAA0C;CAC1C,gDAAgD;CAChD,UAAU;CACV,WAAW;AACZ;AACA;CACC,gBAAgB;CAChB,8BAA8B;CAC9B,aAAa;AACd;AACA;CACC,kBAAkB;CAClB,+CAA+C;CAC/C,SAAS;CACT,OAAO;CACP,QAAQ;CACR,YAAY;CACZ,iBAAiB;CACjB,SAAS;CACT,gBAAgB;CAChB,kBAAkB;CAClB,oDAAoD;CACpD,UAAU;AACX;AACA;CACC,kBAAkB;CAClB,QAAQ;CACR,MAAM;CACN,YAAY;CACZ,YAAY;CACZ,gBAAgB;CAChB,eAAe;CACf,gBAAgB;CAChB,kBAAkB;CAClB,YAAY;CACZ,gBAAgB;CAChB,UAAU;AACX;AACA;CACC,QAAQ;CACR,WAAW;AACZ;AACA;CACC,sBAAsB;CACtB,WAAW;AACZ;AACA;CACC,YAAY;AACb;AACA;CACC,sBAAsB;AACvB;AACA;CACC,eAAe;CACf,sBAAsB;CACtB,YAAY;AACb;AACA;CACC,8BAA8B;CAC9B,UAAU;CACV,wBAAwB;CACxB,gBAAgB;AACjB;AACA;CACC,aAAa;CACb,0CAA0C;CAC1C,gDAAgD;CAChD,cAAc;CACd,mCAAmC;CACnC,oCAAoC;CACpC,iBAAiB;AAClB;AACA;CACC,UAAU;AACX;AACA;CACC,WAAW;AACZ;AACA;CACC,cAAc;AACf;AACA;CACC,6BAA6B;AAC9B;AACA;CACC,eAAe;CACf,6BAA6B;AAC9B;AACA;CACC,eAAe;CACf,kBAAkB;CAClB,kBAAkB;AACnB;AACA;CACC,iBAAiB;CACjB,kBAAkB;CAClB,wBAAwB;CACxB,qBAAqB;CACrB,mBAAmB;AACpB;AACA;CACC,iBAAiB;CACjB,wBAAwB;CACxB,wBAAwB;AACzB;AACA;CACC,iBAAiB;CACjB,wBAAwB;AACzB;AACA;CACC,iBAAiB;CACjB,qBAAqB;CACrB,mBAAmB;AACpB;AACA;CACC,qBAAqB;CACrB,kBAAkB;AACnB;AACA;CACC,iBAAiB;CACjB,UAAU;AACX;AACA;CACC,eAAe;AAChB;AACA;CACC,kBAAkB;CAClB,gBAAgB;AACjB;AACA;CACC,qBAAqB;CACrB,iBAAiB;CACjB,YAAY;AACb;;AAEA;CACC,yCAAyC;CACzC,cAAc;CACd,WAAW;CACX,UAAU;CACV,qDAAqD;CACrD,gBAAgB;CAChB,kBAAkB;AACnB;AACA;CACC,gBAAgB;CAChB,wEAAwE;AACzE;AACA;CACC,wEAAwE;CACxE,mBAAmB;AACpB;AACA;CACC,YAAY;CACZ,cAAc;CACd,SAAS;CACT,eAAe;CACf,kBAAkB;CAClB,QAAQ;CACR,YAAY;CACZ,sCAAsC;AACvC;AACA;CACC,cAAc;CACd,WAAW;CACX,YAAY;CACZ,cAAc;CACd,SAAS;CACT,gCAAgC;CAChC,eAAe;AAChB;AACA;CACC,+CAA+C;AAChD;AACA;CACC,iBAAiB;CACjB,cAAc;CACd,mBAAmB;CACnB,mBAAmB;AACpB;;AAEA;CACC,aAAa;CACb,kBAAkB;CAClB,kBAAkB;AACnB;AACA;CACC,YAAY;CACZ,cAAc;CACd,mBAAmB;CACnB,gBAAgB;CAChB,iBAAiB;CACjB,iBAAiB;AAClB;AACA;CACC,0EAA0E;CAC1E,iBAAiB;AAClB;AACA;CACC,0EAA0E;CAC1E,kBAAkB;AACnB;;AAEA;CACC;EACC,6BAA6B,EAAE,kCAAkC;CAClE;CACA;EACC,cAAc;EACd,mBAAmB;CACpB;CACA;EACC,cAAc;EACd,WAAW;EACX,YAAY;EACZ,YAAY;CACb;CACA;EACC,wBAAwB;CACzB;CACA;EACC,wBAAwB;CACzB;CACA;EACC,aAAa;CACd;AACD;;AAEA,gCAAgC;AAChC;CACC,gBAAgB;CAChB,gBAAgB;CAChB,gBAAgB;CAChB,kBAAkB;CAClB,gBAAgB;CAChB,eAAe;AAChB;AACA,mBAAmB,eAAe,EAAE,gBAAgB,EAAE;AACtD,mBAAmB,iBAAiB,EAAE,oBAAoB,EAAE,wBAAwB,EAAE;AACtF,mBAAmB,iBAAiB,EAAE,mBAAmB,EAAE;AAC3D,mBAAmB,iBAAiB,EAAE,mBAAmB,EAAE;AAC3D,kBAAkB,cAAc,EAAE;AAClC,mBAAmB,yBAAyB,EAAE,UAAU,EAAE;AAC1D,mBAAmB,cAAc,EAAE;AACnC,uBAAuB,wBAAwB,EAAE;AACjD,mBAAmB,8BAA8B,EAAE;AACnD,kBAAkB,wBAAwB,EAAE;AAC5C;CACC,+CAA+C;CAC/C,iDAAiD;CACjD,kBAAkB;CAClB,cAAc;CACd,gBAAgB;AACjB;AACA;CACC,YAAY;CACZ,yCAAyC;CACzC,eAAe;AAChB;AACA;;CAEC,2BAA2B;AAC5B","sourcesContent":["#popups:not(:empty) {\n\tposition: absolute;\n\ttop: 0;\n\tleft: 0;\n\tright: 0;\n\tbottom: 0;\n}\n#popups .popup {\n\tposition:fixed;\n\tdisplay:none;\n\ttop: 15vh;\n\tleft: calc(100vw / 2);\n\ttransform: translate(-50%, 0);\n\tbackground-color: #7A838B;\n\tbackground-color: var(--block-background-color);\n\tborder: 1px solid rgba(0, 0, 0, 0.5);\n\tborder: 1px solid var(--border-color);\n\twidth: 90vw;\n\tmax-width: 500px;\n\tmax-height: calc(80vh);\n\tmargin:0px auto 0px auto;\n\tpadding: 4rem 0 5rem 0;\n\tbox-shadow: 0 0 0 4000px rgba(0,0,0,0.3), 0 0 20px rgba(0,0,0,0.5);\n\tz-index: 100;\n\tfont-size: 15px;\n\toverflow: hidden;\n}\n#popups .popup.wide{\n\tmax-width: 840px;\n}\n#popups .popup a{\n\tcolor: var(--link-color);\n}\n/* the direct child only: this is the dialog's own title bar. Nested h2s\n   (e.g. markdown content in the Changelog dialog) must flow normally. */\n#popups .popup > h2{\n\tdisplay: block;\n\tposition: absolute;\n\ttop: 0;\n\tleft: 0;\n\tright: 0;\n\tmargin: 0;\n\theight: 4rem;\n\tline-height: 4rem;\n\tpadding: 0 1rem;\n\tfont-size: 2rem;\n\tbackground-color: rgba(255, 255, 255, 0.3);\n\tbackground-color: var(--header-background-color);\n\tz-index: 0;\n\tcursor:move;\n}\n#popups .popup .dialog_content {\n\toverflow-y: auto;\n\tmax-height: calc(80vh - 11rem);\n\tpadding: 1rem;\n}\n#popups .popup .buttons{\n\tposition: absolute;\n\tbackground-color: var(--block-background-color);\n\tbottom: 0;\n\tleft: 0;\n\tright: 0;\n\theight: 5rem;\n\tline-height: 4rem;\n\tmargin: 0;\n\tpadding: .5rem 0;\n\ttext-align: center;\n\tborder-top: 1px solid var(--header-background-color);\n\tz-index: 3;\n}\n#popups .popup .close{\n\tposition: absolute;\n\tright: 0;\n\ttop: 0;\n\tmin-width: 0;\n\tpadding: 5px;\n\tline-height: 0.5;\n\tfont-size: 18px;\n\tmargin-top: 10px;\n\tmargin-right: 10px;\n\tborder: none;\n\tbackground: none;\n\tz-index: 1;\n}\n#popups .popup input[type=\"range\"]{\n\tmargin:0;\n\twidth: 100%;\n}\n#popups .popup table{\n\tbox-sizing: border-box;\n\twidth: 100%;\n}\n#popups .popup td, #popups .popup th{\n\theight: 25px;\n}\n#popups .popup td{\n\tvertical-align: middle;\n}\n#popups .popup th{\n\ttext-align:left;\n\tpadding: 5px 5px 5px 0;\n\twidth: 130px;\n}\n#popups .popup textarea{\n\tcolor: var(--input-text-color);\n\twidth:100%;\n\tborder:1px solid #393939;\n\tpadding-left:5px;\n}\n#popups .popup .button{\n\tmargin: 0 3px;\n\tbackground-color: rgba(255, 255, 255, 0.2);\n\tbackground-color: var(--button-background-color);\n\tmin-width:60px;\n\tborder:1px solid rgba(0, 0, 0, 0.5);\n\tborder:1px solid var(--border-color);\n\tpadding: 5px 10px;\n}\n#popups .popup input[type=\"text\"], #popups .popup input[type=\"number\"], #popups .popup textarea{\n\twidth:100%;\n}\n#popups .popup input[type=\"number\"]{\n\twidth:100px;\n}\n#popups .popup input[type=\"radio\"], #popups .popup input[type=\"checkbox\"]{\n\tmargin-left: 0;\n}\n#popups .popup label span{\n\tcolor:var(--text-color-muted);\n}\n#popups .popup .checkbox label{\n\tmargin-top: 5px;\n\tcolor:var(--text-color-muted);\n}\n#popups .popup .preview_container{\n\tmargin-top:10px;\n\tmargin-bottom:15px;\n\ttext-align: center;\n}\n#popups .popup .preview_canvas_left{\n\tposition:relative;\n\tmargin:0 5px 5px 0;\n\tborder:1px solid #393939;\n\tdisplay: inline-block;\n\tvertical-align: top;\n}\n#popups .popup .preview_canvas_post_back{\n\tposition:absolute;\n\tborder:1px solid #393939;\n\tbackground-color:#ffffff;\n}\n#popups .popup .preview_canvas_post{\n\tposition:relative;\n\tborder:1px solid #393939;\n}\n#popups .popup .canvas_preview_container{\n\tposition:relative;\n\tdisplay: inline-block;\n\tvertical-align: top;\n}\n#popups .popup .radios label{\n\tdisplay: inline-block;\n\tmargin-right: 10px;\n}\n#popups .popup .range_value{\n\tpadding-left:10px;\n\twidth:50px;\n}\n#popups .popup .long_text_value{\n\tfont-size: 14px;\n}\n#popups .popup .preview-item-title{\n\ttext-align: center;\n\tmax-width: 150px;\n}\n#popups .popup .field_comment{\n\tdisplay: inline-block;\n\tmargin-left: 10px;\n\topacity: 0.5;\n}\n\n#popups .popup .selection_card {\n\tbackground: var(--input-background-color);\n\tdisplay: block;\n\twidth: 100%;\n\tpadding: 0;\n\tborder-bottom: 0.1rem solid var(--input-border-color);\n\toverflow: hidden;\n\tposition: relative;\n}\n#popups .popup .selection_card:first-child {\n\tmargin-top: 1rem;\n\tborder-radius: var(--input-border-radius) var(--input-border-radius) 0 0;\n}\n#popups .popup .selection_card:last-child {\n\tborder-radius: 0 0 var(--input-border-radius) var(--input-border-radius);\n\tborder-bottom: none;\n}\n#popups .popup .selection_card > input[type=\"checkbox\"] {\n\tflex-grow: 0;\n\tflex-shrink: 0;\n\tmargin: 0;\n\tcursor: pointer;\n\tposition: absolute;\n\ttop: 50%;\n\tleft: 1.5rem;\n\ttransform: translateY(-50%) scale(1.5);\n}\n#popups .popup .selection_card > input[type=\"checkbox\"] + label {\n\tdisplay: block;\n\twidth: 100%;\n\tflex-grow: 1;\n\tflex-shrink: 1;\n\tmargin: 0;\n\tpadding: 1rem 0.5rem 1rem 5.5rem;\n\tcursor: pointer;\n}\n#popups .popup .selection_card > input[type=\"checkbox\"] + label:hover {\n\tbackground: var(--input-background-color-hover);\n}\n#popups .popup .selection_card .font_preview {\n\tfont-size: 1.8rem;\n\theight: 2.5rem;\n\tline-height: 2.5rem;\n\twhite-space: nowrap;\n}\n\n#popups .popup .pagination {\n\tdisplay: flex;\n\ttext-align: center;\n\tmargin: 1rem 0 0 0;\n}\n#popups .popup .pagination button {\n\tflex-grow: 0;\n\theight: 2.8rem;\n\tline-height: 2.8rem;\n\tborder-radius: 0;\n\tmargin-left: -1px;\n\tmin-width: 3.3rem;\n}\n#popups .popup .pagination button:first-child {\n\tborder-radius: var(--button-border-radius) 0 0 var(--button-border-radius);\n\tmargin-left: auto;\n}\n#popups .popup .pagination button:last-child {\n\tborder-radius: 0 var(--button-border-radius) var(--button-border-radius) 0;\n\tmargin-right: auto;\n}\n\n@media screen and (max-width:500px){\n\t#popups .popup {\n\t\tmax-height: calc(80vh - 20px); /* mobile phones has bottom menu */\n\t}\n\t#popups .popup tr{\n\t\tdisplay: block;\n\t\tmargin-bottom: 10px;\n\t}\n\t#popups .popup td, #popups .popup th{\n\t\tdisplay: block;\n\t\twidth: 100%;\n\t\theight: auto;\n\t\tpadding: 5px;\n\t}\n\t#popups .popup th{\n\t\tpadding: 5px 5px 0px 5px;\n\t}\n\t#popups .popup td{\n\t\tpadding: 5px 5px 5px 5px;\n\t}\n\t#popups .popup .range_value{\n\t\tdisplay: none;\n\t}\n}\n\n/* changelog / markdown viewer */\n.markdown_body{\n\tmax-width: 640px;\n\tmax-height: 62vh;\n\toverflow-y: auto;\n\tpadding-right: 6px;\n\tline-height: 1.5;\n\tfont-size: 14px;\n}\n.markdown_body h1{ font-size: 2rem; margin: 0 0 .3em; }\n.markdown_body h2{ font-size: 1.6rem; margin: 1.1em 0 .3em; color: var(--text-color); }\n.markdown_body h3{ font-size: 1.3rem; margin: .9em 0 .3em; }\n.markdown_body h4{ font-size: 1.1rem; margin: .8em 0 .3em; }\n.markdown_body p{ margin: .4em 0; }\n.markdown_body ul{ margin: .3em 0 .8em 1.3em; padding: 0; }\n.markdown_body li{ margin: .2em 0; }\n.markdown_body strong{ color: var(--text-color); }\n.markdown_body em{ color: var(--text-color-muted); }\n.markdown_body a{ color: var(--link-color); }\n.markdown_body code{\n\tbackground-color: var(--input-background-color);\n\tborder: 1px solid var(--input-group-border-color);\n\tborder-radius: 3px;\n\tpadding: 0 4px;\n\tfont-size: .92em;\n}\n.markdown_body hr{\n\tborder: none;\n\tborder-top: 1px solid var(--border-color);\n\tmargin: 1.1em 0;\n}\nbody.theme-yonce .markdown_body h1,\nbody.theme-yonce .markdown_body h2{\n\tcolor: var(--yc-petal-pink);\n}\n"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -59227,6 +61151,8 @@ var map = {
 	"./tools/color_zoom.js": "./src/js/modules/tools/color_zoom.js",
 	"./tools/content_fill.js": "./src/js/modules/tools/content_fill.js",
 	"./tools/keypoints.js": "./src/js/modules/tools/keypoints.js",
+	"./tools/palettes.js": "./src/js/modules/tools/palettes.js",
+	"./tools/pixel.js": "./src/js/modules/tools/pixel.js",
 	"./tools/replace_color.js": "./src/js/modules/tools/replace_color.js",
 	"./tools/restore_alpha.js": "./src/js/modules/tools/restore_alpha.js",
 	"./tools/search.js": "./src/js/modules/tools/search.js",
@@ -59334,6 +61260,42 @@ webpackContext.id = "./src/js/tools sync recursive \\.js$";
 
 /***/ },
 
+/***/ "./src/palettes sync \\.json$"
+/*!*************************************************!*\
+  !*** ./src/palettes/ sync nonrecursive \.json$ ***!
+  \*************************************************/
+(module, __unused_webpack_exports, __webpack_require__) {
+
+var map = {
+	"./endesga-32.json": "./src/palettes/endesga-32.json",
+	"./gameboy-dmg.json": "./src/palettes/gameboy-dmg.json",
+	"./grayscale-16.json": "./src/palettes/grayscale-16.json",
+	"./pico-8.json": "./src/palettes/pico-8.json",
+	"./sweetie-16.json": "./src/palettes/sweetie-16.json"
+};
+
+
+function webpackContext(req) {
+	var id = webpackContextResolve(req);
+	return __webpack_require__(id);
+}
+function webpackContextResolve(req) {
+	if(!__webpack_require__.o(map, req)) {
+		var e = new Error("Cannot find module '" + req + "'");
+		e.code = 'MODULE_NOT_FOUND';
+		throw e;
+	}
+	return map[req];
+}
+webpackContext.keys = function webpackContextKeys() {
+	return Object.keys(map);
+};
+webpackContext.resolve = webpackContextResolve;
+module.exports = webpackContext;
+webpackContext.id = "./src/palettes sync \\.json$";
+
+/***/ },
+
 /***/ "./CHANGELOG.md"
 /*!**********************!*\
   !*** ./CHANGELOG.md ***!
@@ -59341,7 +61303,7 @@ webpackContext.id = "./src/js/tools sync recursive \\.js$";
 (module) {
 
 "use strict";
-module.exports = "# Changelog\n\nAll notable changes to **Get in loser** — a browser paint tool, and also, allegedly, a roguelite. In order of descent: oldest at the top, because the way down only makes sense from the top. Dates are approximate; time is a construct; the fog is real.\n\n---\n\n## v0.1.0 — \"First Coat\"\n\nThe one where it's just a paint app. For now.\n\n- **Painting:** brush, pencil, eraser, fill. They work. You can make an image. Congratulations, you are an artist.\n- **Themes:** shipped the Yoncé theme — Midnight Violet fading to Onyx, Vintage Grape panels, and a hot pink we later agreed was \"too hot.\"\n- **Fonts:** the entire UI now speaks Atkinson Hyperlegible, because we would very much like you to be able to read the pop-ups. You will see why.\n- **The hand:** the \"l\" in the logo is a finger pointing up. It is pointing *at* something. Do not look directly at it yet.\n- Fixed: the gradient background no longer tiles itself into venetian blinds.\n\n*This build contains no roguelite elements. None whatsoever. Why would you even ask.*\n\n---\n\n## v0.1.1 — \"Undo Considered Harmful\"\n\n- **New:** `Ctrl+Z` now also undoes minor regrets. Personal regrets remain out of scope — see roadmap.\n- **Balance:** the Bucket Fill tool no longer floods *adjacent save files.* We know. We are sorry. We have spoken with it.\n- **Layers:** you may now stack up to 8 layers before the Layers panel begins to whisper. This is intended. The whispering is a feature. It is called \"ambiance.\"\n- **Not a secret:** moving your mouse makes the logo letters bob. The secret is what happens on the 7th bob. (Nothing happens on the 7th bob. Keep bobbing.)\n\n---\n\n## v0.1.2 — \"The Fog Rolls In\"\n\n- **Tools:** added the Clone Stamp. It clones pixels. It has recently begun cloning *other things.* Inventory management is coming in a future patch.\n- **New resource — Ink:** every brushstroke now costs 1 Ink. You begin each canvas with 999 Ink. When it runs out you must *find more Ink.* The Ink is in the Effects menu. The Ink was always in the Effects menu.\n- **Encounter:** the Sharpen filter, applied three times in a row, will Sharpen *back.* Bring a friend. Bring the friend as a separate layer.\n- **Accessibility:** all bosses now have subtitles.\n- Fixed: the default color is black, not \"the specific green of a 2009 startup logo.\"\n\n---\n\n## v0.1.3 — \"Descent\" (Floors 1–3)\n\n- **Roguelite systems, now officially acknowledged:** the Zoom controls double as your Depth Meter. 100% is the surface. Keep clicking `-`. We'll wait.\n- **Loot:** every 50 brushstrokes drops a Modifier. Current pool — *Wet* (colors bleed), *Dry* (colors judge you), *Impasto* (colors gain mass, and eventually, opinions).\n- **Meta-progression:** the swatches you never use are being saved. For the run. For *a* run. It's fine.\n- **Boss — The Marquee:** defeat the dashed selection that circles your best work and calls it \"just a draft.\" Reward: the Crop tool, and closure.\n- **Known issue:** the tutorial for the paint tool is finished. The tutorial for the *other* thing is written on the inside of the fog. We are aware. We put it there.\n\n---\n\n## v0.1.4 — \"The Letters Have Learned To Float\"\n\nThe one where the UI stopped holding still.\n\n- **Legibility (paint tool):** the entire interface is now set in Atkinson Hyperlegible, and every font grew by a few points. This is so you can read the tool labels. It is also, per the Braille Institute, so you can read the *warnings.*\n- **Selection color:** softened the tool-selection pink to Petal Pink (`#ce59a7`), after the previous pink was formally reclassified as \"too hot to look at directly.\" Black icons are legible again. We are calling this a truce.\n- **De-pinking:** the number fields, the preview zoom buttons, and the layer controls no longer glow. They match the other inputs now. They are calmer. They have accepted their roles.\n- **Layers:** rows now grow to fit their names instead of clipping them. The names have more room. They are using it to become longer. We are monitoring the situation.\n- **Palette:** the swatch picker now ships pre-loaded with the theme colors, the default color is an honest black, and every tool fills with black by default. The 2009-startup green is gone. Do not ask where.\n- **THE LOGO:** the \"l\" in *loser* is the finger now. The finger hovers on its own, like a ghost, because it is one. Move your mouse and the other letters begin to bob — the wave is *ticked by your cursor,* so the logo only breathes while you are watching it. The finger and \"oser\" bleed from white into pink. It is still pointing at something. You have been moving your mouse for a while now.\n- **Meta:** added this Changelog (Help → Changelog). You are reading the tutorial. This is the tutorial. Hello.\n\n---\n\n## v0.1.5 — \"One Click, No Take-Backs\"\n\n- **Cosmetic:** the delete \"×\" on each layer is now Petal Pink, matching the tool-selection color — a red × felt like a threat, and we prefer our threats color-coordinated.\n- **Rename (a functional change, we admit it):** the layer rename dialog now opens on a *single* click instead of a double-click. One click. Faster. Also less deniable. The layer will know you named it. It will remember the name you chose. Choose kindly.\n\n---\n\n## v0.1.6 — \"Right Of Way\"\n\n- **Rename, reconsidered:** a single click on a layer now just *selects* it, like a reasonable tool. We heard you — the dialog was ambushing you every time you tried to switch layers. It has been asked to wait its turn.\n- **New — right-click menu:** right-click a layer name for a context menu. It currently offers exactly one option, \"Rename,\" with the quiet confidence of a menu that knows more options are coming and is choosing not to say so yet.\n\n---\n\n## v0.1.7 — \"The Menu Reveals Itself\"\n\n- **Layer right-click menu:** the context menu that previously offered only \"Rename\" now admits it has always had more to say. Added *Duplicate*, *Convert to Raster*, *Merge Down* (which appears only when there is, in fact, a layer below to merge into — it will not pretend otherwise), and, past a respectful divider, *Delete*. Each acts on the layer you clicked, whether or not it was the one you were looking at.\n\n---\n\n## v0.1.8 — \"Reunited (The Row Holds)\"\n\n- **Layers, responsiveness:** the visibility eye and the delete \"×\" had been wandering onto their own lines whenever a layer name got long or the panel got narrow. They have been returned to the row. The name now yields space — and truncates, politely — instead of evicting its neighbors. One layer, one line.\n\n---\n\n## v0.1.9 — \"Legible At Last\"\n\n- **Colors panel:** the three toggle icons (picker / channels / swatches) are now white instead of the pressed-state cyan, which had been quietly cosplaying as a UI accent.\n- **Error popups:** the lower-right notifications were black text on a muted red — a color combination previously only found in ransom notes. They now match the grape layer panels: white text, rounded corners, and a colored left edge (red for errors; other colors exist for the other outcomes, should you ever be so lucky).\n\n---\n\n## v0.1.10 — \"Paste, By Request\"\n\n- **Edit → Paste (menu):** now actually pastes. It asks the browser for clipboard-read permission the first time — grant it once and the menu item reads an image straight off your clipboard and drops it in as a layer. Where the browser refuses (Firefox, Safari, insecure contexts, a denied prompt), it steps aside and points you back to the ever-reliable Ctrl+V. Copy was never the problem; *reading* your clipboard is the part browsers guard, and rightly so.\n\n---\n\n## v0.1.11 — \"The Folder Remembers\"\n\n- **New — Smart folder** (*Settings → \"Smart folder\"*): toggle it on and pick a folder. Get in loser tells you plainly that it will read from and write to that folder, then keeps a single `get-in-loser.json` there holding your configuration and a session history.\n- **Pick a folder you have used before and it knows.** Your settings come back — theme and all — and the folder's history gains another entry. It has been counting. It will tell you how many times you have been here.\n- Requires a Chromium browser (Chrome/Edge) for the File System Access API; elsewhere it declines politely rather than pretending. The folder is remembered between sessions and reconnects on load, for as long as the browser still trusts you.\n\n---\n\n## v0.1.12 — \"There Is Only One Theme\"\n\n- **Smart folder has a home now:** a folder icon sits to the right of the logo. Click it to pick your folder; it glows Petal Pink while connected and tells you which folder it is holding. The Settings toggle still exists, at the bottom of a long list, where you did not find it. Fair.\n- **Theme selection, clarified:** choosing any theme other than *yonce* now returns you to the original miniPaint. Immediately. We are not angry. We simply understand that you would be happier there. (Your unsaved work still gets the usual \"are you sure\" — we are petty, not cruel.)\n\n---\n\n## v0.1.13 — \"Faster Than That\"\n\n- **Banishment, recalibrated:** the theme redirect only fired when you pressed *OK* — but the theme changes the instant you touch the dropdown, so you were getting a new theme and no consequences. Unacceptable. It now triggers the moment you pick a non-yonce theme. You do get a 1.5-second grace period: switch back to yonce in time and the matter is quietly dropped.\n\n---\n\n## v0.1.14 — \"A Theme For Every Kind Of Wrong\"\n\nTheme selection is now fully implemented. Each option has been considered carefully.\n\n- **yonce** — correct.\n- **classic** — a faithful copy of the original dark theme, in the sense that every single value in it is now `#000000`. Background, text, borders, icons. Black on black. It does not redirect you anywhere; it does not have to.\n- **dark** — still returns you to the original miniPaint, where dark is presumably fine.\n- **light** — redirects to adobe.com. Enjoy the subscription.\n- **green** — no longer a palette, more of a mood. Every application rolls fresh random greens, all crammed into the same narrow band of darkness so that no two elements are ever quite distinguishable. Re-roll by selecting it again. You will not find a good one.\n\nSwitching back to yonce inside the grace period still cancels any pending relocation, and leaving *green* restores the real palette.\n\n---\n\n## v0.1.15 — \"The Void Is Negotiable\"\n\n- **classic now has an exit.** It is still absolute black on absolute black. But as you move the mouse, the colour bleeds back in — the entire palette climbing out of black toward yonce over roughly ten seconds of actual movement, gradient and all. Stop moving and it stops healing. You are not trapped; you are being asked to demonstrate effort.\n- **green is greener.** The greys, the whites, and the blues it had quietly inherited are all green now — even the semantic \"red\" is green. There is no longer anything in that theme which is not green, which somehow makes the contrast worse.\n- **light** now carries a UTM to adobe.com so the referral is properly attributed. No spaces in it — `get-in-loser`. We are unserious, not unprofessional.\n\n---\n\n## v0.1.16 — \"Dark Mode, Taken Literally\"\n\n- **classic and dark have traded fates.** *classic* now returns you to the original miniPaint, which is what you were asking for by choosing it. *dark* is the void.\n- **dark is now genuinely, completely dark.** Previously the tool icons, the layer visibility eye, the finger in the logo and — most embarrassingly — the canvas itself all carried on glowing while everything else went black. They are black now too. Dark mode should not have exceptions.\n- **The whole void fades back together.** Icons and the canvas ride the recovery with everything else, so ten seconds of mouse movement returns the entire interface rather than most of it.\n- **Selecting dark now commits itself** and closes the dialog. You cannot click \"Ok\" on a dialog you cannot see; asking you to was rude.\n- **green finally reaches the canvas.** The canvas, the tool icons, the logo hand and the checkboxes are all green now. Every part of that theme is green. That was the promise.\n\n---\n\n## v0.1.17 — \"No, All Of It\"\n\n- **dark mode holds out no longer.** The colour picker had been quietly glowing this whole time — the saturation square, the hue strip, the alpha checkerboard, the swatch grid, the native colour and range inputs, the effect previews, and the gradient tool's icon, which upstream had specifically excused from tinting. All black now.\n- **Even the hairline.** Every button carried a hardcoded white inset highlight. It is a variable now, and in dark it is nothing.\n- All of it still fades back together on mouse movement. The void is complete, and it is still negotiable.\n\n---\n\n## v0.1.18 — \"The Sliders Were Hiding\"\n\n- **The colour sliders have joined us.** Their handles are little CSS triangles built out of hardcoded white borders, and the colour channel section is collapsed by default — so they were both invisible to the sweep and stubbornly bright once you opened it. The slider and picker components are now tinted whole, handles and all.\n- Nested pieces are explicitly exempted from tinting twice, because two filters multiply, and a slider that fades at the square of everything else looks haunted in a way we did not intend.\n\n---\n\n## v0.1.19 — \"The Hand Has A Name\"\n\n- **We looked up the icon.** The hand in the logo — the one that has been pointing this whole time — is a real icon by a real person, and we had never actually read its record. Its name is **\"Loser gesture.\"** We did not name it that. It was called that before we found it. We named the project *afterward.* We have decided not to think about this further.\n- **New — Help → Icon License**, or *right-click the hand itself.* The credit is now in the app: creator, license, the page it came from, and exactly which files it became. It reads from a data file fetched straight from the source, so the credit in the app and the credit in the repo cannot drift apart. One of them lying to you would be thematically appropriate but practically unacceptable.\n- **Attribution, properly.** It is used under CC BY 3.0, which asks that we say who made it. We say so in three places now. It is the least we can do for something that has been silently gesturing at you since v0.1.0.\n- **Under the hood:** the layer right-click menu and the new logo right-click menu are now the same menu, wearing different options.\n\n*Naming a thing gives it power. We are aware of the risk. We accepted it.*\n\n---\n\n## Unreleased — \"???\"\n\n- (redacted)\n- (redacted)\n- the frog is not fractions\n- the frog is not fractions\n- please stop resizing the canvas — it can tell\n";
+module.exports = "# Changelog\n\nAll notable changes to **Get in loser** — a browser paint tool, and also, allegedly, a roguelite. In order of descent: oldest at the top, because the way down only makes sense from the top. Dates are approximate; time is a construct; the fog is real.\n\n---\n\n## v0.1.0 — \"First Coat\"\n\nThe one where it's just a paint app. For now.\n\n- **Painting:** brush, pencil, eraser, fill. They work. You can make an image. Congratulations, you are an artist.\n- **Themes:** shipped the Yoncé theme — Midnight Violet fading to Onyx, Vintage Grape panels, and a hot pink we later agreed was \"too hot.\"\n- **Fonts:** the entire UI now speaks Atkinson Hyperlegible, because we would very much like you to be able to read the pop-ups. You will see why.\n- **The hand:** the \"l\" in the logo is a finger pointing up. It is pointing *at* something. Do not look directly at it yet.\n- Fixed: the gradient background no longer tiles itself into venetian blinds.\n\n*This build contains no roguelite elements. None whatsoever. Why would you even ask.*\n\n---\n\n## v0.1.1 — \"Undo Considered Harmful\"\n\n- **New:** `Ctrl+Z` now also undoes minor regrets. Personal regrets remain out of scope — see roadmap.\n- **Balance:** the Bucket Fill tool no longer floods *adjacent save files.* We know. We are sorry. We have spoken with it.\n- **Layers:** you may now stack up to 8 layers before the Layers panel begins to whisper. This is intended. The whispering is a feature. It is called \"ambiance.\"\n- **Not a secret:** moving your mouse makes the logo letters bob. The secret is what happens on the 7th bob. (Nothing happens on the 7th bob. Keep bobbing.)\n\n---\n\n## v0.1.2 — \"The Fog Rolls In\"\n\n- **Tools:** added the Clone Stamp. It clones pixels. It has recently begun cloning *other things.* Inventory management is coming in a future patch.\n- **New resource — Ink:** every brushstroke now costs 1 Ink. You begin each canvas with 999 Ink. When it runs out you must *find more Ink.* The Ink is in the Effects menu. The Ink was always in the Effects menu.\n- **Encounter:** the Sharpen filter, applied three times in a row, will Sharpen *back.* Bring a friend. Bring the friend as a separate layer.\n- **Accessibility:** all bosses now have subtitles.\n- Fixed: the default color is black, not \"the specific green of a 2009 startup logo.\"\n\n---\n\n## v0.1.3 — \"Descent\" (Floors 1–3)\n\n- **Roguelite systems, now officially acknowledged:** the Zoom controls double as your Depth Meter. 100% is the surface. Keep clicking `-`. We'll wait.\n- **Loot:** every 50 brushstrokes drops a Modifier. Current pool — *Wet* (colors bleed), *Dry* (colors judge you), *Impasto* (colors gain mass, and eventually, opinions).\n- **Meta-progression:** the swatches you never use are being saved. For the run. For *a* run. It's fine.\n- **Boss — The Marquee:** defeat the dashed selection that circles your best work and calls it \"just a draft.\" Reward: the Crop tool, and closure.\n- **Known issue:** the tutorial for the paint tool is finished. The tutorial for the *other* thing is written on the inside of the fog. We are aware. We put it there.\n\n---\n\n## v0.1.4 — \"The Letters Have Learned To Float\"\n\nThe one where the UI stopped holding still.\n\n- **Legibility (paint tool):** the entire interface is now set in Atkinson Hyperlegible, and every font grew by a few points. This is so you can read the tool labels. It is also, per the Braille Institute, so you can read the *warnings.*\n- **Selection color:** softened the tool-selection pink to Petal Pink (`#ce59a7`), after the previous pink was formally reclassified as \"too hot to look at directly.\" Black icons are legible again. We are calling this a truce.\n- **De-pinking:** the number fields, the preview zoom buttons, and the layer controls no longer glow. They match the other inputs now. They are calmer. They have accepted their roles.\n- **Layers:** rows now grow to fit their names instead of clipping them. The names have more room. They are using it to become longer. We are monitoring the situation.\n- **Palette:** the swatch picker now ships pre-loaded with the theme colors, the default color is an honest black, and every tool fills with black by default. The 2009-startup green is gone. Do not ask where.\n- **THE LOGO:** the \"l\" in *loser* is the finger now. The finger hovers on its own, like a ghost, because it is one. Move your mouse and the other letters begin to bob — the wave is *ticked by your cursor,* so the logo only breathes while you are watching it. The finger and \"oser\" bleed from white into pink. It is still pointing at something. You have been moving your mouse for a while now.\n- **Meta:** added this Changelog (Help → Changelog). You are reading the tutorial. This is the tutorial. Hello.\n\n---\n\n## v0.1.5 — \"One Click, No Take-Backs\"\n\n- **Cosmetic:** the delete \"×\" on each layer is now Petal Pink, matching the tool-selection color — a red × felt like a threat, and we prefer our threats color-coordinated.\n- **Rename (a functional change, we admit it):** the layer rename dialog now opens on a *single* click instead of a double-click. One click. Faster. Also less deniable. The layer will know you named it. It will remember the name you chose. Choose kindly.\n\n---\n\n## v0.1.6 — \"Right Of Way\"\n\n- **Rename, reconsidered:** a single click on a layer now just *selects* it, like a reasonable tool. We heard you — the dialog was ambushing you every time you tried to switch layers. It has been asked to wait its turn.\n- **New — right-click menu:** right-click a layer name for a context menu. It currently offers exactly one option, \"Rename,\" with the quiet confidence of a menu that knows more options are coming and is choosing not to say so yet.\n\n---\n\n## v0.1.7 — \"The Menu Reveals Itself\"\n\n- **Layer right-click menu:** the context menu that previously offered only \"Rename\" now admits it has always had more to say. Added *Duplicate*, *Convert to Raster*, *Merge Down* (which appears only when there is, in fact, a layer below to merge into — it will not pretend otherwise), and, past a respectful divider, *Delete*. Each acts on the layer you clicked, whether or not it was the one you were looking at.\n\n---\n\n## v0.1.8 — \"Reunited (The Row Holds)\"\n\n- **Layers, responsiveness:** the visibility eye and the delete \"×\" had been wandering onto their own lines whenever a layer name got long or the panel got narrow. They have been returned to the row. The name now yields space — and truncates, politely — instead of evicting its neighbors. One layer, one line.\n\n---\n\n## v0.1.9 — \"Legible At Last\"\n\n- **Colors panel:** the three toggle icons (picker / channels / swatches) are now white instead of the pressed-state cyan, which had been quietly cosplaying as a UI accent.\n- **Error popups:** the lower-right notifications were black text on a muted red — a color combination previously only found in ransom notes. They now match the grape layer panels: white text, rounded corners, and a colored left edge (red for errors; other colors exist for the other outcomes, should you ever be so lucky).\n\n---\n\n## v0.1.10 — \"Paste, By Request\"\n\n- **Edit → Paste (menu):** now actually pastes. It asks the browser for clipboard-read permission the first time — grant it once and the menu item reads an image straight off your clipboard and drops it in as a layer. Where the browser refuses (Firefox, Safari, insecure contexts, a denied prompt), it steps aside and points you back to the ever-reliable Ctrl+V. Copy was never the problem; *reading* your clipboard is the part browsers guard, and rightly so.\n\n---\n\n## v0.1.11 — \"The Folder Remembers\"\n\n- **New — Smart folder** (*Settings → \"Smart folder\"*): toggle it on and pick a folder. Get in loser tells you plainly that it will read from and write to that folder, then keeps a single `get-in-loser.json` there holding your configuration and a session history.\n- **Pick a folder you have used before and it knows.** Your settings come back — theme and all — and the folder's history gains another entry. It has been counting. It will tell you how many times you have been here.\n- Requires a Chromium browser (Chrome/Edge) for the File System Access API; elsewhere it declines politely rather than pretending. The folder is remembered between sessions and reconnects on load, for as long as the browser still trusts you.\n\n---\n\n## v0.1.12 — \"There Is Only One Theme\"\n\n- **Smart folder has a home now:** a folder icon sits to the right of the logo. Click it to pick your folder; it glows Petal Pink while connected and tells you which folder it is holding. The Settings toggle still exists, at the bottom of a long list, where you did not find it. Fair.\n- **Theme selection, clarified:** choosing any theme other than *yonce* now returns you to the original miniPaint. Immediately. We are not angry. We simply understand that you would be happier there. (Your unsaved work still gets the usual \"are you sure\" — we are petty, not cruel.)\n\n---\n\n## v0.1.13 — \"Faster Than That\"\n\n- **Banishment, recalibrated:** the theme redirect only fired when you pressed *OK* — but the theme changes the instant you touch the dropdown, so you were getting a new theme and no consequences. Unacceptable. It now triggers the moment you pick a non-yonce theme. You do get a 1.5-second grace period: switch back to yonce in time and the matter is quietly dropped.\n\n---\n\n## v0.1.14 — \"A Theme For Every Kind Of Wrong\"\n\nTheme selection is now fully implemented. Each option has been considered carefully.\n\n- **yonce** — correct.\n- **classic** — a faithful copy of the original dark theme, in the sense that every single value in it is now `#000000`. Background, text, borders, icons. Black on black. It does not redirect you anywhere; it does not have to.\n- **dark** — still returns you to the original miniPaint, where dark is presumably fine.\n- **light** — redirects to adobe.com. Enjoy the subscription.\n- **green** — no longer a palette, more of a mood. Every application rolls fresh random greens, all crammed into the same narrow band of darkness so that no two elements are ever quite distinguishable. Re-roll by selecting it again. You will not find a good one.\n\nSwitching back to yonce inside the grace period still cancels any pending relocation, and leaving *green* restores the real palette.\n\n---\n\n## v0.1.15 — \"The Void Is Negotiable\"\n\n- **classic now has an exit.** It is still absolute black on absolute black. But as you move the mouse, the colour bleeds back in — the entire palette climbing out of black toward yonce over roughly ten seconds of actual movement, gradient and all. Stop moving and it stops healing. You are not trapped; you are being asked to demonstrate effort.\n- **green is greener.** The greys, the whites, and the blues it had quietly inherited are all green now — even the semantic \"red\" is green. There is no longer anything in that theme which is not green, which somehow makes the contrast worse.\n- **light** now carries a UTM to adobe.com so the referral is properly attributed. No spaces in it — `get-in-loser`. We are unserious, not unprofessional.\n\n---\n\n## v0.1.16 — \"Dark Mode, Taken Literally\"\n\n- **classic and dark have traded fates.** *classic* now returns you to the original miniPaint, which is what you were asking for by choosing it. *dark* is the void.\n- **dark is now genuinely, completely dark.** Previously the tool icons, the layer visibility eye, the finger in the logo and — most embarrassingly — the canvas itself all carried on glowing while everything else went black. They are black now too. Dark mode should not have exceptions.\n- **The whole void fades back together.** Icons and the canvas ride the recovery with everything else, so ten seconds of mouse movement returns the entire interface rather than most of it.\n- **Selecting dark now commits itself** and closes the dialog. You cannot click \"Ok\" on a dialog you cannot see; asking you to was rude.\n- **green finally reaches the canvas.** The canvas, the tool icons, the logo hand and the checkboxes are all green now. Every part of that theme is green. That was the promise.\n\n---\n\n## v0.1.17 — \"No, All Of It\"\n\n- **dark mode holds out no longer.** The colour picker had been quietly glowing this whole time — the saturation square, the hue strip, the alpha checkerboard, the swatch grid, the native colour and range inputs, the effect previews, and the gradient tool's icon, which upstream had specifically excused from tinting. All black now.\n- **Even the hairline.** Every button carried a hardcoded white inset highlight. It is a variable now, and in dark it is nothing.\n- All of it still fades back together on mouse movement. The void is complete, and it is still negotiable.\n\n---\n\n## v0.1.18 — \"The Sliders Were Hiding\"\n\n- **The colour sliders have joined us.** Their handles are little CSS triangles built out of hardcoded white borders, and the colour channel section is collapsed by default — so they were both invisible to the sweep and stubbornly bright once you opened it. The slider and picker components are now tinted whole, handles and all.\n- Nested pieces are explicitly exempted from tinting twice, because two filters multiply, and a slider that fades at the square of everything else looks haunted in a way we did not intend.\n\n---\n\n## v0.1.19 — \"The Hand Has A Name\"\n\n- **We looked up the icon.** The hand in the logo — the one that has been pointing this whole time — is a real icon by a real person, and we had never actually read its record. Its name is **\"Loser gesture.\"** We did not name it that. It was called that before we found it. We named the project *afterward.* We have decided not to think about this further.\n- **New — Help → Icon License**, or *right-click the hand itself.* The credit is now in the app: creator, license, the page it came from, and exactly which files it became. It reads from a data file fetched straight from the source, so the credit in the app and the credit in the repo cannot drift apart. One of them lying to you would be thematically appropriate but practically unacceptable.\n- **Attribution, properly.** It is used under CC BY 3.0, which asks that we say who made it. We say so in three places now. It is the least we can do for something that has been silently gesturing at you since v0.1.0.\n- **Under the hood:** the layer right-click menu and the new logo right-click menu are now the same menu, wearing different options.\n\n*Naming a thing gives it power. We are aware of the risk. We accepted it.*\n\n---\n\n## v0.1.20 — \"The Palette Talks Back\"\n\nThe one where the colors stop being a read-only fact about your image and start being negotiable.\n\n- **Image → Color Palette is no longer a museum.** The dialog used to show you your image's palette behind glass: here are your nine colors, look, don't touch. The glass is gone. Every swatch is now a real color input. Click one. Change it. The image *changes with it.* The dominant color stays behind glass, as a reminder of how things used to be.\n- **Two ways to negotiate:**\n  - **Shift — preserve shading:** every pixel follows its palette color by the same distance you moved it. Gradients survive. Anti-aliasing survives. Your image keeps its soul and changes its wardrobe.\n  - **Replace — exact colors:** every pixel snaps to its palette color, exactly, no survivors. It is Decrease Color Depth with *your* hand on the palette. The image comes back flatter, harder, and extremely certain of itself.\n- **Live preview, before and after,** so you can watch the negotiation happen. `Ctrl+Z` remains the mediator of record.\n- **SURFACE BREACH:** the editor is now live at **mutantfactory.net/get-in-loser**. Yes — after nineteen versions of descending, we went *up.* The Depth Meter reads 100%. The surface was up here the whole time. The fog thins at altitude but it does not lift; bring your own Ink.\n\n*The palette has always known what colors it wanted to be. Now it has a form to fill out.*\n\n---\n\n## v0.1.21 — \"The Changelog Could Not Read Itself\"\n\n- **Fixed:** every section heading in this very changelog was being teleported into the dialog's title bar, stacked in one spot, where only the topmost survived — so the dialog introduced itself as *Unreleased — \"???\"* and the history below scrolled by headless. A dialog that misreports its own history. In *this* app. We checked the CSS and, regrettably, it was CSS. The title bar's layout rule applied to every heading inside the dialog, not just the title. It has been scoped. The changelog can read itself again. We recommend it start from the top.\n\n---\n\n## Unreleased — \"???\"\n\n- (redacted)\n- (redacted)\n- the frog is not fractions\n- the frog is not fractions\n- please stop resizing the canvas — it can tell\n";
 
 /***/ },
 
@@ -60545,6 +62507,61 @@ module.exports = /*#__PURE__*/JSON.parse('{"24-Points star":"","A problem occurr
 
 "use strict";
 module.exports = /*#__PURE__*/JSON.parse('{"A problem occurred while removing undo history. It":"删除撤销历史记录时发生问题。它","About":"关于","Active":"活动","Aden":"Aden","Advanced":"高级","All":"全部","Alpha":"透明度","Alpha:":"透明度：","Animation":"动画","Anonymous":"匿名","Anti aliasing":"抗锯齿","Application markup may have changed,":"应用标记可能已更改，","Arial":"Arial","Arrow":"箭头","ArrowDown":"向下箭头","ArrowLeft":"向左箭头","ArrowRight":"向右箭头","ArrowUp":"向上箭头","Author:":"作者：","Auto Adjust Colors":"自动调整颜色","Auto Kerning":"自动紧排","Auto select":"自动选择","Average:":"平均值：","Backspace":"退格键","Base":"基础","Basic":"基本","Black and White":"黑白","Blue":"蓝色","Blue channel:":"蓝色通道：","Blueprint":"蓝图","Blur":"模糊工具","Blur Radius:":"模糊半径：","Blur Tool":"模糊工具","Blur power:":"模糊强度：","Borders":"边框","Bottom":"底部","Bottom to Top":"从底部到顶部","Bounds:":"边界：","Box":"方框","Box Blur":"方框模糊","Box blur":"方框模糊","Brightness":"亮度","Brightness:":"亮度：","Brush":"刷子工具","Bulge":"凸出","Bulge/Pinch Tool":"凸出/收缩工具","Burn":"加深","Can not animate 1 layer.":"无法对1个图层进行动画。","Can not find previous layer.":"找不到上一个图层。","Can not use this tool on current layer: image already takes all area.":"无法在当前图层上使用此工具：图像已覆盖整个区域。","Cancel":"取消","Canvas Size":"画布尺寸","Center":"中心","Center x:":"中心x：","Center y:":"中心y：","Center:":"中心：","Change Composition":"更改合成","Change Layer Details":"更改图层详情","Change Opacity":"更改不透明度","Channel:":"通道：","Circle":"圆圈","Clarendon":"Clarendon","Clear":"清除","Clear Selection":"清除选区","Clone":"克隆工具","Clone Tool":"克隆工具","Clone count:":"克隆数量：","Clone tool disabled for resized image. Please rasterize first.":"对已调整大小的图像禁用克隆工具。请先栅格化。","Cloned edges":"克隆边缘","Close":"关闭","Color 1:":"颜色 1：","Color 2:":"颜色 2：","Color #":"颜色 #","Color Corrections":"颜色校正","Color Palette":"颜色调色板","Color Zoom":"颜色缩放","Color alpha value can not be zero.":"颜色的 alpha 值不能为零。","Color to Alpha":"颜色转换为透明","Color zoom":"颜色缩放","Color:":"颜色：","Colors":"颜色","Colors:":"颜色：","Common Filters":"常见滤镜","Composition":"合成","Composition:":"合成：","Content Fill":"内容填充","Contiguous":"连续","Contrast":"对比度","Contrast:":"对比度：","Convert layer to raster":"将图层转换为栅格图","Convert to Raster":"转换为栅格图","Copy Selection":"复制选区","Copy to Clipboard":"复制到剪贴板","Courier":"Courier","Crop":"裁剪工具","Crop Tool":"裁剪工具","Crop on rotated layer is not supported. Convert it to raster to continue.":"不支持旋转图层上的裁剪。请将其转换为位图以继续。","Ctrl + C":"Ctrl + C","Ctrl+A":"Ctrl+A","Ctrl+C":"Ctrl+C","Ctrl+P":"Ctrl+P","Ctrl+V":"Ctrl+V","Ctrl+Y":"Ctrl+Y","Ctrl+Z":"Ctrl+Z","Current":"当前","Current Color Preview":"当前颜色预览","Custom":"自定义","Data URL":"数据 URL","Data URL:":"数据 URL：","Decrease":"减少","Decrease Color Depth":"减少色彩深度","Degree:":"角度：","Del":"删除","Delay:":"延迟：","Delete":"删除","Delete Selection":"删除选区","Denoise":"降噪","Desaturate Tool":"去色工具","Description:":"描述：","Deutsch":"德语","Differences":"差异","Differences Down":"差异缩小","Direction:":"方向：","Dither":"抖动","Dithering:":"抖动：","Dominant color:":"主色调：","Dot Screen":"点阵","Down":"向下","Duplicate":"复制","Duplicate Layer":"复制图层","Duplicate layer":"复制图层","Dynamic":"动态","Edge":"边缘","Edit":"编辑","Edit text...":"编辑文本...","Effect browser":"特效浏览器","Effects":"特效","Effects browser":"特效浏览器","Email:":"邮箱：","Emboss":"浮雕","Empty selection":"空选区","Empty selection or type not image.":"空选区或未输入图像。","Enable autoresize:":"启用自动调整大小：","End":"结束","English":"英语","English (UK)":"英语（英国）","Enrich":"增强","Enter":"输入","Erase Tool":"橡皮擦工具","Erase on rotate object is disabled. Please rasterize first.":"禁用旋转对象上的橡皮擦。请先栅格化。","Error":"错误","Error connecting to service.":"连接到服务时出错。","Error loading the list of fonts from Google.":"加载 Google 字体列表时出错。","Error registering service worker":"注册服务工作者时出错","Error: can not find filter:":"错误：无法找到滤镜：","Error: can not find layer with id:":"错误：无法找到带有 ID 的图层：","Error: missing details event target":"错误：缺少详细信息事件目标","Error: unknown layer type:":"错误：未知的图层类型：","Error: unsupported attribute type:":"错误：不支持的属性类型：","Esc":"退出","Escape":"逃脱","Español":"西班牙语","Expand edges":"扩展边缘","Exponent:":"指数：","Export":"导出","External":"外部","Erase":"橡皮擦工具","Factor:":"因子：","File":"文件","File name:":"文件名：","File size:":"文件大小：","Fill":"填充","Fill:":"填充：","Fill Tool":"填充工具","Fit":"适应","Fit Window":"适应窗口","Fit window":"适应窗口","Flatten Image":"图像拉平","Flip":"翻转","FloydSteinberg-serpentine":"FloydSteinberg-蛇形","Font":"字体","Font:":"字体：","Français":"法语","Full HD, 1080p":" 全高清，1080p","Full Screen":"全屏","Full layers data":"全层数据","Gap:":"间距：","Gaussian Blur":"高斯模糊","Gif delay:":"动图延迟：","Gingham":"方格","GitHub:":"GitHub：","Gradient":"渐变工具","Gradient Radius:":"渐变半径：","Grains":"颗粒","Graphics Interchange Format":"图形交换格式","Gray":"灰色","Grayscale":"灰度","Greek":"希腊语","Green":"绿色","Green channel:":"绿色通道：","Greyscale:":"灰度：","Grid":"网格","Grid on/off":"打开/关闭网格","Guides":"参考线","Guides enabled.":"参考线已启用。","H Radius:":"水平半径：","H. Align:":"水平对齐：","Heatmap":"热力图","Height (%):":"高度（%）：","Height:":"高度：","Help":"帮助","Helvetica":"黑体","Hermite":"Hermite","Hex":"十六进制","Hide":"隐藏","Histogram":"直方图","Histogram:":"直方图：","Home":"主页","Horizontal":"水平","Horizontal Alignment":"水平对齐","Horizontal blur:":"水平模糊：","Horizontal:":"水平：","Hue":"色调","Hue Rotate":"色调旋转","Hue:":"色调：","Image":"图片","Image data with multi-layers. Can be opened using miniPaint -":"图像数据带有多层。可使用miniPaint打开 -","Impact":"影响","In proportion:":"按比例：","Increase":"增加","Information":"信息","Inkwell":"墨井","Insert":"插入","Insert guides":"插入参考线","Insert new layer":"插入新图层","Instagram Filters":"Instagram 滤镜","Invalid Hex Code":"无效的十六进制代码","Italiano":"意大利语","JPG/JPEG Format":"JPG / JPEG格式","Kerning:":"字距：","Key-Points":"关键点","KeyU":"键 U","Keyboard Shortcuts":"键盘快捷键","Keyword:":"关键字：","Lanczos":"Lanczos","Landscape":"横向","Language":"语言","Last modified":"上次修改","Layer":"图层","Layer details":"图层详情","Layer is empty.":"图层为空。","Layer is not compatible with resize":"图层不兼容调整大小","Layer is vector, convert it to raster to apply this tool.":"图层为矢量，转换为栅格以应用此工具。","Layers":"图层","Layers:":"图层：","Layout:":"布局：","Leading:":"行距：","Left":"左","Left to Right":"左到右","Level:":"层级：","Levels:":"层级：","Lietuvių":"立陶宛语","Lo-fi":"低保真","Luminance:":"亮度：","Luminosity":"亮度","Magic Eraser Tool":"魔术橡皮擦工具","Merge Down":"向下合并","Merge Layers":"合并图层","Merged":"已合并","Metrics":"指标","Middle":"居中","Missing at least 1 size parameter.":"至少缺少1个尺寸参数。","Missing permissions to write to Clipboard.cc":"缺少写入Clipboard.cc的权限","Mode:":"模式：","Module function not found.":"未找到模块功能。","Modules class not found:":"未找到模块类：","Monospace":"等宽字体","Mosaic":"马赛克","Mouse:":"鼠标：","Move":"移动","Move Layer":"移动图层","Move layer down":"向下移动图层","Move layer up":"向上移动图层","Name:":"名称：","Negative":"负片","New":"新建","New Bezier Layer":"新贝塞尔曲线图层","New Brush Layer":"新画笔图层","New Ellipse Layer":"新椭圆图层","New File":"新建文件","New Gradient Layer":"新渐变图层","New Layer":"新建图层","New Line Layer":"新线条图层","New Pencil Layer":"新铅笔图层","New Polygon Layer":"新多边形图层","New Rectangle Layer":"新矩形图层","New Text Layer":"新文本图层","New file":"新建文件","New from Selection":"从选择新建","New layer":"新建图层","Next":"下一个","Night Vision":"夜视","None":"无","Nothing is selected.":"未选择任何内容。","Offset X:":"X偏移：","Offset Y:":"Y偏移：","Oil":"油画","Ok":"确定","Online image editor.":"在线图像编辑器。","Opacity":"不透明度","Opacity:":"不透明度：","Open":"打开","Open Data URL":"打开数据URL","Open Directory":"打开目录","Open File":"打开文件","Open File Data URL":"打开数据URL文件","Open File URL":"打开文件网址","Open File Webcam":"打开网络摄像头文件","Open Image":"打开图像","Open JSON File":"打开JSON文件","Open Test Template":"打开测试模板","Open URL":"打开网址","Open data URL":"打开数据URL","Open from Webcam":"从摄像头打开","Original Size":"原始大小","PNGTOSVG - Convert Image to SVG":"PNGTOSVG - 将图像转换为SVG格式","PageDown":"下一页","PageUp":"上一页","Palette":"调色板","Parameter #1:":"参数1：","Parameter #2:":"参数2：","Paste":"粘贴","Pencil":"铅笔工具","Percentage:":"百分比：","Pick color":"吸管工具","Pixels:":"像素：","Placeholder comment for color channels":"颜色通道的占位符注释","Placeholder comment for color picker":"颜色选择器的占位符注释","Placeholder comment for color swatches":"颜色样本的占位符注释","Play":"播放","Portable Network Graphics":"便携式网络图形","Portrait":"纵向","Português":"葡萄牙语","Position:":"位置：","Power:":"功率：","Preview":"预览","Previous":"上一个","Previous layer must be image, convert it to raster to apply this tool.":"前一图层必须为图像，将其转换为栅格以应用此工具。","Print":"打印","Quality:":"质量：","Quick Load":"快速加载","Quick Save":"快速保存","REMOVE.BG - Remove Image Background":"REMOVE.BG - 移除图像背景","Radial":"径向","Radial gradient":"径向渐变","Radius:":"半径：","Range:":"范围：","Red":"红色","Red channel:":"红色通道：","Redo":"重做","Remove all":"移除全部","Rename":"重命名","Rename Layer":"重命名图层","Rendered with errors.":"渲染出现错误。","Rendering...":"渲染中...","Replace Color":"替换颜色","Replace color":"替换颜色","Replacement:":"替换：","Report Issues":"报告问题","Reset":"重置","Resize":"调整大小","Resize Boundary":"调整边界","Resize Layer":"调整图层大小","Resize Layers":"调整图层大小","Resize Text Layer":"调整文本图层大小","Resized as background":"调整为背景","Resized:":"调整大小：","Resolution:":"分辨率：","Restore Alpha":"恢复透明度","Right":"右","Right angle:":"直角：","Right to Left":"从右到左","Rotate":"旋转","Rotate Layer":"旋转图层","Rotate is not supported on this type of object. Convert to raster?":"此类型对象不支持旋转。转换为栅格图？","Rotate left":"向左旋转","Rotate:":"旋转：","Ruler":"标尺","SQUOOSH - Compress and Compare Images":"SQUOOSH - 压缩和比较图像","Saturate":"饱和度","Saturation":"饱和度","Saturation:":"饱和度：","Save As":"另存为","Save As Data URL":"另存为数据URL","Save as":"另存为","Save as type:":"另存为类型：","Save layers:":"保存图层：","Scaling up is not supported in Hermite, using Lanczos.":"Hermite不支持放大，请使用Lanczos。","Scroll down":"向下滚动","Scroll up":"向上滚动","Search":"搜索","Search Images":"搜索图像","Search for Font":"搜索字体","Search:":"搜索：","Select All":"全选","Select Text Layer":"选择文本图层","Select object tool":"选择对象工具","Selected":"已选择","Selection":"选择工具","Selection Tool":"选择工具","Sensitivity:":"灵敏度：","Separated":"分离","Separated (original types)":"分离（原始类型）","Sepia":"棕褐色","Set Image Size":"设置图像尺寸","Settings":"设置","Shadow":"阴影","Shapes":"形状","Shapes (H)":"形状 (H)","Sharpen":"锐化","Sharpen Tool":"锐化工具","Sharpen:":"锐化：","Shift + S":"Shift + S","Shortcut Key:":"快捷键：","Show":"显示","Show / Hide":"显示 / 隐藏","Show file size:":"显示文件大小：","Simple":"简单","Size is too big, max":"尺寸太大，最大值为","Size:":"尺寸：","Skip - layer must be image.":"跳过 - 图层必须是图像。","Solarize":"曝光反转","Sorry, cold not load getUserMedia() data:":"抱歉，无法加载 getUserMedia() 数据:","Sorry, image could not be loaded.":"抱歉，无法加载图片。","Sorry, image could not be loaded. Try copy image and paste it.":"抱歉，图片无法加载。尝试复制图像并粘贴。","Sorry, image is too big, max 5 MB.":"抱歉，图片太大，最大值为5 MB。","Source coordinates saved.":"源坐标已保存。","Source is empty, right click on image or use long press to save source position.":"源为空，右键单击图像或长按保存源位置。","Source layer:":"源图层：","Sprites":"图像精灵","Square":"正方形","Stream:":"流：","Strength:":"强度：","Strict":"严格","Stroke size:":"线条粗细：","TINYPNG - Compress PNG and JPEG":"TINYPNG - 压缩PNG和JPEG","Tab":"标签","Tag Image File Format":"标记图像文件格式","Tahoma":"Tahoma","Target:":"目标：","The quick brown fox jumps over the lazy dog.":"敏捷的棕色狐狸跳过了懒狗。","There":"那里","There are no layers behind.":"背后没有图层。","There is only 1 layer.":"只有1个图层。","This layer must contain an image. Please convert it to raster to apply this tool.":"此图层必须包含图像。请将其转换为光栅以应用此工具。","Tilt Shift":"视角移位","Times New Roman":"Times New Roman","Toaster":"Toaster","Toggle":"切换","Toggle Color Channels":"切换颜色通道","Toggle Color Picker":"切换颜色选择器","Toggle Menu":"切换菜单","Toggle Swatches":"切换样本","Tools":"工具","Top":"顶部","Top to Bottom":"从上到下","Total pixels:":"总像素数：","Translate":"翻译","Translate Layer":"翻译图层","Translate error, can not find dictionary:":"翻译错误，找不到字典：","Transparent:":"透明：","Trim":"裁剪","Trim Layers":"裁剪图层","Trim borders:":"裁剪边框：","Trim layer:":"裁剪图层：","Trim white color?":"裁剪白色吗？","Text":" 文本工具","Type:":"类型：","Türkçe":"土耳其语","Undo":"撤销","Unique colors:":"唯一颜色：","Up":"向上","Update":"更新","Update Brush Layer":"更新画笔图层","Update Pencil Layer":"更新铅笔图层","Update guides":"更新指南","Use Ctrl+V keyboard shortcut to paste from Clipboard.":"使用 Ctrl+V 快捷键从剪贴板粘贴。","V Radius:":"垂直半径：","V. Align:":"垂直对齐：","Valencia":"Valencia","Verdana":"Verdana","Version:":"版本：","Vertical":"垂直","Vertical Alignment":"垂直对齐","Vertical blur:":"垂直模糊：","Vertical:":"垂直：","Vibrance":"饱和度","View":"视图","Vignette":"晕影","ViliusL":"ViliusL","Vintage":"复古","Webcam":"摄像头","Webcam #":"摄像头 #","Website:":"网站：","Weppy File Format":"Weppy文件格式","Width (%):":"宽度（%）：","Width:":"宽度：","Windows Bitmap":"Windows位图","Word":"词","Word + Letter":"词 + 字母","Wrap At:":"在此处换行：","Wrap:":"自动换行：","Wrong dimensions":"尺寸错误","Wrong file type, must be image or json.":"文件类型错误，必须是图像或JSON。","X end:":"X 结束：","X position:":"X 位置：","X start:":"X 开始：","X-Pro II":"X-Pro II","Y end:":"Y 结束：","Y position:":"Y 位置：","Y start:":"Y 开始：","You can also drag and drop items into browser.":"您也可以将项目拖放到浏览器中。","Your browser does not support canvas or JavaScript is not enabled.":"您的浏览器不支持画布或JavaScript未启用。","Your browser does not support this format.":"您的浏览器不支持此格式。","Your search did not match any images.":"您的搜索未匹配任何图片。","Zoom":"缩放","Zoom Blur":"缩放模糊","Zoom In":"放大","Zoom Out":"缩小","Zoom blur":"缩放模糊","Zoom in":"放大","Zoom out":"缩小","Zoom:":"缩放："}');
+
+/***/ },
+
+/***/ "./src/palettes/endesga-32.json"
+/*!**************************************!*\
+  !*** ./src/palettes/endesga-32.json ***!
+  \**************************************/
+(module) {
+
+"use strict";
+module.exports = /*#__PURE__*/JSON.parse('{"name":"Endesga 32","author":"ENDESGA","source":"https://lospec.com/palette-list/endesga-32","license":"CC0","colors":["#be4a2f","#d77643","#ead4aa","#e4a672","#b86f50","#733e39","#3e2731","#a22633","#e43b44","#f77622","#feae34","#fee761","#63c74d","#3e8948","#265c42","#193c3e","#124e89","#0099db","#2ce8f5","#ffffff","#c0cbdc","#8b9bb4","#5a6988","#3a4466","#262b44","#181425","#ff0044","#68386c","#b55088","#f6757a","#e8b796","#c28569"]}');
+
+/***/ },
+
+/***/ "./src/palettes/gameboy-dmg.json"
+/*!***************************************!*\
+  !*** ./src/palettes/gameboy-dmg.json ***!
+  \***************************************/
+(module) {
+
+"use strict";
+module.exports = /*#__PURE__*/JSON.parse('{"name":"Game Boy (DMG)","author":"Nintendo","source":"https://en.wikipedia.org/wiki/Game_Boy","colors":["#0f380f","#306230","#8bac0f","#9bbc0f"]}');
+
+/***/ },
+
+/***/ "./src/palettes/grayscale-16.json"
+/*!****************************************!*\
+  !*** ./src/palettes/grayscale-16.json ***!
+  \****************************************/
+(module) {
+
+"use strict";
+module.exports = /*#__PURE__*/JSON.parse('{"name":"Grayscale 16","colors":["#000000","#111111","#222222","#333333","#444444","#555555","#666666","#777777","#888888","#999999","#aaaaaa","#bbbbbb","#cccccc","#dddddd","#eeeeee","#ffffff"]}');
+
+/***/ },
+
+/***/ "./src/palettes/pico-8.json"
+/*!**********************************!*\
+  !*** ./src/palettes/pico-8.json ***!
+  \**********************************/
+(module) {
+
+"use strict";
+module.exports = /*#__PURE__*/JSON.parse('{"name":"PICO-8","author":"Lexaloffle Games","source":"https://pico-8.fandom.com/wiki/Palette","colors":["#000000","#1d2b53","#7e2553","#008751","#ab5236","#5f574f","#c2c3c7","#fff1e8","#ff004d","#ffa300","#ffec27","#00e436","#29adff","#83769c","#ff77a8","#ffccaa"]}');
+
+/***/ },
+
+/***/ "./src/palettes/sweetie-16.json"
+/*!**************************************!*\
+  !*** ./src/palettes/sweetie-16.json ***!
+  \**************************************/
+(module) {
+
+"use strict";
+module.exports = /*#__PURE__*/JSON.parse('{"name":"Sweetie 16","author":"GrafxKid","source":"https://lospec.com/palette-list/sweetie-16","license":"CC0","colors":["#1a1c2c","#5d275d","#b13e53","#ef7d57","#ffcd75","#a7f070","#38b764","#257179","#29366f","#3b5dc9","#41a6f6","#73eff7","#f4f4f4","#94b0c2","#566c86","#333c57"]}');
 
 /***/ }
 
