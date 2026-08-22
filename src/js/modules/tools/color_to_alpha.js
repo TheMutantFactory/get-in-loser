@@ -4,6 +4,7 @@ import Base_layers_class from './../../core/base-layers.js';
 import Dialog_class from './../../libs/popup.js';
 import Helper_class from './../../libs/helpers.js';
 import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
+import { ensure_raster_layer } from './../../libs/rasterize.js';
 
 class Tools_colorToAlpha_class {
 
@@ -13,12 +14,15 @@ class Tools_colorToAlpha_class {
 		this.Helper = new Helper_class();
 	}
 
-	color_to_alpha() {
+	async color_to_alpha() {
 		var _this = this;
 
-		if (config.layer.type != 'image') {
-			alertify.error('This layer must contain an image. Please convert it to raster to apply this tool.');
-			return;
+		if (config.layer.type != 'image' || config.layer.is_vector == true) {
+			//Convert instead of demanding it - see libs/rasterize.js
+			var ready = await ensure_raster_layer('edited');
+			if (ready == false) {
+				return;
+			}
 		}
 
 		var settings = {

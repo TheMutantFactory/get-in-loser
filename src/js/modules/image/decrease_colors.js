@@ -5,6 +5,7 @@ import Dialog_class from './../../libs/popup.js';
 import Helper_class from './../../libs/helpers.js';
 import ImageFilters_class from './../../libs/imagefilters.js';
 import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
+import { ensure_raster_layer } from './../../libs/rasterize.js';
 
 class Image_decreaseColors_class {
 
@@ -15,12 +16,15 @@ class Image_decreaseColors_class {
 		this.ImageFilters = ImageFilters_class;
 	}
 
-	decrease_colors() {
+	async decrease_colors() {
 		var _this = this;
 
-		if (config.layer.type != 'image') {
-			alertify.error('This layer must contain an image. Please convert it to raster to apply this tool.');
-			return;
+		if (config.layer.type != 'image' || config.layer.is_vector == true) {
+			//Convert instead of demanding it - see libs/rasterize.js
+			var ready = await ensure_raster_layer('edited');
+			if (ready == false) {
+				return;
+			}
 		}
 
 		var settings = {

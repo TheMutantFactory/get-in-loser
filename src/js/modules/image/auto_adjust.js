@@ -4,6 +4,7 @@ import Base_layers_class from './../../core/base-layers.js';
 import Dialog_class from './../../libs/popup.js';
 import Helper_class from './../../libs/helpers.js';
 import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
+import { ensure_raster_layer } from './../../libs/rasterize.js';
 
 var instance = null;
 
@@ -37,10 +38,13 @@ class Image_autoAdjust_class {
 		}, false);
 	}
 
-	auto_adjust() {
-		if (config.layer.type != 'image') {
-			alertify.error('This layer must contain an image. Please convert it to raster to apply this tool.');
-			return;
+	async auto_adjust() {
+		if (config.layer.type != 'image' || config.layer.is_vector == true) {
+			//Convert instead of demanding it - see libs/rasterize.js
+			var ready = await ensure_raster_layer('edited');
+			if (ready == false) {
+				return;
+			}
 		}
 
 		//get canvas from layer

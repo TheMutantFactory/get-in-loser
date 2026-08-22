@@ -5,6 +5,7 @@ import colorThief_class from './../../libs/color-thief.js';
 import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
 import Dialog_class from './../../libs/popup.js';
 import Helper_class from './../../libs/helpers.js';
+import { ensure_raster_layer } from './../../libs/rasterize.js';
 
 class Image_color_class {
 
@@ -16,12 +17,15 @@ class Image_color_class {
 		this.original_palette = [];
 	}
 
-	palette() {
+	async palette() {
 		var _this = this;
 
-		if (config.layer.type != 'image') {
-			alertify.error('This layer must contain an image. Please convert it to raster to apply this tool.');
-			return;
+		if (config.layer.type != 'image' || config.layer.is_vector == true) {
+			//Convert instead of demanding it - see libs/rasterize.js
+			var ready = await ensure_raster_layer('edited');
+			if (ready == false) {
+				return;
+			}
 		}
 		var palette = this.ColorThief.getPalette(config.layer.link);
 		var dominant = this.ColorThief.getColor(config.layer.link);

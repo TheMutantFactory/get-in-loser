@@ -4,6 +4,7 @@ import Base_layers_class from './../../core/base-layers.js';
 import Helper_class from './../../libs/helpers.js';
 import ImageFilters_class from './../../libs/imagefilters.js';
 import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
+import { ensure_raster_layer } from './../../libs/rasterize.js';
 
 /**
  * SIFT: scale-invariant-feature-transform, keypoints
@@ -27,11 +28,14 @@ class Tools_keypoints_class {
 	}
 
 	//generate key points for image
-	keypoints(return_data) {
+	async keypoints(return_data) {
 
-		if (config.layer.type != 'image') {
-			alertify.error('This layer must contain an image. Please convert it to raster to apply this tool.');
-			return;
+		if (config.layer.type != 'image' || config.layer.is_vector == true) {
+			//Convert instead of demanding it - see libs/rasterize.js
+			var ready = await ensure_raster_layer('edited');
+			if (ready == false) {
+				return;
+			}
 		}
 
 		var W = config.layer.width;

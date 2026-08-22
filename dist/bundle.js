@@ -30176,15 +30176,22 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
-/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
-/* harmony import */ var _app_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../../app.js */ "./src/js/app.js");
-/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./../../config.js */ "./src/js/config.js");
-/* harmony import */ var _core_base_layers_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./../../core/base-layers.js */ "./src/js/core/base-layers.js");
-/* harmony import */ var _libs_popup_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./../../libs/popup.js */ "./src/js/libs/popup.js");
-/* harmony import */ var _libs_helpers_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./../../libs/helpers.js */ "./src/js/libs/helpers.js");
-/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./../../../../node_modules/alertifyjs/build/alertify.min.js */ "./node_modules/alertifyjs/build/alertify.min.js");
-/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(_node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_7__);
+/* harmony import */ var _babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ "./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js");
+/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
+/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _app_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./../../app.js */ "./src/js/app.js");
+/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./../../config.js */ "./src/js/config.js");
+/* harmony import */ var _core_base_layers_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./../../core/base-layers.js */ "./src/js/core/base-layers.js");
+/* harmony import */ var _libs_popup_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./../../libs/popup.js */ "./src/js/libs/popup.js");
+/* harmony import */ var _libs_helpers_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./../../libs/helpers.js */ "./src/js/libs/helpers.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./../../../../node_modules/alertifyjs/build/alertify.min.js */ "./node_modules/alertifyjs/build/alertify.min.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(_node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_9__);
+/* harmony import */ var _libs_rasterize_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./../../libs/rasterize.js */ "./src/js/libs/rasterize.js");
+
+
+
 
 
 
@@ -30196,18 +30203,18 @@ __webpack_require__.r(__webpack_exports__);
 var instance = null;
 var Image_autoAdjust_class = /*#__PURE__*/function () {
   function Image_autoAdjust_class() {
-    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__["default"])(this, Image_autoAdjust_class);
+    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__["default"])(this, Image_autoAdjust_class);
     //singleton
     if (instance) {
       return instance;
     }
     instance = this;
-    this.POP = new _libs_popup_js__WEBPACK_IMPORTED_MODULE_5__["default"]();
-    this.Base_layers = new _core_base_layers_js__WEBPACK_IMPORTED_MODULE_4__["default"]();
-    this.Helper = new _libs_helpers_js__WEBPACK_IMPORTED_MODULE_6__["default"]();
+    this.POP = new _libs_popup_js__WEBPACK_IMPORTED_MODULE_7__["default"]();
+    this.Base_layers = new _core_base_layers_js__WEBPACK_IMPORTED_MODULE_6__["default"]();
+    this.Helper = new _libs_helpers_js__WEBPACK_IMPORTED_MODULE_8__["default"]();
     this.set_events();
   }
-  return (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__["default"])(Image_autoAdjust_class, [{
+  return (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__["default"])(Image_autoAdjust_class, [{
     key: "set_events",
     value: function set_events() {
       var _this = this;
@@ -30223,24 +30230,46 @@ var Image_autoAdjust_class = /*#__PURE__*/function () {
     }
   }, {
     key: "auto_adjust",
-    value: function auto_adjust() {
-      if (_config_js__WEBPACK_IMPORTED_MODULE_3__["default"].layer.type != 'image') {
-        _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_7___default().error('This layer must contain an image. Please convert it to raster to apply this tool.');
-        return;
+    value: function () {
+      var _auto_adjust = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().mark(function _callee() {
+        var ready, canvas, ctx, img, data;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().wrap(function (_context) {
+          while (1) switch (_context.prev = _context.next) {
+            case 0:
+              if (!(_config_js__WEBPACK_IMPORTED_MODULE_5__["default"].layer.type != 'image' || _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].layer.is_vector == true)) {
+                _context.next = 2;
+                break;
+              }
+              _context.next = 1;
+              return (0,_libs_rasterize_js__WEBPACK_IMPORTED_MODULE_10__.ensure_raster_layer)('edited');
+            case 1:
+              ready = _context.sent;
+              if (!(ready == false)) {
+                _context.next = 2;
+                break;
+              }
+              return _context.abrupt("return");
+            case 2:
+              //get canvas from layer
+              canvas = this.Base_layers.convert_layer_to_canvas(null, true);
+              ctx = canvas.getContext("2d"); //change data
+              img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+              data = this.get_adjust_data(img);
+              ctx.putImageData(data, 0, 0);
+
+              //save
+              return _context.abrupt("return", _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].Actions.Update_layer_image_action(canvas)));
+            case 3:
+            case "end":
+              return _context.stop();
+          }
+        }, _callee, this);
+      }));
+      function auto_adjust() {
+        return _auto_adjust.apply(this, arguments);
       }
-
-      //get canvas from layer
-      var canvas = this.Base_layers.convert_layer_to_canvas(null, true);
-      var ctx = canvas.getContext("2d");
-
-      //change data
-      var img = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      var data = this.get_adjust_data(img);
-      ctx.putImageData(data, 0, 0);
-
-      //save
-      return _app_js__WEBPACK_IMPORTED_MODULE_2__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_2__["default"].Actions.Update_layer_image_action(canvas));
-    }
+      return auto_adjust;
+    }()
   }, {
     key: "get_adjust_data",
     value: function get_adjust_data(data) {
@@ -30347,16 +30376,23 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
-/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
-/* harmony import */ var _app_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../../app.js */ "./src/js/app.js");
-/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./../../config.js */ "./src/js/config.js");
-/* harmony import */ var _core_base_layers_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./../../core/base-layers.js */ "./src/js/core/base-layers.js");
-/* harmony import */ var _libs_popup_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./../../libs/popup.js */ "./src/js/libs/popup.js");
-/* harmony import */ var _libs_helpers_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./../../libs/helpers.js */ "./src/js/libs/helpers.js");
-/* harmony import */ var _libs_imagefilters_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./../../libs/imagefilters.js */ "./src/js/libs/imagefilters.js");
-/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./../../../../node_modules/alertifyjs/build/alertify.min.js */ "./node_modules/alertifyjs/build/alertify.min.js");
-/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(_node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_8__);
+/* harmony import */ var _babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ "./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js");
+/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
+/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _app_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./../../app.js */ "./src/js/app.js");
+/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./../../config.js */ "./src/js/config.js");
+/* harmony import */ var _core_base_layers_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./../../core/base-layers.js */ "./src/js/core/base-layers.js");
+/* harmony import */ var _libs_popup_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./../../libs/popup.js */ "./src/js/libs/popup.js");
+/* harmony import */ var _libs_helpers_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./../../libs/helpers.js */ "./src/js/libs/helpers.js");
+/* harmony import */ var _libs_imagefilters_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./../../libs/imagefilters.js */ "./src/js/libs/imagefilters.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./../../../../node_modules/alertifyjs/build/alertify.min.js */ "./node_modules/alertifyjs/build/alertify.min.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(_node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10__);
+/* harmony import */ var _libs_rasterize_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./../../libs/rasterize.js */ "./src/js/libs/rasterize.js");
+
+
+
 
 
 
@@ -30368,83 +30404,108 @@ __webpack_require__.r(__webpack_exports__);
 
 var Image_colorCorrections_class = /*#__PURE__*/function () {
   function Image_colorCorrections_class() {
-    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__["default"])(this, Image_colorCorrections_class);
-    this.POP = new _libs_popup_js__WEBPACK_IMPORTED_MODULE_5__["default"]();
-    this.Base_layers = new _core_base_layers_js__WEBPACK_IMPORTED_MODULE_4__["default"]();
-    this.Helper = new _libs_helpers_js__WEBPACK_IMPORTED_MODULE_6__["default"]();
-    this.ImageFilters = _libs_imagefilters_js__WEBPACK_IMPORTED_MODULE_7__["default"];
+    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__["default"])(this, Image_colorCorrections_class);
+    this.POP = new _libs_popup_js__WEBPACK_IMPORTED_MODULE_7__["default"]();
+    this.Base_layers = new _core_base_layers_js__WEBPACK_IMPORTED_MODULE_6__["default"]();
+    this.Helper = new _libs_helpers_js__WEBPACK_IMPORTED_MODULE_8__["default"]();
+    this.ImageFilters = _libs_imagefilters_js__WEBPACK_IMPORTED_MODULE_9__["default"];
   }
-  return (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__["default"])(Image_colorCorrections_class, [{
+  return (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__["default"])(Image_colorCorrections_class, [{
     key: "color_corrections",
-    value: function color_corrections() {
-      var _this = this;
-      if (_config_js__WEBPACK_IMPORTED_MODULE_3__["default"].layer.type != 'image') {
-        _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_8___default().error('This layer must contain an image. Please convert it to raster to apply this tool.');
-        return;
-      }
-      var settings = {
-        title: 'Color Corrections',
-        preview: true,
-        on_change: function on_change(params, canvas_preview, w, h, canvas) {
-          //destructive effects
-          var img = this.layer_active_small_ctx.getImageData(0, 0, w, h);
-          var data = _this.do_corrections(img, params, false);
-          canvas_preview.putImageData(data, 0, 0);
+    value: function () {
+      var _color_corrections = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().mark(function _callee() {
+        var _this, ready, settings;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().wrap(function (_context) {
+          while (1) switch (_context.prev = _context.next) {
+            case 0:
+              _this = this;
+              if (!(_config_js__WEBPACK_IMPORTED_MODULE_5__["default"].layer.type != 'image' || _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].layer.is_vector == true)) {
+                _context.next = 2;
+                break;
+              }
+              _context.next = 1;
+              return (0,_libs_rasterize_js__WEBPACK_IMPORTED_MODULE_11__.ensure_raster_layer)('edited');
+            case 1:
+              ready = _context.sent;
+              if (!(ready == false)) {
+                _context.next = 2;
+                break;
+              }
+              return _context.abrupt("return");
+            case 2:
+              settings = {
+                title: 'Color Corrections',
+                preview: true,
+                on_change: function on_change(params, canvas_preview, w, h, canvas) {
+                  //destructive effects
+                  var img = this.layer_active_small_ctx.getImageData(0, 0, w, h);
+                  var data = _this.do_corrections(img, params, false);
+                  canvas_preview.putImageData(data, 0, 0);
 
-          //non-destructive
-          canvas_preview.filter = "brightness(" + (1 + params.param_b / 100) + ")";
-          canvas_preview.filter += " contrast(" + (1 + params.param_c / 100) + ")";
-          canvas_preview.filter += " saturate(" + (1 + params.param_s / 100) + ")";
-          canvas_preview.filter += " hue-rotate(" + params.param_h + "deg)";
-          canvas_preview.drawImage(canvas, 0, 0);
-        },
-        params: [{
-          name: "param_b",
-          title: "Brightness:",
-          value: "0",
-          range: [-100, 100]
-        }, {
-          name: "param_c",
-          title: "Contrast:",
-          value: "0",
-          range: [-100, 100]
-        }, {
-          name: "param_s",
-          title: "Saturation:",
-          value: "0",
-          range: [-100, 100]
-        }, {
-          name: "param_h",
-          title: "Hue:",
-          value: "0",
-          range: [-180, 180]
-        }, {}, {
-          name: "param_l",
-          title: "Luminance:",
-          value: "0",
-          range: [-100, 100]
-        }, {}, {
-          name: "param_red",
-          title: "Red channel:",
-          value: "0",
-          range: [-255, 255]
-        }, {
-          name: "param_green",
-          title: "Green channel:",
-          value: "0",
-          range: [-255, 255]
-        }, {
-          name: "param_blue",
-          title: "Blue channel:",
-          value: "0",
-          range: [-255, 255]
-        }],
-        on_finish: function on_finish(params) {
-          _this.save_changes(params);
-        }
-      };
-      this.POP.show(settings);
-    }
+                  //non-destructive
+                  canvas_preview.filter = "brightness(" + (1 + params.param_b / 100) + ")";
+                  canvas_preview.filter += " contrast(" + (1 + params.param_c / 100) + ")";
+                  canvas_preview.filter += " saturate(" + (1 + params.param_s / 100) + ")";
+                  canvas_preview.filter += " hue-rotate(" + params.param_h + "deg)";
+                  canvas_preview.drawImage(canvas, 0, 0);
+                },
+                params: [{
+                  name: "param_b",
+                  title: "Brightness:",
+                  value: "0",
+                  range: [-100, 100]
+                }, {
+                  name: "param_c",
+                  title: "Contrast:",
+                  value: "0",
+                  range: [-100, 100]
+                }, {
+                  name: "param_s",
+                  title: "Saturation:",
+                  value: "0",
+                  range: [-100, 100]
+                }, {
+                  name: "param_h",
+                  title: "Hue:",
+                  value: "0",
+                  range: [-180, 180]
+                }, {}, {
+                  name: "param_l",
+                  title: "Luminance:",
+                  value: "0",
+                  range: [-100, 100]
+                }, {}, {
+                  name: "param_red",
+                  title: "Red channel:",
+                  value: "0",
+                  range: [-255, 255]
+                }, {
+                  name: "param_green",
+                  title: "Green channel:",
+                  value: "0",
+                  range: [-255, 255]
+                }, {
+                  name: "param_blue",
+                  title: "Blue channel:",
+                  value: "0",
+                  range: [-255, 255]
+                }],
+                on_finish: function on_finish(params) {
+                  _this.save_changes(params);
+                }
+              };
+              this.POP.show(settings);
+            case 3:
+            case "end":
+              return _context.stop();
+          }
+        }, _callee, this);
+      }));
+      function color_corrections() {
+        return _color_corrections.apply(this, arguments);
+      }
+      return color_corrections;
+    }()
   }, {
     key: "save_changes",
     value: function save_changes(params) {
@@ -30458,7 +30519,7 @@ var Image_colorCorrections_class = /*#__PURE__*/function () {
       ctx.putImageData(data, 0, 0);
 
       //save
-      _app_js__WEBPACK_IMPORTED_MODULE_2__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_2__["default"].Actions.Update_layer_image_action(canvas));
+      _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].Actions.Update_layer_image_action(canvas));
 
       //non-destructive filters
       //multiple do_action() + do_corrections() does not work together yet.
@@ -30467,28 +30528,28 @@ var Image_colorCorrections_class = /*#__PURE__*/function () {
           value: params.param_b
         };
         var filter_id = null;
-        _app_js__WEBPACK_IMPORTED_MODULE_2__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_2__["default"].Actions.Add_layer_filter_action(null, 'brightness', parameters, filter_id));
+        _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].Actions.Add_layer_filter_action(null, 'brightness', parameters, filter_id));
       }
       if (params.param_c != 0) {
         var parameters = {
           value: params.param_c
         };
         var filter_id = null;
-        _app_js__WEBPACK_IMPORTED_MODULE_2__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_2__["default"].Actions.Add_layer_filter_action(null, 'contrast', parameters, filter_id));
+        _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].Actions.Add_layer_filter_action(null, 'contrast', parameters, filter_id));
       }
       if (params.param_s != 0) {
         var parameters = {
           value: params.param_s
         };
         var filter_id = null;
-        _app_js__WEBPACK_IMPORTED_MODULE_2__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_2__["default"].Actions.Add_layer_filter_action(null, 'saturate', parameters, filter_id));
+        _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].Actions.Add_layer_filter_action(null, 'saturate', parameters, filter_id));
       }
       if (params.param_h != 0) {
         var parameters = {
           value: params.param_h
         };
         var filter_id = null;
-        _app_js__WEBPACK_IMPORTED_MODULE_2__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_2__["default"].Actions.Add_layer_filter_action(null, 'hue-rotate', parameters, filter_id));
+        _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].Actions.Add_layer_filter_action(null, 'hue-rotate', parameters, filter_id));
       }
     }
 
@@ -30530,16 +30591,23 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
-/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
-/* harmony import */ var _app_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../../app.js */ "./src/js/app.js");
-/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./../../config.js */ "./src/js/config.js");
-/* harmony import */ var _core_base_layers_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./../../core/base-layers.js */ "./src/js/core/base-layers.js");
-/* harmony import */ var _libs_popup_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./../../libs/popup.js */ "./src/js/libs/popup.js");
-/* harmony import */ var _libs_helpers_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./../../libs/helpers.js */ "./src/js/libs/helpers.js");
-/* harmony import */ var _libs_imagefilters_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./../../libs/imagefilters.js */ "./src/js/libs/imagefilters.js");
-/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./../../../../node_modules/alertifyjs/build/alertify.min.js */ "./node_modules/alertifyjs/build/alertify.min.js");
-/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(_node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_8__);
+/* harmony import */ var _babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ "./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js");
+/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
+/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _app_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./../../app.js */ "./src/js/app.js");
+/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./../../config.js */ "./src/js/config.js");
+/* harmony import */ var _core_base_layers_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./../../core/base-layers.js */ "./src/js/core/base-layers.js");
+/* harmony import */ var _libs_popup_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./../../libs/popup.js */ "./src/js/libs/popup.js");
+/* harmony import */ var _libs_helpers_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./../../libs/helpers.js */ "./src/js/libs/helpers.js");
+/* harmony import */ var _libs_imagefilters_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./../../libs/imagefilters.js */ "./src/js/libs/imagefilters.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./../../../../node_modules/alertifyjs/build/alertify.min.js */ "./node_modules/alertifyjs/build/alertify.min.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(_node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10__);
+/* harmony import */ var _libs_rasterize_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./../../libs/rasterize.js */ "./src/js/libs/rasterize.js");
+
+
+
 
 
 
@@ -30551,44 +30619,69 @@ __webpack_require__.r(__webpack_exports__);
 
 var Image_decreaseColors_class = /*#__PURE__*/function () {
   function Image_decreaseColors_class() {
-    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__["default"])(this, Image_decreaseColors_class);
-    this.POP = new _libs_popup_js__WEBPACK_IMPORTED_MODULE_5__["default"]();
-    this.Base_layers = new _core_base_layers_js__WEBPACK_IMPORTED_MODULE_4__["default"]();
-    this.Helper = new _libs_helpers_js__WEBPACK_IMPORTED_MODULE_6__["default"]();
-    this.ImageFilters = _libs_imagefilters_js__WEBPACK_IMPORTED_MODULE_7__["default"];
+    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__["default"])(this, Image_decreaseColors_class);
+    this.POP = new _libs_popup_js__WEBPACK_IMPORTED_MODULE_7__["default"]();
+    this.Base_layers = new _core_base_layers_js__WEBPACK_IMPORTED_MODULE_6__["default"]();
+    this.Helper = new _libs_helpers_js__WEBPACK_IMPORTED_MODULE_8__["default"]();
+    this.ImageFilters = _libs_imagefilters_js__WEBPACK_IMPORTED_MODULE_9__["default"];
   }
-  return (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__["default"])(Image_decreaseColors_class, [{
+  return (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__["default"])(Image_decreaseColors_class, [{
     key: "decrease_colors",
-    value: function decrease_colors() {
-      var _this = this;
-      if (_config_js__WEBPACK_IMPORTED_MODULE_3__["default"].layer.type != 'image') {
-        _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_8___default().error('This layer must contain an image. Please convert it to raster to apply this tool.');
-        return;
+    value: function () {
+      var _decrease_colors = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().mark(function _callee() {
+        var _this, ready, settings;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().wrap(function (_context) {
+          while (1) switch (_context.prev = _context.next) {
+            case 0:
+              _this = this;
+              if (!(_config_js__WEBPACK_IMPORTED_MODULE_5__["default"].layer.type != 'image' || _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].layer.is_vector == true)) {
+                _context.next = 2;
+                break;
+              }
+              _context.next = 1;
+              return (0,_libs_rasterize_js__WEBPACK_IMPORTED_MODULE_11__.ensure_raster_layer)('edited');
+            case 1:
+              ready = _context.sent;
+              if (!(ready == false)) {
+                _context.next = 2;
+                break;
+              }
+              return _context.abrupt("return");
+            case 2:
+              settings = {
+                title: 'Decrease Color Depth',
+                preview: true,
+                on_change: function on_change(params, canvas_preview, w, h) {
+                  var img = canvas_preview.getImageData(0, 0, w, h);
+                  var data = _this.get_decreased_data(img, params.colors, params.greyscale);
+                  canvas_preview.putImageData(data, 0, 0);
+                },
+                params: [{
+                  name: "colors",
+                  title: "Colors:",
+                  value: 10,
+                  range: [1, 256]
+                }, {
+                  name: "greyscale",
+                  title: "Greyscale:",
+                  value: false
+                }],
+                on_finish: function on_finish(params) {
+                  _this.execute(params);
+                }
+              };
+              this.POP.show(settings);
+            case 3:
+            case "end":
+              return _context.stop();
+          }
+        }, _callee, this);
+      }));
+      function decrease_colors() {
+        return _decrease_colors.apply(this, arguments);
       }
-      var settings = {
-        title: 'Decrease Color Depth',
-        preview: true,
-        on_change: function on_change(params, canvas_preview, w, h) {
-          var img = canvas_preview.getImageData(0, 0, w, h);
-          var data = _this.get_decreased_data(img, params.colors, params.greyscale);
-          canvas_preview.putImageData(data, 0, 0);
-        },
-        params: [{
-          name: "colors",
-          title: "Colors:",
-          value: 10,
-          range: [1, 256]
-        }, {
-          name: "greyscale",
-          title: "Greyscale:",
-          value: false
-        }],
-        on_finish: function on_finish(params) {
-          _this.execute(params);
-        }
-      };
-      this.POP.show(settings);
-    }
+      return decrease_colors;
+    }()
   }, {
     key: "execute",
     value: function execute(params) {
@@ -30602,7 +30695,7 @@ var Image_decreaseColors_class = /*#__PURE__*/function () {
       ctx.putImageData(data, 0, 0);
 
       //save
-      return _app_js__WEBPACK_IMPORTED_MODULE_2__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_2__["default"].Actions.Update_layer_image_action(canvas));
+      return _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].Actions.Update_layer_image_action(canvas));
     }
   }, {
     key: "get_decreased_data",
@@ -30621,7 +30714,7 @@ var Image_decreaseColors_class = /*#__PURE__*/function () {
       canvas.height = H;
 
       //collect top colors
-      ctx.drawImage(_config_js__WEBPACK_IMPORTED_MODULE_3__["default"].layer.link, 0, 0, Math.ceil(W / block_size), Math.ceil(H / block_size));
+      ctx.drawImage(_config_js__WEBPACK_IMPORTED_MODULE_5__["default"].layer.link, 0, 0, Math.ceil(W / block_size), Math.ceil(H / block_size));
       var img_p = ctx.getImageData(0, 0, Math.ceil(W / block_size), Math.ceil(H / block_size));
       var imgData_p = img_p.data;
       ctx.clearRect(0, 0, W, H);
@@ -30714,13 +30807,20 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
-/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
-/* harmony import */ var _app_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../../app.js */ "./src/js/app.js");
-/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./../../config.js */ "./src/js/config.js");
-/* harmony import */ var _core_base_layers_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./../../core/base-layers.js */ "./src/js/core/base-layers.js");
-/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./../../../../node_modules/alertifyjs/build/alertify.min.js */ "./node_modules/alertifyjs/build/alertify.min.js");
-/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ "./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js");
+/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
+/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _app_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./../../app.js */ "./src/js/app.js");
+/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./../../config.js */ "./src/js/config.js");
+/* harmony import */ var _core_base_layers_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./../../core/base-layers.js */ "./src/js/core/base-layers.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./../../../../node_modules/alertifyjs/build/alertify.min.js */ "./node_modules/alertifyjs/build/alertify.min.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(_node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_7__);
+/* harmony import */ var _libs_rasterize_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./../../libs/rasterize.js */ "./src/js/libs/rasterize.js");
+
+
+
 
 
 
@@ -30729,10 +30829,10 @@ __webpack_require__.r(__webpack_exports__);
 
 var Image_flip_class = /*#__PURE__*/function () {
   function Image_flip_class() {
-    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__["default"])(this, Image_flip_class);
-    this.Base_layers = new _core_base_layers_js__WEBPACK_IMPORTED_MODULE_4__["default"]();
+    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__["default"])(this, Image_flip_class);
+    this.Base_layers = new _core_base_layers_js__WEBPACK_IMPORTED_MODULE_6__["default"]();
   }
-  return (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__["default"])(Image_flip_class, [{
+  return (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__["default"])(Image_flip_class, [{
     key: "vertical",
     value: function vertical() {
       this.flip('vertical');
@@ -30744,36 +30844,58 @@ var Image_flip_class = /*#__PURE__*/function () {
     }
   }, {
     key: "flip",
-    value: function flip(mode) {
-      if (_config_js__WEBPACK_IMPORTED_MODULE_3__["default"].layer.type != 'image') {
-        _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_5___default().error('This layer must contain an image. Please convert it to raster to apply this tool.');
-        return;
+    value: function () {
+      var _flip = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().mark(function _callee(mode) {
+        var ready, canvas, ctx, canvas2, ctx2;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().wrap(function (_context) {
+          while (1) switch (_context.prev = _context.next) {
+            case 0:
+              if (!(_config_js__WEBPACK_IMPORTED_MODULE_5__["default"].layer.type != 'image' || _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].layer.is_vector == true)) {
+                _context.next = 2;
+                break;
+              }
+              _context.next = 1;
+              return (0,_libs_rasterize_js__WEBPACK_IMPORTED_MODULE_8__.ensure_raster_layer)('edited');
+            case 1:
+              ready = _context.sent;
+              if (!(ready == false)) {
+                _context.next = 2;
+                break;
+              }
+              return _context.abrupt("return");
+            case 2:
+              //get canvas from layer
+              canvas = this.Base_layers.convert_layer_to_canvas(null, true);
+              ctx = canvas.getContext("2d"); //create destination canvas
+              canvas2 = document.createElement('canvas');
+              canvas2.width = canvas.width;
+              canvas2.height = canvas.height;
+              ctx2 = canvas2.getContext("2d");
+              canvas2.dataset.x = canvas.dataset.x;
+              canvas2.dataset.y = canvas.dataset.y;
+
+              //flip
+              if (mode == 'vertical') {
+                ctx2.scale(1, -1);
+                ctx2.drawImage(canvas, 0, canvas2.height * -1);
+              } else if (mode == 'horizontal') {
+                ctx2.scale(-1, 1);
+                ctx2.drawImage(canvas, canvas2.width * -1, 0);
+              }
+
+              //save
+              return _context.abrupt("return", _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].Actions.Update_layer_image_action(canvas2)));
+            case 3:
+            case "end":
+              return _context.stop();
+          }
+        }, _callee, this);
+      }));
+      function flip(_x) {
+        return _flip.apply(this, arguments);
       }
-
-      //get canvas from layer
-      var canvas = this.Base_layers.convert_layer_to_canvas(null, true);
-      var ctx = canvas.getContext("2d");
-
-      //create destination canvas
-      var canvas2 = document.createElement('canvas');
-      canvas2.width = canvas.width;
-      canvas2.height = canvas.height;
-      var ctx2 = canvas2.getContext("2d");
-      canvas2.dataset.x = canvas.dataset.x;
-      canvas2.dataset.y = canvas.dataset.y;
-
-      //flip
-      if (mode == 'vertical') {
-        ctx2.scale(1, -1);
-        ctx2.drawImage(canvas, 0, canvas2.height * -1);
-      } else if (mode == 'horizontal') {
-        ctx2.scale(-1, 1);
-        ctx2.drawImage(canvas, canvas2.width * -1, 0);
-      }
-
-      //save
-      return _app_js__WEBPACK_IMPORTED_MODULE_2__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_2__["default"].Actions.Update_layer_image_action(canvas2));
-    }
+      return flip;
+    }()
   }]);
 }();
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Image_flip_class);
@@ -31157,16 +31279,23 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
-/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
-/* harmony import */ var _app_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../../app.js */ "./src/js/app.js");
-/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./../../config.js */ "./src/js/config.js");
-/* harmony import */ var _core_base_layers_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./../../core/base-layers.js */ "./src/js/core/base-layers.js");
-/* harmony import */ var _libs_color_thief_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./../../libs/color-thief.js */ "./src/js/libs/color-thief.js");
-/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./../../../../node_modules/alertifyjs/build/alertify.min.js */ "./node_modules/alertifyjs/build/alertify.min.js");
-/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(_node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_6__);
-/* harmony import */ var _libs_popup_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./../../libs/popup.js */ "./src/js/libs/popup.js");
-/* harmony import */ var _libs_helpers_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./../../libs/helpers.js */ "./src/js/libs/helpers.js");
+/* harmony import */ var _babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ "./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js");
+/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
+/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _app_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./../../app.js */ "./src/js/app.js");
+/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./../../config.js */ "./src/js/config.js");
+/* harmony import */ var _core_base_layers_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./../../core/base-layers.js */ "./src/js/core/base-layers.js");
+/* harmony import */ var _libs_color_thief_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./../../libs/color-thief.js */ "./src/js/libs/color-thief.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./../../../../node_modules/alertifyjs/build/alertify.min.js */ "./node_modules/alertifyjs/build/alertify.min.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(_node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_8__);
+/* harmony import */ var _libs_popup_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./../../libs/popup.js */ "./src/js/libs/popup.js");
+/* harmony import */ var _libs_helpers_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./../../libs/helpers.js */ "./src/js/libs/helpers.js");
+/* harmony import */ var _libs_rasterize_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./../../libs/rasterize.js */ "./src/js/libs/rasterize.js");
+
+
+
 
 
 
@@ -31178,62 +31307,87 @@ __webpack_require__.r(__webpack_exports__);
 
 var Image_color_class = /*#__PURE__*/function () {
   function Image_color_class() {
-    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__["default"])(this, Image_color_class);
-    this.Base_layers = new _core_base_layers_js__WEBPACK_IMPORTED_MODULE_4__["default"]();
-    this.ColorThief = new _libs_color_thief_js__WEBPACK_IMPORTED_MODULE_5__["default"]();
-    this.POP = new _libs_popup_js__WEBPACK_IMPORTED_MODULE_7__["default"]();
-    this.Helper = new _libs_helpers_js__WEBPACK_IMPORTED_MODULE_8__["default"]();
+    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__["default"])(this, Image_color_class);
+    this.Base_layers = new _core_base_layers_js__WEBPACK_IMPORTED_MODULE_6__["default"]();
+    this.ColorThief = new _libs_color_thief_js__WEBPACK_IMPORTED_MODULE_7__["default"]();
+    this.POP = new _libs_popup_js__WEBPACK_IMPORTED_MODULE_9__["default"]();
+    this.Helper = new _libs_helpers_js__WEBPACK_IMPORTED_MODULE_10__["default"]();
     this.original_palette = [];
   }
-  return (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__["default"])(Image_color_class, [{
+  return (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__["default"])(Image_color_class, [{
     key: "palette",
-    value: function palette() {
-      var _this = this;
-      if (_config_js__WEBPACK_IMPORTED_MODULE_3__["default"].layer.type != 'image') {
-        _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_6___default().error('This layer must contain an image. Please convert it to raster to apply this tool.');
-        return;
+    value: function () {
+      var _palette = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().mark(function _callee() {
+        var _this, ready, palette, dominant, settings, i, rgb;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().wrap(function (_context) {
+          while (1) switch (_context.prev = _context.next) {
+            case 0:
+              _this = this;
+              if (!(_config_js__WEBPACK_IMPORTED_MODULE_5__["default"].layer.type != 'image' || _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].layer.is_vector == true)) {
+                _context.next = 2;
+                break;
+              }
+              _context.next = 1;
+              return (0,_libs_rasterize_js__WEBPACK_IMPORTED_MODULE_11__.ensure_raster_layer)('edited');
+            case 1:
+              ready = _context.sent;
+              if (!(ready == false)) {
+                _context.next = 2;
+                break;
+              }
+              return _context.abrupt("return");
+            case 2:
+              palette = this.ColorThief.getPalette(_config_js__WEBPACK_IMPORTED_MODULE_5__["default"].layer.link);
+              dominant = this.ColorThief.getColor(_config_js__WEBPACK_IMPORTED_MODULE_5__["default"].layer.link);
+              dominant = this.Helper.rgbToHex(dominant[0], dominant[1], dominant[2]);
+              this.original_palette = [];
+              settings = {
+                title: 'Palette',
+                preview: true,
+                on_change: function on_change(params, canvas_preview, w, h) {
+                  var img = canvas_preview.getImageData(0, 0, w, h);
+                  var data = _this.remap_palette(img, params);
+                  canvas_preview.putImageData(data, 0, 0);
+                },
+                params: [{
+                  title: "Dominant color:",
+                  html: this.generate_color_box(dominant, 200)
+                }, {
+                  name: "mode",
+                  title: "Mode:",
+                  values: ['Shift - preserve shading', 'Replace - exact colors']
+                }],
+                on_finish: function on_finish(params) {
+                  _this.execute(params);
+                }
+              };
+              for (i in palette) {
+                rgb = this.Helper.rgbToHex(palette[i][0], palette[i][1], palette[i][2]);
+                i = parseInt(i);
+                this.original_palette.push({
+                  r: palette[i][0],
+                  g: palette[i][1],
+                  b: palette[i][2]
+                });
+                settings.params.push({
+                  name: "color_" + i,
+                  title: "Color #" + (i + 1) + ":",
+                  value: rgb,
+                  type: 'color'
+                });
+              }
+              this.POP.show(settings);
+            case 3:
+            case "end":
+              return _context.stop();
+          }
+        }, _callee, this);
+      }));
+      function palette() {
+        return _palette.apply(this, arguments);
       }
-      var palette = this.ColorThief.getPalette(_config_js__WEBPACK_IMPORTED_MODULE_3__["default"].layer.link);
-      var dominant = this.ColorThief.getColor(_config_js__WEBPACK_IMPORTED_MODULE_3__["default"].layer.link);
-      dominant = this.Helper.rgbToHex(dominant[0], dominant[1], dominant[2]);
-      this.original_palette = [];
-      var settings = {
-        title: 'Palette',
-        preview: true,
-        on_change: function on_change(params, canvas_preview, w, h) {
-          var img = canvas_preview.getImageData(0, 0, w, h);
-          var data = _this.remap_palette(img, params);
-          canvas_preview.putImageData(data, 0, 0);
-        },
-        params: [{
-          title: "Dominant color:",
-          html: this.generate_color_box(dominant, 200)
-        }, {
-          name: "mode",
-          title: "Mode:",
-          values: ['Shift - preserve shading', 'Replace - exact colors']
-        }],
-        on_finish: function on_finish(params) {
-          _this.execute(params);
-        }
-      };
-      for (var i in palette) {
-        var rgb = this.Helper.rgbToHex(palette[i][0], palette[i][1], palette[i][2]);
-        i = parseInt(i);
-        this.original_palette.push({
-          r: palette[i][0],
-          g: palette[i][1],
-          b: palette[i][2]
-        });
-        settings.params.push({
-          name: "color_" + i,
-          title: "Color #" + (i + 1) + ":",
-          value: rgb,
-          type: 'color'
-        });
-      }
-      this.POP.show(settings);
-    }
+      return palette;
+    }()
   }, {
     key: "execute",
     value: function execute(params) {
@@ -31247,7 +31401,7 @@ var Image_color_class = /*#__PURE__*/function () {
       ctx.putImageData(data, 0, 0);
 
       //save
-      return _app_js__WEBPACK_IMPORTED_MODULE_2__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_2__["default"].Actions.Update_layer_image_action(canvas));
+      return _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].Actions.Update_layer_image_action(canvas));
     }
   }, {
     key: "remap_palette",
@@ -33345,15 +33499,22 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
-/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
-/* harmony import */ var _app_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../../app.js */ "./src/js/app.js");
-/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./../../config.js */ "./src/js/config.js");
-/* harmony import */ var _core_base_layers_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./../../core/base-layers.js */ "./src/js/core/base-layers.js");
-/* harmony import */ var _libs_popup_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./../../libs/popup.js */ "./src/js/libs/popup.js");
-/* harmony import */ var _libs_helpers_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./../../libs/helpers.js */ "./src/js/libs/helpers.js");
-/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./../../../../node_modules/alertifyjs/build/alertify.min.js */ "./node_modules/alertifyjs/build/alertify.min.js");
-/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(_node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_7__);
+/* harmony import */ var _babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ "./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js");
+/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
+/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _app_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./../../app.js */ "./src/js/app.js");
+/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./../../config.js */ "./src/js/config.js");
+/* harmony import */ var _core_base_layers_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./../../core/base-layers.js */ "./src/js/core/base-layers.js");
+/* harmony import */ var _libs_popup_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./../../libs/popup.js */ "./src/js/libs/popup.js");
+/* harmony import */ var _libs_helpers_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./../../libs/helpers.js */ "./src/js/libs/helpers.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./../../../../node_modules/alertifyjs/build/alertify.min.js */ "./node_modules/alertifyjs/build/alertify.min.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(_node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_9__);
+/* harmony import */ var _libs_rasterize_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./../../libs/rasterize.js */ "./src/js/libs/rasterize.js");
+
+
+
 
 
 
@@ -33364,39 +33525,64 @@ __webpack_require__.r(__webpack_exports__);
 
 var Tools_colorToAlpha_class = /*#__PURE__*/function () {
   function Tools_colorToAlpha_class() {
-    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__["default"])(this, Tools_colorToAlpha_class);
-    this.POP = new _libs_popup_js__WEBPACK_IMPORTED_MODULE_5__["default"]();
-    this.Base_layers = new _core_base_layers_js__WEBPACK_IMPORTED_MODULE_4__["default"]();
-    this.Helper = new _libs_helpers_js__WEBPACK_IMPORTED_MODULE_6__["default"]();
+    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__["default"])(this, Tools_colorToAlpha_class);
+    this.POP = new _libs_popup_js__WEBPACK_IMPORTED_MODULE_7__["default"]();
+    this.Base_layers = new _core_base_layers_js__WEBPACK_IMPORTED_MODULE_6__["default"]();
+    this.Helper = new _libs_helpers_js__WEBPACK_IMPORTED_MODULE_8__["default"]();
   }
-  return (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__["default"])(Tools_colorToAlpha_class, [{
+  return (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__["default"])(Tools_colorToAlpha_class, [{
     key: "color_to_alpha",
-    value: function color_to_alpha() {
-      var _this = this;
-      if (_config_js__WEBPACK_IMPORTED_MODULE_3__["default"].layer.type != 'image') {
-        _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_7___default().error('This layer must contain an image. Please convert it to raster to apply this tool.');
-        return;
+    value: function () {
+      var _color_to_alpha = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().mark(function _callee() {
+        var _this, ready, settings;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().wrap(function (_context) {
+          while (1) switch (_context.prev = _context.next) {
+            case 0:
+              _this = this;
+              if (!(_config_js__WEBPACK_IMPORTED_MODULE_5__["default"].layer.type != 'image' || _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].layer.is_vector == true)) {
+                _context.next = 2;
+                break;
+              }
+              _context.next = 1;
+              return (0,_libs_rasterize_js__WEBPACK_IMPORTED_MODULE_10__.ensure_raster_layer)('edited');
+            case 1:
+              ready = _context.sent;
+              if (!(ready == false)) {
+                _context.next = 2;
+                break;
+              }
+              return _context.abrupt("return");
+            case 2:
+              settings = {
+                title: 'Color to Alpha',
+                preview: true,
+                on_change: function on_change(params, canvas_preview, w, h) {
+                  var img = canvas_preview.getImageData(0, 0, w, h);
+                  var data = _this.change(img, params.color);
+                  canvas_preview.putImageData(data, 0, 0);
+                },
+                params: [{
+                  name: "color",
+                  title: "Color:",
+                  value: _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].COLOR,
+                  type: 'color'
+                }],
+                on_finish: function on_finish(params) {
+                  _this.apply_affect(params.color);
+                }
+              };
+              this.POP.show(settings);
+            case 3:
+            case "end":
+              return _context.stop();
+          }
+        }, _callee, this);
+      }));
+      function color_to_alpha() {
+        return _color_to_alpha.apply(this, arguments);
       }
-      var settings = {
-        title: 'Color to Alpha',
-        preview: true,
-        on_change: function on_change(params, canvas_preview, w, h) {
-          var img = canvas_preview.getImageData(0, 0, w, h);
-          var data = _this.change(img, params.color);
-          canvas_preview.putImageData(data, 0, 0);
-        },
-        params: [{
-          name: "color",
-          title: "Color:",
-          value: _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].COLOR,
-          type: 'color'
-        }],
-        on_finish: function on_finish(params) {
-          _this.apply_affect(params.color);
-        }
-      };
-      this.POP.show(settings);
-    }
+      return color_to_alpha;
+    }()
   }, {
     key: "apply_affect",
     value: function apply_affect(color) {
@@ -33410,7 +33596,7 @@ var Tools_colorToAlpha_class = /*#__PURE__*/function () {
       ctx.putImageData(data, 0, 0);
 
       //save
-      return _app_js__WEBPACK_IMPORTED_MODULE_2__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_2__["default"].Actions.Update_layer_image_action(canvas));
+      return _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].Actions.Update_layer_image_action(canvas));
     }
   }, {
     key: "change",
@@ -33450,14 +33636,21 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
-/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
-/* harmony import */ var _app_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../../app.js */ "./src/js/app.js");
-/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./../../config.js */ "./src/js/config.js");
-/* harmony import */ var _core_base_layers_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./../../core/base-layers.js */ "./src/js/core/base-layers.js");
-/* harmony import */ var _libs_popup_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./../../libs/popup.js */ "./src/js/libs/popup.js");
-/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./../../../../node_modules/alertifyjs/build/alertify.min.js */ "./node_modules/alertifyjs/build/alertify.min.js");
-/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(_node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var _babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ "./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js");
+/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
+/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _app_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./../../app.js */ "./src/js/app.js");
+/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./../../config.js */ "./src/js/config.js");
+/* harmony import */ var _core_base_layers_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./../../core/base-layers.js */ "./src/js/core/base-layers.js");
+/* harmony import */ var _libs_popup_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./../../libs/popup.js */ "./src/js/libs/popup.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./../../../../node_modules/alertifyjs/build/alertify.min.js */ "./node_modules/alertifyjs/build/alertify.min.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(_node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_8__);
+/* harmony import */ var _libs_rasterize_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./../../libs/rasterize.js */ "./src/js/libs/rasterize.js");
+
+
+
 
 
 
@@ -33467,43 +33660,68 @@ __webpack_require__.r(__webpack_exports__);
 
 var Tools_colorZoom_class = /*#__PURE__*/function () {
   function Tools_colorZoom_class() {
-    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__["default"])(this, Tools_colorZoom_class);
-    this.POP = new _libs_popup_js__WEBPACK_IMPORTED_MODULE_5__["default"]();
-    this.Base_layers = new _core_base_layers_js__WEBPACK_IMPORTED_MODULE_4__["default"]();
+    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__["default"])(this, Tools_colorZoom_class);
+    this.POP = new _libs_popup_js__WEBPACK_IMPORTED_MODULE_7__["default"]();
+    this.Base_layers = new _core_base_layers_js__WEBPACK_IMPORTED_MODULE_6__["default"]();
   }
-  return (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__["default"])(Tools_colorZoom_class, [{
+  return (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__["default"])(Tools_colorZoom_class, [{
     key: "color_zoom",
-    value: function color_zoom() {
-      var _this = this;
-      if (_config_js__WEBPACK_IMPORTED_MODULE_3__["default"].layer.type != 'image') {
-        _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_6___default().error('This layer must contain an image. Please convert it to raster to apply this tool.');
-        return;
+    value: function () {
+      var _color_zoom = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().mark(function _callee() {
+        var _this, ready, settings;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().wrap(function (_context) {
+          while (1) switch (_context.prev = _context.next) {
+            case 0:
+              _this = this;
+              if (!(_config_js__WEBPACK_IMPORTED_MODULE_5__["default"].layer.type != 'image' || _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].layer.is_vector == true)) {
+                _context.next = 2;
+                break;
+              }
+              _context.next = 1;
+              return (0,_libs_rasterize_js__WEBPACK_IMPORTED_MODULE_9__.ensure_raster_layer)('edited');
+            case 1:
+              ready = _context.sent;
+              if (!(ready == false)) {
+                _context.next = 2;
+                break;
+              }
+              return _context.abrupt("return");
+            case 2:
+              settings = {
+                title: 'Color zoom',
+                preview: true,
+                params: [{
+                  name: "zoom",
+                  title: "Zoom:",
+                  value: "2",
+                  range: [2, 20]
+                }, {
+                  name: "center",
+                  title: "Center:",
+                  value: "128",
+                  range: [0, 255]
+                }],
+                on_change: function on_change(params, canvas_preview, w, h) {
+                  var img = canvas_preview.getImageData(0, 0, w, h);
+                  var data = _this.change(img, params.zoom, params.center);
+                  canvas_preview.putImageData(data, 0, 0);
+                },
+                on_finish: function on_finish(params) {
+                  _this.save_zoom(params.zoom, params.center);
+                }
+              };
+              this.POP.show(settings);
+            case 3:
+            case "end":
+              return _context.stop();
+          }
+        }, _callee, this);
+      }));
+      function color_zoom() {
+        return _color_zoom.apply(this, arguments);
       }
-      var settings = {
-        title: 'Color zoom',
-        preview: true,
-        params: [{
-          name: "zoom",
-          title: "Zoom:",
-          value: "2",
-          range: [2, 20]
-        }, {
-          name: "center",
-          title: "Center:",
-          value: "128",
-          range: [0, 255]
-        }],
-        on_change: function on_change(params, canvas_preview, w, h) {
-          var img = canvas_preview.getImageData(0, 0, w, h);
-          var data = _this.change(img, params.zoom, params.center);
-          canvas_preview.putImageData(data, 0, 0);
-        },
-        on_finish: function on_finish(params) {
-          _this.save_zoom(params.zoom, params.center);
-        }
-      };
-      this.POP.show(settings);
-    }
+      return color_zoom;
+    }()
   }, {
     key: "save_zoom",
     value: function save_zoom(zoom, center) {
@@ -33517,7 +33735,7 @@ var Tools_colorZoom_class = /*#__PURE__*/function () {
       ctx.putImageData(data, 0, 0);
 
       //save
-      return _app_js__WEBPACK_IMPORTED_MODULE_2__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_2__["default"].Actions.Update_layer_image_action(canvas));
+      return _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].Actions.Update_layer_image_action(canvas));
     }
   }, {
     key: "change",
@@ -33554,16 +33772,23 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
-/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
-/* harmony import */ var _app_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../../app.js */ "./src/js/app.js");
-/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./../../config.js */ "./src/js/config.js");
-/* harmony import */ var _core_base_layers_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./../../core/base-layers.js */ "./src/js/core/base-layers.js");
-/* harmony import */ var _libs_popup_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./../../libs/popup.js */ "./src/js/libs/popup.js");
-/* harmony import */ var _libs_imagefilters_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./../../libs/imagefilters.js */ "./src/js/libs/imagefilters.js");
-/* harmony import */ var _image_trim_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./../image/trim.js */ "./src/js/modules/image/trim.js");
-/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./../../../../node_modules/alertifyjs/build/alertify.min.js */ "./node_modules/alertifyjs/build/alertify.min.js");
-/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(_node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_8__);
+/* harmony import */ var _babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ "./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js");
+/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
+/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _app_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./../../app.js */ "./src/js/app.js");
+/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./../../config.js */ "./src/js/config.js");
+/* harmony import */ var _core_base_layers_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./../../core/base-layers.js */ "./src/js/core/base-layers.js");
+/* harmony import */ var _libs_popup_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./../../libs/popup.js */ "./src/js/libs/popup.js");
+/* harmony import */ var _libs_imagefilters_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./../../libs/imagefilters.js */ "./src/js/libs/imagefilters.js");
+/* harmony import */ var _image_trim_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./../image/trim.js */ "./src/js/modules/image/trim.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./../../../../node_modules/alertifyjs/build/alertify.min.js */ "./node_modules/alertifyjs/build/alertify.min.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(_node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10__);
+/* harmony import */ var _libs_rasterize_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./../../libs/rasterize.js */ "./src/js/libs/rasterize.js");
+
+
+
 
 
 
@@ -33575,89 +33800,117 @@ __webpack_require__.r(__webpack_exports__);
 
 var Tools_contentFill_class = /*#__PURE__*/function () {
   function Tools_contentFill_class() {
-    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__["default"])(this, Tools_contentFill_class);
-    this.POP = new _libs_popup_js__WEBPACK_IMPORTED_MODULE_5__["default"]();
-    this.Base_layers = new _core_base_layers_js__WEBPACK_IMPORTED_MODULE_4__["default"]();
-    this.Image_trim = new _image_trim_js__WEBPACK_IMPORTED_MODULE_7__["default"]();
+    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__["default"])(this, Tools_contentFill_class);
+    this.POP = new _libs_popup_js__WEBPACK_IMPORTED_MODULE_7__["default"]();
+    this.Base_layers = new _core_base_layers_js__WEBPACK_IMPORTED_MODULE_6__["default"]();
+    this.Image_trim = new _image_trim_js__WEBPACK_IMPORTED_MODULE_9__["default"]();
   }
-  return (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__["default"])(Tools_contentFill_class, [{
+  return (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__["default"])(Tools_contentFill_class, [{
     key: "content_fill",
-    value: function content_fill() {
-      var _this = this;
-      if (_config_js__WEBPACK_IMPORTED_MODULE_3__["default"].layer.type != 'image') {
-        _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_8___default().error('This layer must contain an image. Please convert it to raster to apply this tool.');
-        return;
+    value: function () {
+      var _content_fill = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().mark(function _callee() {
+        var _this, ready, settings;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().wrap(function (_context) {
+          while (1) switch (_context.prev = _context.next) {
+            case 0:
+              _this = this;
+              if (!(_config_js__WEBPACK_IMPORTED_MODULE_5__["default"].layer.type != 'image' || _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].layer.is_vector == true)) {
+                _context.next = 2;
+                break;
+              }
+              _context.next = 1;
+              return (0,_libs_rasterize_js__WEBPACK_IMPORTED_MODULE_11__.ensure_raster_layer)('edited');
+            case 1:
+              ready = _context.sent;
+              if (!(ready == false)) {
+                _context.next = 2;
+                break;
+              }
+              return _context.abrupt("return");
+            case 2:
+              if (!(_config_js__WEBPACK_IMPORTED_MODULE_5__["default"].layer.x == 0 && _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].layer.y == 0 && _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].layer.width == _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].WIDTH && _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].layer.height == _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].HEIGHT)) {
+                _context.next = 3;
+                break;
+              }
+              _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10___default().error('Can not use this tool on current layer: image already takes all area.');
+              return _context.abrupt("return");
+            case 3:
+              settings = {
+                title: 'Content Fill',
+                preview: true,
+                on_change: function on_change(params, canvas_preview, w, h, canvasElement) {
+                  canvas_preview.clearRect(0, 0, w, h);
+
+                  //create tmp canvas
+                  var canvas = document.createElement('canvas');
+                  canvas.width = _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].WIDTH;
+                  canvas.height = _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].HEIGHT;
+
+                  //change data
+                  _this.change(canvas, params);
+
+                  //add to preview
+                  canvas_preview.drawImage(canvas, 0, 0, w, h);
+                },
+                params: [{
+                  name: "mode",
+                  title: "Mode:",
+                  values: ['Expand edges', 'Cloned edges', 'Resized as background']
+                }, {
+                  name: "blur_power",
+                  title: "Blur power:",
+                  value: 5,
+                  range: [1, 20]
+                }, {
+                  name: "blur_h",
+                  title: "Horizontal blur:",
+                  value: 5,
+                  range: [0, 30]
+                }, {
+                  name: "blur_v",
+                  title: "Vertical blur:",
+                  value: 5,
+                  range: [0, 30]
+                }, {
+                  name: "clone_count",
+                  title: "Clone count:",
+                  value: 15,
+                  range: [10, 50]
+                }],
+                on_finish: function on_finish(params) {
+                  _this.apply_affect(params);
+                }
+              };
+              this.POP.show(settings);
+            case 4:
+            case "end":
+              return _context.stop();
+          }
+        }, _callee, this);
+      }));
+      function content_fill() {
+        return _content_fill.apply(this, arguments);
       }
-      if (_config_js__WEBPACK_IMPORTED_MODULE_3__["default"].layer.x == 0 && _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].layer.y == 0 && _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].layer.width == _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].WIDTH && _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].layer.height == _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].HEIGHT) {
-        _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_8___default().error('Can not use this tool on current layer: image already takes all area.');
-        return;
-      }
-      var settings = {
-        title: 'Content Fill',
-        preview: true,
-        on_change: function on_change(params, canvas_preview, w, h, canvasElement) {
-          canvas_preview.clearRect(0, 0, w, h);
-
-          //create tmp canvas
-          var canvas = document.createElement('canvas');
-          canvas.width = _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].WIDTH;
-          canvas.height = _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].HEIGHT;
-
-          //change data
-          _this.change(canvas, params);
-
-          //add to preview
-          canvas_preview.drawImage(canvas, 0, 0, w, h);
-        },
-        params: [{
-          name: "mode",
-          title: "Mode:",
-          values: ['Expand edges', 'Cloned edges', 'Resized as background']
-        }, {
-          name: "blur_power",
-          title: "Blur power:",
-          value: 5,
-          range: [1, 20]
-        }, {
-          name: "blur_h",
-          title: "Horizontal blur:",
-          value: 5,
-          range: [0, 30]
-        }, {
-          name: "blur_v",
-          title: "Vertical blur:",
-          value: 5,
-          range: [0, 30]
-        }, {
-          name: "clone_count",
-          title: "Clone count:",
-          value: 15,
-          range: [10, 50]
-        }],
-        on_finish: function on_finish(params) {
-          _this.apply_affect(params);
-        }
-      };
-      this.POP.show(settings);
-    }
+      return content_fill;
+    }()
   }, {
     key: "apply_affect",
     value: function apply_affect(params) {
       //create tmp canvas
       var canvas = document.createElement('canvas');
-      canvas.width = _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].WIDTH;
-      canvas.height = _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].HEIGHT;
+      canvas.width = _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].WIDTH;
+      canvas.height = _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].HEIGHT;
 
       //change data
       this.change(canvas, params);
 
       //save
-      return _app_js__WEBPACK_IMPORTED_MODULE_2__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_2__["default"].Actions.Bundle_action('content_fill', 'Content Fill', [new _app_js__WEBPACK_IMPORTED_MODULE_2__["default"].Actions.Update_layer_action(_config_js__WEBPACK_IMPORTED_MODULE_3__["default"].layer.id, {
+      return _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].Actions.Bundle_action('content_fill', 'Content Fill', [new _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].Actions.Update_layer_action(_config_js__WEBPACK_IMPORTED_MODULE_5__["default"].layer.id, {
         x: 0,
         y: 0,
-        width: _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].WIDTH,
-        height: _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].HEIGHT
-      }), new _app_js__WEBPACK_IMPORTED_MODULE_2__["default"].Actions.Update_layer_image_action(canvas)]));
+        width: _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].WIDTH,
+        height: _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].HEIGHT
+      }), new _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].Actions.Update_layer_image_action(canvas)]));
     }
   }, {
     key: "change",
@@ -33669,13 +33922,13 @@ var Tools_contentFill_class = /*#__PURE__*/function () {
       if (mode == 'Expand edges') this.add_edge_background(canvas, params);else if (mode == 'Resized as background') this.add_resized_background(canvas, params);else if (mode == 'Cloned edges') this.add_cloned_background(canvas, params);
 
       //draw original image
-      this.Base_layers.render_object(ctx, _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].layer);
+      this.Base_layers.render_object(ctx, _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].layer);
     }
   }, {
     key: "add_edge_background",
     value: function add_edge_background(canvas, params) {
       var ctx = canvas.getContext("2d");
-      var trim_info = this.Image_trim.get_trim_info(_config_js__WEBPACK_IMPORTED_MODULE_3__["default"].layer.id);
+      var trim_info = this.Image_trim.get_trim_info(_config_js__WEBPACK_IMPORTED_MODULE_5__["default"].layer.id);
       var original = this.Base_layers.convert_layer_to_canvas();
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(original, trim_info.left, trim_info.top);
@@ -33710,7 +33963,7 @@ var Tools_contentFill_class = /*#__PURE__*/function () {
 
       //add blur
       var img = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      var blurred = _libs_imagefilters_js__WEBPACK_IMPORTED_MODULE_6__["default"].BoxBlur(img, params.blur_h, params.blur_v, params.blur_power);
+      var blurred = _libs_imagefilters_js__WEBPACK_IMPORTED_MODULE_8__["default"].BoxBlur(img, params.blur_h, params.blur_v, params.blur_power);
       ctx.putImageData(blurred, 0, 0);
     }
   }, {
@@ -33724,7 +33977,7 @@ var Tools_contentFill_class = /*#__PURE__*/function () {
 
       //add blur
       var img = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      var blurred = _libs_imagefilters_js__WEBPACK_IMPORTED_MODULE_6__["default"].BoxBlur(img, params.blur_h, params.blur_v, params.blur_power);
+      var blurred = _libs_imagefilters_js__WEBPACK_IMPORTED_MODULE_8__["default"].BoxBlur(img, params.blur_h, params.blur_v, params.blur_power);
       ctx.putImageData(blurred, 0, 0);
     }
   }, {
@@ -33732,7 +33985,7 @@ var Tools_contentFill_class = /*#__PURE__*/function () {
     value: function add_cloned_background(canvas, params) {
       var blocks = params.clone_count;
       var ctx = canvas.getContext("2d");
-      var trim_info = this.Image_trim.get_trim_info(_config_js__WEBPACK_IMPORTED_MODULE_3__["default"].layer.id);
+      var trim_info = this.Image_trim.get_trim_info(_config_js__WEBPACK_IMPORTED_MODULE_5__["default"].layer.id);
       var original = this.Base_layers.convert_layer_to_canvas();
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(original, trim_info.left, trim_info.top);
@@ -33802,7 +34055,7 @@ var Tools_contentFill_class = /*#__PURE__*/function () {
 
       //add blur
       var img = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      var blurred = _libs_imagefilters_js__WEBPACK_IMPORTED_MODULE_6__["default"].BoxBlur(img, params.blur_h, params.blur_v, params.blur_power);
+      var blurred = _libs_imagefilters_js__WEBPACK_IMPORTED_MODULE_8__["default"].BoxBlur(img, params.blur_h, params.blur_v, params.blur_power);
       ctx.putImageData(blurred, 0, 0);
     }
   }]);
@@ -33822,15 +34075,22 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
-/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
-/* harmony import */ var _app_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../../app.js */ "./src/js/app.js");
-/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./../../config.js */ "./src/js/config.js");
-/* harmony import */ var _core_base_layers_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./../../core/base-layers.js */ "./src/js/core/base-layers.js");
-/* harmony import */ var _libs_helpers_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./../../libs/helpers.js */ "./src/js/libs/helpers.js");
-/* harmony import */ var _libs_imagefilters_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./../../libs/imagefilters.js */ "./src/js/libs/imagefilters.js");
-/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./../../../../node_modules/alertifyjs/build/alertify.min.js */ "./node_modules/alertifyjs/build/alertify.min.js");
-/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(_node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_7__);
+/* harmony import */ var _babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ "./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js");
+/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
+/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _app_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./../../app.js */ "./src/js/app.js");
+/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./../../config.js */ "./src/js/config.js");
+/* harmony import */ var _core_base_layers_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./../../core/base-layers.js */ "./src/js/core/base-layers.js");
+/* harmony import */ var _libs_helpers_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./../../libs/helpers.js */ "./src/js/libs/helpers.js");
+/* harmony import */ var _libs_imagefilters_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./../../libs/imagefilters.js */ "./src/js/libs/imagefilters.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./../../../../node_modules/alertifyjs/build/alertify.min.js */ "./node_modules/alertifyjs/build/alertify.min.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(_node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_9__);
+/* harmony import */ var _libs_rasterize_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./../../libs/rasterize.js */ "./src/js/libs/rasterize.js");
+
+
+
 
 
 
@@ -33847,10 +34107,10 @@ __webpack_require__.r(__webpack_exports__);
  */
 var Tools_keypoints_class = /*#__PURE__*/function () {
   function Tools_keypoints_class() {
-    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__["default"])(this, Tools_keypoints_class);
-    this.Helper = new _libs_helpers_js__WEBPACK_IMPORTED_MODULE_5__["default"]();
-    this.Base_layers = new _core_base_layers_js__WEBPACK_IMPORTED_MODULE_4__["default"]();
-    this.ImageFilters = _libs_imagefilters_js__WEBPACK_IMPORTED_MODULE_6__["default"];
+    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__["default"])(this, Tools_keypoints_class);
+    this.Helper = new _libs_helpers_js__WEBPACK_IMPORTED_MODULE_7__["default"]();
+    this.Base_layers = new _core_base_layers_js__WEBPACK_IMPORTED_MODULE_6__["default"]();
+    this.ImageFilters = _libs_imagefilters_js__WEBPACK_IMPORTED_MODULE_8__["default"];
 
     //contrast check, smaller - more points, better accuracy, but slower
     this.avg_offset = 50;
@@ -33862,88 +34122,124 @@ var Tools_keypoints_class = /*#__PURE__*/function () {
   }
 
   //generate key points for image
-  return (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__["default"])(Tools_keypoints_class, [{
+  return (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__["default"])(Tools_keypoints_class, [{
     key: "keypoints",
-    value: function keypoints(return_data) {
-      if (_config_js__WEBPACK_IMPORTED_MODULE_3__["default"].layer.type != 'image') {
-        _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_7___default().error('This layer must contain an image. Please convert it to raster to apply this tool.');
-        return;
-      }
-      var W = _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].layer.width;
-      var H = _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].layer.height;
+    value: function () {
+      var _keypoints = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().mark(function _callee(return_data) {
+        var ready, W, H, clone, ctx, imageData, data, n, copies, i, tmp_canvas, ctx_i, filtered, points, n0, c, imageData0, imageData2, j, x, x_pre, x_post, area_average, l, avgi, a, min, min0, min2, max, max0, max2, size, point, params;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().wrap(function (_context) {
+          while (1) switch (_context.prev = _context.next) {
+            case 0:
+              if (!(_config_js__WEBPACK_IMPORTED_MODULE_5__["default"].layer.type != 'image' || _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].layer.is_vector == true)) {
+                _context.next = 2;
+                break;
+              }
+              _context.next = 1;
+              return (0,_libs_rasterize_js__WEBPACK_IMPORTED_MODULE_10__.ensure_raster_layer)('edited');
+            case 1:
+              ready = _context.sent;
+              if (!(ready == false)) {
+                _context.next = 2;
+                break;
+              }
+              return _context.abrupt("return");
+            case 2:
+              W = _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].layer.width;
+              H = _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].layer.height; //get canvas from layer
+              clone = this.Base_layers.convert_layer_to_canvas();
+              ctx = clone.getContext("2d"); //greyscale
+              imageData = ctx.getImageData(0, 0, W, H);
+              data = this.convert_to_grayscale(imageData);
+              ctx.putImageData(data, 0, 0);
 
-      //get canvas from layer
-      var clone = this.Base_layers.convert_layer_to_canvas();
-      var ctx = clone.getContext("2d");
+              //make few copies and blur each
+              n = 5;
+              copies = [];
+              for (i = 0; i < n; i++) {
+                tmp_canvas = document.createElement('canvas');
+                tmp_canvas.width = W;
+                tmp_canvas.height = H;
+                ctx_i = tmp_canvas.getContext("2d");
+                ctx_i.drawImage(clone, 0, 0);
 
-      //greyscale
-      var imageData = ctx.getImageData(0, 0, W, H);
-      var data = this.convert_to_grayscale(imageData);
-      ctx.putImageData(data, 0, 0);
+                //Gausian blur
+                imageData = ctx_i.getImageData(0, 0, W, H);
+                filtered = this.ImageFilters.GaussianBlur(imageData, i + 0.5); //add effect
+                ctx_i.putImageData(filtered, 0, 0);
+                copies.push(tmp_canvas);
+              }
 
-      //make few copies and blur each
-      var n = 5;
-      var copies = [];
-      for (var i = 0; i < n; i++) {
-        var tmp_canvas = document.createElement('canvas');
-        tmp_canvas.width = W;
-        tmp_canvas.height = H;
-        var ctx_i = tmp_canvas.getContext("2d");
-        ctx_i.drawImage(clone, 0, 0);
-
-        //Gausian blur
-        var imageData = ctx_i.getImageData(0, 0, W, H);
-        var filtered = this.ImageFilters.GaussianBlur(imageData, i + 0.5); //add effect
-        ctx_i.putImageData(filtered, 0, 0);
-        copies.push(tmp_canvas);
-      }
-
-      //find extreme points
-      var points = [];
-      var n0 = this.avg_step * 2 + 1;
-      for (var c = 1; c < copies.length - 1; c++) {
-        var imageData = copies[c].getContext("2d").getImageData(0, 0, W, H).data;
-        var imageData0 = copies[c - 1].getContext("2d").getImageData(0, 0, W, H).data;
-        var imageData2 = copies[c + 1].getContext("2d").getImageData(0, 0, W, H).data;
-        for (var j = this.avg_step; j < H - this.avg_step; j++) {
-          for (var i = this.avg_step; i < W - this.avg_step; i++) {
-            var x = (i + j * W) * 4;
-            if (imageData[x + 3] == 0) continue; //transparent
-            if (imageData[x] < imageData[x - 4] || imageData[x] < imageData[x + 4] || imageData[x] > imageData[x - 4] || imageData[x] > imageData[x + 4]) {
-              var x_pre = (i + (j - 1) * W) * 4;
-              var x_post = (i + (j + 1) * W) * 4;
-              //calc average
-              var area_average = 0;
-              for (var l = -this.avg_step; l <= this.avg_step; l++) {
-                var avgi = (i + (j - l) * W) * 4;
-                for (var a = -this.avg_step; a <= this.avg_step; a++) {
+              //find extreme points
+              points = [];
+              n0 = this.avg_step * 2 + 1;
+              c = 1;
+            case 3:
+              if (!(c < copies.length - 1)) {
+                _context.next = 11;
+                break;
+              }
+              imageData = copies[c].getContext("2d").getImageData(0, 0, W, H).data;
+              imageData0 = copies[c - 1].getContext("2d").getImageData(0, 0, W, H).data;
+              imageData2 = copies[c + 1].getContext("2d").getImageData(0, 0, W, H).data;
+              j = this.avg_step;
+            case 4:
+              if (!(j < H - this.avg_step)) {
+                _context.next = 10;
+                break;
+              }
+              i = this.avg_step;
+            case 5:
+              if (!(i < W - this.avg_step)) {
+                _context.next = 9;
+                break;
+              }
+              x = (i + j * W) * 4;
+              if (!(imageData[x + 3] == 0)) {
+                _context.next = 6;
+                break;
+              }
+              return _context.abrupt("continue", 8);
+            case 6:
+              if (!(imageData[x] < imageData[x - 4] || imageData[x] < imageData[x + 4] || imageData[x] > imageData[x - 4] || imageData[x] > imageData[x + 4])) {
+                _context.next = 8;
+                break;
+              }
+              x_pre = (i + (j - 1) * W) * 4;
+              x_post = (i + (j + 1) * W) * 4; //calc average
+              area_average = 0;
+              for (l = -this.avg_step; l <= this.avg_step; l++) {
+                avgi = (i + (j - l) * W) * 4;
+                for (a = -this.avg_step; a <= this.avg_step; a++) {
                   area_average += imageData[avgi + 4 * a];
                 }
               }
               area_average = area_average / (n0 * n0);
               //max
-              if (imageData[x] + this.avg_offset < area_average) {
-                var min = Math.min(imageData[x_pre - 4], imageData[x_pre], imageData[x_pre + 4], imageData[x - 4], imageData[x + 4], imageData[x_post - 4], imageData[x_post], imageData[x_post + 4]);
-                if (imageData[x] <= min) {
-                  var min0 = Math.min(imageData0[x_pre - 4], imageData0[x_pre], imageData0[x_pre + 4], imageData0[x - 4], imageData0[x + 4], imageData0[x_post - 4], imageData0[x_post], imageData0[x_post + 4]);
-                  if (imageData[x] <= min0) {
-                    var min2 = Math.min(imageData2[x_pre - 4], imageData2[x_pre], imageData2[x_pre + 4], imageData2[x - 4], imageData2[x + 4], imageData2[x_post - 4], imageData2[x_post], imageData2[x_post + 4]);
-                    if (imageData[x] <= min2) points.push({
-                      x: i,
-                      y: j,
-                      w: Math.round(area_average - imageData[x] - this.avg_offset)
-                    });
-                  }
-                }
-                continue;
+              if (!(imageData[x] + this.avg_offset < area_average)) {
+                _context.next = 7;
+                break;
               }
+              min = Math.min(imageData[x_pre - 4], imageData[x_pre], imageData[x_pre + 4], imageData[x - 4], imageData[x + 4], imageData[x_post - 4], imageData[x_post], imageData[x_post + 4]);
+              if (imageData[x] <= min) {
+                min0 = Math.min(imageData0[x_pre - 4], imageData0[x_pre], imageData0[x_pre + 4], imageData0[x - 4], imageData0[x + 4], imageData0[x_post - 4], imageData0[x_post], imageData0[x_post + 4]);
+                if (imageData[x] <= min0) {
+                  min2 = Math.min(imageData2[x_pre - 4], imageData2[x_pre], imageData2[x_pre + 4], imageData2[x - 4], imageData2[x + 4], imageData2[x_post - 4], imageData2[x_post], imageData2[x_post + 4]);
+                  if (imageData[x] <= min2) points.push({
+                    x: i,
+                    y: j,
+                    w: Math.round(area_average - imageData[x] - this.avg_offset)
+                  });
+                }
+              }
+              return _context.abrupt("continue", 8);
+            case 7:
               //min
               if (imageData[x] - this.avg_offset > area_average) {
-                var max = Math.max(imageData[x_pre - 4], imageData[x_pre], imageData[x_pre + 4], imageData[x - 4], imageData[x + 4], imageData[x_post - 4], imageData[x_post], imageData[x_post + 4]);
+                max = Math.max(imageData[x_pre - 4], imageData[x_pre], imageData[x_pre + 4], imageData[x - 4], imageData[x + 4], imageData[x_post - 4], imageData[x_post], imageData[x_post + 4]);
                 if (imageData[x] >= max) {
-                  var max0 = Math.max(imageData0[x_pre - 4], imageData0[x_pre], imageData0[x_pre + 4], imageData0[x - 4], imageData0[x + 4], imageData0[x_post - 4], imageData0[x_post], imageData0[x_post + 4]);
+                  max0 = Math.max(imageData0[x_pre - 4], imageData0[x_pre], imageData0[x_pre + 4], imageData0[x - 4], imageData0[x + 4], imageData0[x_post - 4], imageData0[x_post], imageData0[x_post + 4]);
                   if (imageData[x] >= max0) {
-                    var max2 = Math.max(imageData2[x_pre - 4], imageData2[x_pre], imageData2[x_pre + 4], imageData2[x - 4], imageData2[x + 4], imageData2[x_post - 4], imageData2[x_post], imageData2[x_post + 4]);
+                    max2 = Math.max(imageData2[x_pre - 4], imageData2[x_pre], imageData2[x_pre + 4], imageData2[x - 4], imageData2[x + 4], imageData2[x_post - 4], imageData2[x_post], imageData2[x_post + 4]);
                     if (imageData[x] >= max2) {
                       points.push({
                         x: i,
@@ -33954,60 +34250,97 @@ var Tools_keypoints_class = /*#__PURE__*/function () {
                   }
                 }
               }
-            }
+            case 8:
+              i++;
+              _context.next = 5;
+              break;
+            case 9:
+              j++;
+              _context.next = 4;
+              break;
+            case 10:
+              c++;
+              _context.next = 3;
+              break;
+            case 11:
+              i = 0;
+            case 12:
+              if (!(i < points.length)) {
+                _context.next = 16;
+                break;
+              }
+              j = 0;
+            case 13:
+              if (!(j < points.length)) {
+                _context.next = 15;
+                break;
+              }
+              if (!(i != j && points[i].x == points[j].x && points[i].y == points[j].y)) {
+                _context.next = 14;
+                break;
+              }
+              points.splice(i, 1);
+              i--;
+              return _context.abrupt("continue", 15);
+            case 14:
+              j++;
+              _context.next = 13;
+              break;
+            case 15:
+              i++;
+              _context.next = 12;
+              break;
+            case 16:
+              if (!(return_data === undefined || return_data !== true)) {
+                _context.next = 17;
+                break;
+              }
+              _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_9___default().success('key points: ' + points.length);
+              size = 3;
+              ctx.clearRect(0, 0, clone.width, clone.height);
+              ctx.fillStyle = "#ff0000";
+              for (i in points) {
+                point = points[i];
+                ctx.beginPath();
+                ctx.rect(point.x - Math.floor(size / 2) + 1, point.y - Math.floor(size / 2) + 1, size, size);
+                ctx.fill();
+              }
+
+              //show
+              params = [];
+              params.type = 'image';
+              params.name = _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].layer.name + ' + key points';
+              params.data = clone.toDataURL("image/png");
+              params.x = parseInt(clone.dataset.x);
+              params.y = parseInt(clone.dataset.y);
+              params.width = clone.width;
+              params.height = clone.height;
+              _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].Actions.Bundle_action('keypoints', 'Key-Points', [new _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].Actions.Insert_layer_action(params)]));
+              clone.width = 1;
+              clone.height = 1;
+              _context.next = 18;
+              break;
+            case 17:
+              //sort by weights 
+              points.sort(function (a, b) {
+                return parseFloat(b.w) - parseFloat(a.w);
+              });
+              clone.width = 1;
+              clone.height = 1;
+              return _context.abrupt("return", {
+                points: points
+              });
+            case 18:
+            case "end":
+              return _context.stop();
           }
-        }
+        }, _callee, this);
+      }));
+      function keypoints(_x) {
+        return _keypoints.apply(this, arguments);
       }
-      //make unique
-      for (var i = 0; i < points.length; i++) {
-        for (var j = 0; j < points.length; j++) {
-          if (i != j && points[i].x == points[j].x && points[i].y == points[j].y) {
-            points.splice(i, 1);
-            i--;
-            break;
-          }
-        }
-      }
-
-      //show points?
-      if (return_data === undefined || return_data !== true) {
-        _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_7___default().success('key points: ' + points.length);
-        var size = 3;
-        ctx.clearRect(0, 0, clone.width, clone.height);
-        ctx.fillStyle = "#ff0000";
-        for (var i in points) {
-          var point = points[i];
-          ctx.beginPath();
-          ctx.rect(point.x - Math.floor(size / 2) + 1, point.y - Math.floor(size / 2) + 1, size, size);
-          ctx.fill();
-        }
-
-        //show
-        var params = [];
-        params.type = 'image';
-        params.name = _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].layer.name + ' + key points';
-        params.data = clone.toDataURL("image/png");
-        params.x = parseInt(clone.dataset.x);
-        params.y = parseInt(clone.dataset.y);
-        params.width = clone.width;
-        params.height = clone.height;
-        _app_js__WEBPACK_IMPORTED_MODULE_2__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_2__["default"].Actions.Bundle_action('keypoints', 'Key-Points', [new _app_js__WEBPACK_IMPORTED_MODULE_2__["default"].Actions.Insert_layer_action(params)]));
-        clone.width = 1;
-        clone.height = 1;
-      } else {
-        //sort by weights 
-        points.sort(function (a, b) {
-          return parseFloat(b.w) - parseFloat(a.w);
-        });
-        clone.width = 1;
-        clone.height = 1;
-        return {
-          points: points
-        };
-      }
-    }
-
-    //returns average value of requested area from greyscale image
+      return keypoints;
+    }() //returns average value of requested area from greyscale image
     //area = {x, y, w, h}
   }, {
     key: "get_area_average",
@@ -34610,15 +34943,22 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
-/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
-/* harmony import */ var _app_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../../app.js */ "./src/js/app.js");
-/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./../../config.js */ "./src/js/config.js");
-/* harmony import */ var _core_base_layers_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./../../core/base-layers.js */ "./src/js/core/base-layers.js");
-/* harmony import */ var _libs_popup_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./../../libs/popup.js */ "./src/js/libs/popup.js");
-/* harmony import */ var _libs_helpers_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./../../libs/helpers.js */ "./src/js/libs/helpers.js");
-/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./../../../../node_modules/alertifyjs/build/alertify.min.js */ "./node_modules/alertifyjs/build/alertify.min.js");
-/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(_node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_7__);
+/* harmony import */ var _babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ "./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js");
+/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
+/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _app_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./../../app.js */ "./src/js/app.js");
+/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./../../config.js */ "./src/js/config.js");
+/* harmony import */ var _core_base_layers_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./../../core/base-layers.js */ "./src/js/core/base-layers.js");
+/* harmony import */ var _libs_popup_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./../../libs/popup.js */ "./src/js/libs/popup.js");
+/* harmony import */ var _libs_helpers_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./../../libs/helpers.js */ "./src/js/libs/helpers.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./../../../../node_modules/alertifyjs/build/alertify.min.js */ "./node_modules/alertifyjs/build/alertify.min.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(_node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_9__);
+/* harmony import */ var _libs_rasterize_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./../../libs/rasterize.js */ "./src/js/libs/rasterize.js");
+
+
+
 
 
 
@@ -34629,58 +34969,83 @@ __webpack_require__.r(__webpack_exports__);
 
 var Tools_replaceColor_class = /*#__PURE__*/function () {
   function Tools_replaceColor_class() {
-    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__["default"])(this, Tools_replaceColor_class);
-    this.POP = new _libs_popup_js__WEBPACK_IMPORTED_MODULE_5__["default"]();
-    this.Base_layers = new _core_base_layers_js__WEBPACK_IMPORTED_MODULE_4__["default"]();
-    this.Helper = new _libs_helpers_js__WEBPACK_IMPORTED_MODULE_6__["default"]();
+    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__["default"])(this, Tools_replaceColor_class);
+    this.POP = new _libs_popup_js__WEBPACK_IMPORTED_MODULE_7__["default"]();
+    this.Base_layers = new _core_base_layers_js__WEBPACK_IMPORTED_MODULE_6__["default"]();
+    this.Helper = new _libs_helpers_js__WEBPACK_IMPORTED_MODULE_8__["default"]();
   }
-  return (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__["default"])(Tools_replaceColor_class, [{
+  return (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__["default"])(Tools_replaceColor_class, [{
     key: "replace_color",
-    value: function replace_color() {
-      var _this = this;
-      if (_config_js__WEBPACK_IMPORTED_MODULE_3__["default"].layer.type != 'image') {
-        _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_7___default().error('This layer must contain an image. Please convert it to raster to apply this tool.');
-        return;
+    value: function () {
+      var _replace_color = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().mark(function _callee() {
+        var _this, ready, settings;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().wrap(function (_context) {
+          while (1) switch (_context.prev = _context.next) {
+            case 0:
+              _this = this;
+              if (!(_config_js__WEBPACK_IMPORTED_MODULE_5__["default"].layer.type != 'image' || _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].layer.is_vector == true)) {
+                _context.next = 2;
+                break;
+              }
+              _context.next = 1;
+              return (0,_libs_rasterize_js__WEBPACK_IMPORTED_MODULE_10__.ensure_raster_layer)('edited');
+            case 1:
+              ready = _context.sent;
+              if (!(ready == false)) {
+                _context.next = 2;
+                break;
+              }
+              return _context.abrupt("return");
+            case 2:
+              settings = {
+                title: 'Replace color',
+                preview: true,
+                on_change: function on_change(params, canvas_preview, w, h) {
+                  var img = canvas_preview.getImageData(0, 0, w, h);
+                  var data = _this.do_replace(img, params);
+                  canvas_preview.putImageData(data, 0, 0);
+                },
+                params: [{
+                  name: "target",
+                  title: "Target:",
+                  value: _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].COLOR,
+                  type: 'color'
+                }, {
+                  name: "replacement",
+                  title: "Replacement:",
+                  value: '#ff0000',
+                  type: 'color'
+                }, {
+                  name: "power",
+                  title: "Power:",
+                  value: "20",
+                  range: [0, 255]
+                }, {
+                  name: "alpha",
+                  title: "Alpha:",
+                  value: "255",
+                  range: [0, 255]
+                }, {
+                  name: "mode",
+                  title: "Mode:",
+                  values: ['Advanced', 'Simple']
+                }],
+                on_finish: function on_finish(params) {
+                  _this.save_alpha(params);
+                }
+              };
+              this.POP.show(settings);
+            case 3:
+            case "end":
+              return _context.stop();
+          }
+        }, _callee, this);
+      }));
+      function replace_color() {
+        return _replace_color.apply(this, arguments);
       }
-      var settings = {
-        title: 'Replace color',
-        preview: true,
-        on_change: function on_change(params, canvas_preview, w, h) {
-          var img = canvas_preview.getImageData(0, 0, w, h);
-          var data = _this.do_replace(img, params);
-          canvas_preview.putImageData(data, 0, 0);
-        },
-        params: [{
-          name: "target",
-          title: "Target:",
-          value: _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].COLOR,
-          type: 'color'
-        }, {
-          name: "replacement",
-          title: "Replacement:",
-          value: '#ff0000',
-          type: 'color'
-        }, {
-          name: "power",
-          title: "Power:",
-          value: "20",
-          range: [0, 255]
-        }, {
-          name: "alpha",
-          title: "Alpha:",
-          value: "255",
-          range: [0, 255]
-        }, {
-          name: "mode",
-          title: "Mode:",
-          values: ['Advanced', 'Simple']
-        }],
-        on_finish: function on_finish(params) {
-          _this.save_alpha(params);
-        }
-      };
-      this.POP.show(settings);
-    }
+      return replace_color;
+    }()
   }, {
     key: "save_alpha",
     value: function save_alpha(params) {
@@ -34694,7 +35059,7 @@ var Tools_replaceColor_class = /*#__PURE__*/function () {
       ctx.putImageData(data, 0, 0);
 
       //save
-      return _app_js__WEBPACK_IMPORTED_MODULE_2__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_2__["default"].Actions.Update_layer_image_action(canvas));
+      return _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].Actions.Update_layer_image_action(canvas));
     }
   }, {
     key: "do_replace",
@@ -34758,14 +35123,21 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
-/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
-/* harmony import */ var _app_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../../app.js */ "./src/js/app.js");
-/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./../../config.js */ "./src/js/config.js");
-/* harmony import */ var _core_base_layers_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./../../core/base-layers.js */ "./src/js/core/base-layers.js");
-/* harmony import */ var _libs_popup_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./../../libs/popup.js */ "./src/js/libs/popup.js");
-/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./../../../../node_modules/alertifyjs/build/alertify.min.js */ "./node_modules/alertifyjs/build/alertify.min.js");
-/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(_node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var _babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ "./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js");
+/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
+/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _app_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./../../app.js */ "./src/js/app.js");
+/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./../../config.js */ "./src/js/config.js");
+/* harmony import */ var _core_base_layers_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./../../core/base-layers.js */ "./src/js/core/base-layers.js");
+/* harmony import */ var _libs_popup_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./../../libs/popup.js */ "./src/js/libs/popup.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./../../../../node_modules/alertifyjs/build/alertify.min.js */ "./node_modules/alertifyjs/build/alertify.min.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(_node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_8__);
+/* harmony import */ var _libs_rasterize_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./../../libs/rasterize.js */ "./src/js/libs/rasterize.js");
+
+
+
 
 
 
@@ -34775,38 +35147,63 @@ __webpack_require__.r(__webpack_exports__);
 
 var Tools_restoreAlpha_class = /*#__PURE__*/function () {
   function Tools_restoreAlpha_class() {
-    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__["default"])(this, Tools_restoreAlpha_class);
-    this.POP = new _libs_popup_js__WEBPACK_IMPORTED_MODULE_5__["default"]();
-    this.Base_layers = new _core_base_layers_js__WEBPACK_IMPORTED_MODULE_4__["default"]();
+    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__["default"])(this, Tools_restoreAlpha_class);
+    this.POP = new _libs_popup_js__WEBPACK_IMPORTED_MODULE_7__["default"]();
+    this.Base_layers = new _core_base_layers_js__WEBPACK_IMPORTED_MODULE_6__["default"]();
   }
-  return (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__["default"])(Tools_restoreAlpha_class, [{
+  return (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__["default"])(Tools_restoreAlpha_class, [{
     key: "restore_alpha",
-    value: function restore_alpha() {
-      var _this = this;
-      if (_config_js__WEBPACK_IMPORTED_MODULE_3__["default"].layer.type != 'image') {
-        _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_6___default().error('This layer must contain an image. Please convert it to raster to apply this tool.');
-        return;
+    value: function () {
+      var _restore_alpha = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().mark(function _callee() {
+        var _this, ready, settings;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().wrap(function (_context) {
+          while (1) switch (_context.prev = _context.next) {
+            case 0:
+              _this = this;
+              if (!(_config_js__WEBPACK_IMPORTED_MODULE_5__["default"].layer.type != 'image' || _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].layer.is_vector == true)) {
+                _context.next = 2;
+                break;
+              }
+              _context.next = 1;
+              return (0,_libs_rasterize_js__WEBPACK_IMPORTED_MODULE_9__.ensure_raster_layer)('edited');
+            case 1:
+              ready = _context.sent;
+              if (!(ready == false)) {
+                _context.next = 2;
+                break;
+              }
+              return _context.abrupt("return");
+            case 2:
+              settings = {
+                title: 'Restore Alpha',
+                preview: true,
+                on_change: function on_change(params, canvas_preview, w, h) {
+                  var img = canvas_preview.getImageData(0, 0, w, h);
+                  var data = _this.recover_alpha(img, params.level);
+                  canvas_preview.putImageData(data, 0, 0);
+                },
+                params: [{
+                  name: "level",
+                  title: "Level:",
+                  value: "128",
+                  range: [0, 255]
+                }],
+                on_finish: function on_finish(params) {
+                  _this.save_alpha(params.level);
+                }
+              };
+              this.POP.show(settings);
+            case 3:
+            case "end":
+              return _context.stop();
+          }
+        }, _callee, this);
+      }));
+      function restore_alpha() {
+        return _restore_alpha.apply(this, arguments);
       }
-      var settings = {
-        title: 'Restore Alpha',
-        preview: true,
-        on_change: function on_change(params, canvas_preview, w, h) {
-          var img = canvas_preview.getImageData(0, 0, w, h);
-          var data = _this.recover_alpha(img, params.level);
-          canvas_preview.putImageData(data, 0, 0);
-        },
-        params: [{
-          name: "level",
-          title: "Level:",
-          value: "128",
-          range: [0, 255]
-        }],
-        on_finish: function on_finish(params) {
-          _this.save_alpha(params.level);
-        }
-      };
-      this.POP.show(settings);
-    }
+      return restore_alpha;
+    }()
   }, {
     key: "save_alpha",
     value: function save_alpha(level) {
@@ -34820,7 +35217,7 @@ var Tools_restoreAlpha_class = /*#__PURE__*/function () {
       ctx.putImageData(data, 0, 0);
 
       //save
-      return _app_js__WEBPACK_IMPORTED_MODULE_2__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_2__["default"].Actions.Update_layer_image_action(canvas));
+      return _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].Actions.Update_layer_image_action(canvas));
     }
   }, {
     key: "recover_alpha",
