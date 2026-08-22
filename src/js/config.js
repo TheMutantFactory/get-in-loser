@@ -42,6 +42,9 @@ config.PIXEL_MODE = false;
 config.PIXEL_GRID = true;
 config.palette = null;
 
+//voxel mode. null until a model exists; see core/voxel.js and modules/tools/voxel.js
+config.voxel = null;
+
 //requires styles in reset.css
 config.themes = [
 	'yonce',

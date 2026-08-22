@@ -65,6 +65,15 @@ Uses the File System Access API, so **Chromium only** (Chrome/Edge); elsewhere i
 - *Pixel Grid* — a hairline grid on every image pixel once zoomed past 6x, with a stronger line every 8 pixels.
 - *Zoom to Fit*.
 
+**Voxel mode** (`Voxel` menu)
+
+- A 16w x 16d x 24h volume edited one flat slice at a time. The slice is an ordinary raster layer, so every tool, the palette and pixel mode work on it unchanged.
+- **The volume is the model; the canvas is a view of one slice.** Rotating changes which way the volume is *cut* - top, front or side - and never touches the data, so it is instant and lossless. Paint on the front, and it is there when you look from the top.
+- A second view on the sidebar draws the model in isometric with the current slice picked out, because a flat canvas cannot show you where in the model you are painting. It orbits in quarter turns.
+- **Onion skinning** shows the neighbouring slices faintly behind the live one - warm below, cool above, fading with distance - so lining a shape up with what it sits on is something you can see rather than remember.
+- Slices import and export as a single PNG strip, inspectable in any editor.
+- Slice changes are navigation, not edits, so they do not fill the undo history. The trade is that undo does not step back across a slice change; it applies to the slice you are on.
+
 **Colour palettes**
 
 - JSON palettes live in [`src/palettes`](src/palettes) and are bundled at build time. See that folder's README for the format — the loader also accepts bare arrays, hex codes without `#`, rgb triplets and per-colour objects.
@@ -100,7 +109,7 @@ Uses the File System Access API, so **Chromium only** (Chrome/Edge); elsewhere i
 npm test
 ```
 
-Jest covers the geometry and parsing that the features above depend on: preview sizing and the active zone, palette parsing and nearest-colour matching, pixel grid placement, pixel canvas sizing, middle-drag panning, and the feedback envelope and outbox.
+Jest covers the geometry and parsing that the features above depend on: preview sizing and the active zone, palette parsing and nearest-colour matching, pixel grid placement, pixel canvas sizing, middle-drag panning, the feedback envelope and outbox, and the voxel volume, its isometric projection and onion skinning.
 
 ## Build instructions
 

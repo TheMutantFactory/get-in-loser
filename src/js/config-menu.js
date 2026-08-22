@@ -339,6 +339,78 @@ const menuDefinition = [
 		]
 	},
 	{
+		name: 'Voxel',
+		children: [
+			{
+				name: 'New Voxel Model',
+				ellipsis: true,
+				target: 'tools/voxel.new_model'
+			},
+			{
+				name: 'Voxel Mode',
+				target: 'tools/voxel.voxel_mode'
+			},
+			{
+				divider: true
+			},
+			{
+				name: 'Slice From',
+				children: [
+					{
+						name: 'Top',
+						target: 'tools/voxel.view_top'
+					},
+					{
+						name: 'Front',
+						target: 'tools/voxel.view_front'
+					},
+					{
+						name: 'Side',
+						target: 'tools/voxel.view_side'
+					}
+				]
+			},
+			{
+				name: 'Next Slice',
+				target: 'tools/voxel.next_slice'
+			},
+			{
+				name: 'Previous Slice',
+				target: 'tools/voxel.previous_slice'
+			},
+			{
+				divider: true
+			},
+			{
+				name: 'Onion Skin',
+				target: 'tools/voxel.onion_skin'
+			},
+			{
+				divider: true
+			},
+			{
+				name: 'Orbit Left',
+				target: 'tools/voxel.orbit_left'
+			},
+			{
+				name: 'Orbit Right',
+				target: 'tools/voxel.orbit_right'
+			},
+			{
+				divider: true
+			},
+			{
+				name: 'Export Slices',
+				target: 'tools/voxel.export_slices'
+			},
+			{
+				name: 'Import Slices',
+				ellipsis: true,
+				target: 'tools/voxel.import_slices'
+			}
+		]
+	},
+	{
 		name: 'Layer',
 		children: [
 			{

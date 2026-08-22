@@ -183,6 +183,9 @@ class Base_layers_class {
 				config.HEIGHT
 			);
 
+			//onion skin first - the neighbouring voxel slices belong UNDER the live one
+			this.Base_gui.draw_onion_skin(this.ctx);
+
 			this.render_objects(this.ctx, newCanvas, layers_sorted, ()=>{
 				this.ctx.save();
 			});

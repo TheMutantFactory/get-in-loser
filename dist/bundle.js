@@ -4972,6 +4972,58 @@ var menuDefinition = [{
     }]
   }]
 }, {
+  name: 'Voxel',
+  children: [{
+    name: 'New Voxel Model',
+    ellipsis: true,
+    target: 'tools/voxel.new_model'
+  }, {
+    name: 'Voxel Mode',
+    target: 'tools/voxel.voxel_mode'
+  }, {
+    divider: true
+  }, {
+    name: 'Slice From',
+    children: [{
+      name: 'Top',
+      target: 'tools/voxel.view_top'
+    }, {
+      name: 'Front',
+      target: 'tools/voxel.view_front'
+    }, {
+      name: 'Side',
+      target: 'tools/voxel.view_side'
+    }]
+  }, {
+    name: 'Next Slice',
+    target: 'tools/voxel.next_slice'
+  }, {
+    name: 'Previous Slice',
+    target: 'tools/voxel.previous_slice'
+  }, {
+    divider: true
+  }, {
+    name: 'Onion Skin',
+    target: 'tools/voxel.onion_skin'
+  }, {
+    divider: true
+  }, {
+    name: 'Orbit Left',
+    target: 'tools/voxel.orbit_left'
+  }, {
+    name: 'Orbit Right',
+    target: 'tools/voxel.orbit_right'
+  }, {
+    divider: true
+  }, {
+    name: 'Export Slices',
+    target: 'tools/voxel.export_slices'
+  }, {
+    name: 'Import Slices',
+    ellipsis: true,
+    target: 'tools/voxel.import_slices'
+  }]
+}, {
   name: 'Layer',
   children: [{
     name: 'New',
@@ -5400,6 +5452,9 @@ config.PIXEL_MODE = false;
 config.PIXEL_GRID = true;
 config.palette = null;
 
+//voxel mode. null until a model exists; see core/voxel.js and modules/tools/voxel.js
+config.voxel = null;
+
 //requires styles in reset.css
 config.themes = ['yonce', 'classic', 'dark', 'light', 'green'];
 
@@ -5818,24 +5873,30 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _gui_gui_preview_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./gui/gui-preview.js */ "./src/js/core/gui/gui-preview.js");
 /* harmony import */ var _gui_gui_panels_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./gui/gui-panels.js */ "./src/js/core/gui/gui-panels.js");
 /* harmony import */ var _gui_gui_palette_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./gui/gui-palette.js */ "./src/js/core/gui/gui-palette.js");
-/* harmony import */ var _pixel_grid_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./pixel-grid.js */ "./src/js/core/pixel-grid.js");
-/* harmony import */ var _gui_gui_colors_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./gui/gui-colors.js */ "./src/js/core/gui/gui-colors.js");
-/* harmony import */ var _gui_gui_layers_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./gui/gui-layers.js */ "./src/js/core/gui/gui-layers.js");
-/* harmony import */ var _gui_gui_information_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./gui/gui-information.js */ "./src/js/core/gui/gui-information.js");
-/* harmony import */ var _gui_gui_details_js__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./gui/gui-details.js */ "./src/js/core/gui/gui-details.js");
-/* harmony import */ var _gui_gui_menu_js__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./gui/gui-menu.js */ "./src/js/core/gui/gui-menu.js");
-/* harmony import */ var _modules_tools_translate_js__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./../modules/tools/translate.js */ "./src/js/modules/tools/translate.js");
-/* harmony import */ var _modules_tools_settings_js__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./../modules/tools/settings.js */ "./src/js/modules/tools/settings.js");
-/* harmony import */ var _libs_helpers_js__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./../libs/helpers.js */ "./src/js/libs/helpers.js");
-/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./../../../node_modules/alertifyjs/build/alertify.min.js */ "./node_modules/alertifyjs/build/alertify.min.js");
-/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_17___default = /*#__PURE__*/__webpack_require__.n(_node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_17__);
-/* harmony import */ var _libs_smart_folder_js__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./../libs/smart_folder.js */ "./src/js/libs/smart_folder.js");
+/* harmony import */ var _gui_gui_voxel_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./gui/gui-voxel.js */ "./src/js/core/gui/gui-voxel.js");
+/* harmony import */ var _pixel_grid_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./pixel-grid.js */ "./src/js/core/pixel-grid.js");
+/* harmony import */ var _voxel_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./voxel.js */ "./src/js/core/voxel.js");
+/* harmony import */ var _voxel_view_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./voxel-view.js */ "./src/js/core/voxel-view.js");
+/* harmony import */ var _gui_gui_colors_js__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./gui/gui-colors.js */ "./src/js/core/gui/gui-colors.js");
+/* harmony import */ var _gui_gui_layers_js__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./gui/gui-layers.js */ "./src/js/core/gui/gui-layers.js");
+/* harmony import */ var _gui_gui_information_js__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./gui/gui-information.js */ "./src/js/core/gui/gui-information.js");
+/* harmony import */ var _gui_gui_details_js__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./gui/gui-details.js */ "./src/js/core/gui/gui-details.js");
+/* harmony import */ var _gui_gui_menu_js__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./gui/gui-menu.js */ "./src/js/core/gui/gui-menu.js");
+/* harmony import */ var _modules_tools_translate_js__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./../modules/tools/translate.js */ "./src/js/modules/tools/translate.js");
+/* harmony import */ var _modules_tools_settings_js__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./../modules/tools/settings.js */ "./src/js/modules/tools/settings.js");
+/* harmony import */ var _libs_helpers_js__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./../libs/helpers.js */ "./src/js/libs/helpers.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./../../../node_modules/alertifyjs/build/alertify.min.js */ "./node_modules/alertifyjs/build/alertify.min.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_20___default = /*#__PURE__*/__webpack_require__.n(_node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_20__);
+/* harmony import */ var _libs_smart_folder_js__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ./../libs/smart_folder.js */ "./src/js/libs/smart_folder.js");
 
 
 /*
  * miniPaint - https://github.com/viliusle/miniPaint
  * author: Vilius L.
  */
+
+
+
 
 
 
@@ -5867,7 +5928,7 @@ var Base_gui_class = /*#__PURE__*/function () {
       return instance;
     }
     instance = this;
-    this.Helper = new _libs_helpers_js__WEBPACK_IMPORTED_MODULE_16__["default"]();
+    this.Helper = new _libs_helpers_js__WEBPACK_IMPORTED_MODULE_19__["default"]();
     this.Base_layers = new _base_layers_js__WEBPACK_IMPORTED_MODULE_3__["default"]();
 
     //last used menu id
@@ -5890,14 +5951,15 @@ var Base_gui_class = /*#__PURE__*/function () {
     this.GUI_tools = new _gui_gui_tools_js__WEBPACK_IMPORTED_MODULE_4__["default"](this);
     this.GUI_preview = new _gui_gui_preview_js__WEBPACK_IMPORTED_MODULE_5__["default"](this);
     this.GUI_panels = new _gui_gui_panels_js__WEBPACK_IMPORTED_MODULE_6__["default"](this);
-    this.GUI_colors = new _gui_gui_colors_js__WEBPACK_IMPORTED_MODULE_9__["default"](this);
+    this.GUI_colors = new _gui_gui_colors_js__WEBPACK_IMPORTED_MODULE_12__["default"](this);
     this.GUI_palette = new _gui_gui_palette_js__WEBPACK_IMPORTED_MODULE_7__["default"](this);
-    this.GUI_layers = new _gui_gui_layers_js__WEBPACK_IMPORTED_MODULE_10__["default"](this);
-    this.GUI_information = new _gui_gui_information_js__WEBPACK_IMPORTED_MODULE_11__["default"](this);
-    this.GUI_details = new _gui_gui_details_js__WEBPACK_IMPORTED_MODULE_12__["default"](this);
-    this.GUI_menu = new _gui_gui_menu_js__WEBPACK_IMPORTED_MODULE_13__["default"]();
-    this.Tools_translate = new _modules_tools_translate_js__WEBPACK_IMPORTED_MODULE_14__["default"]();
-    this.Tools_settings = new _modules_tools_settings_js__WEBPACK_IMPORTED_MODULE_15__["default"]();
+    this.GUI_voxel = new _gui_gui_voxel_js__WEBPACK_IMPORTED_MODULE_8__["default"](this);
+    this.GUI_layers = new _gui_gui_layers_js__WEBPACK_IMPORTED_MODULE_13__["default"](this);
+    this.GUI_information = new _gui_gui_information_js__WEBPACK_IMPORTED_MODULE_14__["default"](this);
+    this.GUI_details = new _gui_gui_details_js__WEBPACK_IMPORTED_MODULE_15__["default"](this);
+    this.GUI_menu = new _gui_gui_menu_js__WEBPACK_IMPORTED_MODULE_16__["default"]();
+    this.Tools_translate = new _modules_tools_translate_js__WEBPACK_IMPORTED_MODULE_17__["default"]();
+    this.Tools_settings = new _modules_tools_settings_js__WEBPACK_IMPORTED_MODULE_18__["default"]();
     this.modules = {};
   }
   return (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__["default"])(Base_gui_class, [{
@@ -5908,8 +5970,8 @@ var Base_gui_class = /*#__PURE__*/function () {
       this.render_main_gui();
       this.init_service_worker();
       //smart folder: header toggle + reconnect a previously-enabled folder
-      _libs_smart_folder_js__WEBPACK_IMPORTED_MODULE_18__["default"].init_toggle();
-      _libs_smart_folder_js__WEBPACK_IMPORTED_MODULE_18__["default"].restore();
+      _libs_smart_folder_js__WEBPACK_IMPORTED_MODULE_21__["default"].init_toggle();
+      _libs_smart_folder_js__WEBPACK_IMPORTED_MODULE_21__["default"].restore();
 
       //right-click the hand in the logo -> icon licence / source page
       if (this.modules['help/icon_license']) {
@@ -5982,6 +6044,7 @@ var Base_gui_class = /*#__PURE__*/function () {
       this.GUI_preview.render_main_preview();
       this.GUI_colors.render_main_colors();
       this.GUI_palette.render_main_palette();
+      this.GUI_voxel.render_main_voxel();
       this.GUI_layers.render_main_layers();
       this.GUI_information.render_main_information();
       this.GUI_details.render_main_details();
@@ -6018,11 +6081,11 @@ var Base_gui_class = /*#__PURE__*/function () {
 
         //call module
         if (_this2.modules[module] == undefined) {
-          _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_17___default().error('Modules class not found: ' + module);
+          _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_20___default().error('Modules class not found: ' + module);
           return;
         }
         if (_this2.modules[module][function_name] == undefined) {
-          _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_17___default().error('Module function not found. ' + module + '.' + function_name);
+          _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_20___default().error('Module function not found. ' + module + '.' + function_name);
           return;
         }
         _this2.modules[module][function_name](param);
@@ -6227,6 +6290,99 @@ var Base_gui_class = /*#__PURE__*/function () {
     }
 
     /**
+     * ONION SKIN. The neighbouring slices, faint, behind the one being painted.
+     *
+     * A slice on its own gives no sense of what it sits on top of, so lining a shape up with the
+     * layer below is done from memory. This puts them on screen: below-slices warm, above-slices
+     * cool, fading with distance.
+     *
+     * Drawn BEFORE the layers, so the live slice stays crisp and fully opaque on top - an onion
+     * skin painted over the top would fight the thing you are actually drawing.
+     *
+     * @param {canvas.context} ctx
+     * @returns {boolean} whether anything was drawn
+     */
+  }, {
+    key: "draw_onion_skin",
+    value: function draw_onion_skin(ctx) {
+      var state = _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].voxel;
+      if (state == null || state.enabled !== true || state.volume == null) {
+        return false;
+      }
+      if (state.onion == null || state.onion.enabled !== true) {
+        return false;
+      }
+      var dims = (0,_voxel_js__WEBPACK_IMPORTED_MODULE_10__.slice_dimensions)(state.volume, state.axis);
+      var neighbours = (0,_voxel_view_js__WEBPACK_IMPORTED_MODULE_11__.onion_slices)(state.slice, dims.count, state.onion.before, state.onion.after);
+      if (neighbours.length === 0) {
+        return false;
+      }
+
+      //same screen-space approach as the pixel grid: the ambient transform in the middle of the
+      //render loop is not the plain zoom matrix
+      var origin = this.Base_layers.get_world_coords(0, 0);
+      var zoom = _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].ZOOM;
+      ctx.save();
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.imageSmoothingEnabled = false;
+      ctx.globalCompositeOperation = 'source-over';
+      for (var i = 0; i < neighbours.length; i++) {
+        var skin = this.build_onion_canvas(state, neighbours[i], dims);
+        if (skin == null) {
+          continue;
+        }
+        ctx.globalAlpha = neighbours[i].alpha;
+        ctx.drawImage(skin, Math.round(-origin.x * zoom), Math.round(-origin.y * zoom), Math.round(dims.width * zoom), Math.round(dims.height * zoom));
+      }
+      ctx.restore();
+      return true;
+    }
+
+    /**
+     * One neighbouring slice, flattened to a tinted canvas.
+     *
+     * The tint is applied with source-atop so it colours the voxels and not the gaps between them -
+     * filling the whole rectangle would wash a transparent slice into a solid sheet.
+     *
+     * @param {object} state config.voxel
+     * @param {object} neighbour from onion_slices
+     * @param {object} dims slice dimensions
+     * @returns {HTMLCanvasElement|null}
+     */
+  }, {
+    key: "build_onion_canvas",
+    value: function build_onion_canvas(state, neighbour, dims) {
+      var slice = (0,_voxel_js__WEBPACK_IMPORTED_MODULE_10__.read_slice)(state.volume, state.axis, neighbour.index);
+      var canvas = document.createElement('canvas');
+      canvas.width = dims.width;
+      canvas.height = dims.height;
+      var ctx = canvas.getContext('2d');
+      var img = ctx.createImageData(dims.width, dims.height);
+      var any = false;
+      for (var p = 0; p < slice.data.length; p++) {
+        if (slice.data[p] === 0) {
+          continue;
+        }
+        any = true;
+        var c = (0,_voxel_js__WEBPACK_IMPORTED_MODULE_10__.unpack)(slice.data[p]);
+        img.data[p * 4] = c.r;
+        img.data[p * 4 + 1] = c.g;
+        img.data[p * 4 + 2] = c.b;
+        img.data[p * 4 + 3] = c.a;
+      }
+      if (any === false) {
+        //an empty neighbour is not worth a draw call
+        return null;
+      }
+      ctx.putImageData(img, 0, 0);
+      var tint = neighbour.direction < 0 ? _voxel_view_js__WEBPACK_IMPORTED_MODULE_11__.ONION.tint_below : _voxel_view_js__WEBPACK_IMPORTED_MODULE_11__.ONION.tint_above;
+      ctx.globalCompositeOperation = 'source-atop';
+      ctx.fillStyle = 'rgba(' + tint.r + ',' + tint.g + ',' + tint.b + ', 0.55)';
+      ctx.fillRect(0, 0, dims.width, dims.height);
+      return canvas;
+    }
+
+    /**
      * draws a 1px grid over every image pixel - only useful when zoomed in far
      * enough that image pixels are large on screen.
      *
@@ -6243,19 +6399,19 @@ var Base_gui_class = /*#__PURE__*/function () {
         width: _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].WIDTH,
         height: _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].HEIGHT
       };
-      if ((0,_pixel_grid_js__WEBPACK_IMPORTED_MODULE_8__.should_draw_pixel_grid)(state) == false) {
+      if ((0,_pixel_grid_js__WEBPACK_IMPORTED_MODULE_9__.should_draw_pixel_grid)(state) == false) {
         return false;
       }
 
       //image coordinate sitting at the top left corner of the visible canvas
       var origin = this.Base_layers.get_world_coords(0, 0);
-      var vertical = (0,_pixel_grid_js__WEBPACK_IMPORTED_MODULE_8__.grid_line_positions)({
+      var vertical = (0,_pixel_grid_js__WEBPACK_IMPORTED_MODULE_9__.grid_line_positions)({
         count: _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].WIDTH,
         zoom: _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].ZOOM,
         origin: origin.x,
         screen_size: ctx.canvas.width
       });
-      var horizontal = (0,_pixel_grid_js__WEBPACK_IMPORTED_MODULE_8__.grid_line_positions)({
+      var horizontal = (0,_pixel_grid_js__WEBPACK_IMPORTED_MODULE_9__.grid_line_positions)({
         count: _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].HEIGHT,
         zoom: _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].ZOOM,
         origin: origin.y,
@@ -6773,6 +6929,9 @@ var Base_layers_class = /*#__PURE__*/function () {
         var layers_sorted = this.get_sorted_layers();
         _libs_zoomView_js__WEBPACK_IMPORTED_MODULE_11__["default"].apply();
         var newCanvas = this.create_new_canvas(null, _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].WIDTH, _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].HEIGHT);
+
+        //onion skin first - the neighbouring voxel slices belong UNDER the live one
+        this.Base_gui.draw_onion_skin(this.ctx);
         this.render_objects(this.ctx, newCanvas, layers_sorted, function () {
           _this2.ctx.save();
         });
@@ -13838,6 +13997,293 @@ var GUI_tools_class = /*#__PURE__*/function () {
 
 /***/ },
 
+/***/ "./src/js/core/gui/gui-voxel.js"
+/*!**************************************!*\
+  !*** ./src/js/core/gui/gui-voxel.js ***!
+  \**************************************/
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
+/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
+/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../../config.js */ "./src/js/config.js");
+/* harmony import */ var _voxel_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./../voxel.js */ "./src/js/core/voxel.js");
+/* harmony import */ var _voxel_view_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./../voxel-view.js */ "./src/js/core/voxel-view.js");
+
+
+/*
+ * get-in-loser - https://github.com/TheMutantFactory/get-in-loser
+ *
+ * The second view: an isometric preview of the voxel model with the current slice picked out.
+ *
+ * The editing canvas can only ever show one flat slice, which leaves two questions unanswered -
+ * what does the model actually look like, and where in it am I painting. This panel answers both,
+ * and carries the controls for moving the slice and turning the model.
+ */
+
+
+
+
+var instance = null;
+var template = "\n\t<div class=\"voxel_preview_wrapper\">\n\t\t<canvas width=\"176\" height=\"176\" id=\"canvas_voxel\"></canvas>\n\t</div>\n\t<div class=\"voxel_controls\">\n\t\t<div class=\"details\">\n\t\t\t<button type=\"button\" title=\"Turn the model left\" class=\"layer_add\" id=\"voxel_orbit_left\">&#8630;</button>\n\t\t\t<button type=\"button\" title=\"Turn the model right\" class=\"layer_add\" id=\"voxel_orbit_right\">&#8631;</button>\n\t\t</div>\n\t\t<div class=\"ui_button_group voxel_axes\" id=\"voxel_axes\"></div>\n\t\t<div class=\"details voxel_slice_row\">\n\t\t\t<button type=\"button\" title=\"Previous slice\" class=\"layer_add\" id=\"voxel_slice_down\">-</button>\n\t\t\t<span class=\"voxel_slice_label\" id=\"voxel_slice_label\">-</span>\n\t\t\t<button type=\"button\" title=\"Next slice\" class=\"layer_add\" id=\"voxel_slice_up\">+</button>\n\t\t</div>\n\t\t<input id=\"voxel_slice_range\" type=\"range\" value=\"0\" min=\"0\" max=\"0\" step=\"1\" />\n\t\t<div class=\"details voxel_onion_row\">\n\t\t\t<button type=\"button\" title=\"Show the neighbouring slices faintly\" class=\"layer_add\" id=\"voxel_onion\">Onion</button>\n\t\t\t<button type=\"button\" title=\"Fewer neighbours\" class=\"layer_add\" id=\"voxel_onion_less\">-</button>\n\t\t\t<span class=\"voxel_slice_label\" id=\"voxel_onion_label\">1</span>\n\t\t\t<button type=\"button\" title=\"More neighbours\" class=\"layer_add\" id=\"voxel_onion_more\">+</button>\n\t\t</div>\n\t</div>\n";
+
+/**
+ * GUI class responsible for the voxel block on the right sidebar
+ */
+var GUI_voxel_class = /*#__PURE__*/function () {
+  function GUI_voxel_class(GUI_class) {
+    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__["default"])(this, GUI_voxel_class);
+    //singleton
+    if (instance) {
+      return instance;
+    }
+    instance = this;
+    if (GUI_class != undefined) {
+      this.GUI = GUI_class;
+    }
+    this.ctx = null;
+  }
+  return (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__["default"])(GUI_voxel_class, [{
+    key: "render_main_voxel",
+    value: function render_main_voxel() {
+      var target = document.getElementById('toggle_voxel');
+      if (target == null) {
+        return;
+      }
+      target.innerHTML = template;
+      this.ctx = document.getElementById('canvas_voxel').getContext('2d');
+      this.ctx.imageSmoothingEnabled = false;
+      document.getElementById('voxel_axes').innerHTML = _voxel_js__WEBPACK_IMPORTED_MODULE_3__.AXES.map(function (axis) {
+        return '<button type="button" class="ui_icon_button voxel_axis" data-axis="' + axis + '" title="Slice from the ' + _voxel_js__WEBPACK_IMPORTED_MODULE_3__.AXIS_LABELS[axis].toLowerCase() + '">' + _voxel_js__WEBPACK_IMPORTED_MODULE_3__.AXIS_LABELS[axis] + '</button>';
+      }).join('');
+      this.set_events();
+      this.render_voxel();
+    }
+  }, {
+    key: "set_events",
+    value: function set_events() {
+      var _this = this;
+      var voxel = function voxel() {
+        return _this.GUI.modules ? _this.GUI.modules['tools/voxel'] : null;
+      };
+      document.getElementById('voxel_orbit_left').addEventListener('click', function () {
+        var v = voxel();
+        if (v) v.orbit_left();
+      }, false);
+      document.getElementById('voxel_orbit_right').addEventListener('click', function () {
+        var v = voxel();
+        if (v) v.orbit_right();
+      }, false);
+      document.getElementById('voxel_slice_down').addEventListener('click', function () {
+        var v = voxel();
+        if (v) v.previous_slice();
+      }, false);
+      document.getElementById('voxel_slice_up').addEventListener('click', function () {
+        var v = voxel();
+        if (v) v.next_slice();
+      }, false);
+      document.getElementById('voxel_slice_range').addEventListener('change', function () {
+        var v = voxel();
+        if (v) v.set_slice(parseInt(this.value, 10));
+      }, false);
+      document.getElementById('voxel_onion').addEventListener('click', function () {
+        var v = voxel();
+        if (v) v.onion_skin();
+      }, false);
+      document.getElementById('voxel_onion_less').addEventListener('click', function () {
+        var v = voxel();
+        if (v && _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].voxel && _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].voxel.onion) {
+          var n = _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].voxel.onion.before - 1;
+          v.set_onion_depth(n, n);
+        }
+      }, false);
+      document.getElementById('voxel_onion_more').addEventListener('click', function () {
+        var v = voxel();
+        if (v && _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].voxel && _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].voxel.onion) {
+          var n = _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].voxel.onion.before + 1;
+          v.set_onion_depth(n, n);
+        }
+      }, false);
+      document.getElementById('voxel_axes').addEventListener('click', function (e) {
+        var button = e.target.closest ? e.target.closest('.voxel_axis') : null;
+        var v = voxel();
+        if (button && v) {
+          v.set_axis(button.dataset.axis);
+        }
+      }, false);
+    }
+
+    /**
+     * Redraw the preview and bring the controls in line with the state.
+     */
+  }, {
+    key: "render_voxel",
+    value: function render_voxel() {
+      if (this.ctx == null) {
+        return false;
+      }
+      var canvas = this.ctx.canvas;
+      this.ctx.clearRect(0, 0, canvas.width, canvas.height);
+      var state = _config_js__WEBPACK_IMPORTED_MODULE_2__["default"].voxel;
+      if (state == null || state.volume == null) {
+        this.render_empty();
+        return false;
+      }
+      this.render_controls(state);
+      this.render_model(state);
+      return true;
+    }
+  }, {
+    key: "render_empty",
+    value: function render_empty() {
+      var canvas = this.ctx.canvas;
+      this.ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
+      this.ctx.font = '11px sans-serif';
+      this.ctx.textAlign = 'center';
+      this.ctx.fillText('No voxel model', canvas.width / 2, canvas.height / 2);
+      var label = document.getElementById('voxel_slice_label');
+      if (label) {
+        label.textContent = '-';
+      }
+    }
+
+    /**
+     * @param {object} state config.voxel
+     */
+  }, {
+    key: "render_controls",
+    value: function render_controls(state) {
+      var dims = (0,_voxel_js__WEBPACK_IMPORTED_MODULE_3__.slice_dimensions)(state.volume, state.axis);
+      var label = document.getElementById('voxel_slice_label');
+      if (label) {
+        label.textContent = state.slice + 1 + ' / ' + dims.count;
+      }
+      var range = document.getElementById('voxel_slice_range');
+      if (range) {
+        range.max = Math.max(0, dims.count - 1);
+        range.value = state.slice;
+      }
+      var onion = document.getElementById('voxel_onion');
+      var onion_label = document.getElementById('voxel_onion_label');
+      if (onion && state.onion) {
+        onion.setAttribute('aria-pressed', state.onion.enabled ? 'true' : 'false');
+        onion.classList.toggle('active', !!state.onion.enabled);
+      }
+      if (onion_label && state.onion) {
+        onion_label.textContent = String(state.onion.before);
+      }
+      var buttons = document.querySelectorAll('.voxel_axis');
+      for (var i = 0; i < buttons.length; i++) {
+        buttons[i].setAttribute('aria-pressed', buttons[i].dataset.axis === state.axis ? 'true' : 'false');
+      }
+    }
+
+    /**
+     * @param {object} state config.voxel
+     */
+  }, {
+    key: "render_model",
+    value: function render_model(state) {
+      var canvas = this.ctx.canvas;
+      var vol = state.volume;
+      var view = {
+        yaw: state.yaw,
+        w: vol.w,
+        d: vol.d,
+        scale: 1
+      };
+      view.scale = (0,_voxel_view_js__WEBPACK_IMPORTED_MODULE_4__.fit_scale)(vol, view, {
+        w: canvas.width,
+        h: canvas.height
+      }, 6);
+      var b = (0,_voxel_view_js__WEBPACK_IMPORTED_MODULE_4__.bounds)(vol, view);
+      //centre the model in the panel, and keep the framing fixed while drawing
+      var ox = canvas.width / 2 - (b.min_x + b.max_x) / 2;
+      var oy = canvas.height / 2 - (b.min_y + b.max_y) / 2;
+      this.draw_voxels(vol, view, ox, oy);
+      this.draw_slice_plane(state, view, ox, oy);
+    }
+
+    /**
+     * Back to front, three faces each - top, left, right. Shading the sides is what makes a stack
+     * of cubes read as solid rather than as a flat blob of colour.
+     */
+  }, {
+    key: "draw_voxels",
+    value: function draw_voxels(vol, view, ox, oy) {
+      var ctx = this.ctx;
+      var order = (0,_voxel_view_js__WEBPACK_IMPORTED_MODULE_4__.draw_order)(vol, view, _voxel_js__WEBPACK_IMPORTED_MODULE_3__.get_voxel);
+      for (var i = 0; i < order.length; i++) {
+        var v = order[i];
+        var c = (0,_voxel_js__WEBPACK_IMPORTED_MODULE_3__.unpack)(v.value);
+
+        //the eight corners this voxel needs, projected once
+        var p = function p(dx, dy, dz) {
+          var q = (0,_voxel_view_js__WEBPACK_IMPORTED_MODULE_4__.project)(v.x + dx, v.y + dy, v.z + dz, view);
+          return [q.sx + ox, q.sy + oy];
+        };
+        var top = [p(0, 1, 0), p(1, 1, 0), p(1, 1, 1), p(0, 1, 1)];
+        var left = [p(0, 0, 1), p(0, 1, 1), p(1, 1, 1), p(1, 0, 1)];
+        var right = [p(1, 0, 1), p(1, 1, 1), p(1, 1, 0), p(1, 0, 0)];
+        this.fill_face(top, c, 1);
+        this.fill_face(left, c, 0.72);
+        this.fill_face(right, c, 0.52);
+      }
+    }
+
+    /**
+     * @param {array} points [[x,y], ...]
+     * @param {object} colour keys r,g,b,a
+     * @param {number} shade multiplier
+     */
+  }, {
+    key: "fill_face",
+    value: function fill_face(points, colour, shade) {
+      var ctx = this.ctx;
+      ctx.beginPath();
+      ctx.moveTo(points[0][0], points[0][1]);
+      for (var i = 1; i < points.length; i++) {
+        ctx.lineTo(points[i][0], points[i][1]);
+      }
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(' + Math.round(colour.r * shade) + ',' + Math.round(colour.g * shade) + ',' + Math.round(colour.b * shade) + ',' + colour.a / 255 + ')';
+      ctx.fill();
+    }
+
+    /**
+     * The whole reason for the second view: where the slice being painted actually sits.
+     */
+  }, {
+    key: "draw_slice_plane",
+    value: function draw_slice_plane(state, view, ox, oy) {
+      var ctx = this.ctx;
+      var quad = (0,_voxel_view_js__WEBPACK_IMPORTED_MODULE_4__.slice_quad)(state.volume, state.axis, state.slice, view);
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(quad[0].sx + ox, quad[0].sy + oy);
+      for (var i = 1; i < quad.length; i++) {
+        ctx.lineTo(quad[i].sx + ox, quad[i].sy + oy);
+      }
+      ctx.closePath();
+
+      //drawn OVER the model rather than into it: the point is to be findable, not realistic
+      ctx.fillStyle = 'rgba(0, 255, 255, 0.18)';
+      ctx.strokeStyle = '#00ffff';
+      ctx.lineWidth = 1;
+      ctx.fill();
+      ctx.stroke();
+      ctx.restore();
+    }
+  }]);
+}();
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (GUI_voxel_class);
+
+/***/ },
+
 /***/ "./src/js/core/gui/preview-geometry.js"
 /*!*********************************************!*\
   !*** ./src/js/core/gui/preview-geometry.js ***!
@@ -14323,6 +14769,667 @@ function stroke_nibs(from_x, from_y, to_x, to_y, size) {
   return line_pixels(from_x, from_y, to_x, to_y).map(function (p) {
     return nib_origin(p.x, p.y, size);
   });
+}
+
+
+/***/ },
+
+/***/ "./src/js/core/voxel-view.js"
+/*!***********************************!*\
+  !*** ./src/js/core/voxel-view.js ***!
+  \***********************************/
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   ONION: () => (/* binding */ ONION),
+/* harmony export */   TILE: () => (/* binding */ TILE),
+/* harmony export */   VOXEL_H: () => (/* binding */ VOXEL_H),
+/* harmony export */   YAWS: () => (/* binding */ YAWS),
+/* harmony export */   bounds: () => (/* binding */ bounds),
+/* harmony export */   depth_key: () => (/* binding */ depth_key),
+/* harmony export */   draw_order: () => (/* binding */ draw_order),
+/* harmony export */   fit_scale: () => (/* binding */ fit_scale),
+/* harmony export */   onion_slices: () => (/* binding */ onion_slices),
+/* harmony export */   project: () => (/* binding */ project),
+/* harmony export */   rotate_xz: () => (/* binding */ rotate_xz),
+/* harmony export */   slice_quad: () => (/* binding */ slice_quad)
+/* harmony export */ });
+/*
+ * get-in-loser - derivative of miniPaint (https://github.com/viliusle/miniPaint)
+ *
+ * Isometric projection for the voxel preview - the second view, which exists to answer two
+ * questions the flat editing canvas cannot: what does this look like, and WHERE IS THE SLICE I AM
+ * PAINTING ON. Pure; see tests/voxel-view.test.js.
+ *
+ * The camera orbits in 90 degree steps around the vertical axis. That is a deliberate limit: at
+ * multiples of 90 the projection stays exact, every voxel lands on the same lattice, and the slice
+ * plane is always a clean parallelogram. Free rotation would look nicer and make the "which slice
+ * is that" question harder to answer at a glance.
+ */
+
+/** The camera positions. Orbiting is a quarter turn at a time. */
+var YAWS = [0, 90, 180, 270];
+
+/** 2:1 isometric - the pixel-art standard, and it keeps every edge on a whole pixel. */
+var TILE = {
+  w: 2,
+  h: 1
+};
+
+/** How tall one voxel stands on screen, in the same units as TILE. */
+var VOXEL_H = 1;
+
+/**
+ * Turn the model under the camera.
+ *
+ * The footprint swaps at 90 and 270: a 16 wide by 8 deep model is 8 wide by 16 deep from the side,
+ * and forgetting that is how a preview ends up clipped down one edge.
+ *
+ * @param {number} x
+ * @param {number} z
+ * @param {number} yaw
+ * @param {number} w footprint width
+ * @param {number} d footprint depth
+ * @returns {object} keys x, z (rotated), w, d (footprint after rotation)
+ */
+function rotate_xz(x, z, yaw, w, d) {
+  var turn = ((parseInt(yaw, 10) || 0) % 360 + 360) % 360;
+  if (turn === 90) {
+    return {
+      x: d - 1 - z,
+      z: x,
+      w: d,
+      d: w
+    };
+  }
+  if (turn === 180) {
+    return {
+      x: w - 1 - x,
+      z: d - 1 - z,
+      w: w,
+      d: d
+    };
+  }
+  if (turn === 270) {
+    return {
+      x: z,
+      z: w - 1 - x,
+      w: d,
+      d: w
+    };
+  }
+  return {
+    x: x,
+    y: undefined,
+    z: z,
+    w: w,
+    d: d
+  };
+}
+
+/**
+ * Project a point onto the preview.
+ *
+ * Takes CONTINUOUS coordinates, so it serves both voxel corners (whole numbers) and the slice
+ * plane, whose corners sit on the far edge of the last voxel rather than its centre.
+ *
+ * @param {number} x
+ * @param {number} y height
+ * @param {number} z
+ * @param {object} view keys: yaw, w, d, scale
+ * @returns {object} keys sx, sy
+ */
+function project(x, y, z, view) {
+  var scale = view.scale || 1;
+  var turn = ((parseInt(view.yaw, 10) || 0) % 360 + 360) % 360;
+  var w = view.w;
+  var d = view.d;
+
+  //rotate in continuous space - rotate_xz works on voxel indices, and reusing it here would be
+  //off by one along the mirrored axes
+  var rx = x;
+  var rz = z;
+  if (turn === 90) {
+    rx = d - z;
+    rz = x;
+  } else if (turn === 180) {
+    rx = w - x;
+    rz = d - z;
+  } else if (turn === 270) {
+    rx = z;
+    rz = w - x;
+  }
+  return {
+    sx: (rx - rz) * (TILE.w / 2) * scale,
+    sy: ((rx + rz) * (TILE.h / 2) - y * VOXEL_H) * scale
+  };
+}
+
+/**
+ * Painter's algorithm key. Larger is nearer the camera, so drawing in ascending order puts the
+ * back of the model down first.
+ *
+ * @returns {number}
+ */
+function depth_key(x, y, z, yaw, w, d) {
+  var r = rotate_xz(x, z, yaw, w, d);
+  return r.x + r.z + y;
+}
+
+/**
+ * Every filled voxel, ordered back to front.
+ *
+ * @param {object} vol
+ * @param {object} view keys: yaw
+ * @param {function} get_voxel (vol,x,y,z) => packed colour
+ * @returns {array} [{x, y, z, value}]
+ */
+function draw_order(vol, view, get_voxel) {
+  var out = [];
+  for (var y = 0; y < vol.h; y++) {
+    for (var z = 0; z < vol.d; z++) {
+      for (var x = 0; x < vol.w; x++) {
+        var value = get_voxel(vol, x, y, z);
+        if (value !== 0) {
+          out.push({
+            x: x,
+            y: y,
+            z: z,
+            value: value
+          });
+        }
+      }
+    }
+  }
+  out.sort(function (a, b) {
+    return depth_key(a.x, a.y, a.z, view.yaw, vol.w, vol.d) - depth_key(b.x, b.y, b.z, view.yaw, vol.w, vol.d);
+  });
+  return out;
+}
+
+/**
+ * The box the whole model projects into, so the preview can be centred and scaled to fit.
+ *
+ * Computed from the eight corners of the volume rather than from the filled voxels: the framing
+ * must not jump about while someone is drawing.
+ *
+ * @param {object} vol
+ * @param {object} view
+ * @returns {object} keys min_x, max_x, min_y, max_y, width, height
+ */
+function bounds(vol, view) {
+  var v = {
+    yaw: view.yaw,
+    w: vol.w,
+    d: vol.d,
+    scale: view.scale || 1
+  };
+  var xs = [];
+  var ys = [];
+  for (var i = 0; i < 8; i++) {
+    var p = project(i & 1 ? vol.w : 0, i & 2 ? vol.h : 0, i & 4 ? vol.d : 0, v);
+    xs.push(p.sx);
+    ys.push(p.sy);
+  }
+  var min_x = Math.min.apply(null, xs);
+  var max_x = Math.max.apply(null, xs);
+  var min_y = Math.min.apply(null, ys);
+  var max_y = Math.max.apply(null, ys);
+  return {
+    min_x: min_x,
+    max_x: max_x,
+    min_y: min_y,
+    max_y: max_y,
+    width: max_x - min_x,
+    height: max_y - min_y
+  };
+}
+
+/**
+ * The four projected corners of the current slice plane - what the preview outlines so the slice
+ * has a visible position in the model.
+ *
+ * @param {object} vol
+ * @param {string} axis
+ * @param {number} slice
+ * @param {object} view
+ * @returns {array} four {sx, sy}, in order around the plane
+ */
+function slice_quad(vol, axis, slice, view) {
+  var v = {
+    yaw: view.yaw,
+    w: vol.w,
+    d: vol.d,
+    scale: view.scale || 1
+  };
+  //the plane sits on the FAR face of the slice's voxels, which is index + 1
+  var s = slice + 1;
+  var corners;
+  if (axis === 'z') {
+    corners = [[0, 0, s], [vol.w, 0, s], [vol.w, vol.h, s], [0, vol.h, s]];
+  } else if (axis === 'x') {
+    corners = [[s, 0, 0], [s, 0, vol.d], [s, vol.h, vol.d], [s, vol.h, 0]];
+  } else {
+    corners = [[0, s, 0], [vol.w, s, 0], [vol.w, s, vol.d], [0, s, vol.d]];
+  }
+  return corners.map(function (c) {
+    return project(c[0], c[1], c[2], v);
+  });
+}
+
+/**
+ * Scale that fits the model inside a box, with a margin.
+ *
+ * @param {object} vol
+ * @param {object} view keys: yaw
+ * @param {object} box keys: w, h
+ * @param {number} margin pixels
+ * @returns {number}
+ */
+function fit_scale(vol, view, box, margin) {
+  var b = bounds(vol, {
+    yaw: view.yaw,
+    scale: 1
+  });
+  var pad = margin != undefined ? margin : 4;
+  var avail_w = Math.max(1, box.w - pad * 2);
+  var avail_h = Math.max(1, box.h - pad * 2);
+  if (b.width <= 0 || b.height <= 0) {
+    return 1;
+  }
+  return Math.min(avail_w / b.width, avail_h / b.height);
+}
+
+/**
+ * ONION SKINNING. How far to look either way, and how faint each neighbour is.
+ *
+ * Slices are only legible one at a time, which makes lining a shape up with the slice under it a
+ * matter of memory. Showing the neighbours faintly behind the live one turns that into something
+ * you can see.
+ */
+var ONION = {
+  /** the nearest neighbour, at its strongest */
+  max_alpha: 0.42,
+  /** never so faint it may as well not be drawn */
+  min_alpha: 0.08,
+  /** below the current slice - warm, like the frames already gone in animation onion skinning */
+  tint_below: {
+    r: 255,
+    g: 80,
+    b: 80
+  },
+  /** above - cool */
+  tint_above: {
+    r: 90,
+    g: 170,
+    b: 255
+  }
+};
+
+/**
+ * Which neighbouring slices to draw, and how strongly.
+ *
+ * Returned FARTHEST FIRST, so nearer neighbours paint over more distant ones and the stack reads
+ * as depth rather than as a smear.
+ *
+ * @param {number} current
+ * @param {number} count how many slices exist on this axis
+ * @param {number} before how many to show below/behind
+ * @param {number} after how many to show above/in front
+ * @returns {array} [{index, distance, direction, alpha}]
+ */
+function onion_slices(current, count, before, after) {
+  var out = [];
+  var falloff = function falloff(distance, span) {
+    if (span <= 0) {
+      return 0;
+    }
+    var a = ONION.max_alpha * (1 - (distance - 1) / span);
+    return Math.max(ONION.min_alpha, a);
+  };
+  for (var d = 1; d <= (before || 0); d++) {
+    var i = current - d;
+    if (i < 0) {
+      break;
+    }
+    out.push({
+      index: i,
+      distance: d,
+      direction: -1,
+      alpha: falloff(d, before)
+    });
+  }
+  for (var e = 1; e <= (after || 0); e++) {
+    var j = current + e;
+    if (j >= count) {
+      break;
+    }
+    out.push({
+      index: j,
+      distance: e,
+      direction: 1,
+      alpha: falloff(e, after)
+    });
+  }
+  out.sort(function (a, b) {
+    return b.distance - a.distance;
+  });
+  return out;
+}
+
+
+/***/ },
+
+/***/ "./src/js/core/voxel.js"
+/*!******************************!*\
+  !*** ./src/js/core/voxel.js ***!
+  \******************************/
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   AXES: () => (/* binding */ AXES),
+/* harmony export */   AXIS_LABELS: () => (/* binding */ AXIS_LABELS),
+/* harmony export */   DEFAULT_SIZE: () => (/* binding */ DEFAULT_SIZE),
+/* harmony export */   MAX_SIZE: () => (/* binding */ MAX_SIZE),
+/* harmony export */   clamp_slice: () => (/* binding */ clamp_slice),
+/* harmony export */   count_filled: () => (/* binding */ count_filled),
+/* harmony export */   create_volume: () => (/* binding */ create_volume),
+/* harmony export */   get_voxel: () => (/* binding */ get_voxel),
+/* harmony export */   index_of: () => (/* binding */ index_of),
+/* harmony export */   pack: () => (/* binding */ pack),
+/* harmony export */   read_slice: () => (/* binding */ read_slice),
+/* harmony export */   set_voxel: () => (/* binding */ set_voxel),
+/* harmony export */   slice_dimensions: () => (/* binding */ slice_dimensions),
+/* harmony export */   slice_to_voxel: () => (/* binding */ slice_to_voxel),
+/* harmony export */   unpack: () => (/* binding */ unpack),
+/* harmony export */   write_slice: () => (/* binding */ write_slice)
+/* harmony export */ });
+/*
+ * get-in-loser - derivative of miniPaint (https://github.com/viliusle/miniPaint)
+ *
+ * The voxel volume. Pure - see tests/voxel.test.js.
+ *
+ * THE VOLUME IS THE SOURCE OF TRUTH, NOT THE SLICES. A slice is a VIEW: reading one produces a
+ * flat image the editor can paint on, writing one puts those pixels back. Rotating to work on a
+ * different face changes which way the volume is cut, never the volume itself - so it is instant,
+ * lossless, and repeatable. Storing 24 stacked layers instead would make every rotation a rebuild
+ * of the whole stack, and a non-cube volume (16 x 16 x 24) would not survive the round trip.
+ *
+ * AXES. x is width (left to right), y is HEIGHT (bottom to top), z is depth (front to back).
+ * "16w x 16d x 24h" is therefore w:16, d:16, h:24.
+ */
+
+/** The size this mode is built around. */
+var DEFAULT_SIZE = {
+  w: 16,
+  d: 16,
+  h: 24
+};
+
+/** Bigger than this is not pixel art any more, and the isometric preview stops being readable. */
+var MAX_SIZE = 256;
+
+/**
+ * Which axis the volume is cut along. The slice plane is the other two.
+ *
+ *   y - looking down at the top. 24 slices of 16w x 16d
+ *   z - looking at the front.    16 slices of 16w x 24h
+ *   x - looking at the side.     16 slices of 16d x 24h
+ */
+var AXES = ['y', 'z', 'x'];
+
+/** Human labels, in the order a person would think of them. */
+var AXIS_LABELS = {
+  y: 'Top',
+  z: 'Front',
+  x: 'Side'
+};
+
+/**
+ * @param {number} r 0-255
+ * @param {number} g
+ * @param {number} b
+ * @param {number} a
+ * @returns {number} 0xAARRGGBB. Zero means empty - a fully transparent voxel is no voxel.
+ */
+function pack(r, g, b, a) {
+  if (a === 0) {
+    return 0;
+  }
+  return ((a & 255) << 24 | (r & 255) << 16 | (g & 255) << 8 | b & 255) >>> 0;
+}
+
+/**
+ * @param {number} value 0xAARRGGBB
+ * @returns {object} keys r, g, b, a
+ */
+function unpack(value) {
+  return {
+    r: value >>> 16 & 255,
+    g: value >>> 8 & 255,
+    b: value & 255,
+    a: value >>> 24 & 255
+  };
+}
+
+/**
+ * @param {number} w
+ * @param {number} d
+ * @param {number} h
+ * @returns {object} keys: w, d, h, data (Uint32Array)
+ */
+function create_volume(w, d, h) {
+  var size = {
+    w: clamp_dimension(w, DEFAULT_SIZE.w),
+    d: clamp_dimension(d, DEFAULT_SIZE.d),
+    h: clamp_dimension(h, DEFAULT_SIZE.h)
+  };
+  return {
+    w: size.w,
+    d: size.d,
+    h: size.h,
+    data: new Uint32Array(size.w * size.d * size.h)
+  };
+}
+
+/**
+ * @param {*} value
+ * @param {number} fallback
+ * @returns {number} a whole number of voxels, at least 1
+ */
+function clamp_dimension(value, fallback) {
+  var n = parseInt(value, 10);
+  if (isNaN(n) || n < 1) {
+    return fallback;
+  }
+  return Math.min(n, MAX_SIZE);
+}
+
+/**
+ * @param {object} vol
+ * @param {number} x
+ * @param {number} y
+ * @param {number} z
+ * @returns {number} index into vol.data, or -1 when outside
+ */
+function index_of(vol, x, y, z) {
+  if (x < 0 || y < 0 || z < 0 || x >= vol.w || y >= vol.h || z >= vol.d) {
+    return -1;
+  }
+  return (y * vol.d + z) * vol.w + x;
+}
+
+/**
+ * @returns {number} 0xAARRGGBB, 0 for empty or out of bounds
+ */
+function get_voxel(vol, x, y, z) {
+  var i = index_of(vol, x, y, z);
+  return i < 0 ? 0 : vol.data[i];
+}
+
+/**
+ * @returns {boolean} whether anything was written
+ */
+function set_voxel(vol, x, y, z, value) {
+  var i = index_of(vol, x, y, z);
+  if (i < 0) {
+    return false;
+  }
+  vol.data[i] = value >>> 0;
+  return true;
+}
+
+/**
+ * Size of a slice taken along the given axis, and how many there are.
+ *
+ * @param {object} vol
+ * @param {string} axis one of AXES
+ * @returns {object} keys: width, height, count
+ */
+function slice_dimensions(vol, axis) {
+  if (axis === 'z') {
+    return {
+      width: vol.w,
+      height: vol.h,
+      count: vol.d
+    };
+  }
+  if (axis === 'x') {
+    return {
+      width: vol.d,
+      height: vol.h,
+      count: vol.w
+    };
+  }
+
+  //'y', the default: looking down at the top
+  return {
+    width: vol.w,
+    height: vol.d,
+    count: vol.h
+  };
+}
+
+/**
+ * Where a pixel of a slice lives in the volume.
+ *
+ * v is measured DOWNWARD from the top of the slice image, because that is how a canvas is
+ * addressed. For the side-on views that means flipping against y, which counts upward - get this
+ * backwards and the model is drawn upside down.
+ *
+ * @param {object} vol
+ * @param {string} axis
+ * @param {number} slice index along the axis
+ * @param {number} u column in the slice image
+ * @param {number} v row in the slice image, from the top
+ * @returns {object} keys x, y, z
+ */
+function slice_to_voxel(vol, axis, slice, u, v) {
+  if (axis === 'z') {
+    return {
+      x: u,
+      y: vol.h - 1 - v,
+      z: slice
+    };
+  }
+  if (axis === 'x') {
+    return {
+      x: slice,
+      y: vol.h - 1 - v,
+      z: u
+    };
+  }
+  return {
+    x: u,
+    y: slice,
+    z: v
+  };
+}
+
+/**
+ * Read one slice out as a flat image.
+ *
+ * @param {object} vol
+ * @param {string} axis
+ * @param {number} slice
+ * @returns {object} keys: width, height, data (Uint32Array, row major)
+ */
+function read_slice(vol, axis, slice) {
+  var dims = slice_dimensions(vol, axis);
+  var out = new Uint32Array(dims.width * dims.height);
+  for (var v = 0; v < dims.height; v++) {
+    for (var u = 0; u < dims.width; u++) {
+      var p = slice_to_voxel(vol, axis, slice, u, v);
+      out[v * dims.width + u] = get_voxel(vol, p.x, p.y, p.z);
+    }
+  }
+  return {
+    width: dims.width,
+    height: dims.height,
+    data: out
+  };
+}
+
+/**
+ * Put a flat image back into the volume as one slice.
+ *
+ * @param {object} vol
+ * @param {string} axis
+ * @param {number} slice
+ * @param {Uint32Array} pixels row major, length width*height for this axis
+ * @returns {number} how many voxels were written
+ */
+function write_slice(vol, axis, slice, pixels) {
+  var dims = slice_dimensions(vol, axis);
+  var written = 0;
+  if (!pixels || pixels.length < dims.width * dims.height) {
+    return 0;
+  }
+  for (var v = 0; v < dims.height; v++) {
+    for (var u = 0; u < dims.width; u++) {
+      var p = slice_to_voxel(vol, axis, slice, u, v);
+      if (set_voxel(vol, p.x, p.y, p.z, pixels[v * dims.width + u])) {
+        written++;
+      }
+    }
+  }
+  return written;
+}
+
+/**
+ * Keep a slice index inside the volume when the axis changes under it - the axes have different
+ * counts (24 slices from the top, 16 from the front), so the old index can be past the end.
+ *
+ * @param {object} vol
+ * @param {string} axis
+ * @param {number} slice
+ * @returns {number}
+ */
+function clamp_slice(vol, axis, slice) {
+  var count = slice_dimensions(vol, axis).count;
+  var n = parseInt(slice, 10);
+  if (isNaN(n)) {
+    return 0;
+  }
+  return Math.max(0, Math.min(count - 1, n));
+}
+
+/**
+ * @param {object} vol
+ * @returns {number} how many voxels are not empty
+ */
+function count_filled(vol) {
+  var n = 0;
+  for (var i = 0; i < vol.data.length; i++) {
+    if (vol.data[i] !== 0) {
+      n++;
+    }
+  }
+  return n;
 }
 
 
@@ -35798,6 +36905,705 @@ var Tools_translate_class = /*#__PURE__*/function () {
 
 /***/ },
 
+/***/ "./src/js/modules/tools/voxel.js"
+/*!***************************************!*\
+  !*** ./src/js/modules/tools/voxel.js ***!
+  \***************************************/
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ "./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js");
+/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
+/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _app_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./../../app.js */ "./src/js/app.js");
+/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./../../config.js */ "./src/js/config.js");
+/* harmony import */ var _core_base_gui_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./../../core/base-gui.js */ "./src/js/core/base-gui.js");
+/* harmony import */ var _core_base_layers_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./../../core/base-layers.js */ "./src/js/core/base-layers.js");
+/* harmony import */ var _libs_popup_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./../../libs/popup.js */ "./src/js/libs/popup.js");
+/* harmony import */ var _libs_helpers_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./../../libs/helpers.js */ "./src/js/libs/helpers.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./../../../../node_modules/alertifyjs/build/alertify.min.js */ "./node_modules/alertifyjs/build/alertify.min.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(_node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10__);
+/* harmony import */ var _core_voxel_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./../../core/voxel.js */ "./src/js/core/voxel.js");
+/* harmony import */ var _core_voxel_view_js__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./../../core/voxel-view.js */ "./src/js/core/voxel-view.js");
+
+
+
+
+/*
+ * get-in-loser - https://github.com/TheMutantFactory/get-in-loser
+ *
+ * Voxel mode: edit a 3D volume one flat slice at a time.
+ *
+ * THE VOLUME IS THE MODEL, THE CANVAS IS A VIEW OF ONE SLICE. Every existing tool, the palette and
+ * pixel mode work on the slice unchanged, because the slice really is an ordinary raster layer.
+ * Moving to another slice commits what is on the canvas back into the volume and loads the next
+ * one; rotating changes which way the volume is cut and never touches the data. See core/voxel.js.
+ *
+ * SLICE CHANGES ARE NAVIGATION, NOT EDITS, so they are applied directly rather than through the
+ * action system - otherwise scrubbing through 24 slices would bury the undo history. The trade is
+ * that undo does not step backwards across a slice change; it applies to the slice you are on.
+ */
+
+
+
+
+
+
+
+
+
+
+var instance = null;
+var Tools_voxel_class = /*#__PURE__*/function () {
+  function Tools_voxel_class() {
+    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__["default"])(this, Tools_voxel_class);
+    //singleton
+    if (instance) {
+      return instance;
+    }
+    instance = this;
+    this.Base_gui = new _core_base_gui_js__WEBPACK_IMPORTED_MODULE_6__["default"]();
+    this.Base_layers = new _core_base_layers_js__WEBPACK_IMPORTED_MODULE_7__["default"]();
+    this.POP = new _libs_popup_js__WEBPACK_IMPORTED_MODULE_8__["default"]();
+    this.Helper = new _libs_helpers_js__WEBPACK_IMPORTED_MODULE_9__["default"]();
+  }
+
+  /**
+   * @returns {object|null} the live volume, or null when voxel mode is off
+   */
+  return (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__["default"])(Tools_voxel_class, [{
+    key: "get_volume",
+    value: function get_volume() {
+      return _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].voxel ? _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].voxel.volume : null;
+    }
+
+    /**
+     * menu: Voxel > New Voxel Model
+     */
+  }, {
+    key: "new_model",
+    value: function new_model() {
+      var _this = this;
+      var settings = {
+        title: 'New Voxel Model',
+        params: [{
+          name: 'w',
+          title: 'Width:',
+          value: _core_voxel_js__WEBPACK_IMPORTED_MODULE_11__.DEFAULT_SIZE.w,
+          comment: 'voxels'
+        }, {
+          name: 'd',
+          title: 'Depth:',
+          value: _core_voxel_js__WEBPACK_IMPORTED_MODULE_11__.DEFAULT_SIZE.d,
+          comment: 'voxels'
+        }, {
+          name: 'h',
+          title: 'Height:',
+          value: _core_voxel_js__WEBPACK_IMPORTED_MODULE_11__.DEFAULT_SIZE.h,
+          comment: 'voxels'
+        }],
+        on_finish: function on_finish(params) {
+          _this.new_model_handler(params);
+        }
+      };
+      this.POP.show(settings);
+    }
+  }, {
+    key: "new_model_handler",
+    value: function () {
+      var _new_model_handler = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().mark(function _callee(params) {
+        var volume, pixel;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().wrap(function (_context) {
+          while (1) switch (_context.prev = _context.next) {
+            case 0:
+              volume = (0,_core_voxel_js__WEBPACK_IMPORTED_MODULE_11__.create_volume)(params.w, params.d, params.h);
+              _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].voxel = {
+                volume: volume,
+                axis: 'y',
+                slice: 0,
+                yaw: 0,
+                enabled: true,
+                //onion skinning: how many neighbours to show either way. One each way by default -
+                //enough to line a shape up against what it sits on, without turning the canvas to soup
+                onion: {
+                  enabled: true,
+                  before: 1,
+                  after: 1
+                }
+              };
+
+              //a voxel model is pixel art by definition
+              pixel = this.Base_gui.modules['tools/pixel'];
+              if (pixel) {
+                pixel.set_pixel_mode(true, true);
+              }
+              _context.next = 1;
+              return this.reset_canvas_for_slice(true);
+            case 1:
+              _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10___default().success('New ' + volume.w + ' x ' + volume.d + ' x ' + volume.h + ' voxel model.');
+            case 2:
+            case "end":
+              return _context.stop();
+          }
+        }, _callee, this);
+      }));
+      function new_model_handler(_x) {
+        return _new_model_handler.apply(this, arguments);
+      }
+      return new_model_handler;
+    }()
+    /**
+     * menu: Voxel > Voxel Mode
+     */
+  }, {
+    key: "voxel_mode",
+    value: (function () {
+      var _voxel_mode = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().mark(function _callee2() {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().wrap(function (_context2) {
+          while (1) switch (_context2.prev = _context2.next) {
+            case 0:
+              if (!(_config_js__WEBPACK_IMPORTED_MODULE_5__["default"].voxel == null)) {
+                _context2.next = 1;
+                break;
+              }
+              return _context2.abrupt("return", this.new_model());
+            case 1:
+              _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].voxel.enabled = !_config_js__WEBPACK_IMPORTED_MODULE_5__["default"].voxel.enabled;
+              if (!_config_js__WEBPACK_IMPORTED_MODULE_5__["default"].voxel.enabled) {
+                _context2.next = 3;
+                break;
+              }
+              _context2.next = 2;
+              return this.reset_canvas_for_slice(true);
+            case 2:
+              _context2.next = 4;
+              break;
+            case 3:
+              //commit what is on screen before stepping out, or the last edit is lost
+              this.commit_slice();
+            case 4:
+              this.Base_gui.GUI_voxel.render_voxel();
+              _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10___default().success('Voxel mode ' + (_config_js__WEBPACK_IMPORTED_MODULE_5__["default"].voxel.enabled ? 'on' : 'off') + '.');
+              return _context2.abrupt("return", _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].voxel.enabled);
+            case 5:
+            case "end":
+              return _context2.stop();
+          }
+        }, _callee2, this);
+      }));
+      function voxel_mode() {
+        return _voxel_mode.apply(this, arguments);
+      }
+      return voxel_mode;
+    }()
+    /**
+     * @returns {boolean} whether voxel mode is on AND has a volume
+     */
+    )
+  }, {
+    key: "is_active",
+    value: function is_active() {
+      return _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].voxel != null && _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].voxel.enabled === true && _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].voxel.volume != null;
+    }
+
+    /**
+     * Flatten what is on the canvas and store it as the current slice.
+     *
+     * @returns {boolean} whether anything was committed
+     */
+  }, {
+    key: "commit_slice",
+    value: function commit_slice() {
+      if (!this.is_active()) {
+        return false;
+      }
+      var state = _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].voxel;
+      var dims = (0,_core_voxel_js__WEBPACK_IMPORTED_MODULE_11__.slice_dimensions)(state.volume, state.axis);
+      var pixels = this.read_canvas(dims.width, dims.height);
+      if (pixels == null) {
+        return false;
+      }
+      (0,_core_voxel_js__WEBPACK_IMPORTED_MODULE_11__.write_slice)(state.volume, state.axis, state.slice, pixels);
+      return true;
+    }
+
+    /**
+     * Flatten every visible layer into a packed pixel array.
+     *
+     * @param {number} width
+     * @param {number} height
+     * @returns {Uint32Array|null}
+     */
+  }, {
+    key: "read_canvas",
+    value: function read_canvas(width, height) {
+      try {
+        var canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        var ctx = canvas.getContext('2d');
+        ctx.imageSmoothingEnabled = false;
+        var layers = this.Base_layers.get_sorted_layers().slice().reverse();
+        for (var i = 0; i < layers.length; i++) {
+          this.Base_layers.render_object(ctx, layers[i]);
+        }
+        var img = ctx.getImageData(0, 0, width, height).data;
+        var out = new Uint32Array(width * height);
+        for (var p = 0; p < out.length; p++) {
+          out[p] = (0,_core_voxel_js__WEBPACK_IMPORTED_MODULE_11__.pack)(img[p * 4], img[p * 4 + 1], img[p * 4 + 2], img[p * 4 + 3]);
+        }
+        return out;
+      } catch (e) {
+        //a tainted canvas, from an image opened cross origin
+        return null;
+      }
+    }
+
+    /**
+     * Build a canvas holding the current slice.
+     *
+     * @returns {HTMLCanvasElement}
+     */
+  }, {
+    key: "slice_to_canvas",
+    value: function slice_to_canvas() {
+      var state = _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].voxel;
+      var slice = (0,_core_voxel_js__WEBPACK_IMPORTED_MODULE_11__.read_slice)(state.volume, state.axis, state.slice);
+      var canvas = document.createElement('canvas');
+      canvas.width = slice.width;
+      canvas.height = slice.height;
+      var ctx = canvas.getContext('2d');
+      var img = ctx.createImageData(slice.width, slice.height);
+      for (var i = 0; i < slice.data.length; i++) {
+        var c = (0,_core_voxel_js__WEBPACK_IMPORTED_MODULE_11__.unpack)(slice.data[i]);
+        img.data[i * 4] = c.r;
+        img.data[i * 4 + 1] = c.g;
+        img.data[i * 4 + 2] = c.b;
+        img.data[i * 4 + 3] = c.a;
+      }
+      ctx.putImageData(img, 0, 0);
+      return canvas;
+    }
+
+    /**
+     * Replace the editing canvas with the current slice.
+     *
+     * Goes through the action system only on the FIRST load - creating the layer - because after
+     * that this is navigation and must not fill the undo stack.
+     *
+     * @param {boolean} rebuild force a fresh layer
+     */
+  }, {
+    key: "reset_canvas_for_slice",
+    value: (function () {
+      var _reset_canvas_for_slice = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().mark(function _callee3(rebuild) {
+        var state, dims, canvas, needs_layer;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().wrap(function (_context3) {
+          while (1) switch (_context3.prev = _context3.next) {
+            case 0:
+              if (this.is_active()) {
+                _context3.next = 1;
+                break;
+              }
+              return _context3.abrupt("return", false);
+            case 1:
+              state = _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].voxel;
+              dims = (0,_core_voxel_js__WEBPACK_IMPORTED_MODULE_11__.slice_dimensions)(state.volume, state.axis);
+              canvas = this.slice_to_canvas();
+              needs_layer = rebuild === true || _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].layers.length !== 1 || _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].layer == null || _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].layer.type !== 'image';
+              if (!needs_layer) {
+                _context3.next = 3;
+                break;
+              }
+              _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].Actions.Bundle_action('voxel_slice', 'Voxel Slice', [new _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].Actions.Prepare_canvas_action('undo'), new _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].Actions.Update_config_action({
+                WIDTH: dims.width,
+                HEIGHT: dims.height,
+                TRANSPARENCY: true
+              }), new _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].Actions.Prepare_canvas_action('do'), new _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].Actions.Reset_layers_action(), new _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].Actions.Init_canvas_zoom_action(), new _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].Actions.Insert_layer_action({
+                type: 'image',
+                name: 'Slice',
+                data: canvas.toDataURL('image/png'),
+                x: 0,
+                y: 0,
+                width: dims.width,
+                height: dims.height
+              }, false)]));
+              _context3.next = 2;
+              return new Promise(function (r) {
+                return setTimeout(r, 20);
+              });
+            case 2:
+              this.Base_gui.GUI_preview.zoom_auto();
+              _context3.next = 4;
+              break;
+            case 3:
+              //NAVIGATION PATH. Direct, so scrubbing slices does not bury the undo history.
+              this.apply_slice_directly(canvas, dims);
+            case 4:
+              this.Base_gui.GUI_voxel.render_voxel();
+              return _context3.abrupt("return", true);
+            case 5:
+            case "end":
+              return _context3.stop();
+          }
+        }, _callee3, this);
+      }));
+      function reset_canvas_for_slice(_x2) {
+        return _reset_canvas_for_slice.apply(this, arguments);
+      }
+      return reset_canvas_for_slice;
+    }()
+    /**
+     * Swap the layer's image and the canvas size without touching undo.
+     *
+     * @param {HTMLCanvasElement} canvas
+     * @param {object} dims keys width, height
+     */
+    )
+  }, {
+    key: "apply_slice_directly",
+    value: function apply_slice_directly(canvas, dims) {
+      var layer = _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].layer;
+      var resized = _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].WIDTH !== dims.width || _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].HEIGHT !== dims.height;
+      if (resized) {
+        _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].WIDTH = dims.width;
+        _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].HEIGHT = dims.height;
+      }
+      layer.x = 0;
+      layer.y = 0;
+      layer.width = dims.width;
+      layer.height = dims.height;
+      layer.width_original = dims.width;
+      layer.height_original = dims.height;
+      layer.rotate = 0;
+      //Update_layer_image_action only swaps link.src, so the dimensions above have to be set by
+      //hand - a stale width here draws the slice squashed into the old shape
+      layer.link.src = canvas.toDataURL('image/png');
+      delete layer.link_canvas;
+      if (resized) {
+        this.Base_layers.init_zoom_lib();
+        this.Base_gui.prepare_canvas();
+        this.Base_gui.GUI_preview.zoom_auto();
+      }
+      _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].need_render = true;
+    }
+
+    /**
+     * Move to another slice, committing the current one on the way out.
+     *
+     * @param {number} slice
+     */
+  }, {
+    key: "set_slice",
+    value: (function () {
+      var _set_slice = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().mark(function _callee4(slice) {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().wrap(function (_context4) {
+          while (1) switch (_context4.prev = _context4.next) {
+            case 0:
+              if (this.is_active()) {
+                _context4.next = 1;
+                break;
+              }
+              return _context4.abrupt("return", false);
+            case 1:
+              this.commit_slice();
+              _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].voxel.slice = (0,_core_voxel_js__WEBPACK_IMPORTED_MODULE_11__.clamp_slice)(_config_js__WEBPACK_IMPORTED_MODULE_5__["default"].voxel.volume, _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].voxel.axis, slice);
+              _context4.next = 2;
+              return this.reset_canvas_for_slice(false);
+            case 2:
+              return _context4.abrupt("return", _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].voxel.slice);
+            case 3:
+            case "end":
+              return _context4.stop();
+          }
+        }, _callee4, this);
+      }));
+      function set_slice(_x3) {
+        return _set_slice.apply(this, arguments);
+      }
+      return set_slice;
+    }() /** menu: Voxel > Next Slice */)
+  }, {
+    key: "next_slice",
+    value: function next_slice() {
+      return this.is_active() ? this.set_slice(_config_js__WEBPACK_IMPORTED_MODULE_5__["default"].voxel.slice + 1) : false;
+    }
+
+    /** menu: Voxel > Previous Slice */
+  }, {
+    key: "previous_slice",
+    value: function previous_slice() {
+      return this.is_active() ? this.set_slice(_config_js__WEBPACK_IMPORTED_MODULE_5__["default"].voxel.slice - 1) : false;
+    }
+
+    /**
+     * Cut the volume a different way. The model does not move.
+     *
+     * @param {string} axis one of AXES
+     */
+  }, {
+    key: "set_axis",
+    value: (function () {
+      var _set_axis = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().mark(function _callee5(axis) {
+        var state;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().wrap(function (_context5) {
+          while (1) switch (_context5.prev = _context5.next) {
+            case 0:
+              if (!(!this.is_active() || _core_voxel_js__WEBPACK_IMPORTED_MODULE_11__.AXES.indexOf(axis) < 0)) {
+                _context5.next = 1;
+                break;
+              }
+              return _context5.abrupt("return", false);
+            case 1:
+              this.commit_slice();
+              state = _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].voxel;
+              state.axis = axis;
+              //the axes have different counts, so the old index can be past the end
+              state.slice = (0,_core_voxel_js__WEBPACK_IMPORTED_MODULE_11__.clamp_slice)(state.volume, axis, state.slice);
+              _context5.next = 2;
+              return this.reset_canvas_for_slice(false);
+            case 2:
+              _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10___default().success('Slicing from the ' + _core_voxel_js__WEBPACK_IMPORTED_MODULE_11__.AXIS_LABELS[axis].toLowerCase() + '.');
+              return _context5.abrupt("return", axis);
+            case 3:
+            case "end":
+              return _context5.stop();
+          }
+        }, _callee5, this);
+      }));
+      function set_axis(_x4) {
+        return _set_axis.apply(this, arguments);
+      }
+      return set_axis;
+    }() /** menu: Voxel > Slice from Top / Front / Side */)
+  }, {
+    key: "view_top",
+    value: function view_top() {
+      return this.set_axis('y');
+    }
+  }, {
+    key: "view_front",
+    value: function view_front() {
+      return this.set_axis('z');
+    }
+  }, {
+    key: "view_side",
+    value: function view_side() {
+      return this.set_axis('x');
+    }
+
+    /**
+     * Turn the preview camera a quarter turn. Editing is unaffected - this is the second view only.
+     *
+     * @param {number} direction +1 or -1
+     */
+  }, {
+    key: "orbit",
+    value: function orbit(direction) {
+      if (_config_js__WEBPACK_IMPORTED_MODULE_5__["default"].voxel == null) {
+        return false;
+      }
+      var step = direction < 0 ? -90 : 90;
+      _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].voxel.yaw = ((_config_js__WEBPACK_IMPORTED_MODULE_5__["default"].voxel.yaw + step) % 360 + 360) % 360;
+      this.Base_gui.GUI_voxel.render_voxel();
+      return _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].voxel.yaw;
+    }
+
+    /**
+     * menu: Voxel > Onion Skin
+     */
+  }, {
+    key: "onion_skin",
+    value: function onion_skin() {
+      if (_config_js__WEBPACK_IMPORTED_MODULE_5__["default"].voxel == null) {
+        _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10___default().error('No voxel model yet.');
+        return false;
+      }
+      if (_config_js__WEBPACK_IMPORTED_MODULE_5__["default"].voxel.onion == null) {
+        _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].voxel.onion = {
+          enabled: false,
+          before: 1,
+          after: 1
+        };
+      }
+      _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].voxel.onion.enabled = !_config_js__WEBPACK_IMPORTED_MODULE_5__["default"].voxel.onion.enabled;
+      _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].need_render = true;
+      this.Base_gui.GUI_voxel.render_voxel();
+      _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10___default().success('Onion skin ' + (_config_js__WEBPACK_IMPORTED_MODULE_5__["default"].voxel.onion.enabled ? 'on' : 'off') + '.');
+      return _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].voxel.onion.enabled;
+    }
+
+    /**
+     * How many neighbouring slices the onion skin reaches.
+     *
+     * @param {number} before
+     * @param {number} after
+     */
+  }, {
+    key: "set_onion_depth",
+    value: function set_onion_depth(before, after) {
+      if (_config_js__WEBPACK_IMPORTED_MODULE_5__["default"].voxel == null || _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].voxel.onion == null) {
+        return false;
+      }
+      var clamp = function clamp(n) {
+        var v = parseInt(n, 10);
+        return isNaN(v) ? 0 : Math.max(0, Math.min(8, v));
+      };
+      _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].voxel.onion.before = clamp(before);
+      _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].voxel.onion.after = clamp(after);
+      _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].need_render = true;
+      this.Base_gui.GUI_voxel.render_voxel();
+      return _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].voxel.onion;
+    }
+
+    /** menu: Voxel > Orbit Left / Right */
+  }, {
+    key: "orbit_left",
+    value: function orbit_left() {
+      return this.orbit(-1);
+    }
+  }, {
+    key: "orbit_right",
+    value: function orbit_right() {
+      return this.orbit(1);
+    }
+
+    /**
+     * menu: Voxel > Export Slices
+     *
+     * Every slice along the current axis, side by side in one PNG. Inspectable in any image editor,
+     * and re-importable without a bespoke format.
+     */
+  }, {
+    key: "export_slices",
+    value: function export_slices() {
+      if (!this.is_active()) {
+        _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10___default().error('No voxel model. Use Voxel > New Voxel Model first.');
+        return false;
+      }
+      this.commit_slice();
+      var state = _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].voxel;
+      var dims = (0,_core_voxel_js__WEBPACK_IMPORTED_MODULE_11__.slice_dimensions)(state.volume, state.axis);
+      var sheet = document.createElement('canvas');
+      sheet.width = dims.width * dims.count;
+      sheet.height = dims.height;
+      var ctx = sheet.getContext('2d');
+      ctx.imageSmoothingEnabled = false;
+      var keep = state.slice;
+      for (var i = 0; i < dims.count; i++) {
+        state.slice = i;
+        ctx.drawImage(this.slice_to_canvas(), i * dims.width, 0);
+      }
+      state.slice = keep;
+      sheet.toBlob(function (blob) {
+        var link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'voxel-' + state.volume.w + 'x' + state.volume.d + 'x' + state.volume.h + '-' + _core_voxel_js__WEBPACK_IMPORTED_MODULE_11__.AXIS_LABELS[state.axis].toLowerCase() + '.png';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(link.href);
+      }, 'image/png');
+      return true;
+    }
+
+    /**
+     * menu: Voxel > Import Slices
+     */
+  }, {
+    key: "import_slices",
+    value: function import_slices() {
+      var _this = this;
+      var input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/png';
+      input.addEventListener('change', function () {
+        var file = this.files[0];
+        if (file == undefined) {
+          return;
+        }
+        var image = new Image();
+        image.onload = function () {
+          _this.import_sheet(image);
+        };
+        image.onerror = function () {
+          _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10___default().error('Could not read that image.');
+        };
+        image.src = URL.createObjectURL(file);
+      }, false);
+      input.click();
+    }
+
+    /**
+     * @param {HTMLImageElement} image a strip of slices, side by side
+     */
+  }, {
+    key: "import_sheet",
+    value: (function () {
+      var _import_sheet = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().mark(function _callee6(image) {
+        var state, dims, expected, canvas, ctx, i, img, pixels, p;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().wrap(function (_context6) {
+          while (1) switch (_context6.prev = _context6.next) {
+            case 0:
+              if (this.is_active()) {
+                _context6.next = 1;
+                break;
+              }
+              _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10___default().error('Create a voxel model first, so the strip has something to load into.');
+              return _context6.abrupt("return", false);
+            case 1:
+              state = _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].voxel;
+              dims = (0,_core_voxel_js__WEBPACK_IMPORTED_MODULE_11__.slice_dimensions)(state.volume, state.axis);
+              expected = dims.width * dims.count;
+              if (!(image.width !== expected || image.height !== dims.height)) {
+                _context6.next = 2;
+                break;
+              }
+              _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10___default().error('Expected a ' + expected + ' x ' + dims.height + ' strip for this axis, got ' + image.width + ' x ' + image.height + '.');
+              return _context6.abrupt("return", false);
+            case 2:
+              canvas = document.createElement('canvas');
+              canvas.width = image.width;
+              canvas.height = image.height;
+              ctx = canvas.getContext('2d');
+              ctx.imageSmoothingEnabled = false;
+              ctx.drawImage(image, 0, 0);
+              for (i = 0; i < dims.count; i++) {
+                img = ctx.getImageData(i * dims.width, 0, dims.width, dims.height).data;
+                pixels = new Uint32Array(dims.width * dims.height);
+                for (p = 0; p < pixels.length; p++) {
+                  pixels[p] = (0,_core_voxel_js__WEBPACK_IMPORTED_MODULE_11__.pack)(img[p * 4], img[p * 4 + 1], img[p * 4 + 2], img[p * 4 + 3]);
+                }
+                (0,_core_voxel_js__WEBPACK_IMPORTED_MODULE_11__.write_slice)(state.volume, state.axis, i, pixels);
+              }
+              _context6.next = 3;
+              return this.reset_canvas_for_slice(false);
+            case 3:
+              _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10___default().success('Imported ' + dims.count + ' slices (' + (0,_core_voxel_js__WEBPACK_IMPORTED_MODULE_11__.count_filled)(state.volume) + ' voxels).');
+              return _context6.abrupt("return", true);
+            case 4:
+            case "end":
+              return _context6.stop();
+          }
+        }, _callee6, this);
+      }));
+      function import_sheet(_x5) {
+        return _import_sheet.apply(this, arguments);
+      }
+      return import_sheet;
+    }())
+  }]);
+}();
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Tools_voxel_class);
+
+/***/ },
+
 /***/ "./src/js/modules/view/full_screen.js"
 /*!********************************************!*\
   !*** ./src/js/modules/view/full_screen.js ***!
@@ -48521,7 +50327,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, ".wrapper{\n\tdisplay: -ms-grid;\n\tdisplay: grid;\n\tmargin: 0;\n\tposition: fixed; /* dont change it, vh does not work on mobiles with bottom footer */\n\ttop: 30px;\n\tright: 0;\n\tleft: 0;\n\tbottom: 5px;\n\theight: auto;\n\toverflow: hidden;\n\n\t-ms-grid-rows: auto 1fr;\n\tgrid-template-rows: auto 1fr;\n\t-ms-grid-columns: auto 1fr auto;\n\tgrid-template-columns: auto 1fr auto;\n\n\tgrid-template-areas:\n\t\t\"submenu submenu submenu\"\n\t\t\"sidebar_left main sidebar_right\";\n}\n.trn{}\n.toggle{\n\tcursor: pointer;\n}\n.hidden{\n\tdisplay:none;\n}\n.center{\n\ttext-align: center;\n}\n.pointer{\n\tcursor: pointer;\n}\n.clear{\n\tclear:both;\n}\n.displayBlock{\n\tdisplay: block;\n}\n.bold{\n\tfont-weight: bold;\n}\n.left{\n\tfloat: left;\n}\n.right{\n\tfloat: right;\n}\n.grey{\n\tcolor:grey;\n}\n.noselect {\n\t-webkit-touch-callout: none; /* iOS Safari */\n    -webkit-user-select: none; /* Safari */\n\t-khtml-user-select: none; /* Konqueror HTML */\n\t-moz-user-select: none; /* Firefox */\n\t-ms-user-select: none; /* Internet Explorer/Edge */\n\tuser-select: none; /* Non-prefixed version */\n}\n.block{\n\tposition: relative;\n\tbackground-color: rgba(255, 255, 255, 0.2);\n\tbackground-color: var(--block-background-color);\n\tborder: 1px solid rgba(0, 0, 0, 0.5);\n\tborder: 1px solid var(--border-color);\n\tmargin-bottom: 10px;\n\tuser-select: none;\n\tborder-radius: 4px;\n}\n.sidebar_right .block{\n\tbackground-color: #68727b;\n\tbackground-color: var(--block-background-color);\n\tborder-bottom: none;\n\tbox-shadow: 0 -2px 0 0 var(--header-background-color) inset;\n}\n.block:last-child{\n\tmargin-bottom: 0;\n}\n.block h2{\n\tposition: relative;\n\tpadding: 2px 5px 2px 6px;\n\tmargin: 0;\n\tfont-size: 110%;\n\tbackground-color: rgba(255, 255, 255, 0.3);\n\tbackground-color: var(--header-background-color);\n\tborder-bottom: #555;\n\tborder-radius: 4px 4px 0 0;\n}\n.block.toggled h2, .block h2.toggled:after{\n\tborder: none;\n}\n.block h2.toggle:before{\n\t/* icon */\n\tposition:absolute;\n\tcontent:'';\n\twidth: 0;\n\theight: 0;\n\tright: 10px;\n\ttop: 10px;\n\tborder-style: solid;\n\tborder-width: 0 4px 5px 4px;\n\tborder-color: transparent transparent var(--text-color-muted) transparent;\n}\n.block h2.toggled:before{\n\t/* icon */\n\tborder-width: 5px 4px 0 4px;\n\tborder-color: var(--text-color-muted) transparent transparent transparent;\n}\n.block .content{\n\tpadding: 7.5px 5px;\n}\n.block_section {\n    margin: .75rem 0;\n}\n.block_section:first-child {\n    margin-top: 0;\n}\n.block_section:last-child {\n    margin-bottom: 0;\n}\n.error{\n\tpadding:20px;\n\tmargin:10px;\n\tborder:1px solid #ff0000;\n\tbackground-color:#ffffff;\n\twidth:500px;\n\tfont-weight:bold;\n}\n\n/* color chooser */\nbody .sp-replacer{\n\twidth: 100%;\n\theight: 40px;\n}\nbody .sp-preview{\n\twidth: calc(100% - 20px);\n\theight: 100%;\n}\n\n/* ========== header ======================================================== */\n\n.logo{\n\tdisplay: inline-block;\n\theight: 30px;\n\twhite-space: nowrap;\n\tpadding: 5px;\n\tmargin: 5px;\n\t/* responsive: scales with the viewport, bounded to fit the header */\n\tfont-size: clamp(15px, 1.4vw, 18px);\n\tline-height: 1;\n\ttext-decoration: none;\n\tfont-weight: bold;\n\tcolor: #ffffff;\n\tcolor: var(--text-color);\n}\n.logo_ch{\n\t/* each letter is independently bob-able (LFO) via JS transforms */\n\tdisplay: inline-block;\n\twill-change: transform;\n}\n.logo_l{\n\t/* the finger-L hand stands in for the \"l\" in loser; em-sized so it scales\n\t   with the text, vertical-align tuned to sit centered on the text */\n\tdisplay: inline-block;\n\twidth: 1.15em;\n\theight: 1.15em;\n\tmargin: 0 0.03em;\n\tvertical-align: -0.26em;\n\tbackground: url('images/logo.png') no-repeat center center;\n\tbackground-size: contain;\n\timage-rendering: pixelated;\n\tfilter: var(--mobile-menu-toggle-filter);\n\twill-change: transform;\n}\n/* yonce whimsy: the icon + \"oser\" fade white (top) -> petal pink (bottom) */\nbody.theme-yonce .logo_grad{\n\tbackground: linear-gradient(to bottom, #ffffff 12%, var(--yc-petal-pink) 92%);\n\t-webkit-background-clip: text;\n\tbackground-clip: text;\n\t-webkit-text-fill-color: transparent;\n\tcolor: transparent;\n}\nbody.theme-yonce .logo_l{\n\t/* fill the hand shape with the same gradient (mask by the logo alpha) */\n\tbackground: linear-gradient(to bottom, #ffffff 12%, var(--yc-petal-pink) 92%);\n\t-webkit-mask: url('images/logo.png') no-repeat center / contain;\n\tmask: url('images/logo.png') no-repeat center / contain;\n\tfilter: none;\n}\n/* smart folder toggle, sits to the right of the logo */\n.smart_folder_toggle{\n\tdisplay: inline-flex;\n\talign-items: center;\n\tjustify-content: center;\n\twidth: 26px;\n\theight: 26px;\n\tpadding: 0;\n\tmargin: 5px 0 5px 4px;\n\tvertical-align: middle;\n\tbackground-color: transparent;\n\tborder: 1px solid transparent;\n\tbox-shadow: none;\n\tborder-radius: var(--button-border-radius);\n\tcolor: var(--text-color-muted);\n\tcursor: pointer;\n}\n.smart_folder_toggle > svg{\n\tdisplay: block;\n\twidth: 16px;\n\theight: 16px;\n}\n.smart_folder_toggle:hover{\n\tbackground-color: var(--input-background-color-hover);\n\tcolor: var(--text-color);\n}\n.smart_folder_toggle[aria-pressed=\"true\"]{\n\tcolor: var(--background-color-active);\n\tborder-color: var(--border-color);\n\tbackground-color: transparent;\n}\n.smart_folder_toggle[aria-pressed=\"true\"]:hover{\n\tbackground-color: var(--input-background-color-hover);\n}\n.about-logo{\n\tmargin-left:22%;\n}\n.about-name{\n\tfont-size: 17px;\n\tfont-weight:bold;\n}\n.undo_button {\n\tdisplay: none;\n\twidth: 50px;\n\theight: 50px;\n\ttop: 0;\n\tborder: 0;\n\toutline: none;\n\tcursor: pointer;\n\tfilter: var(--mobile-menu-toggle-filter);\n\tbackground: url(images/icons/undo.svg) no-repeat center center;\n\tbackground-size: auto 25px;\n\tmargin-left: 10px;\n}\n.undo_button:hover {\n\tbackground-color: transparent;\n}\n@media screen and (max-width: 700px){\n\t.undo_button {\n\t\tdisplay: block;\n\t}\n}\n\n/* ========== sub-header ==================================================== */\n\n.submenu{\n\t-ms-grid-row: 1;\n\t-ms-grid-column: 1;\n\t-ms-grid-column-span: 3;\n\tgrid-area: submenu;\n\tdisplay: flex;\n\tflex-direction: row;\n\talign-items: center;\n\tbackground-color: rgba(255, 255, 255, 0.2);\n\tbackground-color: var(--section-background-color);\n\toverflow: hidden;\n\tmargin-bottom: 5px;\n}\n.attributes{\n\tdisplay: flex;\n\tflex-wrap: nowrap;\n\tbackground-color: var(--area-background-color);\n\twidth: calc(100% - 125px);\n\tmargin-top: 5px;\n\tmargin-bottom: 5px !important;\n\tpadding: 3px 10px 3px 10px;\n\tborder: 0;\n\toverflow-x: auto;\n\toverflow-y: hidden;\n\twhite-space: nowrap;\n\tmin-height: 30px;\n}\n.attributes .item{\n\tdisplay: inline-flex;\n\talign-items: center;\n\tmargin-right: 20px;\n}\n.attributes .item > label {\n\tmargin: 0 .5rem 0 0;\n}\n.attributes input[type=\"number\"]{\n\twidth: 60px;\n\tmargin-right: 5px;\n}\n.attributes input[type=\"color\"] {\n\tcursor: pointer;\n\tpadding: 0;\n\tborder: .2rem solid var(--input-background-color);\n\twidth: 3rem;\n}\n.attributes .item > button:not(.ui_icon_button){\n\tdisplay: inline-block;\n\tpadding: 3px 10px;\n}\n\n/* ========== left sidebar ================================================== */\n\n.sidebar_left{\n\t-ms-grid-row: 2;\n\t-ms-grid-column: 1;\n\tgrid-area: sidebar_left;\n\tdisplay: flex;\n\tflex-direction: row;\n\tflex-wrap: wrap;\n\tbackground-color: var(--section-background-color);\n\tpadding: 0 5px 5px 0;\n\tmargin-right: 5px;\n\toverflow: hidden;\n\talign-self: start;\n\twidth: 40px;\n\toverflow-y: auto;\n\tmax-height: 100%;\n}\n.sidebar_left .item{\n\tposition: relative;\n\tdisplay:block;\n\tbackground-color: var(--area-background-color);\n\theight: 25px;\n\twidth: 30px;\n\tmargin: 5px 0 0 5px;\n\toverflow: hidden;\n\tcursor: pointer;\n}\n.sidebar_left .item:after{\n\tposition: absolute;\n\tcontent: '';\n\tleft:0;\n\ttop:0;\n\tbottom:0;\n\tright:0;\n\tfilter: var(--menu-icons-filter);\n\tbackground-position: center center;\n\tbackground-repeat: no-repeat;\n\tbackground-size: 20px 20px;\n}\n.sidebar_left .item:hover{\n\tbackground-color: var(--background-color-hover);\n}\n.sidebar_left .item.active{\n\tbackground-color: var(--background-color-active);\n\tcolor: var(--text-color-active);\n}\n.sidebar_left .item.active:after{\n\tfilter: var(--menu-icons-filter-active);\n}\n\n/*\nIMPORTANT: any new icon should also must be added on /service-worker.js + its version should be updated - FEATURE DISABLED\n */\n.sidebar_left .select:after{ background-image: url('images/icons/select.svg'); }\n.sidebar_left .selection:after{ background-image: url('images/icons/selection.svg'); }\n.sidebar_left .brush:after{ background-image: url('images/icons/brush.svg'); }\n.sidebar_left .pencil:after{ background-image: url('images/icons/pencil.svg'); }\n.sidebar_left .pick_color:after{ background-image: url('images/icons/pick_color.svg'); }\n.sidebar_left .erase:after{ background-image: url('images/icons/erase.svg'); }\n.sidebar_left .magic_erase:after{ background-image: url('images/icons/magic_erase.svg'); }\n.sidebar_left .fill:after{ background-image: url('images/icons/fill.svg'); }\n.sidebar_left .media:after{ background-image: url('images/icons/media.svg'); }\n.sidebar_left .shape:after{ background-image: url('images/icons/shape.svg'); }\n.sidebar_left .text:after{ background-image: url('images/icons/text.svg'); background-size: 16px auto; }\n/* the gradient icon is a colour PNG, so it opts out of the invert filter -\n   but it still has to obey the theme tint (black in dark, green in green) */\n.sidebar_left .gradient:after{ background-image: url('images/icons/gradient.png'); background-size: 18px 12px; filter: var(--canvas-filter, none); }\n.sidebar_left .clone:after{ background-image: url('images/icons/clone.svg'); }\n.sidebar_left .crop:after{ background-image: url('images/icons/crop.svg'); }\n.sidebar_left .blur:after{ background-image: url('images/icons/blur.svg'); }\n.sidebar_left .sharpen:after{ background-image: url('images/icons/sharpen.svg'); }\n.sidebar_left .desaturate:after{ background-image: url('images/icons/desaturate.svg'); }\n.sidebar_left .bulge_pinch:after{ background-image: url('images/icons/bulge_pinch.svg'); }\n.sidebar_left .animation:after{ background-image: url('images/icons/animation.svg'); }\n\n@media screen and (max-width:550px){\n\t#sidebar_left{\n\t\tleft: -110px;\n\t}\n}\n\n/* ========== right sidebar ================================================= */\n\n.sidebar_right{\n\t-ms-grid-row: 2;\n\t-ms-grid-column: 3;\n\tgrid-area: sidebar_right;\n\tz-index: 2;\n\tdisplay: flex;\n\tflex-direction: column;\n\ttransition: 0.2s;\n\toverflow-x: hidden;\n\toverflow-y: scroll;\n\tmargin: 0 5px;\n\twidth: 200px;\n}\n.sidebar_right.active{\n\tright: 0 !important;\n}\n.sidebar_right .block.layers:last-child{\n\tflex: 1;\n}\n\n/* ---------- sidebar panels: pin + reorder ---------- */\n\n.sidebar_right .block.pinned{\n\tposition: -webkit-sticky;\n\tposition: sticky;\n\ttop: 0;\n}\n.sidebar_right .block.pinned > h2{\n\tbox-shadow: 0 1px 0 0 var(--border-color);\n}\n.sidebar_right .block.dragging{\n\topacity: 0.5;\n}\n.block h2.panel_header{\n\tpadding-right: 80px;\n\tcursor: pointer;\n\twhite-space: nowrap;\n\toverflow: hidden;\n\ttext-overflow: ellipsis;\n}\n.block h2.panel_header.toggle:before{\n\t/* collapse arrow sits left of the panel controls */\n\tright: 68px;\n}\n.panel_controls{\n\tposition: absolute;\n\ttop: 0;\n\tright: 2px;\n\theight: 100%;\n\tdisplay: flex;\n\talign-items: center;\n}\n.panel_control{\n\tdisplay: flex;\n\talign-items: center;\n\tjustify-content: center;\n\twidth: 16px;\n\theight: 16px;\n\tpadding: 0;\n\tmargin: 0;\n\tborder: none;\n\tborder-radius: 3px;\n\tbackground: none;\n\tcolor: var(--text-color-muted);\n\tfont-size: 13px;\n\tline-height: 1;\n\tcursor: pointer;\n}\n.panel_control:hover{\n\tbackground-color: rgba(255, 255, 255, 0.18);\n\tcolor: var(--text-color);\n}\n.panel_control:focus-visible{\n\toutline: 1px solid var(--text-color);\n\toutline-offset: -1px;\n}\n.panel_control[disabled]{\n\topacity: 0.25;\n\tcursor: default;\n\tbackground: none;\n}\n.panel_pin[aria-pressed=\"true\"]{\n\tcolor: #00b8b8;\n\tbackground-color: rgba(0, 184, 184, 0.15);\n}\n.panel_drag_handle{\n\tcursor: grab;\n}\n.block.dragging .panel_drag_handle{\n\tcursor: grabbing;\n}\n\n/* ---------- palette panel ---------- */\n\n.palette_colors{\n\tdisplay: flex;\n\tflex-wrap: wrap;\n\tgap: 2px;\n}\n.palette_color{\n\twidth: 20px;\n\theight: 20px;\n\tpadding: 0;\n\tmargin: 0;\n\tborder: 1px solid rgba(0, 0, 0, 0.55);\n\tborder-radius: 2px;\n\tcursor: pointer;\n}\n.palette_color:hover{\n\ttransform: scale(1.15);\n}\n.palette_color.active{\n\toutline: 2px solid #ffffff;\n\toutline-offset: -3px;\n\tbox-shadow: 0 0 0 1px #000000;\n}\n.palette_meta{\n\tfont-size: 90%;\n}\n.palette .details button{\n\tmargin: 0 3px 0 0;\n}\n#palette_select{\n\twidth: 100%;\n}\n.sidebar_right .block.layers .content{\n\tpadding-bottom: 25px;\n}\n\n/* middle mouse button drag panning */\nbody.panning,\nbody.panning #main_wrapper,\nbody.panning #canvas_minipaint{\n\tcursor: grabbing !important;\n}\nbody.panning{\n\t/* no text selection while dragging the canvas around */\n\tuser-select: none;\n\t-webkit-user-select: none;\n}\n\n/* preview */\n.canvas_preview_wrapper{\n\tdisplay: flex;\n\tjustify-content: center;\n\talign-items: center;\n\tmargin: 5px 5px 10px 5px;\n}\n.canvas_preview_inner{\n\tposition: relative;\n\tline-height: 0;\n\twidth: 176px;\n\theight: 176px;\n}\n.canvas_preview_details{\n\tpadding: 0 5px;\n}\n.canvas_preview_details button{\n\tmargin: 0;\n}\n.preview canvas{\n\tcursor: pointer;\n}\n.details input{\n\tpadding: 5px 10px;\n}\n\n/* color */\n.color_area{\n\tborder: 1px solid #444;\n\twidth: calc(100% - 10px);\n\theight: 40px;\n\tcursor: pointer;\n\tmargin: 5px;\n}\n\n/* layers */\n.layers_list{\n\tmargin-top: 10px;\n}\n.layers_arrow{\n\tdisplay:inline-block;\n\tfloat:right;\n\tmargin-left:5px;\n\tpadding:1px 8px;\n\tborder:1px solid #444;\n\tborder-color: var(--border-color);\n\ttext-decoration:none;\n\tcolor:var(--text-color);\n\tfont-size: 14px;\n}\n.layer_add{\n\tdisplay:inline-block;\n\tpadding:1px 8px;\n\tmargin-right: 10px;\n\tbackground-color: #419147;\n\tbackground-color: var(--input-background-color);\n\tborder:1px solid #444;\n\tborder-color: var(--input-border-color);\n\tcolor: var(--input-text-color);\n\tcursor:pointer;\n\ttext-decoration:none;\n\tfont-size: 18px;\n\tfont-weight: bold;\n}\n/* Layers header buttons (D, R, move arrows) match the themed input fields too */\n.layer_duplicate, .layer_raster, .layers_arrow{\n\tbackground-color: var(--input-background-color);\n\tcolor: var(--input-text-color);\n\tborder-color: var(--input-border-color);\n}\n/* Shared hover for all these control buttons (preview zoom + layer buttons) */\n.layer_add:hover, .layer_duplicate:hover, .layer_raster:hover, .layers_arrow:hover{\n\tbackground-color: var(--input-background-color-hover);\n}\n.layers_list .item{\n\tmargin-bottom:2px;\n\tdisplay: flex;\n\tflex-wrap: wrap;\n\talign-items: center;\n}\n.layers_list .item > .clear{\n\tdisplay: none;\n}\n.layers_list .layer_name{\n\tdisplay:block;\n\tpadding:1px 5px 3px 5px;\n\t/* flex-basis 0 so a long name never pushes the icons/delete onto new lines;\n\t   it grows to fill the row and truncates with the ellipsis below. */\n\tflex: 1 1 0;\n\tmin-width: 0;\n\ttext-align: left;\n\toverflow:hidden;\n\ttext-overflow: ellipsis;\n\tbackground-color:#989898;\n\tbackground-color: var(--input-background-color);\n\tborder:1px solid #393939;\n\tborder-color: var(--input-border-color);\n\tborder-radius:3px;\n\tcursor:pointer;\n\tfont-size: 18px;\n\tfont-weight: bold;\n\tline-height: 1.4;\n\tcolor:var(--text-color);\n\twhite-space: nowrap;\n}\n.layers_list .item.shorter .layer_name{\n\twidth: auto;\n}\n.layers_list .item.active .layer_name{\n\tbackground-color: var(--input-background-color-hover);\n\tborder-color: var(--border-color);\n\tcolor: var(--input-text-color);\n}\n.layers_list .arrow_down{\n\tposition: relative;\n\tfloat:left;\n\tmargin-right: 5px;\n\twidth:10px;\n\theight:19px;\n\topacity: 0.4;\n}\n.layers_list .arrow_down:after{\n\tposition: absolute;\n\tcontent: '';\n\tleft:0;\n\ttop:0;\n\tbottom:0;\n\tright:0;\n\tfilter: var(--menu-icons-filter);\n\tbackground: url('images/icons/arrow-down.svg') no-repeat center center;\n\tbackground-size: 12px auto;\n}\n.layers_list .visibility{\n\tposition: relative;\n\tfloat:left;\n\tcursor:pointer;\n\tpadding:0px 3px 0px 3px;\n\tmargin-right: 5px;\n\twidth:20px;\n\theight:19px;\n\topacity:0.1;\n\tborder: none;\n\tbackground: transparent;\n\tbox-shadow: none;\n}\n.layers_list .visibility:after{\n\tposition: absolute;\n\tcontent: '';\n\tleft:0;\n\ttop:0;\n\tbottom:0;\n\tright:0;\n\tfilter: var(--menu-icons-filter);\n\tbackground: url('images/icons/view.svg') no-repeat center center;\n\tbackground-size: 18px auto;\n}\n.layers_list .visible{ opacity:0.4; }\n.layers_list .delete{\n\tfloat:right;\n\torder: 1;\n\tcursor:pointer;\n\tpadding:0px 3px 0px 3px;\n\twidth:12px;\n\theight:19px;\n\tmargin-left: 5px;\n\t/* delete \"x\" tinted to the tool-selection color via alpha mask */\n\tbackground-color: var(--background-color-active);\n\t-webkit-mask: url(images/icons/delete.svg) no-repeat center / 10px 10px;\n\tmask: url(images/icons/delete.svg) no-repeat center / 10px 10px;\n\tborder: none;\n\tbox-shadow: none;\n}\n/* shared right-click context menu (layers panel, logo hand) */\n.context_menu{\n\tposition: fixed;\n\tz-index: 9999;\n\tmin-width: 140px;\n\tbackground-color: var(--menu-background-color);\n\tborder: 1px solid var(--border-color);\n\tborder-radius: 4px;\n\tbox-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);\n\tpadding: 4px 0;\n}\n.context_menu .context_menu_item{\n\tdisplay: block;\n\twidth: 100%;\n\ttext-align: left;\n\tbackground: transparent;\n\tborder: none;\n\tbox-shadow: none;\n\tborder-radius: 0;\n\tcolor: var(--menu-text-color);\n\tpadding: 6px 16px;\n\tfont-size: 14px;\n\tfont-weight: normal;\n\twhite-space: nowrap;\n\tcursor: pointer;\n}\n.context_menu .context_menu_item:hover{\n\tbackground-color: var(--background-color-active);\n\tcolor: var(--text-color-active);\n}\n.context_menu .context_menu_divider{\n\theight: 1px;\n\tmargin: 4px 0;\n\tbackground-color: var(--border-color);\n\topacity: 0.5;\n}\n\n/* icon licence dialog */\n/* the popup is a fixed 500px, so the facts get the full width and the\n   artwork sits in a header row rather than stealing a column */\n.icon_license_head{\n\tdisplay: flex;\n\tgap: 14px;\n\talign-items: center;\n\tmargin-bottom: 14px;\n}\n.icon_license_art{\n\tflex: 0 0 auto;\n\twidth: 64px;\n\theight: 64px;\n\tborder-radius: 10px;\n}\n.icon_license_attribution{\n\tmargin: 0;\n\tfont-size: 17px;\n\tfont-weight: bold;\n\tline-height: 1.35;\n\tcolor: var(--text-color);\n}\n.icon_license_facts{\n\tdisplay: grid;\n\tgrid-template-columns: max-content 1fr;\n\tgap: 6px 14px;\n\tmargin: 0 0 12px;\n}\n.icon_license_facts dt{\n\tcolor: var(--text-color-soft, var(--text-color));\n\topacity: 0.75;\n\tfont-size: 14px;\n}\n.icon_license_facts dd{\n\tmargin: 0;\n\tfont-size: 14px;\n\tcolor: var(--text-color);\n}\n.icon_license_muted{\n\topacity: 0.7;\n}\n.icon_license_note{\n\tmargin: 0;\n\tfont-size: 13px;\n\tline-height: 1.5;\n\topacity: 0.85;\n\tborder-top: 1px solid var(--border-color);\n\tpadding-top: 10px;\n}\n\n/* filters */\n.layers_list .filters{\n\tmargin-bottom: 5px;\n\torder: 2;\n\tflex: 0 0 100%;\n}\n.layers_list .filter{\n\tmargin-bottom: 2px;\n\tmargin-left: 30px;\n\topacity: 0.7;\n}\n.layers_list .filter .layer_name{\n\tposition: relative;\n}\n.layers_list .filter .layer_name:after{\n\tposition:absolute;\n\tcontent:\"fx\";\n\tright: -4px;\n\ttop:1px;\n\tbottom:0;\n\twidth: 20px;\n}\n.sidebar_right .label{\n\tdisplay: inline-block;\n}\n.info .toggle.toggled{\n\tmargin-bottom: -3px;\n}\n.block.details .row{\n\tclear:both;\n\tmargin-bottom: 4px;\n\tmin-height: 23px;\n}\n.block.details input[type=\"number\"]{\n\twidth: 70px;\n\tpadding: 3px 5px;\n\tfloat: right;\n}\n.block.details .ui_color_input{\n\twidth: 70px;\n\tfloat: right;\n}\n.block.details .ui_color_input input{\n\twidth: 100%;\n\theight: 23px;\n}\n.block.details button.ui_toggle_button{\n\twidth: 90px;\n\tfloat: right;\n}\n.block.details select{\n\twidth: calc(100% - 70px);\n\theight: 23px;\n\tfloat: right;\n}\n.block.details button{\n\twidth: calc(100% - 70px);\n\theight: 23px;\n\tborder: 1px solid #444;\n}\n.block.details button.reset{\n\tposition: relative;\n\twidth: 25px;\n\tfloat: right;\n\tmargin-right: 3px;\n\toverflow: hidden;\n\topacity: 0.5;\n\tcolor: transparent;\n}\n.block.details button.reset:after{\n\tposition: absolute;\n\tcontent: '';\n\tleft:0;\n\ttop:0;\n\tbottom:0;\n\tright:0;\n\tbackground: url(images/icons/refresh.svg) no-repeat center center;\n\tbackground-size: auto 14px;\n\tfilter: var(--menu-icons-filter);\n}\n.block.details button.active{\n\tbackground-color: var(--background-color-active);\n\tcolor: var(--text-color-active);\n}\n.details-content{\n\theight: 206px;\n\toverflow-y: auto;\n}\n\n@media screen and (max-width:700px){\n\tbody{\n\t\tpadding-top:50px;\n\t}\n\t.wrapper{\n\t\ttop: 50px;\n\t}\n\t.sidebar_left{\n\t\tposition: absolute;\n\t\tleft: -90px;\n\t\tbackground: var(--background);\n\t}\n\t.sidebar_left.active{\n\t\tbox-shadow: -5px 0px 10px 0px rgba(0,0,0,0.75);\n\t\tleft: 0;\n\t\tz-index: 3;\n\t}\n\t.sidebar_right{\n\t\tposition: absolute;\n\t\theight: 100%;\n\t\tright: -210px;\n\t\tbackground: var(--background);\n\t}\n\t.sidebar_right.active{\n\t\tbox-shadow: -5px 0px 10px 0px rgba(0,0,0,0.75);\n\t\tright: 0;\n\t\tmargin-right: 0;\n\t}\n}\n\n/* ========== content ======================================================= */\n\n.ruler_left{\n\tdisplay: none;\n\tposition: absolute;\n\tleft:0;\n\ttop: 20px;\n\tbackground-color: #ccc;\n}\n.ruler_top{\n\tdisplay: none;\n\tposition: absolute;\n\tleft: 20px;\n\ttop:0;\n\tbackground-color: #ccc;\n}\n.middle_area{\n\tposition: relative;\n\t-ms-grid-row: 2;\n\t-ms-grid-column: 2;\n\tgrid-area: main;\n}\n.main_wrapper{\n\tposition:absolute;\n\ttop:0;\n\tright:0;\n\tbottom:0;\n\tleft:0;\n\toverflow: hidden;\n\tdisplay: flex;\n\tjustify-content: center;\n\talign-items: center;\n}\n.middle_area.has-ruler .main_wrapper{\n\ttop: 20px;\n\tleft: 20px;\n}\n.canvas_wrapper{\n\tposition:relative;\n}\n.canvas_wrapper canvas{\n\tposition: absolute;\n\tbox-sizing: content-box;\n\tfont-kerning: normal !important;\n}\n.loaded .canvas_wrapper canvas{\n\tborder: 1px solid var(--border-color);\n}\n#mouse{\n\tposition:absolute;\n\tpointer-events:none;\n\twidth:10px;\n\theight:10px;\n\tz-index:10;\n}\n#mouse.rect{\n\tborder:1px solid rgba(0,0,0,0.5);\n}\n#mouse.circle{\n\tborder:1px solid rgba(0,0,0,0.5);\n\tborder-radius:50%;\n}\n.transparent-grid{\n\twidth: 100%;\n\theight: 100%;\n\tposition: absolute;\n\tpointer-events: none;\n\t/*background: url(images/icons/grid.png) repeat top left;*/\n\tbackground: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAQElEQVQ4T2N89+7dfwYigKCgIBGqGBgYRw3EGU6jYYgzaIZAsvn//z9ROeX9+/fE5ZRRA3GG02gY4s4pgz7ZAAAnSWvHPkHXaAAAAABJRU5ErkJggg==') repeat top left;\n\tz-index:1;\n\timage-rendering: pixelated; /* disable antialiasing */\n}\n.transparent-grid.white{\n\tbackground:white;\n}\n.transparent-grid.green{\n\tbackground: #5be471;\n}\n.transparent-grid.grey{\n\tbackground: #dfdfdf;\n}\ncanvas{\n\tposition:relative;\n\tz-index:2;\n}\n#canvas_back{\n\tposition: absolute;\n\tbackground-color:#ffffff;\n\toutline: none;\n}\n#canvas_grid{\n\tpointer-events:none;\n}\n.group{\n\tborder:1px solid #999999;\n\tmargin: 5px 0px 5px 0px;\n\tpadding:5px 8px;\n}\n.flex-container{\n\tdisplay: flex;\n\tflex-wrap: wrap;\n}\n.flex-container .item{\n\tflex: auto;\n\tmargin: 2px 0;\n\twidth: 150px;\n}\n.flex-container .item:empty{\n\theight: 0;\n\tborder: none;\n}\n/* Colors panel toggle icons: white, not the pressed-state cyan\n   (setting the active-text var whitens both the icon and its underline) */\n#toggle_color_picker_section_button,\n#toggle_color_channels_section_button,\n#toggle_color_swatches_section_button{\n\t--button-text-color-active: var(--text-color);\n\tcolor: var(--text-color);\n}\n\n/* Error / notification popups: readable, styled like the (grape) layer panels */\n.alertify-notifier{\n\tcolor: var(--text-color);\n}\n.alertify-notifier .ajs-message{\n\tbackground: var(--block-background-color) !important;\n\tcolor: var(--text-color) !important;\n\tborder: 1px solid var(--border-color);\n\tborder-radius: 4px;\n\tbox-shadow: 0 3px 12px rgba(0, 0, 0, 0.5);\n\ttext-shadow: none;\n}\n.alertify-notifier .ajs-message.ajs-error{\n\tbackground: var(--block-background-color) !important;\n\tborder-left: 4px solid var(--text-color-red);\n}\n.alertify-notifier .ajs-message.ajs-success{\n\tbackground: var(--block-background-color) !important;\n\tborder-left: 4px solid var(--text-color-green);\n}\n.alertify-notifier .ajs-message.ajs-warning{\n\tbackground: var(--block-background-color) !important;\n\tborder-left: 4px solid var(--text-color-blue);\n}\n.effectsPreview{\n\tcursor: pointer;\n\tbackground-color: #ddd;\n}\n\n@media screen and (max-width:550px){\n\t.canvas_wrapper{\n\t\tmargin-left: 0px;\n\t}\n}\n@media screen and (max-height: 690px){\n\t.sidebar_left{\n\t\twidth: 75px;\n\t}\n}\n@media screen and (max-height:450px){\n\t.sidebar_left{\n\t\twidth: 88px;\n\t}\n}\n\n/* ========== dialogs ======================================================= */\n\n#dialog_color_picker_group {\n\twidth: 60%;\n}\n#dialog_color_channel_group {\n\twidth: 40%;\n\tmargin-left: 1rem;\n}\n\n@media screen and (max-width: 450px) {\n\t#dialog_color_picker .ui_flex_group {\n\t\tflex-wrap: wrap;\n\t}\n\t#dialog_color_picker_group {\n\t\twidth: 100%;\n\t}\n\t#dialog_color_channel_group {\n\t\twidth: 100%;\n\t\tmargin-left: 0;\n\t\tmargin-top: 1rem;\n\t}\n}", "",{"version":3,"sources":["webpack://./src/css/layout.css"],"names":[],"mappings":"AAAA;CACC,iBAAiB;CACjB,aAAa;CACb,SAAS;CACT,eAAe,EAAE,mEAAmE;CACpF,SAAS;CACT,QAAQ;CACR,OAAO;CACP,WAAW;CACX,YAAY;CACZ,gBAAgB;;CAEhB,uBAAuB;CACvB,4BAA4B;CAC5B,+BAA+B;CAC/B,oCAAoC;;CAEpC;;mCAEkC;AACnC;AACA,KAAK;AACL;CACC,eAAe;AAChB;AACA;CACC,YAAY;AACb;AACA;CACC,kBAAkB;AACnB;AACA;CACC,eAAe;AAChB;AACA;CACC,UAAU;AACX;AACA;CACC,cAAc;AACf;AACA;CACC,iBAAiB;AAClB;AACA;CACC,WAAW;AACZ;AACA;CACC,YAAY;AACb;AACA;CACC,UAAU;AACX;AACA;CACC,2BAA2B,EAAE,eAAe;IACzC,yBAAyB,EAAE,WAAW;CACzC,wBAAwB,EAAE,mBAAmB;CAC7C,sBAAsB,EAAE,YAAY;CACpC,qBAAqB,EAAE,2BAA2B;CAClD,iBAAiB,EAAE,yBAAyB;AAC7C;AACA;CACC,kBAAkB;CAClB,0CAA0C;CAC1C,+CAA+C;CAC/C,oCAAoC;CACpC,qCAAqC;CACrC,mBAAmB;CACnB,iBAAiB;CACjB,kBAAkB;AACnB;AACA;CACC,yBAAyB;CACzB,+CAA+C;CAC/C,mBAAmB;CACnB,2DAA2D;AAC5D;AACA;CACC,gBAAgB;AACjB;AACA;CACC,kBAAkB;CAClB,wBAAwB;CACxB,SAAS;CACT,eAAe;CACf,0CAA0C;CAC1C,gDAAgD;CAChD,mBAAmB;CACnB,0BAA0B;AAC3B;AACA;CACC,YAAY;AACb;AACA;CACC,SAAS;CACT,iBAAiB;CACjB,UAAU;CACV,QAAQ;CACR,SAAS;CACT,WAAW;CACX,SAAS;CACT,mBAAmB;CACnB,2BAA2B;CAC3B,yEAAyE;AAC1E;AACA;CACC,SAAS;CACT,2BAA2B;CAC3B,yEAAyE;AAC1E;AACA;CACC,kBAAkB;AACnB;AACA;IACI,gBAAgB;AACpB;AACA;IACI,aAAa;AACjB;AACA;IACI,gBAAgB;AACpB;AACA;CACC,YAAY;CACZ,WAAW;CACX,wBAAwB;CACxB,wBAAwB;CACxB,WAAW;CACX,gBAAgB;AACjB;;AAEA,kBAAkB;AAClB;CACC,WAAW;CACX,YAAY;AACb;AACA;CACC,wBAAwB;CACxB,YAAY;AACb;;AAEA,+EAA+E;;AAE/E;CACC,qBAAqB;CACrB,YAAY;CACZ,mBAAmB;CACnB,YAAY;CACZ,WAAW;CACX,oEAAoE;CACpE,mCAAmC;CACnC,cAAc;CACd,qBAAqB;CACrB,iBAAiB;CACjB,cAAc;CACd,wBAAwB;AACzB;AACA;CACC,kEAAkE;CAClE,qBAAqB;CACrB,sBAAsB;AACvB;AACA;CACC;qEACoE;CACpE,qBAAqB;CACrB,aAAa;CACb,cAAc;CACd,gBAAgB;CAChB,uBAAuB;CACvB,0DAA0D;CAC1D,wBAAwB;CACxB,0BAA0B;CAC1B,wCAAwC;CACxC,sBAAsB;AACvB;AACA,4EAA4E;AAC5E;CACC,6EAA6E;CAC7E,6BAA6B;CAC7B,qBAAqB;CACrB,oCAAoC;CACpC,kBAAkB;AACnB;AACA;CACC,wEAAwE;CACxE,6EAA6E;CAC7E,+DAA+D;CAC/D,uDAAuD;CACvD,YAAY;AACb;AACA,uDAAuD;AACvD;CACC,oBAAoB;CACpB,mBAAmB;CACnB,uBAAuB;CACvB,WAAW;CACX,YAAY;CACZ,UAAU;CACV,qBAAqB;CACrB,sBAAsB;CACtB,6BAA6B;CAC7B,6BAA6B;CAC7B,gBAAgB;CAChB,0CAA0C;CAC1C,8BAA8B;CAC9B,eAAe;AAChB;AACA;CACC,cAAc;CACd,WAAW;CACX,YAAY;AACb;AACA;CACC,qDAAqD;CACrD,wBAAwB;AACzB;AACA;CACC,qCAAqC;CACrC,iCAAiC;CACjC,6BAA6B;AAC9B;AACA;CACC,qDAAqD;AACtD;AACA;CACC,eAAe;AAChB;AACA;CACC,eAAe;CACf,gBAAgB;AACjB;AACA;CACC,aAAa;CACb,WAAW;CACX,YAAY;CACZ,MAAM;CACN,SAAS;CACT,aAAa;CACb,eAAe;CACf,wCAAwC;CACxC,8DAA8D;CAC9D,0BAA0B;CAC1B,iBAAiB;AAClB;AACA;CACC,6BAA6B;AAC9B;AACA;CACC;EACC,cAAc;CACf;AACD;;AAEA,+EAA+E;;AAE/E;CACC,eAAe;CACf,kBAAkB;CAClB,uBAAuB;CACvB,kBAAkB;CAClB,aAAa;CACb,mBAAmB;CACnB,mBAAmB;CACnB,0CAA0C;CAC1C,iDAAiD;CACjD,gBAAgB;CAChB,kBAAkB;AACnB;AACA;CACC,aAAa;CACb,iBAAiB;CACjB,8CAA8C;CAC9C,yBAAyB;CACzB,eAAe;CACf,6BAA6B;CAC7B,0BAA0B;CAC1B,SAAS;CACT,gBAAgB;CAChB,kBAAkB;CAClB,mBAAmB;CACnB,gBAAgB;AACjB;AACA;CACC,oBAAoB;CACpB,mBAAmB;CACnB,kBAAkB;AACnB;AACA;CACC,mBAAmB;AACpB;AACA;CACC,WAAW;CACX,iBAAiB;AAClB;AACA;CACC,eAAe;CACf,UAAU;CACV,iDAAiD;CACjD,WAAW;AACZ;AACA;CACC,qBAAqB;CACrB,iBAAiB;AAClB;;AAEA,+EAA+E;;AAE/E;CACC,eAAe;CACf,kBAAkB;CAClB,uBAAuB;CACvB,aAAa;CACb,mBAAmB;CACnB,eAAe;CACf,iDAAiD;CACjD,oBAAoB;CACpB,iBAAiB;CACjB,gBAAgB;CAChB,iBAAiB;CACjB,WAAW;CACX,gBAAgB;CAChB,gBAAgB;AACjB;AACA;CACC,kBAAkB;CAClB,aAAa;CACb,8CAA8C;CAC9C,YAAY;CACZ,WAAW;CACX,mBAAmB;CACnB,gBAAgB;CAChB,eAAe;AAChB;AACA;CACC,kBAAkB;CAClB,WAAW;CACX,MAAM;CACN,KAAK;CACL,QAAQ;CACR,OAAO;CACP,gCAAgC;CAChC,kCAAkC;CAClC,4BAA4B;CAC5B,0BAA0B;AAC3B;AACA;CACC,+CAA+C;AAChD;AACA;CACC,gDAAgD;CAChD,+BAA+B;AAChC;AACA;CACC,uCAAuC;AACxC;;AAEA;;EAEE;AACF,6BAA6B,gDAAgD,EAAE;AAC/E,gCAAgC,mDAAmD,EAAE;AACrF,4BAA4B,+CAA+C,EAAE;AAC7E,6BAA6B,gDAAgD,EAAE;AAC/E,iCAAiC,oDAAoD,EAAE;AACvF,4BAA4B,+CAA+C,EAAE;AAC7E,kCAAkC,qDAAqD,EAAE;AACzF,2BAA2B,8CAA8C,EAAE;AAC3E,4BAA4B,+CAA+C,EAAE;AAC7E,4BAA4B,+CAA+C,EAAE;AAC7E,2BAA2B,8CAA8C,EAAE,0BAA0B,EAAE;AACvG;4EAC4E;AAC5E,+BAA+B,kDAAkD,EAAE,0BAA0B,EAAE,kCAAkC,EAAE;AACnJ,4BAA4B,+CAA+C,EAAE;AAC7E,2BAA2B,8CAA8C,EAAE;AAC3E,2BAA2B,8CAA8C,EAAE;AAC3E,8BAA8B,iDAAiD,EAAE;AACjF,iCAAiC,oDAAoD,EAAE;AACvF,kCAAkC,qDAAqD,EAAE;AACzF,gCAAgC,mDAAmD,EAAE;;AAErF;CACC;EACC,YAAY;CACb;AACD;;AAEA,+EAA+E;;AAE/E;CACC,eAAe;CACf,kBAAkB;CAClB,wBAAwB;CACxB,UAAU;CACV,aAAa;CACb,sBAAsB;CACtB,gBAAgB;CAChB,kBAAkB;CAClB,kBAAkB;CAClB,aAAa;CACb,YAAY;AACb;AACA;CACC,mBAAmB;AACpB;AACA;CACC,OAAO;AACR;;AAEA,wDAAwD;;AAExD;CACC,wBAAwB;CACxB,gBAAgB;CAChB,MAAM;AACP;AACA;CACC,yCAAyC;AAC1C;AACA;CACC,YAAY;AACb;AACA;CACC,mBAAmB;CACnB,eAAe;CACf,mBAAmB;CACnB,gBAAgB;CAChB,uBAAuB;AACxB;AACA;CACC,mDAAmD;CACnD,WAAW;AACZ;AACA;CACC,kBAAkB;CAClB,MAAM;CACN,UAAU;CACV,YAAY;CACZ,aAAa;CACb,mBAAmB;AACpB;AACA;CACC,aAAa;CACb,mBAAmB;CACnB,uBAAuB;CACvB,WAAW;CACX,YAAY;CACZ,UAAU;CACV,SAAS;CACT,YAAY;CACZ,kBAAkB;CAClB,gBAAgB;CAChB,8BAA8B;CAC9B,eAAe;CACf,cAAc;CACd,eAAe;AAChB;AACA;CACC,2CAA2C;CAC3C,wBAAwB;AACzB;AACA;CACC,oCAAoC;CACpC,oBAAoB;AACrB;AACA;CACC,aAAa;CACb,eAAe;CACf,gBAAgB;AACjB;AACA;CACC,cAAc;CACd,yCAAyC;AAC1C;AACA;CACC,YAAY;AACb;AACA;CACC,gBAAgB;AACjB;;AAEA,wCAAwC;;AAExC;CACC,aAAa;CACb,eAAe;CACf,QAAQ;AACT;AACA;CACC,WAAW;CACX,YAAY;CACZ,UAAU;CACV,SAAS;CACT,qCAAqC;CACrC,kBAAkB;CAClB,eAAe;AAChB;AACA;CACC,sBAAsB;AACvB;AACA;CACC,0BAA0B;CAC1B,oBAAoB;CACpB,6BAA6B;AAC9B;AACA;CACC,cAAc;AACf;AACA;CACC,iBAAiB;AAClB;AACA;CACC,WAAW;AACZ;AACA;CACC,oBAAoB;AACrB;;AAEA,qCAAqC;AACrC;;;CAGC,2BAA2B;AAC5B;AACA;CACC,uDAAuD;CACvD,iBAAiB;CACjB,yBAAyB;AAC1B;;AAEA,YAAY;AACZ;CACC,aAAa;CACb,uBAAuB;CACvB,mBAAmB;CACnB,wBAAwB;AACzB;AACA;CACC,kBAAkB;CAClB,cAAc;CACd,YAAY;CACZ,aAAa;AACd;AACA;CACC,cAAc;AACf;AACA;CACC,SAAS;AACV;AACA;CACC,eAAe;AAChB;AACA;CACC,iBAAiB;AAClB;;AAEA,UAAU;AACV;CACC,sBAAsB;CACtB,wBAAwB;CACxB,YAAY;CACZ,eAAe;CACf,WAAW;AACZ;;AAEA,WAAW;AACX;CACC,gBAAgB;AACjB;AACA;CACC,oBAAoB;CACpB,WAAW;CACX,eAAe;CACf,eAAe;CACf,qBAAqB;CACrB,iCAAiC;CACjC,oBAAoB;CACpB,uBAAuB;CACvB,eAAe;AAChB;AACA;CACC,oBAAoB;CACpB,eAAe;CACf,kBAAkB;CAClB,yBAAyB;CACzB,+CAA+C;CAC/C,qBAAqB;CACrB,uCAAuC;CACvC,8BAA8B;CAC9B,cAAc;CACd,oBAAoB;CACpB,eAAe;CACf,iBAAiB;AAClB;AACA,gFAAgF;AAChF;CACC,+CAA+C;CAC/C,8BAA8B;CAC9B,uCAAuC;AACxC;AACA,8EAA8E;AAC9E;CACC,qDAAqD;AACtD;AACA;CACC,iBAAiB;CACjB,aAAa;CACb,eAAe;CACf,mBAAmB;AACpB;AACA;CACC,aAAa;AACd;AACA;CACC,aAAa;CACb,uBAAuB;CACvB;qEACoE;CACpE,WAAW;CACX,YAAY;CACZ,gBAAgB;CAChB,eAAe;CACf,uBAAuB;CACvB,wBAAwB;CACxB,+CAA+C;CAC/C,wBAAwB;CACxB,uCAAuC;CACvC,iBAAiB;CACjB,cAAc;CACd,eAAe;CACf,iBAAiB;CACjB,gBAAgB;CAChB,uBAAuB;CACvB,mBAAmB;AACpB;AACA;CACC,WAAW;AACZ;AACA;CACC,qDAAqD;CACrD,iCAAiC;CACjC,8BAA8B;AAC/B;AACA;CACC,kBAAkB;CAClB,UAAU;CACV,iBAAiB;CACjB,UAAU;CACV,WAAW;CACX,YAAY;AACb;AACA;CACC,kBAAkB;CAClB,WAAW;CACX,MAAM;CACN,KAAK;CACL,QAAQ;CACR,OAAO;CACP,gCAAgC;CAChC,sEAAsE;CACtE,0BAA0B;AAC3B;AACA;CACC,kBAAkB;CAClB,UAAU;CACV,cAAc;CACd,uBAAuB;CACvB,iBAAiB;CACjB,UAAU;CACV,WAAW;CACX,WAAW;CACX,YAAY;CACZ,uBAAuB;CACvB,gBAAgB;AACjB;AACA;CACC,kBAAkB;CAClB,WAAW;CACX,MAAM;CACN,KAAK;CACL,QAAQ;CACR,OAAO;CACP,gCAAgC;CAChC,gEAAgE;CAChE,0BAA0B;AAC3B;AACA,uBAAuB,WAAW,EAAE;AACpC;CACC,WAAW;CACX,QAAQ;CACR,cAAc;CACd,uBAAuB;CACvB,UAAU;CACV,WAAW;CACX,gBAAgB;CAChB,iEAAiE;CACjE,gDAAgD;CAChD,uEAAuE;CACvE,+DAA+D;CAC/D,YAAY;CACZ,gBAAgB;AACjB;AACA,8DAA8D;AAC9D;CACC,eAAe;CACf,aAAa;CACb,gBAAgB;CAChB,8CAA8C;CAC9C,qCAAqC;CACrC,kBAAkB;CAClB,0CAA0C;CAC1C,cAAc;AACf;AACA;CACC,cAAc;CACd,WAAW;CACX,gBAAgB;CAChB,uBAAuB;CACvB,YAAY;CACZ,gBAAgB;CAChB,gBAAgB;CAChB,6BAA6B;CAC7B,iBAAiB;CACjB,eAAe;CACf,mBAAmB;CACnB,mBAAmB;CACnB,eAAe;AAChB;AACA;CACC,gDAAgD;CAChD,+BAA+B;AAChC;AACA;CACC,WAAW;CACX,aAAa;CACb,qCAAqC;CACrC,YAAY;AACb;;AAEA,wBAAwB;AACxB;+DAC+D;AAC/D;CACC,aAAa;CACb,SAAS;CACT,mBAAmB;CACnB,mBAAmB;AACpB;AACA;CACC,cAAc;CACd,WAAW;CACX,YAAY;CACZ,mBAAmB;AACpB;AACA;CACC,SAAS;CACT,eAAe;CACf,iBAAiB;CACjB,iBAAiB;CACjB,wBAAwB;AACzB;AACA;CACC,aAAa;CACb,sCAAsC;CACtC,aAAa;CACb,gBAAgB;AACjB;AACA;CACC,gDAAgD;CAChD,aAAa;CACb,eAAe;AAChB;AACA;CACC,SAAS;CACT,eAAe;CACf,wBAAwB;AACzB;AACA;CACC,YAAY;AACb;AACA;CACC,SAAS;CACT,eAAe;CACf,gBAAgB;CAChB,aAAa;CACb,yCAAyC;CACzC,iBAAiB;AAClB;;AAEA,YAAY;AACZ;CACC,kBAAkB;CAClB,QAAQ;CACR,cAAc;AACf;AACA;CACC,kBAAkB;CAClB,iBAAiB;CACjB,YAAY;AACb;AACA;CACC,kBAAkB;AACnB;AACA;CACC,iBAAiB;CACjB,YAAY;CACZ,WAAW;CACX,OAAO;CACP,QAAQ;CACR,WAAW;AACZ;AACA;CACC,qBAAqB;AACtB;AACA;CACC,mBAAmB;AACpB;AACA;CACC,UAAU;CACV,kBAAkB;CAClB,gBAAgB;AACjB;AACA;CACC,WAAW;CACX,gBAAgB;CAChB,YAAY;AACb;AACA;CACC,WAAW;CACX,YAAY;AACb;AACA;CACC,WAAW;CACX,YAAY;AACb;AACA;CACC,WAAW;CACX,YAAY;AACb;AACA;CACC,wBAAwB;CACxB,YAAY;CACZ,YAAY;AACb;AACA;CACC,wBAAwB;CACxB,YAAY;CACZ,sBAAsB;AACvB;AACA;CACC,kBAAkB;CAClB,WAAW;CACX,YAAY;CACZ,iBAAiB;CACjB,gBAAgB;CAChB,YAAY;CACZ,kBAAkB;AACnB;AACA;CACC,kBAAkB;CAClB,WAAW;CACX,MAAM;CACN,KAAK;CACL,QAAQ;CACR,OAAO;CACP,iEAAiE;CACjE,0BAA0B;CAC1B,gCAAgC;AACjC;AACA;CACC,gDAAgD;CAChD,+BAA+B;AAChC;AACA;CACC,aAAa;CACb,gBAAgB;AACjB;;AAEA;CACC;EACC,gBAAgB;CACjB;CACA;EACC,SAAS;CACV;CACA;EACC,kBAAkB;EAClB,WAAW;EACX,6BAA6B;CAC9B;CACA;EACC,8CAA8C;EAC9C,OAAO;EACP,UAAU;CACX;CACA;EACC,kBAAkB;EAClB,YAAY;EACZ,aAAa;EACb,6BAA6B;CAC9B;CACA;EACC,8CAA8C;EAC9C,QAAQ;EACR,eAAe;CAChB;AACD;;AAEA,+EAA+E;;AAE/E;CACC,aAAa;CACb,kBAAkB;CAClB,MAAM;CACN,SAAS;CACT,sBAAsB;AACvB;AACA;CACC,aAAa;CACb,kBAAkB;CAClB,UAAU;CACV,KAAK;CACL,sBAAsB;AACvB;AACA;CACC,kBAAkB;CAClB,eAAe;CACf,kBAAkB;CAClB,eAAe;AAChB;AACA;CACC,iBAAiB;CACjB,KAAK;CACL,OAAO;CACP,QAAQ;CACR,MAAM;CACN,gBAAgB;CAChB,aAAa;CACb,uBAAuB;CACvB,mBAAmB;AACpB;AACA;CACC,SAAS;CACT,UAAU;AACX;AACA;CACC,iBAAiB;AAClB;AACA;CACC,kBAAkB;CAClB,uBAAuB;CACvB,+BAA+B;AAChC;AACA;CACC,qCAAqC;AACtC;AACA;CACC,iBAAiB;CACjB,mBAAmB;CACnB,UAAU;CACV,WAAW;CACX,UAAU;AACX;AACA;CACC,gCAAgC;AACjC;AACA;CACC,gCAAgC;CAChC,iBAAiB;AAClB;AACA;CACC,WAAW;CACX,YAAY;CACZ,kBAAkB;CAClB,oBAAoB;CACpB,0DAA0D;CAC1D,6NAA6N;CAC7N,SAAS;CACT,0BAA0B,EAAE,yBAAyB;AACtD;AACA;CACC,gBAAgB;AACjB;AACA;CACC,mBAAmB;AACpB;AACA;CACC,mBAAmB;AACpB;AACA;CACC,iBAAiB;CACjB,SAAS;AACV;AACA;CACC,kBAAkB;CAClB,wBAAwB;CACxB,aAAa;AACd;AACA;CACC,mBAAmB;AACpB;AACA;CACC,wBAAwB;CACxB,uBAAuB;CACvB,eAAe;AAChB;AACA;CACC,aAAa;CACb,eAAe;AAChB;AACA;CACC,UAAU;CACV,aAAa;CACb,YAAY;AACb;AACA;CACC,SAAS;CACT,YAAY;AACb;AACA;0EAC0E;AAC1E;;;CAGC,6CAA6C;CAC7C,wBAAwB;AACzB;;AAEA,gFAAgF;AAChF;CACC,wBAAwB;AACzB;AACA;CACC,oDAAoD;CACpD,mCAAmC;CACnC,qCAAqC;CACrC,kBAAkB;CAClB,yCAAyC;CACzC,iBAAiB;AAClB;AACA;CACC,oDAAoD;CACpD,4CAA4C;AAC7C;AACA;CACC,oDAAoD;CACpD,8CAA8C;AAC/C;AACA;CACC,oDAAoD;CACpD,6CAA6C;AAC9C;AACA;CACC,eAAe;CACf,sBAAsB;AACvB;;AAEA;CACC;EACC,gBAAgB;CACjB;AACD;AACA;CACC;EACC,WAAW;CACZ;AACD;AACA;CACC;EACC,WAAW;CACZ;AACD;;AAEA,+EAA+E;;AAE/E;CACC,UAAU;AACX;AACA;CACC,UAAU;CACV,iBAAiB;AAClB;;AAEA;CACC;EACC,eAAe;CAChB;CACA;EACC,WAAW;CACZ;CACA;EACC,WAAW;EACX,cAAc;EACd,gBAAgB;CACjB;AACD","sourcesContent":[".wrapper{\n\tdisplay: -ms-grid;\n\tdisplay: grid;\n\tmargin: 0;\n\tposition: fixed; /* dont change it, vh does not work on mobiles with bottom footer */\n\ttop: 30px;\n\tright: 0;\n\tleft: 0;\n\tbottom: 5px;\n\theight: auto;\n\toverflow: hidden;\n\n\t-ms-grid-rows: auto 1fr;\n\tgrid-template-rows: auto 1fr;\n\t-ms-grid-columns: auto 1fr auto;\n\tgrid-template-columns: auto 1fr auto;\n\n\tgrid-template-areas:\n\t\t\"submenu submenu submenu\"\n\t\t\"sidebar_left main sidebar_right\";\n}\n.trn{}\n.toggle{\n\tcursor: pointer;\n}\n.hidden{\n\tdisplay:none;\n}\n.center{\n\ttext-align: center;\n}\n.pointer{\n\tcursor: pointer;\n}\n.clear{\n\tclear:both;\n}\n.displayBlock{\n\tdisplay: block;\n}\n.bold{\n\tfont-weight: bold;\n}\n.left{\n\tfloat: left;\n}\n.right{\n\tfloat: right;\n}\n.grey{\n\tcolor:grey;\n}\n.noselect {\n\t-webkit-touch-callout: none; /* iOS Safari */\n    -webkit-user-select: none; /* Safari */\n\t-khtml-user-select: none; /* Konqueror HTML */\n\t-moz-user-select: none; /* Firefox */\n\t-ms-user-select: none; /* Internet Explorer/Edge */\n\tuser-select: none; /* Non-prefixed version */\n}\n.block{\n\tposition: relative;\n\tbackground-color: rgba(255, 255, 255, 0.2);\n\tbackground-color: var(--block-background-color);\n\tborder: 1px solid rgba(0, 0, 0, 0.5);\n\tborder: 1px solid var(--border-color);\n\tmargin-bottom: 10px;\n\tuser-select: none;\n\tborder-radius: 4px;\n}\n.sidebar_right .block{\n\tbackground-color: #68727b;\n\tbackground-color: var(--block-background-color);\n\tborder-bottom: none;\n\tbox-shadow: 0 -2px 0 0 var(--header-background-color) inset;\n}\n.block:last-child{\n\tmargin-bottom: 0;\n}\n.block h2{\n\tposition: relative;\n\tpadding: 2px 5px 2px 6px;\n\tmargin: 0;\n\tfont-size: 110%;\n\tbackground-color: rgba(255, 255, 255, 0.3);\n\tbackground-color: var(--header-background-color);\n\tborder-bottom: #555;\n\tborder-radius: 4px 4px 0 0;\n}\n.block.toggled h2, .block h2.toggled:after{\n\tborder: none;\n}\n.block h2.toggle:before{\n\t/* icon */\n\tposition:absolute;\n\tcontent:'';\n\twidth: 0;\n\theight: 0;\n\tright: 10px;\n\ttop: 10px;\n\tborder-style: solid;\n\tborder-width: 0 4px 5px 4px;\n\tborder-color: transparent transparent var(--text-color-muted) transparent;\n}\n.block h2.toggled:before{\n\t/* icon */\n\tborder-width: 5px 4px 0 4px;\n\tborder-color: var(--text-color-muted) transparent transparent transparent;\n}\n.block .content{\n\tpadding: 7.5px 5px;\n}\n.block_section {\n    margin: .75rem 0;\n}\n.block_section:first-child {\n    margin-top: 0;\n}\n.block_section:last-child {\n    margin-bottom: 0;\n}\n.error{\n\tpadding:20px;\n\tmargin:10px;\n\tborder:1px solid #ff0000;\n\tbackground-color:#ffffff;\n\twidth:500px;\n\tfont-weight:bold;\n}\n\n/* color chooser */\nbody .sp-replacer{\n\twidth: 100%;\n\theight: 40px;\n}\nbody .sp-preview{\n\twidth: calc(100% - 20px);\n\theight: 100%;\n}\n\n/* ========== header ======================================================== */\n\n.logo{\n\tdisplay: inline-block;\n\theight: 30px;\n\twhite-space: nowrap;\n\tpadding: 5px;\n\tmargin: 5px;\n\t/* responsive: scales with the viewport, bounded to fit the header */\n\tfont-size: clamp(15px, 1.4vw, 18px);\n\tline-height: 1;\n\ttext-decoration: none;\n\tfont-weight: bold;\n\tcolor: #ffffff;\n\tcolor: var(--text-color);\n}\n.logo_ch{\n\t/* each letter is independently bob-able (LFO) via JS transforms */\n\tdisplay: inline-block;\n\twill-change: transform;\n}\n.logo_l{\n\t/* the finger-L hand stands in for the \"l\" in loser; em-sized so it scales\n\t   with the text, vertical-align tuned to sit centered on the text */\n\tdisplay: inline-block;\n\twidth: 1.15em;\n\theight: 1.15em;\n\tmargin: 0 0.03em;\n\tvertical-align: -0.26em;\n\tbackground: url('images/logo.png') no-repeat center center;\n\tbackground-size: contain;\n\timage-rendering: pixelated;\n\tfilter: var(--mobile-menu-toggle-filter);\n\twill-change: transform;\n}\n/* yonce whimsy: the icon + \"oser\" fade white (top) -> petal pink (bottom) */\nbody.theme-yonce .logo_grad{\n\tbackground: linear-gradient(to bottom, #ffffff 12%, var(--yc-petal-pink) 92%);\n\t-webkit-background-clip: text;\n\tbackground-clip: text;\n\t-webkit-text-fill-color: transparent;\n\tcolor: transparent;\n}\nbody.theme-yonce .logo_l{\n\t/* fill the hand shape with the same gradient (mask by the logo alpha) */\n\tbackground: linear-gradient(to bottom, #ffffff 12%, var(--yc-petal-pink) 92%);\n\t-webkit-mask: url('images/logo.png') no-repeat center / contain;\n\tmask: url('images/logo.png') no-repeat center / contain;\n\tfilter: none;\n}\n/* smart folder toggle, sits to the right of the logo */\n.smart_folder_toggle{\n\tdisplay: inline-flex;\n\talign-items: center;\n\tjustify-content: center;\n\twidth: 26px;\n\theight: 26px;\n\tpadding: 0;\n\tmargin: 5px 0 5px 4px;\n\tvertical-align: middle;\n\tbackground-color: transparent;\n\tborder: 1px solid transparent;\n\tbox-shadow: none;\n\tborder-radius: var(--button-border-radius);\n\tcolor: var(--text-color-muted);\n\tcursor: pointer;\n}\n.smart_folder_toggle > svg{\n\tdisplay: block;\n\twidth: 16px;\n\theight: 16px;\n}\n.smart_folder_toggle:hover{\n\tbackground-color: var(--input-background-color-hover);\n\tcolor: var(--text-color);\n}\n.smart_folder_toggle[aria-pressed=\"true\"]{\n\tcolor: var(--background-color-active);\n\tborder-color: var(--border-color);\n\tbackground-color: transparent;\n}\n.smart_folder_toggle[aria-pressed=\"true\"]:hover{\n\tbackground-color: var(--input-background-color-hover);\n}\n.about-logo{\n\tmargin-left:22%;\n}\n.about-name{\n\tfont-size: 17px;\n\tfont-weight:bold;\n}\n.undo_button {\n\tdisplay: none;\n\twidth: 50px;\n\theight: 50px;\n\ttop: 0;\n\tborder: 0;\n\toutline: none;\n\tcursor: pointer;\n\tfilter: var(--mobile-menu-toggle-filter);\n\tbackground: url(images/icons/undo.svg) no-repeat center center;\n\tbackground-size: auto 25px;\n\tmargin-left: 10px;\n}\n.undo_button:hover {\n\tbackground-color: transparent;\n}\n@media screen and (max-width: 700px){\n\t.undo_button {\n\t\tdisplay: block;\n\t}\n}\n\n/* ========== sub-header ==================================================== */\n\n.submenu{\n\t-ms-grid-row: 1;\n\t-ms-grid-column: 1;\n\t-ms-grid-column-span: 3;\n\tgrid-area: submenu;\n\tdisplay: flex;\n\tflex-direction: row;\n\talign-items: center;\n\tbackground-color: rgba(255, 255, 255, 0.2);\n\tbackground-color: var(--section-background-color);\n\toverflow: hidden;\n\tmargin-bottom: 5px;\n}\n.attributes{\n\tdisplay: flex;\n\tflex-wrap: nowrap;\n\tbackground-color: var(--area-background-color);\n\twidth: calc(100% - 125px);\n\tmargin-top: 5px;\n\tmargin-bottom: 5px !important;\n\tpadding: 3px 10px 3px 10px;\n\tborder: 0;\n\toverflow-x: auto;\n\toverflow-y: hidden;\n\twhite-space: nowrap;\n\tmin-height: 30px;\n}\n.attributes .item{\n\tdisplay: inline-flex;\n\talign-items: center;\n\tmargin-right: 20px;\n}\n.attributes .item > label {\n\tmargin: 0 .5rem 0 0;\n}\n.attributes input[type=\"number\"]{\n\twidth: 60px;\n\tmargin-right: 5px;\n}\n.attributes input[type=\"color\"] {\n\tcursor: pointer;\n\tpadding: 0;\n\tborder: .2rem solid var(--input-background-color);\n\twidth: 3rem;\n}\n.attributes .item > button:not(.ui_icon_button){\n\tdisplay: inline-block;\n\tpadding: 3px 10px;\n}\n\n/* ========== left sidebar ================================================== */\n\n.sidebar_left{\n\t-ms-grid-row: 2;\n\t-ms-grid-column: 1;\n\tgrid-area: sidebar_left;\n\tdisplay: flex;\n\tflex-direction: row;\n\tflex-wrap: wrap;\n\tbackground-color: var(--section-background-color);\n\tpadding: 0 5px 5px 0;\n\tmargin-right: 5px;\n\toverflow: hidden;\n\talign-self: start;\n\twidth: 40px;\n\toverflow-y: auto;\n\tmax-height: 100%;\n}\n.sidebar_left .item{\n\tposition: relative;\n\tdisplay:block;\n\tbackground-color: var(--area-background-color);\n\theight: 25px;\n\twidth: 30px;\n\tmargin: 5px 0 0 5px;\n\toverflow: hidden;\n\tcursor: pointer;\n}\n.sidebar_left .item:after{\n\tposition: absolute;\n\tcontent: '';\n\tleft:0;\n\ttop:0;\n\tbottom:0;\n\tright:0;\n\tfilter: var(--menu-icons-filter);\n\tbackground-position: center center;\n\tbackground-repeat: no-repeat;\n\tbackground-size: 20px 20px;\n}\n.sidebar_left .item:hover{\n\tbackground-color: var(--background-color-hover);\n}\n.sidebar_left .item.active{\n\tbackground-color: var(--background-color-active);\n\tcolor: var(--text-color-active);\n}\n.sidebar_left .item.active:after{\n\tfilter: var(--menu-icons-filter-active);\n}\n\n/*\nIMPORTANT: any new icon should also must be added on /service-worker.js + its version should be updated - FEATURE DISABLED\n */\n.sidebar_left .select:after{ background-image: url('images/icons/select.svg'); }\n.sidebar_left .selection:after{ background-image: url('images/icons/selection.svg'); }\n.sidebar_left .brush:after{ background-image: url('images/icons/brush.svg'); }\n.sidebar_left .pencil:after{ background-image: url('images/icons/pencil.svg'); }\n.sidebar_left .pick_color:after{ background-image: url('images/icons/pick_color.svg'); }\n.sidebar_left .erase:after{ background-image: url('images/icons/erase.svg'); }\n.sidebar_left .magic_erase:after{ background-image: url('images/icons/magic_erase.svg'); }\n.sidebar_left .fill:after{ background-image: url('images/icons/fill.svg'); }\n.sidebar_left .media:after{ background-image: url('images/icons/media.svg'); }\n.sidebar_left .shape:after{ background-image: url('images/icons/shape.svg'); }\n.sidebar_left .text:after{ background-image: url('images/icons/text.svg'); background-size: 16px auto; }\n/* the gradient icon is a colour PNG, so it opts out of the invert filter -\n   but it still has to obey the theme tint (black in dark, green in green) */\n.sidebar_left .gradient:after{ background-image: url('images/icons/gradient.png'); background-size: 18px 12px; filter: var(--canvas-filter, none); }\n.sidebar_left .clone:after{ background-image: url('images/icons/clone.svg'); }\n.sidebar_left .crop:after{ background-image: url('images/icons/crop.svg'); }\n.sidebar_left .blur:after{ background-image: url('images/icons/blur.svg'); }\n.sidebar_left .sharpen:after{ background-image: url('images/icons/sharpen.svg'); }\n.sidebar_left .desaturate:after{ background-image: url('images/icons/desaturate.svg'); }\n.sidebar_left .bulge_pinch:after{ background-image: url('images/icons/bulge_pinch.svg'); }\n.sidebar_left .animation:after{ background-image: url('images/icons/animation.svg'); }\n\n@media screen and (max-width:550px){\n\t#sidebar_left{\n\t\tleft: -110px;\n\t}\n}\n\n/* ========== right sidebar ================================================= */\n\n.sidebar_right{\n\t-ms-grid-row: 2;\n\t-ms-grid-column: 3;\n\tgrid-area: sidebar_right;\n\tz-index: 2;\n\tdisplay: flex;\n\tflex-direction: column;\n\ttransition: 0.2s;\n\toverflow-x: hidden;\n\toverflow-y: scroll;\n\tmargin: 0 5px;\n\twidth: 200px;\n}\n.sidebar_right.active{\n\tright: 0 !important;\n}\n.sidebar_right .block.layers:last-child{\n\tflex: 1;\n}\n\n/* ---------- sidebar panels: pin + reorder ---------- */\n\n.sidebar_right .block.pinned{\n\tposition: -webkit-sticky;\n\tposition: sticky;\n\ttop: 0;\n}\n.sidebar_right .block.pinned > h2{\n\tbox-shadow: 0 1px 0 0 var(--border-color);\n}\n.sidebar_right .block.dragging{\n\topacity: 0.5;\n}\n.block h2.panel_header{\n\tpadding-right: 80px;\n\tcursor: pointer;\n\twhite-space: nowrap;\n\toverflow: hidden;\n\ttext-overflow: ellipsis;\n}\n.block h2.panel_header.toggle:before{\n\t/* collapse arrow sits left of the panel controls */\n\tright: 68px;\n}\n.panel_controls{\n\tposition: absolute;\n\ttop: 0;\n\tright: 2px;\n\theight: 100%;\n\tdisplay: flex;\n\talign-items: center;\n}\n.panel_control{\n\tdisplay: flex;\n\talign-items: center;\n\tjustify-content: center;\n\twidth: 16px;\n\theight: 16px;\n\tpadding: 0;\n\tmargin: 0;\n\tborder: none;\n\tborder-radius: 3px;\n\tbackground: none;\n\tcolor: var(--text-color-muted);\n\tfont-size: 13px;\n\tline-height: 1;\n\tcursor: pointer;\n}\n.panel_control:hover{\n\tbackground-color: rgba(255, 255, 255, 0.18);\n\tcolor: var(--text-color);\n}\n.panel_control:focus-visible{\n\toutline: 1px solid var(--text-color);\n\toutline-offset: -1px;\n}\n.panel_control[disabled]{\n\topacity: 0.25;\n\tcursor: default;\n\tbackground: none;\n}\n.panel_pin[aria-pressed=\"true\"]{\n\tcolor: #00b8b8;\n\tbackground-color: rgba(0, 184, 184, 0.15);\n}\n.panel_drag_handle{\n\tcursor: grab;\n}\n.block.dragging .panel_drag_handle{\n\tcursor: grabbing;\n}\n\n/* ---------- palette panel ---------- */\n\n.palette_colors{\n\tdisplay: flex;\n\tflex-wrap: wrap;\n\tgap: 2px;\n}\n.palette_color{\n\twidth: 20px;\n\theight: 20px;\n\tpadding: 0;\n\tmargin: 0;\n\tborder: 1px solid rgba(0, 0, 0, 0.55);\n\tborder-radius: 2px;\n\tcursor: pointer;\n}\n.palette_color:hover{\n\ttransform: scale(1.15);\n}\n.palette_color.active{\n\toutline: 2px solid #ffffff;\n\toutline-offset: -3px;\n\tbox-shadow: 0 0 0 1px #000000;\n}\n.palette_meta{\n\tfont-size: 90%;\n}\n.palette .details button{\n\tmargin: 0 3px 0 0;\n}\n#palette_select{\n\twidth: 100%;\n}\n.sidebar_right .block.layers .content{\n\tpadding-bottom: 25px;\n}\n\n/* middle mouse button drag panning */\nbody.panning,\nbody.panning #main_wrapper,\nbody.panning #canvas_minipaint{\n\tcursor: grabbing !important;\n}\nbody.panning{\n\t/* no text selection while dragging the canvas around */\n\tuser-select: none;\n\t-webkit-user-select: none;\n}\n\n/* preview */\n.canvas_preview_wrapper{\n\tdisplay: flex;\n\tjustify-content: center;\n\talign-items: center;\n\tmargin: 5px 5px 10px 5px;\n}\n.canvas_preview_inner{\n\tposition: relative;\n\tline-height: 0;\n\twidth: 176px;\n\theight: 176px;\n}\n.canvas_preview_details{\n\tpadding: 0 5px;\n}\n.canvas_preview_details button{\n\tmargin: 0;\n}\n.preview canvas{\n\tcursor: pointer;\n}\n.details input{\n\tpadding: 5px 10px;\n}\n\n/* color */\n.color_area{\n\tborder: 1px solid #444;\n\twidth: calc(100% - 10px);\n\theight: 40px;\n\tcursor: pointer;\n\tmargin: 5px;\n}\n\n/* layers */\n.layers_list{\n\tmargin-top: 10px;\n}\n.layers_arrow{\n\tdisplay:inline-block;\n\tfloat:right;\n\tmargin-left:5px;\n\tpadding:1px 8px;\n\tborder:1px solid #444;\n\tborder-color: var(--border-color);\n\ttext-decoration:none;\n\tcolor:var(--text-color);\n\tfont-size: 14px;\n}\n.layer_add{\n\tdisplay:inline-block;\n\tpadding:1px 8px;\n\tmargin-right: 10px;\n\tbackground-color: #419147;\n\tbackground-color: var(--input-background-color);\n\tborder:1px solid #444;\n\tborder-color: var(--input-border-color);\n\tcolor: var(--input-text-color);\n\tcursor:pointer;\n\ttext-decoration:none;\n\tfont-size: 18px;\n\tfont-weight: bold;\n}\n/* Layers header buttons (D, R, move arrows) match the themed input fields too */\n.layer_duplicate, .layer_raster, .layers_arrow{\n\tbackground-color: var(--input-background-color);\n\tcolor: var(--input-text-color);\n\tborder-color: var(--input-border-color);\n}\n/* Shared hover for all these control buttons (preview zoom + layer buttons) */\n.layer_add:hover, .layer_duplicate:hover, .layer_raster:hover, .layers_arrow:hover{\n\tbackground-color: var(--input-background-color-hover);\n}\n.layers_list .item{\n\tmargin-bottom:2px;\n\tdisplay: flex;\n\tflex-wrap: wrap;\n\talign-items: center;\n}\n.layers_list .item > .clear{\n\tdisplay: none;\n}\n.layers_list .layer_name{\n\tdisplay:block;\n\tpadding:1px 5px 3px 5px;\n\t/* flex-basis 0 so a long name never pushes the icons/delete onto new lines;\n\t   it grows to fill the row and truncates with the ellipsis below. */\n\tflex: 1 1 0;\n\tmin-width: 0;\n\ttext-align: left;\n\toverflow:hidden;\n\ttext-overflow: ellipsis;\n\tbackground-color:#989898;\n\tbackground-color: var(--input-background-color);\n\tborder:1px solid #393939;\n\tborder-color: var(--input-border-color);\n\tborder-radius:3px;\n\tcursor:pointer;\n\tfont-size: 18px;\n\tfont-weight: bold;\n\tline-height: 1.4;\n\tcolor:var(--text-color);\n\twhite-space: nowrap;\n}\n.layers_list .item.shorter .layer_name{\n\twidth: auto;\n}\n.layers_list .item.active .layer_name{\n\tbackground-color: var(--input-background-color-hover);\n\tborder-color: var(--border-color);\n\tcolor: var(--input-text-color);\n}\n.layers_list .arrow_down{\n\tposition: relative;\n\tfloat:left;\n\tmargin-right: 5px;\n\twidth:10px;\n\theight:19px;\n\topacity: 0.4;\n}\n.layers_list .arrow_down:after{\n\tposition: absolute;\n\tcontent: '';\n\tleft:0;\n\ttop:0;\n\tbottom:0;\n\tright:0;\n\tfilter: var(--menu-icons-filter);\n\tbackground: url('images/icons/arrow-down.svg') no-repeat center center;\n\tbackground-size: 12px auto;\n}\n.layers_list .visibility{\n\tposition: relative;\n\tfloat:left;\n\tcursor:pointer;\n\tpadding:0px 3px 0px 3px;\n\tmargin-right: 5px;\n\twidth:20px;\n\theight:19px;\n\topacity:0.1;\n\tborder: none;\n\tbackground: transparent;\n\tbox-shadow: none;\n}\n.layers_list .visibility:after{\n\tposition: absolute;\n\tcontent: '';\n\tleft:0;\n\ttop:0;\n\tbottom:0;\n\tright:0;\n\tfilter: var(--menu-icons-filter);\n\tbackground: url('images/icons/view.svg') no-repeat center center;\n\tbackground-size: 18px auto;\n}\n.layers_list .visible{ opacity:0.4; }\n.layers_list .delete{\n\tfloat:right;\n\torder: 1;\n\tcursor:pointer;\n\tpadding:0px 3px 0px 3px;\n\twidth:12px;\n\theight:19px;\n\tmargin-left: 5px;\n\t/* delete \"x\" tinted to the tool-selection color via alpha mask */\n\tbackground-color: var(--background-color-active);\n\t-webkit-mask: url(images/icons/delete.svg) no-repeat center / 10px 10px;\n\tmask: url(images/icons/delete.svg) no-repeat center / 10px 10px;\n\tborder: none;\n\tbox-shadow: none;\n}\n/* shared right-click context menu (layers panel, logo hand) */\n.context_menu{\n\tposition: fixed;\n\tz-index: 9999;\n\tmin-width: 140px;\n\tbackground-color: var(--menu-background-color);\n\tborder: 1px solid var(--border-color);\n\tborder-radius: 4px;\n\tbox-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);\n\tpadding: 4px 0;\n}\n.context_menu .context_menu_item{\n\tdisplay: block;\n\twidth: 100%;\n\ttext-align: left;\n\tbackground: transparent;\n\tborder: none;\n\tbox-shadow: none;\n\tborder-radius: 0;\n\tcolor: var(--menu-text-color);\n\tpadding: 6px 16px;\n\tfont-size: 14px;\n\tfont-weight: normal;\n\twhite-space: nowrap;\n\tcursor: pointer;\n}\n.context_menu .context_menu_item:hover{\n\tbackground-color: var(--background-color-active);\n\tcolor: var(--text-color-active);\n}\n.context_menu .context_menu_divider{\n\theight: 1px;\n\tmargin: 4px 0;\n\tbackground-color: var(--border-color);\n\topacity: 0.5;\n}\n\n/* icon licence dialog */\n/* the popup is a fixed 500px, so the facts get the full width and the\n   artwork sits in a header row rather than stealing a column */\n.icon_license_head{\n\tdisplay: flex;\n\tgap: 14px;\n\talign-items: center;\n\tmargin-bottom: 14px;\n}\n.icon_license_art{\n\tflex: 0 0 auto;\n\twidth: 64px;\n\theight: 64px;\n\tborder-radius: 10px;\n}\n.icon_license_attribution{\n\tmargin: 0;\n\tfont-size: 17px;\n\tfont-weight: bold;\n\tline-height: 1.35;\n\tcolor: var(--text-color);\n}\n.icon_license_facts{\n\tdisplay: grid;\n\tgrid-template-columns: max-content 1fr;\n\tgap: 6px 14px;\n\tmargin: 0 0 12px;\n}\n.icon_license_facts dt{\n\tcolor: var(--text-color-soft, var(--text-color));\n\topacity: 0.75;\n\tfont-size: 14px;\n}\n.icon_license_facts dd{\n\tmargin: 0;\n\tfont-size: 14px;\n\tcolor: var(--text-color);\n}\n.icon_license_muted{\n\topacity: 0.7;\n}\n.icon_license_note{\n\tmargin: 0;\n\tfont-size: 13px;\n\tline-height: 1.5;\n\topacity: 0.85;\n\tborder-top: 1px solid var(--border-color);\n\tpadding-top: 10px;\n}\n\n/* filters */\n.layers_list .filters{\n\tmargin-bottom: 5px;\n\torder: 2;\n\tflex: 0 0 100%;\n}\n.layers_list .filter{\n\tmargin-bottom: 2px;\n\tmargin-left: 30px;\n\topacity: 0.7;\n}\n.layers_list .filter .layer_name{\n\tposition: relative;\n}\n.layers_list .filter .layer_name:after{\n\tposition:absolute;\n\tcontent:\"fx\";\n\tright: -4px;\n\ttop:1px;\n\tbottom:0;\n\twidth: 20px;\n}\n.sidebar_right .label{\n\tdisplay: inline-block;\n}\n.info .toggle.toggled{\n\tmargin-bottom: -3px;\n}\n.block.details .row{\n\tclear:both;\n\tmargin-bottom: 4px;\n\tmin-height: 23px;\n}\n.block.details input[type=\"number\"]{\n\twidth: 70px;\n\tpadding: 3px 5px;\n\tfloat: right;\n}\n.block.details .ui_color_input{\n\twidth: 70px;\n\tfloat: right;\n}\n.block.details .ui_color_input input{\n\twidth: 100%;\n\theight: 23px;\n}\n.block.details button.ui_toggle_button{\n\twidth: 90px;\n\tfloat: right;\n}\n.block.details select{\n\twidth: calc(100% - 70px);\n\theight: 23px;\n\tfloat: right;\n}\n.block.details button{\n\twidth: calc(100% - 70px);\n\theight: 23px;\n\tborder: 1px solid #444;\n}\n.block.details button.reset{\n\tposition: relative;\n\twidth: 25px;\n\tfloat: right;\n\tmargin-right: 3px;\n\toverflow: hidden;\n\topacity: 0.5;\n\tcolor: transparent;\n}\n.block.details button.reset:after{\n\tposition: absolute;\n\tcontent: '';\n\tleft:0;\n\ttop:0;\n\tbottom:0;\n\tright:0;\n\tbackground: url(images/icons/refresh.svg) no-repeat center center;\n\tbackground-size: auto 14px;\n\tfilter: var(--menu-icons-filter);\n}\n.block.details button.active{\n\tbackground-color: var(--background-color-active);\n\tcolor: var(--text-color-active);\n}\n.details-content{\n\theight: 206px;\n\toverflow-y: auto;\n}\n\n@media screen and (max-width:700px){\n\tbody{\n\t\tpadding-top:50px;\n\t}\n\t.wrapper{\n\t\ttop: 50px;\n\t}\n\t.sidebar_left{\n\t\tposition: absolute;\n\t\tleft: -90px;\n\t\tbackground: var(--background);\n\t}\n\t.sidebar_left.active{\n\t\tbox-shadow: -5px 0px 10px 0px rgba(0,0,0,0.75);\n\t\tleft: 0;\n\t\tz-index: 3;\n\t}\n\t.sidebar_right{\n\t\tposition: absolute;\n\t\theight: 100%;\n\t\tright: -210px;\n\t\tbackground: var(--background);\n\t}\n\t.sidebar_right.active{\n\t\tbox-shadow: -5px 0px 10px 0px rgba(0,0,0,0.75);\n\t\tright: 0;\n\t\tmargin-right: 0;\n\t}\n}\n\n/* ========== content ======================================================= */\n\n.ruler_left{\n\tdisplay: none;\n\tposition: absolute;\n\tleft:0;\n\ttop: 20px;\n\tbackground-color: #ccc;\n}\n.ruler_top{\n\tdisplay: none;\n\tposition: absolute;\n\tleft: 20px;\n\ttop:0;\n\tbackground-color: #ccc;\n}\n.middle_area{\n\tposition: relative;\n\t-ms-grid-row: 2;\n\t-ms-grid-column: 2;\n\tgrid-area: main;\n}\n.main_wrapper{\n\tposition:absolute;\n\ttop:0;\n\tright:0;\n\tbottom:0;\n\tleft:0;\n\toverflow: hidden;\n\tdisplay: flex;\n\tjustify-content: center;\n\talign-items: center;\n}\n.middle_area.has-ruler .main_wrapper{\n\ttop: 20px;\n\tleft: 20px;\n}\n.canvas_wrapper{\n\tposition:relative;\n}\n.canvas_wrapper canvas{\n\tposition: absolute;\n\tbox-sizing: content-box;\n\tfont-kerning: normal !important;\n}\n.loaded .canvas_wrapper canvas{\n\tborder: 1px solid var(--border-color);\n}\n#mouse{\n\tposition:absolute;\n\tpointer-events:none;\n\twidth:10px;\n\theight:10px;\n\tz-index:10;\n}\n#mouse.rect{\n\tborder:1px solid rgba(0,0,0,0.5);\n}\n#mouse.circle{\n\tborder:1px solid rgba(0,0,0,0.5);\n\tborder-radius:50%;\n}\n.transparent-grid{\n\twidth: 100%;\n\theight: 100%;\n\tposition: absolute;\n\tpointer-events: none;\n\t/*background: url(images/icons/grid.png) repeat top left;*/\n\tbackground: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAQElEQVQ4T2N89+7dfwYigKCgIBGqGBgYRw3EGU6jYYgzaIZAsvn//z9ROeX9+/fE5ZRRA3GG02gY4s4pgz7ZAAAnSWvHPkHXaAAAAABJRU5ErkJggg==') repeat top left;\n\tz-index:1;\n\timage-rendering: pixelated; /* disable antialiasing */\n}\n.transparent-grid.white{\n\tbackground:white;\n}\n.transparent-grid.green{\n\tbackground: #5be471;\n}\n.transparent-grid.grey{\n\tbackground: #dfdfdf;\n}\ncanvas{\n\tposition:relative;\n\tz-index:2;\n}\n#canvas_back{\n\tposition: absolute;\n\tbackground-color:#ffffff;\n\toutline: none;\n}\n#canvas_grid{\n\tpointer-events:none;\n}\n.group{\n\tborder:1px solid #999999;\n\tmargin: 5px 0px 5px 0px;\n\tpadding:5px 8px;\n}\n.flex-container{\n\tdisplay: flex;\n\tflex-wrap: wrap;\n}\n.flex-container .item{\n\tflex: auto;\n\tmargin: 2px 0;\n\twidth: 150px;\n}\n.flex-container .item:empty{\n\theight: 0;\n\tborder: none;\n}\n/* Colors panel toggle icons: white, not the pressed-state cyan\n   (setting the active-text var whitens both the icon and its underline) */\n#toggle_color_picker_section_button,\n#toggle_color_channels_section_button,\n#toggle_color_swatches_section_button{\n\t--button-text-color-active: var(--text-color);\n\tcolor: var(--text-color);\n}\n\n/* Error / notification popups: readable, styled like the (grape) layer panels */\n.alertify-notifier{\n\tcolor: var(--text-color);\n}\n.alertify-notifier .ajs-message{\n\tbackground: var(--block-background-color) !important;\n\tcolor: var(--text-color) !important;\n\tborder: 1px solid var(--border-color);\n\tborder-radius: 4px;\n\tbox-shadow: 0 3px 12px rgba(0, 0, 0, 0.5);\n\ttext-shadow: none;\n}\n.alertify-notifier .ajs-message.ajs-error{\n\tbackground: var(--block-background-color) !important;\n\tborder-left: 4px solid var(--text-color-red);\n}\n.alertify-notifier .ajs-message.ajs-success{\n\tbackground: var(--block-background-color) !important;\n\tborder-left: 4px solid var(--text-color-green);\n}\n.alertify-notifier .ajs-message.ajs-warning{\n\tbackground: var(--block-background-color) !important;\n\tborder-left: 4px solid var(--text-color-blue);\n}\n.effectsPreview{\n\tcursor: pointer;\n\tbackground-color: #ddd;\n}\n\n@media screen and (max-width:550px){\n\t.canvas_wrapper{\n\t\tmargin-left: 0px;\n\t}\n}\n@media screen and (max-height: 690px){\n\t.sidebar_left{\n\t\twidth: 75px;\n\t}\n}\n@media screen and (max-height:450px){\n\t.sidebar_left{\n\t\twidth: 88px;\n\t}\n}\n\n/* ========== dialogs ======================================================= */\n\n#dialog_color_picker_group {\n\twidth: 60%;\n}\n#dialog_color_channel_group {\n\twidth: 40%;\n\tmargin-left: 1rem;\n}\n\n@media screen and (max-width: 450px) {\n\t#dialog_color_picker .ui_flex_group {\n\t\tflex-wrap: wrap;\n\t}\n\t#dialog_color_picker_group {\n\t\twidth: 100%;\n\t}\n\t#dialog_color_channel_group {\n\t\twidth: 100%;\n\t\tmargin-left: 0;\n\t\tmargin-top: 1rem;\n\t}\n}"],"sourceRoot":""}]);
+___CSS_LOADER_EXPORT___.push([module.id, ".wrapper{\n\tdisplay: -ms-grid;\n\tdisplay: grid;\n\tmargin: 0;\n\tposition: fixed; /* dont change it, vh does not work on mobiles with bottom footer */\n\ttop: 30px;\n\tright: 0;\n\tleft: 0;\n\tbottom: 5px;\n\theight: auto;\n\toverflow: hidden;\n\n\t-ms-grid-rows: auto 1fr;\n\tgrid-template-rows: auto 1fr;\n\t-ms-grid-columns: auto 1fr auto;\n\tgrid-template-columns: auto 1fr auto;\n\n\tgrid-template-areas:\n\t\t\"submenu submenu submenu\"\n\t\t\"sidebar_left main sidebar_right\";\n}\n.trn{}\n.toggle{\n\tcursor: pointer;\n}\n.hidden{\n\tdisplay:none;\n}\n.center{\n\ttext-align: center;\n}\n.pointer{\n\tcursor: pointer;\n}\n.clear{\n\tclear:both;\n}\n.displayBlock{\n\tdisplay: block;\n}\n.bold{\n\tfont-weight: bold;\n}\n.left{\n\tfloat: left;\n}\n.right{\n\tfloat: right;\n}\n.grey{\n\tcolor:grey;\n}\n.noselect {\n\t-webkit-touch-callout: none; /* iOS Safari */\n    -webkit-user-select: none; /* Safari */\n\t-khtml-user-select: none; /* Konqueror HTML */\n\t-moz-user-select: none; /* Firefox */\n\t-ms-user-select: none; /* Internet Explorer/Edge */\n\tuser-select: none; /* Non-prefixed version */\n}\n.block{\n\tposition: relative;\n\tbackground-color: rgba(255, 255, 255, 0.2);\n\tbackground-color: var(--block-background-color);\n\tborder: 1px solid rgba(0, 0, 0, 0.5);\n\tborder: 1px solid var(--border-color);\n\tmargin-bottom: 10px;\n\tuser-select: none;\n\tborder-radius: 4px;\n}\n.sidebar_right .block{\n\tbackground-color: #68727b;\n\tbackground-color: var(--block-background-color);\n\tborder-bottom: none;\n\tbox-shadow: 0 -2px 0 0 var(--header-background-color) inset;\n}\n.block:last-child{\n\tmargin-bottom: 0;\n}\n.block h2{\n\tposition: relative;\n\tpadding: 2px 5px 2px 6px;\n\tmargin: 0;\n\tfont-size: 110%;\n\tbackground-color: rgba(255, 255, 255, 0.3);\n\tbackground-color: var(--header-background-color);\n\tborder-bottom: #555;\n\tborder-radius: 4px 4px 0 0;\n}\n.block.toggled h2, .block h2.toggled:after{\n\tborder: none;\n}\n.block h2.toggle:before{\n\t/* icon */\n\tposition:absolute;\n\tcontent:'';\n\twidth: 0;\n\theight: 0;\n\tright: 10px;\n\ttop: 10px;\n\tborder-style: solid;\n\tborder-width: 0 4px 5px 4px;\n\tborder-color: transparent transparent var(--text-color-muted) transparent;\n}\n.block h2.toggled:before{\n\t/* icon */\n\tborder-width: 5px 4px 0 4px;\n\tborder-color: var(--text-color-muted) transparent transparent transparent;\n}\n.block .content{\n\tpadding: 7.5px 5px;\n}\n.block_section {\n    margin: .75rem 0;\n}\n.block_section:first-child {\n    margin-top: 0;\n}\n.block_section:last-child {\n    margin-bottom: 0;\n}\n.error{\n\tpadding:20px;\n\tmargin:10px;\n\tborder:1px solid #ff0000;\n\tbackground-color:#ffffff;\n\twidth:500px;\n\tfont-weight:bold;\n}\n\n/* color chooser */\nbody .sp-replacer{\n\twidth: 100%;\n\theight: 40px;\n}\nbody .sp-preview{\n\twidth: calc(100% - 20px);\n\theight: 100%;\n}\n\n/* ========== header ======================================================== */\n\n.logo{\n\tdisplay: inline-block;\n\theight: 30px;\n\twhite-space: nowrap;\n\tpadding: 5px;\n\tmargin: 5px;\n\t/* responsive: scales with the viewport, bounded to fit the header */\n\tfont-size: clamp(15px, 1.4vw, 18px);\n\tline-height: 1;\n\ttext-decoration: none;\n\tfont-weight: bold;\n\tcolor: #ffffff;\n\tcolor: var(--text-color);\n}\n.logo_ch{\n\t/* each letter is independently bob-able (LFO) via JS transforms */\n\tdisplay: inline-block;\n\twill-change: transform;\n}\n.logo_l{\n\t/* the finger-L hand stands in for the \"l\" in loser; em-sized so it scales\n\t   with the text, vertical-align tuned to sit centered on the text */\n\tdisplay: inline-block;\n\twidth: 1.15em;\n\theight: 1.15em;\n\tmargin: 0 0.03em;\n\tvertical-align: -0.26em;\n\tbackground: url('images/logo.png') no-repeat center center;\n\tbackground-size: contain;\n\timage-rendering: pixelated;\n\tfilter: var(--mobile-menu-toggle-filter);\n\twill-change: transform;\n}\n/* yonce whimsy: the icon + \"oser\" fade white (top) -> petal pink (bottom) */\nbody.theme-yonce .logo_grad{\n\tbackground: linear-gradient(to bottom, #ffffff 12%, var(--yc-petal-pink) 92%);\n\t-webkit-background-clip: text;\n\tbackground-clip: text;\n\t-webkit-text-fill-color: transparent;\n\tcolor: transparent;\n}\nbody.theme-yonce .logo_l{\n\t/* fill the hand shape with the same gradient (mask by the logo alpha) */\n\tbackground: linear-gradient(to bottom, #ffffff 12%, var(--yc-petal-pink) 92%);\n\t-webkit-mask: url('images/logo.png') no-repeat center / contain;\n\tmask: url('images/logo.png') no-repeat center / contain;\n\tfilter: none;\n}\n/* smart folder toggle, sits to the right of the logo */\n.smart_folder_toggle{\n\tdisplay: inline-flex;\n\talign-items: center;\n\tjustify-content: center;\n\twidth: 26px;\n\theight: 26px;\n\tpadding: 0;\n\tmargin: 5px 0 5px 4px;\n\tvertical-align: middle;\n\tbackground-color: transparent;\n\tborder: 1px solid transparent;\n\tbox-shadow: none;\n\tborder-radius: var(--button-border-radius);\n\tcolor: var(--text-color-muted);\n\tcursor: pointer;\n}\n.smart_folder_toggle > svg{\n\tdisplay: block;\n\twidth: 16px;\n\theight: 16px;\n}\n.smart_folder_toggle:hover{\n\tbackground-color: var(--input-background-color-hover);\n\tcolor: var(--text-color);\n}\n.smart_folder_toggle[aria-pressed=\"true\"]{\n\tcolor: var(--background-color-active);\n\tborder-color: var(--border-color);\n\tbackground-color: transparent;\n}\n.smart_folder_toggle[aria-pressed=\"true\"]:hover{\n\tbackground-color: var(--input-background-color-hover);\n}\n.about-logo{\n\tmargin-left:22%;\n}\n.about-name{\n\tfont-size: 17px;\n\tfont-weight:bold;\n}\n.undo_button {\n\tdisplay: none;\n\twidth: 50px;\n\theight: 50px;\n\ttop: 0;\n\tborder: 0;\n\toutline: none;\n\tcursor: pointer;\n\tfilter: var(--mobile-menu-toggle-filter);\n\tbackground: url(images/icons/undo.svg) no-repeat center center;\n\tbackground-size: auto 25px;\n\tmargin-left: 10px;\n}\n.undo_button:hover {\n\tbackground-color: transparent;\n}\n@media screen and (max-width: 700px){\n\t.undo_button {\n\t\tdisplay: block;\n\t}\n}\n\n/* ========== sub-header ==================================================== */\n\n.submenu{\n\t-ms-grid-row: 1;\n\t-ms-grid-column: 1;\n\t-ms-grid-column-span: 3;\n\tgrid-area: submenu;\n\tdisplay: flex;\n\tflex-direction: row;\n\talign-items: center;\n\tbackground-color: rgba(255, 255, 255, 0.2);\n\tbackground-color: var(--section-background-color);\n\toverflow: hidden;\n\tmargin-bottom: 5px;\n}\n.attributes{\n\tdisplay: flex;\n\tflex-wrap: nowrap;\n\tbackground-color: var(--area-background-color);\n\twidth: calc(100% - 125px);\n\tmargin-top: 5px;\n\tmargin-bottom: 5px !important;\n\tpadding: 3px 10px 3px 10px;\n\tborder: 0;\n\toverflow-x: auto;\n\toverflow-y: hidden;\n\twhite-space: nowrap;\n\tmin-height: 30px;\n}\n.attributes .item{\n\tdisplay: inline-flex;\n\talign-items: center;\n\tmargin-right: 20px;\n}\n.attributes .item > label {\n\tmargin: 0 .5rem 0 0;\n}\n.attributes input[type=\"number\"]{\n\twidth: 60px;\n\tmargin-right: 5px;\n}\n.attributes input[type=\"color\"] {\n\tcursor: pointer;\n\tpadding: 0;\n\tborder: .2rem solid var(--input-background-color);\n\twidth: 3rem;\n}\n.attributes .item > button:not(.ui_icon_button){\n\tdisplay: inline-block;\n\tpadding: 3px 10px;\n}\n\n/* ========== left sidebar ================================================== */\n\n.sidebar_left{\n\t-ms-grid-row: 2;\n\t-ms-grid-column: 1;\n\tgrid-area: sidebar_left;\n\tdisplay: flex;\n\tflex-direction: row;\n\tflex-wrap: wrap;\n\tbackground-color: var(--section-background-color);\n\tpadding: 0 5px 5px 0;\n\tmargin-right: 5px;\n\toverflow: hidden;\n\talign-self: start;\n\twidth: 40px;\n\toverflow-y: auto;\n\tmax-height: 100%;\n}\n.sidebar_left .item{\n\tposition: relative;\n\tdisplay:block;\n\tbackground-color: var(--area-background-color);\n\theight: 25px;\n\twidth: 30px;\n\tmargin: 5px 0 0 5px;\n\toverflow: hidden;\n\tcursor: pointer;\n}\n.sidebar_left .item:after{\n\tposition: absolute;\n\tcontent: '';\n\tleft:0;\n\ttop:0;\n\tbottom:0;\n\tright:0;\n\tfilter: var(--menu-icons-filter);\n\tbackground-position: center center;\n\tbackground-repeat: no-repeat;\n\tbackground-size: 20px 20px;\n}\n.sidebar_left .item:hover{\n\tbackground-color: var(--background-color-hover);\n}\n.sidebar_left .item.active{\n\tbackground-color: var(--background-color-active);\n\tcolor: var(--text-color-active);\n}\n.sidebar_left .item.active:after{\n\tfilter: var(--menu-icons-filter-active);\n}\n\n/*\nIMPORTANT: any new icon should also must be added on /service-worker.js + its version should be updated - FEATURE DISABLED\n */\n.sidebar_left .select:after{ background-image: url('images/icons/select.svg'); }\n.sidebar_left .selection:after{ background-image: url('images/icons/selection.svg'); }\n.sidebar_left .brush:after{ background-image: url('images/icons/brush.svg'); }\n.sidebar_left .pencil:after{ background-image: url('images/icons/pencil.svg'); }\n.sidebar_left .pick_color:after{ background-image: url('images/icons/pick_color.svg'); }\n.sidebar_left .erase:after{ background-image: url('images/icons/erase.svg'); }\n.sidebar_left .magic_erase:after{ background-image: url('images/icons/magic_erase.svg'); }\n.sidebar_left .fill:after{ background-image: url('images/icons/fill.svg'); }\n.sidebar_left .media:after{ background-image: url('images/icons/media.svg'); }\n.sidebar_left .shape:after{ background-image: url('images/icons/shape.svg'); }\n.sidebar_left .text:after{ background-image: url('images/icons/text.svg'); background-size: 16px auto; }\n/* the gradient icon is a colour PNG, so it opts out of the invert filter -\n   but it still has to obey the theme tint (black in dark, green in green) */\n.sidebar_left .gradient:after{ background-image: url('images/icons/gradient.png'); background-size: 18px 12px; filter: var(--canvas-filter, none); }\n.sidebar_left .clone:after{ background-image: url('images/icons/clone.svg'); }\n.sidebar_left .crop:after{ background-image: url('images/icons/crop.svg'); }\n.sidebar_left .blur:after{ background-image: url('images/icons/blur.svg'); }\n.sidebar_left .sharpen:after{ background-image: url('images/icons/sharpen.svg'); }\n.sidebar_left .desaturate:after{ background-image: url('images/icons/desaturate.svg'); }\n.sidebar_left .bulge_pinch:after{ background-image: url('images/icons/bulge_pinch.svg'); }\n.sidebar_left .animation:after{ background-image: url('images/icons/animation.svg'); }\n\n@media screen and (max-width:550px){\n\t#sidebar_left{\n\t\tleft: -110px;\n\t}\n}\n\n/* ========== right sidebar ================================================= */\n\n.sidebar_right{\n\t-ms-grid-row: 2;\n\t-ms-grid-column: 3;\n\tgrid-area: sidebar_right;\n\tz-index: 2;\n\tdisplay: flex;\n\tflex-direction: column;\n\ttransition: 0.2s;\n\toverflow-x: hidden;\n\toverflow-y: scroll;\n\tmargin: 0 5px;\n\twidth: 200px;\n}\n.sidebar_right.active{\n\tright: 0 !important;\n}\n.sidebar_right .block.layers:last-child{\n\tflex: 1;\n}\n\n/* ---------- sidebar panels: pin + reorder ---------- */\n\n.sidebar_right .block.pinned{\n\tposition: -webkit-sticky;\n\tposition: sticky;\n\ttop: 0;\n}\n.sidebar_right .block.pinned > h2{\n\tbox-shadow: 0 1px 0 0 var(--border-color);\n}\n.sidebar_right .block.dragging{\n\topacity: 0.5;\n}\n.block h2.panel_header{\n\tpadding-right: 80px;\n\tcursor: pointer;\n\twhite-space: nowrap;\n\toverflow: hidden;\n\ttext-overflow: ellipsis;\n}\n.block h2.panel_header.toggle:before{\n\t/* collapse arrow sits left of the panel controls */\n\tright: 68px;\n}\n.panel_controls{\n\tposition: absolute;\n\ttop: 0;\n\tright: 2px;\n\theight: 100%;\n\tdisplay: flex;\n\talign-items: center;\n}\n.panel_control{\n\tdisplay: flex;\n\talign-items: center;\n\tjustify-content: center;\n\twidth: 16px;\n\theight: 16px;\n\tpadding: 0;\n\tmargin: 0;\n\tborder: none;\n\tborder-radius: 3px;\n\tbackground: none;\n\tcolor: var(--text-color-muted);\n\tfont-size: 13px;\n\tline-height: 1;\n\tcursor: pointer;\n}\n.panel_control:hover{\n\tbackground-color: rgba(255, 255, 255, 0.18);\n\tcolor: var(--text-color);\n}\n.panel_control:focus-visible{\n\toutline: 1px solid var(--text-color);\n\toutline-offset: -1px;\n}\n.panel_control[disabled]{\n\topacity: 0.25;\n\tcursor: default;\n\tbackground: none;\n}\n.panel_pin[aria-pressed=\"true\"]{\n\tcolor: #00b8b8;\n\tbackground-color: rgba(0, 184, 184, 0.15);\n}\n.panel_drag_handle{\n\tcursor: grab;\n}\n.block.dragging .panel_drag_handle{\n\tcursor: grabbing;\n}\n\n/* ---------- voxel panel ---------- */\n\n.voxel_preview_wrapper{\n\tdisplay: flex;\n\tjustify-content: center;\n\tmargin-bottom: 6px;\n\tbackground-color: rgba(0, 0, 0, 0.25);\n\tborder-radius: 3px;\n}\n#canvas_voxel{\n\timage-rendering: pixelated;\n\tcursor: default;\n}\n.voxel_controls .details{\n\tdisplay: flex;\n\talign-items: center;\n\tgap: 3px;\n\tmargin-bottom: 4px;\n}\n.voxel_controls button{\n\tmargin: 0;\n}\n.voxel_axes{\n\tmargin-bottom: 4px;\n}\n.voxel_axes .voxel_axis{\n\tflex: 1;\n\tfont-size: 90%;\n\tpadding: 2px 0;\n}\n.voxel_axes .voxel_axis[aria-pressed=\"true\"]{\n\tbackground-color: #00b8b8;\n\tcolor: #ffffff;\n}\n.voxel_slice_row{\n\tjustify-content: space-between;\n}\n.voxel_slice_label{\n\tflex: 1;\n\ttext-align: center;\n\tfont-size: 90%;\n\tcolor: var(--text-color-muted);\n}\n#voxel_slice_range{\n\twidth: 100%;\n}\n.voxel_onion_row{\n\tmargin-top: 4px;\n}\n#voxel_onion.active{\n\tbackground-color: #00b8b8;\n\tcolor: #ffffff;\n}\n\n/* ---------- palette panel ---------- */\n\n.palette_colors{\n\tdisplay: flex;\n\tflex-wrap: wrap;\n\tgap: 2px;\n}\n.palette_color{\n\twidth: 20px;\n\theight: 20px;\n\tpadding: 0;\n\tmargin: 0;\n\tborder: 1px solid rgba(0, 0, 0, 0.55);\n\tborder-radius: 2px;\n\tcursor: pointer;\n}\n.palette_color:hover{\n\ttransform: scale(1.15);\n}\n.palette_color.active{\n\toutline: 2px solid #ffffff;\n\toutline-offset: -3px;\n\tbox-shadow: 0 0 0 1px #000000;\n}\n.palette_meta{\n\tfont-size: 90%;\n}\n.palette .details button{\n\tmargin: 0 3px 0 0;\n}\n#palette_select{\n\twidth: 100%;\n}\n.sidebar_right .block.layers .content{\n\tpadding-bottom: 25px;\n}\n\n/* middle mouse button drag panning */\nbody.panning,\nbody.panning #main_wrapper,\nbody.panning #canvas_minipaint{\n\tcursor: grabbing !important;\n}\nbody.panning{\n\t/* no text selection while dragging the canvas around */\n\tuser-select: none;\n\t-webkit-user-select: none;\n}\n\n/* preview */\n.canvas_preview_wrapper{\n\tdisplay: flex;\n\tjustify-content: center;\n\talign-items: center;\n\tmargin: 5px 5px 10px 5px;\n}\n.canvas_preview_inner{\n\tposition: relative;\n\tline-height: 0;\n\twidth: 176px;\n\theight: 176px;\n}\n.canvas_preview_details{\n\tpadding: 0 5px;\n}\n.canvas_preview_details button{\n\tmargin: 0;\n}\n.preview canvas{\n\tcursor: pointer;\n}\n.details input{\n\tpadding: 5px 10px;\n}\n\n/* color */\n.color_area{\n\tborder: 1px solid #444;\n\twidth: calc(100% - 10px);\n\theight: 40px;\n\tcursor: pointer;\n\tmargin: 5px;\n}\n\n/* layers */\n.layers_list{\n\tmargin-top: 10px;\n}\n.layers_arrow{\n\tdisplay:inline-block;\n\tfloat:right;\n\tmargin-left:5px;\n\tpadding:1px 8px;\n\tborder:1px solid #444;\n\tborder-color: var(--border-color);\n\ttext-decoration:none;\n\tcolor:var(--text-color);\n\tfont-size: 14px;\n}\n.layer_add{\n\tdisplay:inline-block;\n\tpadding:1px 8px;\n\tmargin-right: 10px;\n\tbackground-color: #419147;\n\tbackground-color: var(--input-background-color);\n\tborder:1px solid #444;\n\tborder-color: var(--input-border-color);\n\tcolor: var(--input-text-color);\n\tcursor:pointer;\n\ttext-decoration:none;\n\tfont-size: 18px;\n\tfont-weight: bold;\n}\n/* Layers header buttons (D, R, move arrows) match the themed input fields too */\n.layer_duplicate, .layer_raster, .layers_arrow{\n\tbackground-color: var(--input-background-color);\n\tcolor: var(--input-text-color);\n\tborder-color: var(--input-border-color);\n}\n/* Shared hover for all these control buttons (preview zoom + layer buttons) */\n.layer_add:hover, .layer_duplicate:hover, .layer_raster:hover, .layers_arrow:hover{\n\tbackground-color: var(--input-background-color-hover);\n}\n.layers_list .item{\n\tmargin-bottom:2px;\n\tdisplay: flex;\n\tflex-wrap: wrap;\n\talign-items: center;\n}\n.layers_list .item > .clear{\n\tdisplay: none;\n}\n.layers_list .layer_name{\n\tdisplay:block;\n\tpadding:1px 5px 3px 5px;\n\t/* flex-basis 0 so a long name never pushes the icons/delete onto new lines;\n\t   it grows to fill the row and truncates with the ellipsis below. */\n\tflex: 1 1 0;\n\tmin-width: 0;\n\ttext-align: left;\n\toverflow:hidden;\n\ttext-overflow: ellipsis;\n\tbackground-color:#989898;\n\tbackground-color: var(--input-background-color);\n\tborder:1px solid #393939;\n\tborder-color: var(--input-border-color);\n\tborder-radius:3px;\n\tcursor:pointer;\n\tfont-size: 18px;\n\tfont-weight: bold;\n\tline-height: 1.4;\n\tcolor:var(--text-color);\n\twhite-space: nowrap;\n}\n.layers_list .item.shorter .layer_name{\n\twidth: auto;\n}\n.layers_list .item.active .layer_name{\n\tbackground-color: var(--input-background-color-hover);\n\tborder-color: var(--border-color);\n\tcolor: var(--input-text-color);\n}\n.layers_list .arrow_down{\n\tposition: relative;\n\tfloat:left;\n\tmargin-right: 5px;\n\twidth:10px;\n\theight:19px;\n\topacity: 0.4;\n}\n.layers_list .arrow_down:after{\n\tposition: absolute;\n\tcontent: '';\n\tleft:0;\n\ttop:0;\n\tbottom:0;\n\tright:0;\n\tfilter: var(--menu-icons-filter);\n\tbackground: url('images/icons/arrow-down.svg') no-repeat center center;\n\tbackground-size: 12px auto;\n}\n.layers_list .visibility{\n\tposition: relative;\n\tfloat:left;\n\tcursor:pointer;\n\tpadding:0px 3px 0px 3px;\n\tmargin-right: 5px;\n\twidth:20px;\n\theight:19px;\n\topacity:0.1;\n\tborder: none;\n\tbackground: transparent;\n\tbox-shadow: none;\n}\n.layers_list .visibility:after{\n\tposition: absolute;\n\tcontent: '';\n\tleft:0;\n\ttop:0;\n\tbottom:0;\n\tright:0;\n\tfilter: var(--menu-icons-filter);\n\tbackground: url('images/icons/view.svg') no-repeat center center;\n\tbackground-size: 18px auto;\n}\n.layers_list .visible{ opacity:0.4; }\n.layers_list .delete{\n\tfloat:right;\n\torder: 1;\n\tcursor:pointer;\n\tpadding:0px 3px 0px 3px;\n\twidth:12px;\n\theight:19px;\n\tmargin-left: 5px;\n\t/* delete \"x\" tinted to the tool-selection color via alpha mask */\n\tbackground-color: var(--background-color-active);\n\t-webkit-mask: url(images/icons/delete.svg) no-repeat center / 10px 10px;\n\tmask: url(images/icons/delete.svg) no-repeat center / 10px 10px;\n\tborder: none;\n\tbox-shadow: none;\n}\n/* shared right-click context menu (layers panel, logo hand) */\n.context_menu{\n\tposition: fixed;\n\tz-index: 9999;\n\tmin-width: 140px;\n\tbackground-color: var(--menu-background-color);\n\tborder: 1px solid var(--border-color);\n\tborder-radius: 4px;\n\tbox-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);\n\tpadding: 4px 0;\n}\n.context_menu .context_menu_item{\n\tdisplay: block;\n\twidth: 100%;\n\ttext-align: left;\n\tbackground: transparent;\n\tborder: none;\n\tbox-shadow: none;\n\tborder-radius: 0;\n\tcolor: var(--menu-text-color);\n\tpadding: 6px 16px;\n\tfont-size: 14px;\n\tfont-weight: normal;\n\twhite-space: nowrap;\n\tcursor: pointer;\n}\n.context_menu .context_menu_item:hover{\n\tbackground-color: var(--background-color-active);\n\tcolor: var(--text-color-active);\n}\n.context_menu .context_menu_divider{\n\theight: 1px;\n\tmargin: 4px 0;\n\tbackground-color: var(--border-color);\n\topacity: 0.5;\n}\n\n/* icon licence dialog */\n/* the popup is a fixed 500px, so the facts get the full width and the\n   artwork sits in a header row rather than stealing a column */\n.icon_license_head{\n\tdisplay: flex;\n\tgap: 14px;\n\talign-items: center;\n\tmargin-bottom: 14px;\n}\n.icon_license_art{\n\tflex: 0 0 auto;\n\twidth: 64px;\n\theight: 64px;\n\tborder-radius: 10px;\n}\n.icon_license_attribution{\n\tmargin: 0;\n\tfont-size: 17px;\n\tfont-weight: bold;\n\tline-height: 1.35;\n\tcolor: var(--text-color);\n}\n.icon_license_facts{\n\tdisplay: grid;\n\tgrid-template-columns: max-content 1fr;\n\tgap: 6px 14px;\n\tmargin: 0 0 12px;\n}\n.icon_license_facts dt{\n\tcolor: var(--text-color-soft, var(--text-color));\n\topacity: 0.75;\n\tfont-size: 14px;\n}\n.icon_license_facts dd{\n\tmargin: 0;\n\tfont-size: 14px;\n\tcolor: var(--text-color);\n}\n.icon_license_muted{\n\topacity: 0.7;\n}\n.icon_license_note{\n\tmargin: 0;\n\tfont-size: 13px;\n\tline-height: 1.5;\n\topacity: 0.85;\n\tborder-top: 1px solid var(--border-color);\n\tpadding-top: 10px;\n}\n\n/* filters */\n.layers_list .filters{\n\tmargin-bottom: 5px;\n\torder: 2;\n\tflex: 0 0 100%;\n}\n.layers_list .filter{\n\tmargin-bottom: 2px;\n\tmargin-left: 30px;\n\topacity: 0.7;\n}\n.layers_list .filter .layer_name{\n\tposition: relative;\n}\n.layers_list .filter .layer_name:after{\n\tposition:absolute;\n\tcontent:\"fx\";\n\tright: -4px;\n\ttop:1px;\n\tbottom:0;\n\twidth: 20px;\n}\n.sidebar_right .label{\n\tdisplay: inline-block;\n}\n.info .toggle.toggled{\n\tmargin-bottom: -3px;\n}\n.block.details .row{\n\tclear:both;\n\tmargin-bottom: 4px;\n\tmin-height: 23px;\n}\n.block.details input[type=\"number\"]{\n\twidth: 70px;\n\tpadding: 3px 5px;\n\tfloat: right;\n}\n.block.details .ui_color_input{\n\twidth: 70px;\n\tfloat: right;\n}\n.block.details .ui_color_input input{\n\twidth: 100%;\n\theight: 23px;\n}\n.block.details button.ui_toggle_button{\n\twidth: 90px;\n\tfloat: right;\n}\n.block.details select{\n\twidth: calc(100% - 70px);\n\theight: 23px;\n\tfloat: right;\n}\n.block.details button{\n\twidth: calc(100% - 70px);\n\theight: 23px;\n\tborder: 1px solid #444;\n}\n.block.details button.reset{\n\tposition: relative;\n\twidth: 25px;\n\tfloat: right;\n\tmargin-right: 3px;\n\toverflow: hidden;\n\topacity: 0.5;\n\tcolor: transparent;\n}\n.block.details button.reset:after{\n\tposition: absolute;\n\tcontent: '';\n\tleft:0;\n\ttop:0;\n\tbottom:0;\n\tright:0;\n\tbackground: url(images/icons/refresh.svg) no-repeat center center;\n\tbackground-size: auto 14px;\n\tfilter: var(--menu-icons-filter);\n}\n.block.details button.active{\n\tbackground-color: var(--background-color-active);\n\tcolor: var(--text-color-active);\n}\n.details-content{\n\theight: 206px;\n\toverflow-y: auto;\n}\n\n@media screen and (max-width:700px){\n\tbody{\n\t\tpadding-top:50px;\n\t}\n\t.wrapper{\n\t\ttop: 50px;\n\t}\n\t.sidebar_left{\n\t\tposition: absolute;\n\t\tleft: -90px;\n\t\tbackground: var(--background);\n\t}\n\t.sidebar_left.active{\n\t\tbox-shadow: -5px 0px 10px 0px rgba(0,0,0,0.75);\n\t\tleft: 0;\n\t\tz-index: 3;\n\t}\n\t.sidebar_right{\n\t\tposition: absolute;\n\t\theight: 100%;\n\t\tright: -210px;\n\t\tbackground: var(--background);\n\t}\n\t.sidebar_right.active{\n\t\tbox-shadow: -5px 0px 10px 0px rgba(0,0,0,0.75);\n\t\tright: 0;\n\t\tmargin-right: 0;\n\t}\n}\n\n/* ========== content ======================================================= */\n\n.ruler_left{\n\tdisplay: none;\n\tposition: absolute;\n\tleft:0;\n\ttop: 20px;\n\tbackground-color: #ccc;\n}\n.ruler_top{\n\tdisplay: none;\n\tposition: absolute;\n\tleft: 20px;\n\ttop:0;\n\tbackground-color: #ccc;\n}\n.middle_area{\n\tposition: relative;\n\t-ms-grid-row: 2;\n\t-ms-grid-column: 2;\n\tgrid-area: main;\n}\n.main_wrapper{\n\tposition:absolute;\n\ttop:0;\n\tright:0;\n\tbottom:0;\n\tleft:0;\n\toverflow: hidden;\n\tdisplay: flex;\n\tjustify-content: center;\n\talign-items: center;\n}\n.middle_area.has-ruler .main_wrapper{\n\ttop: 20px;\n\tleft: 20px;\n}\n.canvas_wrapper{\n\tposition:relative;\n}\n.canvas_wrapper canvas{\n\tposition: absolute;\n\tbox-sizing: content-box;\n\tfont-kerning: normal !important;\n}\n.loaded .canvas_wrapper canvas{\n\tborder: 1px solid var(--border-color);\n}\n#mouse{\n\tposition:absolute;\n\tpointer-events:none;\n\twidth:10px;\n\theight:10px;\n\tz-index:10;\n}\n#mouse.rect{\n\tborder:1px solid rgba(0,0,0,0.5);\n}\n#mouse.circle{\n\tborder:1px solid rgba(0,0,0,0.5);\n\tborder-radius:50%;\n}\n.transparent-grid{\n\twidth: 100%;\n\theight: 100%;\n\tposition: absolute;\n\tpointer-events: none;\n\t/*background: url(images/icons/grid.png) repeat top left;*/\n\tbackground: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAQElEQVQ4T2N89+7dfwYigKCgIBGqGBgYRw3EGU6jYYgzaIZAsvn//z9ROeX9+/fE5ZRRA3GG02gY4s4pgz7ZAAAnSWvHPkHXaAAAAABJRU5ErkJggg==') repeat top left;\n\tz-index:1;\n\timage-rendering: pixelated; /* disable antialiasing */\n}\n.transparent-grid.white{\n\tbackground:white;\n}\n.transparent-grid.green{\n\tbackground: #5be471;\n}\n.transparent-grid.grey{\n\tbackground: #dfdfdf;\n}\ncanvas{\n\tposition:relative;\n\tz-index:2;\n}\n#canvas_back{\n\tposition: absolute;\n\tbackground-color:#ffffff;\n\toutline: none;\n}\n#canvas_grid{\n\tpointer-events:none;\n}\n.group{\n\tborder:1px solid #999999;\n\tmargin: 5px 0px 5px 0px;\n\tpadding:5px 8px;\n}\n.flex-container{\n\tdisplay: flex;\n\tflex-wrap: wrap;\n}\n.flex-container .item{\n\tflex: auto;\n\tmargin: 2px 0;\n\twidth: 150px;\n}\n.flex-container .item:empty{\n\theight: 0;\n\tborder: none;\n}\n/* Colors panel toggle icons: white, not the pressed-state cyan\n   (setting the active-text var whitens both the icon and its underline) */\n#toggle_color_picker_section_button,\n#toggle_color_channels_section_button,\n#toggle_color_swatches_section_button{\n\t--button-text-color-active: var(--text-color);\n\tcolor: var(--text-color);\n}\n\n/* Error / notification popups: readable, styled like the (grape) layer panels */\n.alertify-notifier{\n\tcolor: var(--text-color);\n}\n.alertify-notifier .ajs-message{\n\tbackground: var(--block-background-color) !important;\n\tcolor: var(--text-color) !important;\n\tborder: 1px solid var(--border-color);\n\tborder-radius: 4px;\n\tbox-shadow: 0 3px 12px rgba(0, 0, 0, 0.5);\n\ttext-shadow: none;\n}\n.alertify-notifier .ajs-message.ajs-error{\n\tbackground: var(--block-background-color) !important;\n\tborder-left: 4px solid var(--text-color-red);\n}\n.alertify-notifier .ajs-message.ajs-success{\n\tbackground: var(--block-background-color) !important;\n\tborder-left: 4px solid var(--text-color-green);\n}\n.alertify-notifier .ajs-message.ajs-warning{\n\tbackground: var(--block-background-color) !important;\n\tborder-left: 4px solid var(--text-color-blue);\n}\n.effectsPreview{\n\tcursor: pointer;\n\tbackground-color: #ddd;\n}\n\n@media screen and (max-width:550px){\n\t.canvas_wrapper{\n\t\tmargin-left: 0px;\n\t}\n}\n@media screen and (max-height: 690px){\n\t.sidebar_left{\n\t\twidth: 75px;\n\t}\n}\n@media screen and (max-height:450px){\n\t.sidebar_left{\n\t\twidth: 88px;\n\t}\n}\n\n/* ========== dialogs ======================================================= */\n\n#dialog_color_picker_group {\n\twidth: 60%;\n}\n#dialog_color_channel_group {\n\twidth: 40%;\n\tmargin-left: 1rem;\n}\n\n@media screen and (max-width: 450px) {\n\t#dialog_color_picker .ui_flex_group {\n\t\tflex-wrap: wrap;\n\t}\n\t#dialog_color_picker_group {\n\t\twidth: 100%;\n\t}\n\t#dialog_color_channel_group {\n\t\twidth: 100%;\n\t\tmargin-left: 0;\n\t\tmargin-top: 1rem;\n\t}\n}", "",{"version":3,"sources":["webpack://./src/css/layout.css"],"names":[],"mappings":"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CC,YAAY;AACb;AACA;CACC,gBAAgB;AACjB;;AAEA,sCAAsC;;AAEtC;CACC,aAAa;CACb,uBAAuB;CACvB,kBAAkB;CAClB,qCAAqC;CACrC,kBAAkB;AACnB;AACA;CACC,0BAA0B;CAC1B,eAAe;AAChB;AACA;CACC,aAAa;CACb,mBAAmB;CACnB,QAAQ;CACR,kBAAkB;AACnB;AACA;CACC,SAAS;AACV;AACA;CACC,kBAAkB;AACnB;AACA;CACC,OAAO;CACP,cAAc;CACd,cAAc;AACf;AACA;CACC,yBAAyB;CACzB,cAAc;AACf;AACA;CACC,8BAA8B;AAC/B;AACA;CACC,OAAO;CACP,kBAAkB;CAClB,cAAc;CACd,8BAA8B;AAC/B;AACA;CACC,WAAW;AACZ;AACA;CACC,eAAe;AAChB;AACA;CACC,yBAAyB;CACzB,cAAc;AACf;;AAEA,wCAAwC;;AAExC;CACC,aAAa;CACb,eAAe;CACf,QAAQ;AACT;AACA;CACC,WAAW;CACX,YAAY;CACZ,UAAU;CACV,SAAS;CACT,qCAAqC;CACrC,kBAAkB;CAClB,eAAe;AAChB;AACA;CACC,sBAAsB;AACvB;AACA;CACC,0BAA0B;CAC1B,oBAAoB;CACpB,6BAA6B;AAC9B;AACA;CACC,cAAc;AACf;AACA;CACC,iBAAiB;AAClB;AACA;CACC,WAAW;AACZ;AACA;CACC,oBAAoB;AACrB;;AAEA,qCAAqC;AACrC;;;CAGC,2BAA2B;AAC5B;AACA;CACC,uDAAuD;CACvD,iBAAiB;CACjB,yBAAyB;AAC1B;;AAEA,YAAY;AACZ;CACC,aAAa;CACb,uBAAuB;CACvB,mBAAmB;CACnB,wBAAwB;AACzB;AACA;CACC,kBAAkB;CAClB,cAAc;CACd,YAAY;CACZ,aAAa;AACd;AACA;CACC,cAAc;AACf;AACA;CACC,SAAS;AACV;AACA;CACC,eAAe;AAChB;AACA;CACC,iBAAiB;AAClB;;AAEA,UAAU;AACV;CACC,sBAAsB;CACtB,wBAAwB;CACxB,YAAY;CACZ,eAAe;CACf,WAAW;AACZ;;AAEA,WAAW;AACX;CACC,gBAAgB;AACjB;AACA;CACC,oB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AACA;CACC,mBAAmB;AACpB;AACA;CACC,UAAU;CACV,kBAAkB;CAClB,gBAAgB;AACjB;AACA;CACC,WAAW;CACX,gBAAgB;CAChB,YAAY;AACb;AACA;CACC,WAAW;CACX,YAAY;AACb;AACA;CACC,WAAW;CACX,YAAY;AACb;AACA;CACC,WAAW;CACX,YAAY;AACb;AACA;CACC,wBAAwB;CACxB,YAAY;CACZ,YAAY;AACb;AACA;CACC,wBAAwB;CACxB,YAAY;CACZ,sBAAsB;AACvB;AACA;CACC,kBAAkB;CAClB,WAAW;CACX,YAAY;CACZ,iBAAiB;CACjB,gBAAgB;CAChB,YAAY;CACZ,kBAAkB;AACnB;AACA;CACC,kBAAkB;CAClB,WAAW;CACX,MAAM;CACN,KAAK;CACL,QAAQ;CACR,OAAO;CACP,iEAAiE;CACjE,0BAA0B;CAC1B,gCAAgC;AACjC;AACA;CACC,gDAAgD;CAChD,+BAA+B;AAChC;AACA;CACC,aAAa;CACb,gBAAgB;AACjB;;AAEA;CACC;EACC,gBAAgB;CACjB;CACA;EACC,SAAS;CACV;CACA;EACC,kBAAkB;EAClB,WAAW;EACX,6BAA6B;CAC9B;CACA;EACC,8CAA8C;EAC9C,OAAO;EACP,UAAU;CACX;CACA;EACC,kBAAkB;EAClB,YAAY;EACZ,aAAa;EACb,6BAA6B;CAC9B;CACA;EACC,8CAA8C;EAC9C,QAAQ;EACR,eAAe;CAChB;AACD;;AAEA,+EAA+E;;AAE/E;CACC,aAAa;CACb,kBAAkB;CAClB,MAAM;CACN,SAAS;CACT,sBAAsB;AACvB;AACA;CACC,aAAa;CACb,kBAAkB;CAClB,UAAU;CACV,KAAK;CACL,sBAAsB;AACvB;AACA;CACC,kBAAkB;CAClB,eAAe;CACf,kBAAkB;CAClB,eAAe;AAChB;AACA;CACC,iBAAiB;CACjB,KAAK;CACL,OAAO;CACP,QAAQ;CACR,MAAM;CACN,gBAAgB;CAChB,aAAa;CACb,uBAAuB;CACvB,mBAAmB;AACpB;AACA;CACC,SAAS;CACT,UAAU;AACX;AACA;CACC,iBAAiB;AAClB;AACA;CACC,kBAAkB;CAClB,uBAAuB;CACvB,+BAA+B;AAChC;AACA;CACC,qCAAqC;AACtC;AACA;CACC,iBAAiB;CACjB,mBAAmB;CACnB,UAAU;CACV,WAAW;CACX,UAAU;AACX;AACA;CACC,gCAAgC;AACjC;AACA;CACC,gCAAgC;CAChC,iBAAiB;AAClB;AACA;CACC,WAAW;CACX,YAAY;CACZ,kBAAkB;CAClB,oBAAoB;CACpB,0DAA0D;CAC1D,6NAA6N;CAC7N,SAAS;CACT,0BAA0B,EAAE,yBAAyB;AACtD;AACA;CACC,gBAAgB;AACjB;AACA;CACC,mBAAmB;AACpB;AACA;CACC,mBAAmB;AACpB;AACA;CACC,iBAAiB;CACjB,SAAS;AACV;AACA;CACC,kBAAkB;CAClB,wBAAwB;CACxB,aAAa;AACd;AACA;CACC,mBAAmB;AACpB;AACA;CACC,wBAAwB;CACxB,uBAAuB;CACvB,eAAe;AAChB;AACA;CACC,aAAa;CACb,eAAe;AAChB;AACA;CACC,UAAU;CACV,aAAa;CACb,YAAY;AACb;AACA;CACC,SAAS;CACT,YAAY;AACb;AACA;0EAC0E;AAC1E;;;CAGC,6CAA6C;CAC7C,wBAAwB;AACzB;;AAEA,gFAAgF;AAChF;CACC,wBAAwB;AACzB;AACA;CACC,oDAAoD;CACpD,mCAAmC;CACnC,qCAAqC;CACrC,kBAAkB;CAClB,yCAAyC;CACzC,iBAAiB;AAClB;AACA;CACC,oDAAoD;CACpD,4CAA4C;AAC7C;AACA;CACC,oDAAoD;CACpD,8CAA8C;AAC/C;AACA;CACC,oDAAoD;CACpD,6CAA6C;AAC9C;AACA;CACC,eAAe;CACf,sBAAsB;AACvB;;AAEA;CACC;EACC,gBAAgB;CACjB;AACD;AACA;CACC;EACC,WAAW;CACZ;AACD;AACA;CACC;EACC,WAAW;CACZ;AACD;;AAEA,+EAA+E;;AAE/E;CACC,UAAU;AACX;AACA;CACC,UAAU;CACV,iBAAiB;AAClB;;AAEA;CACC;EACC,eAAe;CAChB;CACA;EACC,WAAW;CACZ;CACA;EACC,WAAW;EACX,cAAc;EACd,gBAAgB;CACjB;AACD","sourcesContent":[".wrapper{\n\tdisplay: -ms-grid;\n\tdisplay: grid;\n\tmargin: 0;\n\tposition: fixed; /* dont change it, vh does not work on mobiles with bottom footer */\n\ttop: 30px;\n\tright: 0;\n\tleft: 0;\n\tbottom: 5px;\n\theight: auto;\n\toverflow: hidden;\n\n\t-ms-grid-rows: auto 1fr;\n\tgrid-template-rows: auto 1fr;\n\t-ms-grid-columns: auto 1fr auto;\n\tgrid-template-columns: auto 1fr auto;\n\n\tgrid-template-areas:\n\t\t\"submenu submenu submenu\"\n\t\t\"sidebar_left main sidebar_right\";\n}\n.trn{}\n.toggle{\n\tcursor: pointer;\n}\n.hidden{\n\tdisplay:none;\n}\n.center{\n\ttext-align: center;\n}\n.pointer{\n\tcursor: pointer;\n}\n.clear{\n\tclear:both;\n}\n.displayBlock{\n\tdisplay: block;\n}\n.bold{\n\tfont-weight: bold;\n}\n.left{\n\tfloat: left;\n}\n.right{\n\tfloat: right;\n}\n.grey{\n\tcolor:grey;\n}\n.noselect {\n\t-webkit-touch-callout: none; /* iOS Safari */\n    -webkit-user-select: none; /* Safari */\n\t-khtml-user-select: none; /* Konqueror HTML */\n\t-moz-user-select: none; /* Firefox */\n\t-ms-user-select: none; /* Internet Explorer/Edge */\n\tuser-select: none; /* Non-prefixed version */\n}\n.block{\n\tposition: relative;\n\tbackground-color: rgba(255, 255, 255, 0.2);\n\tbackground-color: var(--block-background-color);\n\tborder: 1px solid rgba(0, 0, 0, 0.5);\n\tborder: 1px solid var(--border-color);\n\tmargin-bottom: 10px;\n\tuser-select: none;\n\tborder-radius: 4px;\n}\n.sidebar_right .block{\n\tbackground-color: #68727b;\n\tbackground-color: var(--block-background-color);\n\tborder-bottom: none;\n\tbox-shadow: 0 -2px 0 0 var(--header-background-color) inset;\n}\n.block:last-child{\n\tmargin-bottom: 0;\n}\n.block h2{\n\tposition: relative;\n\tpadding: 2px 5px 2px 6px;\n\tmargin: 0;\n\tfont-size: 110%;\n\tbackground-color: rgba(255, 255, 255, 0.3);\n\tbackground-color: var(--header-background-color);\n\tborder-bottom: #555;\n\tborder-radius: 4px 4px 0 0;\n}\n.block.toggled h2, .block h2.toggled:after{\n\tborder: none;\n}\n.block h2.toggle:before{\n\t/* icon */\n\tposition:absolute;\n\tcontent:'';\n\twidth: 0;\n\theight: 0;\n\tright: 10px;\n\ttop: 10px;\n\tborder-style: solid;\n\tborder-width: 0 4px 5px 4px;\n\tborder-color: transparent transparent var(--text-color-muted) transparent;\n}\n.block h2.toggled:before{\n\t/* icon */\n\tborder-width: 5px 4px 0 4px;\n\tborder-color: var(--text-color-muted) transparent transparent transparent;\n}\n.block .content{\n\tpadding: 7.5px 5px;\n}\n.block_section {\n    margin: .75rem 0;\n}\n.block_section:first-child {\n    margin-top: 0;\n}\n.block_section:last-child {\n    margin-bottom: 0;\n}\n.error{\n\tpadding:20px;\n\tmargin:10px;\n\tborder:1px solid #ff0000;\n\tbackground-color:#ffffff;\n\twidth:500px;\n\tfont-weight:bold;\n}\n\n/* color chooser */\nbody .sp-replacer{\n\twidth: 100%;\n\theight: 40px;\n}\nbody .sp-preview{\n\twidth: calc(100% - 20px);\n\theight: 100%;\n}\n\n/* ========== header ======================================================== */\n\n.logo{\n\tdisplay: inline-block;\n\theight: 30px;\n\twhite-space: nowrap;\n\tpadding: 5px;\n\tmargin: 5px;\n\t/* responsive: scales with the viewport, bounded to fit the header */\n\tfont-size: clamp(15px, 1.4vw, 18px);\n\tline-height: 1;\n\ttext-decoration: none;\n\tfont-weight: bold;\n\tcolor: #ffffff;\n\tcolor: var(--text-color);\n}\n.logo_ch{\n\t/* each letter is independently bob-able (LFO) via JS transforms */\n\tdisplay: inline-block;\n\twill-change: transform;\n}\n.logo_l{\n\t/* the finger-L hand stands in for the \"l\" in loser; em-sized so it scales\n\t   with the text, vertical-align tuned to sit centered on the text */\n\tdisplay: inline-block;\n\twidth: 1.15em;\n\theight: 1.15em;\n\tmargin: 0 0.03em;\n\tvertical-align: -0.26em;\n\tbackground: url('images/logo.png') no-repeat center center;\n\tbackground-size: contain;\n\timage-rendering: pixelated;\n\tfilter: var(--mobile-menu-toggle-filter);\n\twill-change: transform;\n}\n/* yonce whimsy: the icon + \"oser\" fade white (top) -> petal pink (bottom) */\nbody.theme-yonce .logo_grad{\n\tbackground: linear-gradient(to bottom, #ffffff 12%, var(--yc-petal-pink) 92%);\n\t-webkit-background-clip: text;\n\tbackground-clip: text;\n\t-webkit-text-fill-color: transparent;\n\tcolor: transparent;\n}\nbody.theme-yonce .logo_l{\n\t/* fill the hand shape with the same gradient (mask by the logo alpha) */\n\tbackground: linear-gradient(to bottom, #ffffff 12%, var(--yc-petal-pink) 92%);\n\t-webkit-mask: url('images/logo.png') no-repeat center / contain;\n\tmask: url('images/logo.png') no-repeat center / contain;\n\tfilter: none;\n}\n/* smart folder toggle, sits to the right of the logo */\n.smart_folder_toggle{\n\tdisplay: inline-flex;\n\talign-items: center;\n\tjustify-content: center;\n\twidth: 26px;\n\theight: 26px;\n\tpadding: 0;\n\tmargin: 5px 0 5px 4px;\n\tvertical-align: middle;\n\tbackground-color: transparent;\n\tborder: 1px solid transparent;\n\tbox-shadow: none;\n\tborder-radius: var(--button-border-radius);\n\tcolor: var(--text-color-muted);\n\tcursor: pointer;\n}\n.smart_folder_toggle > svg{\n\tdisplay: block;\n\twidth: 16px;\n\theight: 16px;\n}\n.smart_folder_toggle:hover{\n\tbackground-color: var(--input-background-color-hover);\n\tcolor: var(--text-color);\n}\n.smart_folder_toggle[aria-pressed=\"true\"]{\n\tcolor: var(--background-color-active);\n\tborder-color: var(--border-color);\n\tbackground-color: transparent;\n}\n.smart_folder_toggle[aria-pressed=\"true\"]:hover{\n\tbackground-color: var(--input-background-color-hover);\n}\n.about-logo{\n\tmargin-left:22%;\n}\n.about-name{\n\tfont-size: 17px;\n\tfont-weight:bold;\n}\n.undo_button {\n\tdisplay: none;\n\twidth: 50px;\n\theight: 50px;\n\ttop: 0;\n\tborder: 0;\n\toutline: none;\n\tcursor: pointer;\n\tfilter: var(--mobile-menu-toggle-filter);\n\tbackground: url(images/icons/undo.svg) no-repeat center center;\n\tbackground-size: auto 25px;\n\tmargin-left: 10px;\n}\n.undo_button:hover {\n\tbackground-color: transparent;\n}\n@media screen and (max-width: 700px){\n\t.undo_button {\n\t\tdisplay: block;\n\t}\n}\n\n/* ========== sub-header ==================================================== */\n\n.submenu{\n\t-ms-grid-row: 1;\n\t-ms-grid-column: 1;\n\t-ms-grid-column-span: 3;\n\tgrid-area: submenu;\n\tdisplay: flex;\n\tflex-direction: row;\n\talign-items: center;\n\tbackground-color: rgba(255, 255, 255, 0.2);\n\tbackground-color: var(--section-background-color);\n\toverflow: hidden;\n\tmargin-bottom: 5px;\n}\n.attributes{\n\tdisplay: flex;\n\tflex-wrap: nowrap;\n\tbackground-color: var(--area-background-color);\n\twidth: calc(100% - 125px);\n\tmargin-top: 5px;\n\tmargin-bottom: 5px !important;\n\tpadding: 3px 10px 3px 10px;\n\tborder: 0;\n\toverflow-x: auto;\n\toverflow-y: hidden;\n\twhite-space: nowrap;\n\tmin-height: 30px;\n}\n.attributes .item{\n\tdisplay: inline-flex;\n\talign-items: center;\n\tmargin-right: 20px;\n}\n.attributes .item > label {\n\tmargin: 0 .5rem 0 0;\n}\n.attributes input[type=\"number\"]{\n\twidth: 60px;\n\tmargin-right: 5px;\n}\n.attributes input[type=\"color\"] {\n\tcursor: pointer;\n\tpadding: 0;\n\tborder: .2rem solid var(--input-background-color);\n\twidth: 3rem;\n}\n.attributes .item > button:not(.ui_icon_button){\n\tdisplay: inline-block;\n\tpadding: 3px 10px;\n}\n\n/* ========== left sidebar ================================================== */\n\n.sidebar_left{\n\t-ms-grid-row: 2;\n\t-ms-grid-column: 1;\n\tgrid-area: sidebar_left;\n\tdisplay: flex;\n\tflex-direction: row;\n\tflex-wrap: wrap;\n\tbackground-color: var(--section-background-color);\n\tpadding: 0 5px 5px 0;\n\tmargin-right: 5px;\n\toverflow: hidden;\n\talign-self: start;\n\twidth: 40px;\n\toverflow-y: auto;\n\tmax-height: 100%;\n}\n.sidebar_left .item{\n\tposition: relative;\n\tdisplay:block;\n\tbackground-color: var(--area-background-color);\n\theight: 25px;\n\twidth: 30px;\n\tmargin: 5px 0 0 5px;\n\toverflow: hidden;\n\tcursor: pointer;\n}\n.sidebar_left .item:after{\n\tposition: absolute;\n\tcontent: '';\n\tleft:0;\n\ttop:0;\n\tbottom:0;\n\tright:0;\n\tfilter: var(--menu-icons-filter);\n\tbackground-position: center center;\n\tbackground-repeat: no-repeat;\n\tbackground-size: 20px 20px;\n}\n.sidebar_left .item:hover{\n\tbackground-color: var(--background-color-hover);\n}\n.sidebar_left .item.active{\n\tbackground-color: var(--background-color-active);\n\tcolor: var(--text-color-active);\n}\n.sidebar_left .item.active:after{\n\tfilter: var(--menu-icons-filter-active);\n}\n\n/*\nIMPORTANT: any new icon should also must be added on /service-worker.js + its version should be updated - FEATURE DISABLED\n */\n.sidebar_left .select:after{ background-image: url('images/icons/select.svg'); }\n.sidebar_left .selection:after{ background-image: url('images/icons/selection.svg'); }\n.sidebar_left .brush:after{ background-image: url('images/icons/brush.svg'); }\n.sidebar_left .pencil:after{ background-image: url('images/icons/pencil.svg'); }\n.sidebar_left .pick_color:after{ background-image: url('images/icons/pick_color.svg'); }\n.sidebar_left .erase:after{ background-image: url('images/icons/erase.svg'); }\n.sidebar_left .magic_erase:after{ background-image: url('images/icons/magic_erase.svg'); }\n.sidebar_left .fill:after{ background-image: url('images/icons/fill.svg'); }\n.sidebar_left .media:after{ background-image: url('images/icons/media.svg'); }\n.sidebar_left .shape:after{ background-image: url('images/icons/shape.svg'); }\n.sidebar_left .text:after{ background-image: url('images/icons/text.svg'); background-size: 16px auto; }\n/* the gradient icon is a colour PNG, so it opts out of the invert filter -\n   but it still has to obey the theme tint (black in dark, green in green) */\n.sidebar_left .gradient:after{ background-image: url('images/icons/gradient.png'); background-size: 18px 12px; filter: var(--canvas-filter, none); }\n.sidebar_left .clone:after{ background-image: url('images/icons/clone.svg'); }\n.sidebar_left .crop:after{ background-image: url('images/icons/crop.svg'); }\n.sidebar_left .blur:after{ background-image: url('images/icons/blur.svg'); }\n.sidebar_left .sharpen:after{ background-image: url('images/icons/sharpen.svg'); }\n.sidebar_left .desaturate:after{ background-image: url('images/icons/desaturate.svg'); }\n.sidebar_left .bulge_pinch:after{ background-image: url('images/icons/bulge_pinch.svg'); }\n.sidebar_left .animation:after{ background-image: url('images/icons/animation.svg'); }\n\n@media screen and (max-width:550px){\n\t#sidebar_left{\n\t\tleft: -110px;\n\t}\n}\n\n/* ========== right sidebar ================================================= */\n\n.sidebar_right{\n\t-ms-grid-row: 2;\n\t-ms-grid-column: 3;\n\tgrid-area: sidebar_right;\n\tz-index: 2;\n\tdisplay: flex;\n\tflex-direction: column;\n\ttransition: 0.2s;\n\toverflow-x: hidden;\n\toverflow-y: scroll;\n\tmargin: 0 5px;\n\twidth: 200px;\n}\n.sidebar_right.active{\n\tright: 0 !important;\n}\n.sidebar_right .block.layers:last-child{\n\tflex: 1;\n}\n\n/* ---------- sidebar panels: pin + reorder ---------- */\n\n.sidebar_right .block.pinned{\n\tposition: -webkit-sticky;\n\tposition: sticky;\n\ttop: 0;\n}\n.sidebar_right .block.pinned > h2{\n\tbox-shadow: 0 1px 0 0 var(--border-color);\n}\n.sidebar_right .block.dragging{\n\topacity: 0.5;\n}\n.block h2.panel_header{\n\tpadding-right: 80px;\n\tcursor: pointer;\n\twhite-space: nowrap;\n\toverflow: hidden;\n\ttext-overflow: ellipsis;\n}\n.block h2.panel_header.toggle:before{\n\t/* collapse arrow sits left of the panel controls */\n\tright: 68px;\n}\n.panel_controls{\n\tposition: absolute;\n\ttop: 0;\n\tright: 2px;\n\theight: 100%;\n\tdisplay: flex;\n\talign-items: center;\n}\n.panel_control{\n\tdisplay: flex;\n\talign-items: center;\n\tjustify-content: center;\n\twidth: 16px;\n\theight: 16px;\n\tpadding: 0;\n\tmargin: 0;\n\tborder: none;\n\tborder-radius: 3px;\n\tbackground: none;\n\tcolor: var(--text-color-muted);\n\tfont-size: 13px;\n\tline-height: 1;\n\tcursor: pointer;\n}\n.panel_control:hover{\n\tbackground-color: rgba(255, 255, 255, 0.18);\n\tcolor: var(--text-color);\n}\n.panel_control:focus-visible{\n\toutline: 1px solid var(--text-color);\n\toutline-offset: -1px;\n}\n.panel_control[disabled]{\n\topacity: 0.25;\n\tcursor: default;\n\tbackground: none;\n}\n.panel_pin[aria-pressed=\"true\"]{\n\tcolor: #00b8b8;\n\tbackground-color: rgba(0, 184, 184, 0.15);\n}\n.panel_drag_handle{\n\tcursor: grab;\n}\n.block.dragging .panel_drag_handle{\n\tcursor: grabbing;\n}\n\n/* ---------- voxel panel ---------- */\n\n.voxel_preview_wrapper{\n\tdisplay: flex;\n\tjustify-content: center;\n\tmargin-bottom: 6px;\n\tbackground-color: rgba(0, 0, 0, 0.25);\n\tborder-radius: 3px;\n}\n#canvas_voxel{\n\timage-rendering: pixelated;\n\tcursor: default;\n}\n.voxel_controls .details{\n\tdisplay: flex;\n\talign-items: center;\n\tgap: 3px;\n\tmargin-bottom: 4px;\n}\n.voxel_controls button{\n\tmargin: 0;\n}\n.voxel_axes{\n\tmargin-bottom: 4px;\n}\n.voxel_axes .voxel_axis{\n\tflex: 1;\n\tfont-size: 90%;\n\tpadding: 2px 0;\n}\n.voxel_axes .voxel_axis[aria-pressed=\"true\"]{\n\tbackground-color: #00b8b8;\n\tcolor: #ffffff;\n}\n.voxel_slice_row{\n\tjustify-content: space-between;\n}\n.voxel_slice_label{\n\tflex: 1;\n\ttext-align: center;\n\tfont-size: 90%;\n\tcolor: var(--text-color-muted);\n}\n#voxel_slice_range{\n\twidth: 100%;\n}\n.voxel_onion_row{\n\tmargin-top: 4px;\n}\n#voxel_onion.active{\n\tbackground-color: #00b8b8;\n\tcolor: #ffffff;\n}\n\n/* ---------- palette panel ---------- */\n\n.palette_colors{\n\tdisplay: flex;\n\tflex-wrap: wrap;\n\tgap: 2px;\n}\n.palette_color{\n\twidth: 20px;\n\theight: 20px;\n\tpadding: 0;\n\tmargin: 0;\n\tborder: 1px solid rgba(0, 0, 0, 0.55);\n\tborder-radius: 2px;\n\tcursor: pointer;\n}\n.palette_color:hover{\n\ttransform: scale(1.15);\n}\n.palette_color.active{\n\toutline: 2px solid #ffffff;\n\toutline-offset: -3px;\n\tbox-shadow: 0 0 0 1px #000000;\n}\n.palette_meta{\n\tfont-size: 90%;\n}\n.palette .details button{\n\tmargin: 0 3px 0 0;\n}\n#palette_select{\n\twidth: 100%;\n}\n.sidebar_right .block.layers .content{\n\tpadding-bottom: 25px;\n}\n\n/* middle mouse button drag panning */\nbody.panning,\nbody.panning #main_wrapper,\nbody.panning #canvas_minipaint{\n\tcursor: grabbing !important;\n}\nbody.panning{\n\t/* no text selection while dragging the canvas around */\n\tuser-select: none;\n\t-webkit-user-select: none;\n}\n\n/* preview */\n.canvas_preview_wrapper{\n\tdisplay: flex;\n\tjustify-content: center;\n\talign-items: center;\n\tmargin: 5px 5px 10px 5px;\n}\n.canvas_preview_inner{\n\tposition: relative;\n\tline-height: 0;\n\twidth: 176px;\n\theight: 176px;\n}\n.canvas_preview_details{\n\tpadding: 0 5px;\n}\n.canvas_preview_details button{\n\tmargin: 0;\n}\n.preview canvas{\n\tcursor: pointer;\n}\n.details input{\n\tpadding: 5px 10px;\n}\n\n/* color */\n.color_area{\n\tborder: 1px solid #444;\n\twidth: calc(100% - 10px);\n\theight: 40px;\n\tcursor: pointer;\n\tmargin: 5px;\n}\n\n/* layers */\n.layers_list{\n\tmargin-top: 10px;\n}\n.layers_arrow{\n\tdisplay:inline-block;\n\tfloat:right;\n\tmargin-left:5px;\n\tpadding:1px 8px;\n\tborder:1px solid #444;\n\tborder-color: var(--border-color);\n\ttext-decoration:none;\n\tcolor:var(--text-color);\n\tfont-size: 14px;\n}\n.layer_add{\n\tdisplay:inline-block;\n\tpadding:1px 8px;\n\tmargin-right: 10px;\n\tbackground-color: #419147;\n\tbackground-color: var(--input-background-color);\n\tborder:1px solid #444;\n\tborder-color: var(--input-border-color);\n\tcolor: var(--input-text-color);\n\tcursor:pointer;\n\ttext-decoration:none;\n\tfont-size: 18px;\n\tfont-weight: bold;\n}\n/* Layers header buttons (D, R, move arrows) match the themed input fields too */\n.layer_duplicate, .layer_raster, .layers_arrow{\n\tbackground-color: var(--input-background-color);\n\tcolor: var(--input-text-color);\n\tborder-color: var(--input-border-color);\n}\n/* Shared hover for all these control buttons (preview zoom + layer buttons) */\n.layer_add:hover, .layer_duplicate:hover, .layer_raster:hover, .layers_arrow:hover{\n\tbackground-color: var(--input-background-color-hover);\n}\n.layers_list .item{\n\tmargin-bottom:2px;\n\tdisplay: flex;\n\tflex-wrap: wrap;\n\talign-items: center;\n}\n.layers_list .item > .clear{\n\tdisplay: none;\n}\n.layers_list .layer_name{\n\tdisplay:block;\n\tpadding:1px 5px 3px 5px;\n\t/* flex-basis 0 so a long name never pushes the icons/delete onto new lines;\n\t   it grows to fill the row and truncates with the ellipsis below. */\n\tflex: 1 1 0;\n\tmin-width: 0;\n\ttext-align: left;\n\toverflow:hidden;\n\ttext-overflow: ellipsis;\n\tbackground-color:#989898;\n\tbackground-color: var(--input-background-color);\n\tborder:1px solid #393939;\n\tborder-color: var(--input-border-color);\n\tborder-radius:3px;\n\tcursor:pointer;\n\tfont-size: 18px;\n\tfont-weight: bold;\n\tline-height: 1.4;\n\tcolor:var(--text-color);\n\twhite-space: nowrap;\n}\n.layers_list .item.shorter .layer_name{\n\twidth: auto;\n}\n.layers_list .item.active .layer_name{\n\tbackground-color: var(--input-background-color-hover);\n\tborder-color: var(--border-color);\n\tcolor: var(--input-text-color);\n}\n.layers_list .arrow_down{\n\tposition: relative;\n\tfloat:left;\n\tmargin-right: 5px;\n\twidth:10px;\n\theight:19px;\n\topacity: 0.4;\n}\n.layers_list .arrow_down:after{\n\tposition: absolute;\n\tcontent: '';\n\tleft:0;\n\ttop:0;\n\tbottom:0;\n\tright:0;\n\tfilter: var(--menu-icons-filter);\n\tbackground: url('images/icons/arrow-down.svg') no-repeat center center;\n\tbackground-size: 12px auto;\n}\n.layers_list .visibility{\n\tposition: relative;\n\tfloat:left;\n\tcursor:pointer;\n\tpadding:0px 3px 0px 3px;\n\tmargin-right: 5px;\n\twidth:20px;\n\theight:19px;\n\topacity:0.1;\n\tborder: none;\n\tbackground: transparent;\n\tbox-shadow: none;\n}\n.layers_list .visibility:after{\n\tposition: absolute;\n\tcontent: '';\n\tleft:0;\n\ttop:0;\n\tbottom:0;\n\tright:0;\n\tfilter: var(--menu-icons-filter);\n\tbackground: url('images/icons/view.svg') no-repeat center center;\n\tbackground-size: 18px auto;\n}\n.layers_list .visible{ opacity:0.4; }\n.layers_list .delete{\n\tfloat:right;\n\torder: 1;\n\tcursor:pointer;\n\tpadding:0px 3px 0px 3px;\n\twidth:12px;\n\theight:19px;\n\tmargin-left: 5px;\n\t/* delete \"x\" tinted to the tool-selection color via alpha mask */\n\tbackground-color: var(--background-color-active);\n\t-webkit-mask: url(images/icons/delete.svg) no-repeat center / 10px 10px;\n\tmask: url(images/icons/delete.svg) no-repeat center / 10px 10px;\n\tborder: none;\n\tbox-shadow: none;\n}\n/* shared right-click context menu (layers panel, logo hand) */\n.context_menu{\n\tposition: fixed;\n\tz-index: 9999;\n\tmin-width: 140px;\n\tbackground-color: var(--menu-background-color);\n\tborder: 1px solid var(--border-color);\n\tborder-radius: 4px;\n\tbox-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);\n\tpadding: 4px 0;\n}\n.context_menu .context_menu_item{\n\tdisplay: block;\n\twidth: 100%;\n\ttext-align: left;\n\tbackground: transparent;\n\tborder: none;\n\tbox-shadow: none;\n\tborder-radius: 0;\n\tcolor: var(--menu-text-color);\n\tpadding: 6px 16px;\n\tfont-size: 14px;\n\tfont-weight: normal;\n\twhite-space: nowrap;\n\tcursor: pointer;\n}\n.context_menu .context_menu_item:hover{\n\tbackground-color: var(--background-color-active);\n\tcolor: var(--text-color-active);\n}\n.context_menu .context_menu_divider{\n\theight: 1px;\n\tmargin: 4px 0;\n\tbackground-color: var(--border-color);\n\topacity: 0.5;\n}\n\n/* icon licence dialog */\n/* the popup is a fixed 500px, so the facts get the full width and the\n   artwork sits in a header row rather than stealing a column */\n.icon_license_head{\n\tdisplay: flex;\n\tgap: 14px;\n\talign-items: center;\n\tmargin-bottom: 14px;\n}\n.icon_license_art{\n\tflex: 0 0 auto;\n\twidth: 64px;\n\theight: 64px;\n\tborder-radius: 10px;\n}\n.icon_license_attribution{\n\tmargin: 0;\n\tfont-size: 17px;\n\tfont-weight: bold;\n\tline-height: 1.35;\n\tcolor: var(--text-color);\n}\n.icon_license_facts{\n\tdisplay: grid;\n\tgrid-template-columns: max-content 1fr;\n\tgap: 6px 14px;\n\tmargin: 0 0 12px;\n}\n.icon_license_facts dt{\n\tcolor: var(--text-color-soft, var(--text-color));\n\topacity: 0.75;\n\tfont-size: 14px;\n}\n.icon_license_facts dd{\n\tmargin: 0;\n\tfont-size: 14px;\n\tcolor: var(--text-color);\n}\n.icon_license_muted{\n\topacity: 0.7;\n}\n.icon_license_note{\n\tmargin: 0;\n\tfont-size: 13px;\n\tline-height: 1.5;\n\topacity: 0.85;\n\tborder-top: 1px solid var(--border-color);\n\tpadding-top: 10px;\n}\n\n/* filters */\n.layers_list .filters{\n\tmargin-bottom: 5px;\n\torder: 2;\n\tflex: 0 0 100%;\n}\n.layers_list .filter{\n\tmargin-bottom: 2px;\n\tmargin-left: 30px;\n\topacity: 0.7;\n}\n.layers_list .filter .layer_name{\n\tposition: relative;\n}\n.layers_list .filter .layer_name:after{\n\tposition:absolute;\n\tcontent:\"fx\";\n\tright: -4px;\n\ttop:1px;\n\tbottom:0;\n\twidth: 20px;\n}\n.sidebar_right .label{\n\tdisplay: inline-block;\n}\n.info .toggle.toggled{\n\tmargin-bottom: -3px;\n}\n.block.details .row{\n\tclear:both;\n\tmargin-bottom: 4px;\n\tmin-height: 23px;\n}\n.block.details input[type=\"number\"]{\n\twidth: 70px;\n\tpadding: 3px 5px;\n\tfloat: right;\n}\n.block.details .ui_color_input{\n\twidth: 70px;\n\tfloat: right;\n}\n.block.details .ui_color_input input{\n\twidth: 100%;\n\theight: 23px;\n}\n.block.details button.ui_toggle_button{\n\twidth: 90px;\n\tfloat: right;\n}\n.block.details select{\n\twidth: calc(100% - 70px);\n\theight: 23px;\n\tfloat: right;\n}\n.block.details button{\n\twidth: calc(100% - 70px);\n\theight: 23px;\n\tborder: 1px solid #444;\n}\n.block.details button.reset{\n\tposition: relative;\n\twidth: 25px;\n\tfloat: right;\n\tmargin-right: 3px;\n\toverflow: hidden;\n\topacity: 0.5;\n\tcolor: transparent;\n}\n.block.details button.reset:after{\n\tposition: absolute;\n\tcontent: '';\n\tleft:0;\n\ttop:0;\n\tbottom:0;\n\tright:0;\n\tbackground: url(images/icons/refresh.svg) no-repeat center center;\n\tbackground-size: auto 14px;\n\tfilter: var(--menu-icons-filter);\n}\n.block.details button.active{\n\tbackground-color: var(--background-color-active);\n\tcolor: var(--text-color-active);\n}\n.details-content{\n\theight: 206px;\n\toverflow-y: auto;\n}\n\n@media screen and (max-width:700px){\n\tbody{\n\t\tpadding-top:50px;\n\t}\n\t.wrapper{\n\t\ttop: 50px;\n\t}\n\t.sidebar_left{\n\t\tposition: absolute;\n\t\tleft: -90px;\n\t\tbackground: var(--background);\n\t}\n\t.sidebar_left.active{\n\t\tbox-shadow: -5px 0px 10px 0px rgba(0,0,0,0.75);\n\t\tleft: 0;\n\t\tz-index: 3;\n\t}\n\t.sidebar_right{\n\t\tposition: absolute;\n\t\theight: 100%;\n\t\tright: -210px;\n\t\tbackground: var(--background);\n\t}\n\t.sidebar_right.active{\n\t\tbox-shadow: -5px 0px 10px 0px rgba(0,0,0,0.75);\n\t\tright: 0;\n\t\tmargin-right: 0;\n\t}\n}\n\n/* ========== content ======================================================= */\n\n.ruler_left{\n\tdisplay: none;\n\tposition: absolute;\n\tleft:0;\n\ttop: 20px;\n\tbackground-color: #ccc;\n}\n.ruler_top{\n\tdisplay: none;\n\tposition: absolute;\n\tleft: 20px;\n\ttop:0;\n\tbackground-color: #ccc;\n}\n.middle_area{\n\tposition: relative;\n\t-ms-grid-row: 2;\n\t-ms-grid-column: 2;\n\tgrid-area: main;\n}\n.main_wrapper{\n\tposition:absolute;\n\ttop:0;\n\tright:0;\n\tbottom:0;\n\tleft:0;\n\toverflow: hidden;\n\tdisplay: flex;\n\tjustify-content: center;\n\talign-items: center;\n}\n.middle_area.has-ruler .main_wrapper{\n\ttop: 20px;\n\tleft: 20px;\n}\n.canvas_wrapper{\n\tposition:relative;\n}\n.canvas_wrapper canvas{\n\tposition: absolute;\n\tbox-sizing: content-box;\n\tfont-kerning: normal !important;\n}\n.loaded .canvas_wrapper canvas{\n\tborder: 1px solid var(--border-color);\n}\n#mouse{\n\tposition:absolute;\n\tpointer-events:none;\n\twidth:10px;\n\theight:10px;\n\tz-index:10;\n}\n#mouse.rect{\n\tborder:1px solid rgba(0,0,0,0.5);\n}\n#mouse.circle{\n\tborder:1px solid rgba(0,0,0,0.5);\n\tborder-radius:50%;\n}\n.transparent-grid{\n\twidth: 100%;\n\theight: 100%;\n\tposition: absolute;\n\tpointer-events: none;\n\t/*background: url(images/icons/grid.png) repeat top left;*/\n\tbackground: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAQElEQVQ4T2N89+7dfwYigKCgIBGqGBgYRw3EGU6jYYgzaIZAsvn//z9ROeX9+/fE5ZRRA3GG02gY4s4pgz7ZAAAnSWvHPkHXaAAAAABJRU5ErkJggg==') repeat top left;\n\tz-index:1;\n\timage-rendering: pixelated; /* disable antialiasing */\n}\n.transparent-grid.white{\n\tbackground:white;\n}\n.transparent-grid.green{\n\tbackground: #5be471;\n}\n.transparent-grid.grey{\n\tbackground: #dfdfdf;\n}\ncanvas{\n\tposition:relative;\n\tz-index:2;\n}\n#canvas_back{\n\tposition: absolute;\n\tbackground-color:#ffffff;\n\toutline: none;\n}\n#canvas_grid{\n\tpointer-events:none;\n}\n.group{\n\tborder:1px solid #999999;\n\tmargin: 5px 0px 5px 0px;\n\tpadding:5px 8px;\n}\n.flex-container{\n\tdisplay: flex;\n\tflex-wrap: wrap;\n}\n.flex-container .item{\n\tflex: auto;\n\tmargin: 2px 0;\n\twidth: 150px;\n}\n.flex-container .item:empty{\n\theight: 0;\n\tborder: none;\n}\n/* Colors panel toggle icons: white, not the pressed-state cyan\n   (setting the active-text var whitens both the icon and its underline) */\n#toggle_color_picker_section_button,\n#toggle_color_channels_section_button,\n#toggle_color_swatches_section_button{\n\t--button-text-color-active: var(--text-color);\n\tcolor: var(--text-color);\n}\n\n/* Error / notification popups: readable, styled like the (grape) layer panels */\n.alertify-notifier{\n\tcolor: var(--text-color);\n}\n.alertify-notifier .ajs-message{\n\tbackground: var(--block-background-color) !important;\n\tcolor: var(--text-color) !important;\n\tborder: 1px solid var(--border-color);\n\tborder-radius: 4px;\n\tbox-shadow: 0 3px 12px rgba(0, 0, 0, 0.5);\n\ttext-shadow: none;\n}\n.alertify-notifier .ajs-message.ajs-error{\n\tbackground: var(--block-background-color) !important;\n\tborder-left: 4px solid var(--text-color-red);\n}\n.alertify-notifier .ajs-message.ajs-success{\n\tbackground: var(--block-background-color) !important;\n\tborder-left: 4px solid var(--text-color-green);\n}\n.alertify-notifier .ajs-message.ajs-warning{\n\tbackground: var(--block-background-color) !important;\n\tborder-left: 4px solid var(--text-color-blue);\n}\n.effectsPreview{\n\tcursor: pointer;\n\tbackground-color: #ddd;\n}\n\n@media screen and (max-width:550px){\n\t.canvas_wrapper{\n\t\tmargin-left: 0px;\n\t}\n}\n@media screen and (max-height: 690px){\n\t.sidebar_left{\n\t\twidth: 75px;\n\t}\n}\n@media screen and (max-height:450px){\n\t.sidebar_left{\n\t\twidth: 88px;\n\t}\n}\n\n/* ========== dialogs ======================================================= */\n\n#dialog_color_picker_group {\n\twidth: 60%;\n}\n#dialog_color_channel_group {\n\twidth: 40%;\n\tmargin-left: 1rem;\n}\n\n@media screen and (max-width: 450px) {\n\t#dialog_color_picker .ui_flex_group {\n\t\tflex-wrap: wrap;\n\t}\n\t#dialog_color_picker_group {\n\t\twidth: 100%;\n\t}\n\t#dialog_color_channel_group {\n\t\twidth: 100%;\n\t\tmargin-left: 0;\n\t\tmargin-top: 1rem;\n\t}\n}"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -64416,6 +66222,7 @@ var map = {
 	"./tools/settings.js": "./src/js/modules/tools/settings.js",
 	"./tools/sprites.js": "./src/js/modules/tools/sprites.js",
 	"./tools/translate.js": "./src/js/modules/tools/translate.js",
+	"./tools/voxel.js": "./src/js/modules/tools/voxel.js",
 	"./view/full_screen.js": "./src/js/modules/view/full_screen.js",
 	"./view/grid.js": "./src/js/modules/view/grid.js",
 	"./view/guides.js": "./src/js/modules/view/guides.js",

@@ -479,6 +479,60 @@ IMPORTANT: any new icon should also must be added on /service-worker.js + its ve
 	cursor: grabbing;
 }
 
+/* ---------- voxel panel ---------- */
+
+.voxel_preview_wrapper{
+	display: flex;
+	justify-content: center;
+	margin-bottom: 6px;
+	background-color: rgba(0, 0, 0, 0.25);
+	border-radius: 3px;
+}
+#canvas_voxel{
+	image-rendering: pixelated;
+	cursor: default;
+}
+.voxel_controls .details{
+	display: flex;
+	align-items: center;
+	gap: 3px;
+	margin-bottom: 4px;
+}
+.voxel_controls button{
+	margin: 0;
+}
+.voxel_axes{
+	margin-bottom: 4px;
+}
+.voxel_axes .voxel_axis{
+	flex: 1;
+	font-size: 90%;
+	padding: 2px 0;
+}
+.voxel_axes .voxel_axis[aria-pressed="true"]{
+	background-color: #00b8b8;
+	color: #ffffff;
+}
+.voxel_slice_row{
+	justify-content: space-between;
+}
+.voxel_slice_label{
+	flex: 1;
+	text-align: center;
+	font-size: 90%;
+	color: var(--text-color-muted);
+}
+#voxel_slice_range{
+	width: 100%;
+}
+.voxel_onion_row{
+	margin-top: 4px;
+}
+#voxel_onion.active{
+	background-color: #00b8b8;
+	color: #ffffff;
+}
+
 /* ---------- palette panel ---------- */
 
 .palette_colors{

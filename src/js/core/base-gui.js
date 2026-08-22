@@ -9,7 +9,10 @@ import GUI_tools_class from './gui/gui-tools.js';
 import GUI_preview_class from './gui/gui-preview.js';
 import GUI_panels_class from './gui/gui-panels.js';
 import GUI_palette_class from './gui/gui-palette.js';
+import GUI_voxel_class from './gui/gui-voxel.js';
 import {should_draw_pixel_grid, grid_line_positions} from './pixel-grid.js';
+import {unpack, read_slice, slice_dimensions} from './voxel.js';
+import {ONION, onion_slices} from './voxel-view.js';
 import GUI_colors_class from './gui/gui-colors.js';
 import GUI_layers_class from './gui/gui-layers.js';
 import GUI_information_class from './gui/gui-information.js';
@@ -66,6 +69,7 @@ class Base_gui_class {
 		this.GUI_panels = new GUI_panels_class(this);
 		this.GUI_colors = new GUI_colors_class(this);
 		this.GUI_palette = new GUI_palette_class(this);
+		this.GUI_voxel = new GUI_voxel_class(this);
 		this.GUI_layers = new GUI_layers_class(this);
 		this.GUI_information = new GUI_information_class(this);
 		this.GUI_details = new GUI_details_class(this);
@@ -156,6 +160,7 @@ class Base_gui_class {
 		this.GUI_preview.render_main_preview();
 		this.GUI_colors.render_main_colors();
 		this.GUI_palette.render_main_palette();
+		this.GUI_voxel.render_main_voxel();
 		this.GUI_layers.render_main_layers();
 		this.GUI_information.render_main_information();
 		this.GUI_details.render_main_details();
@@ -422,6 +427,114 @@ class Base_gui_class {
 			ctx.lineTo(width, 0.5 + i);
 			ctx.stroke();
 		}
+	}
+
+	/**
+	 * ONION SKIN. The neighbouring slices, faint, behind the one being painted.
+	 *
+	 * A slice on its own gives no sense of what it sits on top of, so lining a shape up with the
+	 * layer below is done from memory. This puts them on screen: below-slices warm, above-slices
+	 * cool, fading with distance.
+	 *
+	 * Drawn BEFORE the layers, so the live slice stays crisp and fully opaque on top - an onion
+	 * skin painted over the top would fight the thing you are actually drawing.
+	 *
+	 * @param {canvas.context} ctx
+	 * @returns {boolean} whether anything was drawn
+	 */
+	draw_onion_skin(ctx) {
+		var state = config.voxel;
+
+		if (state == null || state.enabled !== true || state.volume == null) {
+			return false;
+		}
+		if (state.onion == null || state.onion.enabled !== true) {
+			return false;
+		}
+
+		var dims = slice_dimensions(state.volume, state.axis);
+		var neighbours = onion_slices(state.slice, dims.count, state.onion.before, state.onion.after);
+		if (neighbours.length === 0) {
+			return false;
+		}
+
+		//same screen-space approach as the pixel grid: the ambient transform in the middle of the
+		//render loop is not the plain zoom matrix
+		var origin = this.Base_layers.get_world_coords(0, 0);
+		var zoom = config.ZOOM;
+
+		ctx.save();
+		ctx.setTransform(1, 0, 0, 1, 0, 0);
+		ctx.imageSmoothingEnabled = false;
+		ctx.globalCompositeOperation = 'source-over';
+
+		for (var i = 0; i < neighbours.length; i++) {
+			var skin = this.build_onion_canvas(state, neighbours[i], dims);
+			if (skin == null) {
+				continue;
+			}
+
+			ctx.globalAlpha = neighbours[i].alpha;
+			ctx.drawImage(
+				skin,
+				Math.round(-origin.x * zoom),
+				Math.round(-origin.y * zoom),
+				Math.round(dims.width * zoom),
+				Math.round(dims.height * zoom)
+			);
+		}
+
+		ctx.restore();
+
+		return true;
+	}
+
+	/**
+	 * One neighbouring slice, flattened to a tinted canvas.
+	 *
+	 * The tint is applied with source-atop so it colours the voxels and not the gaps between them -
+	 * filling the whole rectangle would wash a transparent slice into a solid sheet.
+	 *
+	 * @param {object} state config.voxel
+	 * @param {object} neighbour from onion_slices
+	 * @param {object} dims slice dimensions
+	 * @returns {HTMLCanvasElement|null}
+	 */
+	build_onion_canvas(state, neighbour, dims) {
+		var slice = read_slice(state.volume, state.axis, neighbour.index);
+		var canvas = document.createElement('canvas');
+		canvas.width = dims.width;
+		canvas.height = dims.height;
+
+		var ctx = canvas.getContext('2d');
+		var img = ctx.createImageData(dims.width, dims.height);
+		var any = false;
+
+		for (var p = 0; p < slice.data.length; p++) {
+			if (slice.data[p] === 0) {
+				continue;
+			}
+			any = true;
+			var c = unpack(slice.data[p]);
+			img.data[p * 4] = c.r;
+			img.data[p * 4 + 1] = c.g;
+			img.data[p * 4 + 2] = c.b;
+			img.data[p * 4 + 3] = c.a;
+		}
+
+		if (any === false) {
+			//an empty neighbour is not worth a draw call
+			return null;
+		}
+
+		ctx.putImageData(img, 0, 0);
+
+		var tint = neighbour.direction < 0 ? ONION.tint_below : ONION.tint_above;
+		ctx.globalCompositeOperation = 'source-atop';
+		ctx.fillStyle = 'rgba(' + tint.r + ',' + tint.g + ',' + tint.b + ', 0.55)';
+		ctx.fillRect(0, 0, dims.width, dims.height);
+
+		return canvas;
 	}
 
 	/**
