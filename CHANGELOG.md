@@ -312,6 +312,21 @@ Clicking **Fit** took you to 1%, and then nothing you drew landed where you clic
 
 ---
 
+## v0.1.31 — "Drag, Don't Poke"
+
+The Background Eraser was click-only, and a click is a thin description of a background. One small disc, one tone, from one spot — while a wall has a gradient, a floor has texture and a sky goes from pale to deep. You can drag now.
+
+- **Drag to mark the background, shift-drag to mark the subject.** A stroke hands over hundreds of pixels spanning the range the background actually covers, instead of asking one sample to stand for all of it. Single clicks still work; they are just strokes of length one.
+- **The marks are drawn on the canvas as you make them** — red for what goes, green for what stays. The two things the tool does, and the only two it does.
+- **The competition between marks now accumulates cost instead of taking the worst step.** This is the substantive change. Scoring a route by its single largest colour step is elegant and collapses on any grainy photograph: grain means there is a path of small steps from anywhere to anywhere, so both marks reach every pixel at about the same price and the winner comes down to rounding. On a wall with mild noise, adding one subject mark brought the **entire background back**. Summing makes distance count, so a mark near a pixel beats a mark far from it unless there is a real boundary between them — which is both what a scribble is supposed to mean and what survives noise.
+- **And each side now knows what it looks like.** Edges and distance alone left a halo of speckle: background right beside the subject is nearer to the subject's mark than to any mark out at the frame's edge, so it defected — despite plainly looking like wall. Each side builds a colour model from its own marks, and claiming a pixel costs extra in proportion to how much better it matches *the other side*. Relative, not absolute: a pixel that resembles both equally is free to either, which is what stops an unmarked face from being charged full price and lost.
+- Fixed: two strokes were drawn as one path, so a mark down the left edge and another across the top came back with a diagonal line ruled between them, straight across the subject.
+- Fixed: a second gesture arriving while the first was still converting a layer to raster ran alongside it, both reading and writing the same marks.
+
+*Still true, and still the rule: once you mark the subject, anything you did not mark goes with the background. A head not quite touching the shoulders needs its own stroke.*
+
+---
+
 ## Unreleased — "???"
 
 - (redacted)

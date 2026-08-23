@@ -643,7 +643,7 @@ function apply_mask(rgba, width, height, out, mask, refine, protect) {
 }
 
 /**
- * Let background marks and subject marks compete for every pixel; nearest wins.
+ * Let background marks and subject marks compete for every pixel.
  *
  * WHY A COMPETITION AND NOT TWO THRESHOLDS. Flooding out from each kind of mark separately means
  * both floods obey the same sensitivity, so an edge that one of them can cross is an edge the other
@@ -655,36 +655,44 @@ function apply_mask(rgba, width, height, out, mask, refine, protect) {
  * marks on their own mean "take this region, out to where it stops looking like this", and the
  * sensitivity governs where that is. Add a subject mark and it becomes "keep what I marked, take
  * everything else" - so a piece of the subject that touches nothing marked, a head not quite meeting
- * the shoulders, goes with the background until it is marked too. That is the rule doing as it is
- * told rather than a fault, but it is not what the first rule would have done.
+ * the shoulders, goes with the background until it is marked too.
  *
- * The distance used is MINIMAX: the cost of reaching a pixel is the largest single colour step on
- * the easiest route to it. That is the right notion here because it asks "what is the strongest edge
- * I had to cross to get here", which is exactly the question a boundary answers. Every pixel then
- * belongs to whichever mark got to it over the lowest wall, and the boundary settles onto the
- * highest ridge between them without anybody having to name a number.
+ * THE DISTANCE ACCUMULATES, AND THAT IS THE WHOLE ALGORITHM. It used to be MINIMAX - the cost of
+ * reaching a pixel was the single largest colour step on the easiest route to it - which is elegant
+ * and works beautifully on clean images. On a grainy one it collapses: film grain and sensor noise
+ * mean there is a path of small steps from anywhere to anywhere, so both marks reach every pixel at
+ * about the same cost and the winner is decided by rounding. Tested on a wall with mild noise, the
+ * background came back in full the moment a subject mark was added.
  *
- * Dial's algorithm rather than a heap: costs are quantised, so the queue is a fixed set of buckets
- * and the whole thing stays linear.
+ * Summing instead makes distance count. Every step costs a small BASE plus however much the colour
+ * changed, so crossing an edge is expensive but so is travelling a long way through grain - and a
+ * mark near a pixel beats a mark far from it unless there is a genuine boundary between. That is
+ * both what people expect from a scribble and what survives noise.
  *
- * COSTS ARE QUANTISED IN SIXTEENTHS, and the sixteenths matter. Rounding them to whole units looked
- * harmless and was not: on a pale shirt against a pale graded wall, the largest step ACROSS the edge
- * was 0.88 and the steps along the wall's own gradient were 0.47. Both round to nothing, the ridge
- * the competition is supposed to find stops existing, and the subject swallows the entire picture.
- * Low-contrast images are exactly the ones this tool is for, so the resolution has to survive them.
+ * Dial's algorithm with a circular bucket queue: edge weights are bounded even though the totals are
+ * not, so the queue only needs as many buckets as the largest single edge.
  *
  * @returns {Uint8Array} 1 where background
  */
 function segment_by_competition(rgba, width, height, bg_seeds, fg_seeds) {
+	//sixteenths of a colour unit. Whole units lost the ridge entirely on low-contrast images: on a
+	//pale shirt against a pale wall the edge measured 0.88 and the wall's own gradient 0.47, and
+	//both round to nothing.
 	var SCALE = 16;
-	var LEVELS = 256 * SCALE + 1;
-	var n = width * height;
-	var cost = new Uint16Array(n).fill(LEVELS);
-	var owner = new Uint8Array(n);
-	var buckets = [];
+	//what one pixel of travel costs where nothing changes, so that "nearer" means something
+	var BASE = 4;
+	//how much it costs to claim a pixel that does not look like what you are
+	var LIKENESS = 8;
+	var WHEEL = 255 * SCALE + 255 * LIKENESS + BASE + 1;
 
-	for (var b = 0; b < LEVELS; b++) {
-		buckets.push([]);
+	var n = width * height;
+	var cost = new Uint32Array(n).fill(0xFFFFFFFF);
+	var owner = new Uint8Array(n);
+	var done = new Uint8Array(n);
+	var buckets = new Array(WHEEL);
+
+	for (var b = 0; b < WHEEL; b++) {
+		buckets[b] = [];
 	}
 
 	var start = function (pixels, mark) {
@@ -698,8 +706,7 @@ function segment_by_competition(rgba, width, height, bg_seeds, fg_seeds) {
 		}
 	};
 
-	//the subject goes first so that a tie is resolved in favour of keeping it; losing the subject is
-	//the failure people notice and mind
+	//the subject goes first so a pixel marked as both is kept rather than cut
 	start(fg_seeds, 2);
 	start(bg_seeds, 1);
 
@@ -708,24 +715,81 @@ function segment_by_competition(rgba, width, height, bg_seeds, fg_seeds) {
 		return color_distance(rgba[i], rgba[i + 1], rgba[i + 2], rgba[j], rgba[j + 1], rgba[j + 2]);
 	};
 
-	for (var c = 0; c < LEVELS; c++) {
-		while (buckets[c].length > 0) {
-			var p = buckets[c].pop();
+	//WHAT THE MARKS LOOK LIKE, not only where they are. Edges and distance alone leave a ragged
+	//fringe: on a grainy wall, background right beside the subject is nearer to the subject's mark
+	//than to any mark out at the edges of the frame, so it goes to the subject and the cutout comes
+	//back wearing a halo of speckle. But that speckle plainly looks like wall. Each side builds a
+	//colour model from its own marks, and claiming a pixel that does not resemble you costs extra -
+	//which is what stops "nearest" from meaning "nearest regardless of what it obviously is".
+	var likeness = function (pixels) {
+		var clusters = cluster_colors(sample_colors(rgba, pixels), MAX_MARK_CLUSTERS);
+		var out = new Uint8Array(n);
 
-			if (cost[p] !== c) {
-				//already reached more cheaply by another route
+		if (clusters.length === 0) {
+			return out;
+		}
+
+		for (var p = 0; p < n; p++) {
+			var i = p * 4;
+			var best = 255;
+			for (var c = 0; c < clusters.length; c++) {
+				var d = color_distance(rgba[i], rgba[i + 1], rgba[i + 2],
+					clusters[c].r, clusters[c].g, clusters[c].b);
+				if (d < best) {
+					best = d;
+				}
+			}
+			out[p] = Math.round(best);
+		}
+		return out;
+	};
+
+	var unlike_background = likeness(bg_seeds);
+	//competition is only ever reached with marks on both sides, but a zeroed model keeps the
+	//difference well defined rather than special-casing it inside the inner loop
+	var unlike_subject = fg_seeds.length > 0 ? likeness(fg_seeds) : new Uint8Array(n);
+
+	var remaining = n;
+	var distance = 0;
+	var ceiling = WHEEL * 4 + n * (BASE + 1);
+
+	while (remaining > 0 && distance < ceiling) {
+		var bucket = buckets[distance % WHEEL];
+
+		while (bucket.length > 0) {
+			var p = bucket.pop();
+
+			if (done[p] === 1 || cost[p] !== distance) {
+				//already settled, or this entry was superseded by a cheaper route
 				continue;
 			}
+
+			done[p] = 1;
+			remaining--;
 
 			var px = p % width;
 			var py = (p - px) / width;
 
 			var relax = function (q) {
-				var next = Math.max(c, Math.round(step(p, q) * SCALE));
+				if (done[q] === 1) {
+					return;
+				}
+				//RELATIVE, NOT ABSOLUTE. Charging each side for how unlike it a pixel is punishes
+				//anything the marks did not happen to cover: mark the shirt but not the face, and
+				//the face resembles the shirt no better than it resembles the wall, so it was
+				//charged full price and lost. Charging only the DIFFERENCE means a pixel that looks
+				//equally like both is free to either - decided by edges and distance, as it should
+				//be - while one that plainly looks like the wall is expensive for the subject to
+				//claim, which is what clears the speckle.
+				var mine = owner[p] === 1 ? unlike_background[q] : unlike_subject[q];
+				var theirs = owner[p] === 1 ? unlike_subject[q] : unlike_background[q];
+				var mismatch = mine > theirs ? mine - theirs : 0;
+
+				var next = distance + BASE + Math.round(step(p, q) * SCALE) + mismatch * LIKENESS;
 				if (next < cost[q]) {
 					cost[q] = next;
 					owner[q] = owner[p];
-					buckets[next].push(q);
+					buckets[next % WHEEL].push(q);
 				}
 			};
 
@@ -734,6 +798,8 @@ function segment_by_competition(rgba, width, height, bg_seeds, fg_seeds) {
 			if (py > 0) relax(p - width);
 			if (py < height - 1) relax(p + width);
 		}
+
+		distance++;
 	}
 
 	var mask = new Uint8Array(n);
@@ -744,6 +810,26 @@ function segment_by_competition(rgba, width, height, bg_seeds, fg_seeds) {
 }
 
 /**
+ * The colours of a set of pixels, ready for clustering.
+ *
+ * @param {Uint8ClampedArray} rgba
+ * @param {Array} pixels indices
+ * @returns {Array} entries [r, g, b, weight]
+ */
+function sample_colors(rgba, pixels) {
+	var samples = [];
+
+	for (var i = 0; i < pixels.length; i++) {
+		var k = pixels[i] * 4;
+		if (rgba[k + 3] > 0) {
+			samples.push([rgba[k], rgba[k + 1], rgba[k + 2], 1]);
+		}
+	}
+
+	return samples;
+}
+
+/**
  * Clear the background the marks point at.
  *
  * @returns {object} the same shape remove_background returns
@@ -751,18 +837,7 @@ function segment_by_competition(rgba, width, height, bg_seeds, fg_seeds) {
 function from_marks(rgba, width, height, out, seeds, blocked, protect,
 	tolerance, refine, step_limit, brush) {
 
-	var colors_of = function (pixels) {
-		var samples = [];
-		for (var i = 0; i < pixels.length; i++) {
-			var k = pixels[i] * 4;
-			if (rgba[k + 3] > 0) {
-				samples.push([rgba[k], rgba[k + 1], rgba[k + 2], 1]);
-			}
-		}
-		return cluster_colors(samples, MAX_MARK_CLUSTERS);
-	};
-
-	var clusters = colors_of(seeds);
+	var clusters = cluster_colors(sample_colors(rgba, seeds), MAX_MARK_CLUSTERS);
 
 	if (clusters.length === 0) {
 		//every marked pixel is already transparent; there is nothing there to take

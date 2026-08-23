@@ -437,7 +437,15 @@ describe('remove_background with marks', () => {
 		expect(alpha(out.data, 52, 52)).toBe(255);
 	});
 
-	test('ONE shift-click puts a whole region back, not a dot', () => {
+	/** what a person actually does now: a stroke along the background, not one poke at a corner */
+	const edge_stroke = () => {
+		const marks = [];
+		for (let x = 2; x < W - 2; x += 3) marks.push([x, 2]);
+		for (let y = 2; y < H - 2; y += 3) { marks.push([2, y]); marks.push([W - 3, y]); }
+		return marks;
+	};
+
+	test('ONE shift-stroke puts a whole region back, not a dot', () => {
 		//THE BUG. A subject mark blocked only its own little disc, so the flood poured in around it
 		//and the correction corrected nothing you could see. A mark now grows by the same rule the
 		//background flood uses: pointing at the shirt means the shirt.
@@ -445,12 +453,12 @@ describe('remove_background with marks', () => {
 
 		//deliberately too loose, so the flood crosses the shirt's soft edge and takes it
 		const greedy = remove_background(d, W, H, {tolerance: 120, step_limit: 40, refine: 0,
-			seeds: [[2, 2]]});
+			seeds: edge_stroke()});
 		expect(damage(greedy).lost).toBeGreaterThan(0.5);
 
-		//one mark, in the middle of the shirt, at the default brush size
+		//one stroke, across the middle of the shirt, at the default brush size
 		const corrected = remove_background(d, W, H, {tolerance: 120, step_limit: 40, refine: 0,
-			seeds: [[2, 2]], protect: [[32, 50]], brush: 3});
+			seeds: edge_stroke(), protect: [[20, 50], [30, 50], [40, 50]], brush: 3});
 
 		expect(damage(corrected).lost).toBeLessThan(0.05);
 		//...and the background still goes
@@ -464,7 +472,8 @@ describe('remove_background with marks', () => {
 		//both kinds, the boundary is decided by where the strongest edge between them lies, and the
 		//slider becomes something you do not have to get right.
 		const d = close_tones();
-		const marks = {refine: 0, seeds: [[2, 2]], protect: [[32, 50]], brush: 3};
+		const marks = {refine: 0, seeds: edge_stroke(),
+			protect: [[20, 50], [30, 50], [40, 50]], brush: 3};
 		const results = [2, 8, 40, 200].map((step_limit) =>
 			damage(remove_background(d, W, H, Object.assign({tolerance: 120, step_limit}, marks))));
 
@@ -474,14 +483,51 @@ describe('remove_background with marks', () => {
 		}
 	});
 
+	test('GRAIN DOES NOT DISSOLVE THE COMPETITION', () => {
+		//THE BUG. The competition used to score a route by its single largest colour step, which is
+		//elegant and collapses on a noisy image: grain means there is a path of small steps from
+		//anywhere to anywhere, so both marks reach every pixel at about the same cost and the winner
+		//is decided by rounding. Measured on this scene, adding a subject mark brought the ENTIRE
+		//background back. Costs accumulate now, so distance counts and grain cannot tunnel.
+		const d = blank(W, H);
+		let seed = 99;
+		const noise = () => ((seed = (seed * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff - 0.5) * 22;
+		for (let y = 0; y < H; y++)
+			for (let x = 0; x < W; x++) {
+				const n = noise();
+				put(d, W, x, y, [200 + y * 0.3 + n, 206 + y * 0.25 + n, 216 + y * 0.2 + n]);
+			}
+		//a smooth subject in the middle, close in tone to the grainy wall around it
+		for (let y = 22; y < 50; y++) for (let x = 20; x < 46; x++) put(d, W, x, y, [206, 210, 216]);
+
+		const out = remove_background(d, W, H, {
+			refine: 0, brush: 2,
+			seeds: edge_stroke(),
+			protect: [[26, 34], [32, 36], [38, 34]],
+		});
+
+		let subject = 0, kept = 0, wall = 0, gone = 0;
+		for (let y = 0; y < H; y++)
+			for (let x = 0; x < W; x++) {
+				const a = alpha(out.data, x, y);
+				const is_subject = y >= 22 && y < 50 && x >= 20 && x < 46;
+				if (is_subject) { subject++; if (a >= 128) kept++; }
+				//well clear of the boundary, where a few pixels of speckle are expected
+				else if (x < 12 || x > W - 12 || y < 12 || y > H - 12) { wall++; if (a < 128) gone++; }
+			}
+
+		expect(kept / subject).toBeGreaterThan(0.9);
+		expect(gone / wall).toBeGreaterThan(0.9);
+	});
+
 	test('a protected region survives the edge band, not just the flood', () => {
 		//build_trimap erodes the mask to make room for solved alpha, and a mark must not be eaten
 		//by that erosion - it is an instruction, not a hint
 		const d = close_tones();
 		const out = remove_background(d, W, H, {tolerance: 120, step_limit: 40, refine: 6,
-			seeds: [[2, 2]], protect: [[32, 50]], brush: 3});
+			seeds: edge_stroke(), protect: [[20, 50], [30, 50], [40, 50]], brush: 3});
 
-		expect(alpha(out.data, 32, 50)).toBe(255);
+		expect(alpha(out.data, 30, 50)).toBe(255);
 		expect(damage(out).lost).toBeLessThan(0.1);
 	});
 
