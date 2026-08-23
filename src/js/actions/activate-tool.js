@@ -54,6 +54,16 @@ export class Activate_tool_action extends Base_action {
 				return;
 			}
 
+			//RETIRE THE OLD TOOL'S SIZE CURSOR. The #mouse circle is only ever updated by the tool
+			//that owns it, from its own mousemove - so switching from the brush to the pencil left
+			//the brush's circle sitting on the canvas, at its last position, for as long as the
+			//pencil was in hand (field report 5d36c467). Nobody owns it during a switch except
+			//this action, so this action clears it.
+			const staleCursor = document.getElementById('mouse');
+			if (staleCursor != null) {
+				staleCursor.className = '';
+			}
+
 			//set default cursor
 			const mainWrapper = document.getElementById('main_wrapper');
 			const defaultCursor = config.TOOL && config.TOOL.name === 'text' ? 'text' : 'default';

@@ -2,6 +2,7 @@ import app from './../app.js';
 import config from './../config.js';
 import Base_tools_class from './../core/base-tools.js';
 import Base_layers_class from './../core/base-layers.js';
+import {nib_origin, stroke_nibs} from './../core/pixel-paint.js';
 
 class Pencil_class extends Base_tools_class {
 
@@ -13,6 +14,12 @@ class Pencil_class extends Base_tools_class {
 		this.params_hash = false;
 		this.pressure_supported = false;
 		this.pointer_pressure = 0; // has range [0 - 1]
+
+		//the right-button erase stroke - pixel mode only, see right_erase_start
+		this.right_erasing = false;
+		this.right_pointer_down = false;
+		this.eraseCanvas = null;
+		this.eraseCtx = null;
 	}
 
 	load() {
@@ -27,6 +34,165 @@ class Pencil_class extends Base_tools_class {
 		});
 
 		this.default_events();
+
+		//RIGHT-CLICK ERASES, in pixel and voxel mode. Field report de4750dc asked for it, and it is
+		//the pixel-art convention everywhere else. The left-button path above knows nothing about
+		//this: click_valid is false for any button but the first, so these listeners carry the
+		//whole gesture themselves.
+		document.addEventListener('contextmenu', function (event) {
+			_this.on_contextmenu(event);
+		});
+		document.addEventListener('mousedown', function (event) {
+			_this.right_erase_start(event);
+		});
+		document.addEventListener('mousemove', function (event) {
+			_this.right_erase_move(event);
+		});
+		document.addEventListener('mouseup', function (event) {
+			_this.right_erase_end(event);
+		});
+	}
+
+	/** the gesture exists only here: pencil selected, pixel mode on, cursor over the canvas */
+	right_erase_applies(e) {
+		return config.TOOL.name == this.name
+			&& config.PIXEL_MODE == true
+			&& (e.target.id == 'canvas_minipaint' || e.target.id == 'main_wrapper');
+	}
+
+	on_contextmenu(e) {
+		//suppress the browser menu only where the erase gesture lives - everywhere else the
+		//right button still belongs to the browser
+		if (this.right_erase_applies(e)) {
+			e.preventDefault();
+		}
+	}
+
+	async right_erase_start(e) {
+		if (e.button !== 2 || this.right_erasing || !this.right_erase_applies(e)) {
+			return;
+		}
+
+		var mouse = this.get_mouse_info(e);
+		this.right_erasing = true;
+		this.right_pointer_down = true;
+
+		if (config.layer.type != 'image' || config.layer.is_vector == true) {
+			//Convert rather than refusing - the same decision as the eraser proper, and a pencil
+			//layer is exactly the vector case: erasing from it means rasterizing it
+			var ready = await this.rasterize_active_layer('erased');
+			if (ready == false) {
+				this.right_erasing = false;
+				return;
+			}
+		}
+
+		var image = config.layer.link;
+		if (image != null && image.complete === false && typeof image.decode === 'function') {
+			//the rasterize swaps in an image built from a data URL, and drawing it before it has
+			//decoded snapshots a BLANK canvas - which the mouseup then commits, erasing the whole
+			//layer. The Background Eraser hit this identical trap; the wait is the fix both times.
+			try {
+				await image.decode();
+			}
+			catch (err) {
+				this.right_erasing = false;
+				return;
+			}
+		}
+
+		//a working copy, shown live through link_canvas - the erase tool's pattern
+		this.eraseCanvas = document.createElement('canvas');
+		this.eraseCanvas.width = config.layer.width_original;
+		this.eraseCanvas.height = config.layer.height_original;
+		this.eraseCtx = this.eraseCanvas.getContext('2d');
+		this.eraseCtx.drawImage(config.layer.link, 0, 0);
+
+		this.erase_pixels(mouse, false);
+
+		config.layer.link_canvas = this.eraseCanvas;
+		config.need_render = true;
+
+		if (this.right_pointer_down == false) {
+			//released while the layer was converting: keep the click rather than dropping it
+			this.right_erase_end(e);
+		}
+	}
+
+	right_erase_move(e) {
+		if (this.right_erasing == false || this.eraseCtx == null) {
+			return;
+		}
+
+		this.erase_pixels(this.get_mouse_info(e), true);
+		config.need_render = true;
+	}
+
+	right_erase_end(e) {
+		this.right_pointer_down = false;
+
+		if (this.right_erasing == false || this.eraseCanvas == null) {
+			return;
+		}
+
+		delete config.layer.link_canvas;
+
+		app.State.do_action(
+			new app.Actions.Bundle_action('pencil_erase', 'Pencil Erase', [
+				new app.Actions.Update_layer_image_action(this.eraseCanvas)
+			])
+		);
+
+		this.eraseCanvas = null;
+		this.eraseCtx = null;
+		this.right_erasing = false;
+	}
+
+	/**
+	 * Clear whole pixels at the cursor - the eraser's pixel-mode semantics exactly: square nib,
+	 * full alpha, gaps between fast-drag points filled along the line.
+	 *
+	 * @param {object} mouse
+	 * @param {boolean} is_move
+	 */
+	erase_pixels(mouse, is_move) {
+		var ctx = this.eraseCtx;
+		var layer = config.layer;
+		var size = parseInt(this.getParams().size) || 1;
+
+		var scale_x = layer.width ? layer.width_original / layer.width : 1;
+		var scale_y = layer.height ? layer.height_original / layer.height : 1;
+		if (!isFinite(scale_x) || scale_x <= 0) scale_x = 1;
+		if (!isFinite(scale_y) || scale_y <= 0) scale_y = 1;
+
+		var to_image_x = (v) => (v - layer.x) * scale_x;
+		var to_image_y = (v) => (v - layer.y) * scale_y;
+
+		ctx.save();
+		ctx.setTransform(1, 0, 0, 1, 0, 0);
+		ctx.globalCompositeOperation = 'destination-out';
+		//opaque: anything less leaves partial alpha, which is the ghost that reads as "not erasing"
+		ctx.fillStyle = 'rgba(255, 255, 255, 1)';
+		ctx.imageSmoothingEnabled = false;
+
+		var x = to_image_x(mouse.x);
+		var y = to_image_y(mouse.y);
+		var nib_size = Math.max(1, Math.round(size * scale_x));
+		var has_last = mouse.last_x !== false && mouse.last_x != null
+			&& mouse.last_y !== false && mouse.last_y != null;
+
+		if (is_move && has_last) {
+			var nibs = stroke_nibs(to_image_x(mouse.last_x), to_image_y(mouse.last_y), x, y, nib_size);
+			for (var i = 0; i < nibs.length; i++) {
+				ctx.fillRect(nibs[i].x, nibs[i].y, nibs[i].size, nibs[i].size);
+			}
+		}
+		else {
+			var nib = nib_origin(x, y, nib_size);
+			ctx.fillRect(nib.x, nib.y, nib.size, nib.size);
+		}
+
+		ctx.restore();
 	}
 
 	dragMove(event) {

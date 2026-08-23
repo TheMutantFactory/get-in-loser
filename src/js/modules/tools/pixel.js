@@ -181,6 +181,8 @@ class Tools_pixel_class {
 
 		document.body.classList.toggle('pixel_mode', config.PIXEL_MODE);
 
+		this.adjust_erase_size(config.PIXEL_MODE);
+
 		this.Base_gui.prepare_canvas();
 		config.need_render = true;
 
@@ -189,6 +191,37 @@ class Tools_pixel_class {
 		}
 
 		return config.PIXEL_MODE;
+	}
+
+	/**
+	 * The eraser arrives in pixel mode at size 1, and gets its old size back on the way out.
+	 *
+	 * Field report 987f66d1. The eraser's default is 30 - a third of the default voxel slice in one
+	 * touch, which on a 16-wide canvas is less an eraser than a demolition. The restore is guarded:
+	 * only a size still sitting at 1 goes back, so a size the person chose themselves is kept.
+	 *
+	 * @param {boolean} pixel_on
+	 */
+	adjust_erase_size(pixel_on) {
+		var erase = config.TOOLS.find(function (t) { return t.name == 'erase'; });
+		if (erase == null || erase.attributes == null) {
+			return;
+		}
+
+		if (pixel_on) {
+			if (erase.attributes.size > 1) {
+				this.erase_size_before = erase.attributes.size;
+				erase.attributes.size = 1;
+			}
+		}
+		else if (erase.attributes.size === 1 && this.erase_size_before > 1) {
+			erase.attributes.size = this.erase_size_before;
+			this.erase_size_before = null;
+		}
+
+		if (config.TOOL != null && config.TOOL.name == 'erase') {
+			this.Base_gui.GUI_tools.show_action_attributes();
+		}
 	}
 
 	/**

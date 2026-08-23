@@ -349,6 +349,17 @@ One fix, reported from the field within hours of the deploy going live: *"voxel 
 
 ---
 
+## v0.1.34 — "Small Knives"
+
+Four fixes, three of them straight off the feedback queue.
+
+- **Pencil right-click erases, in pixel and voxel mode** (report de4750dc). The pixel-art convention everywhere else, now here: right-drag clears whole pixels at the pencil's size, as its own undo step, and the browser's context menu stays out of the way — but only over the canvas, in pixel mode, with the pencil in hand. Everywhere else the right button still belongs to the browser.
+- **The eraser arrives in pixel mode at size 1** (report 987f66d1). Its default is 30 — on a 16-wide voxel slice that is less an eraser than a demolition. It gets its old size back when pixel mode ends, unless you changed it yourself in between.
+- **The brush's size circle no longer haunts the next tool** (report 5d36c467). It was only ever updated by the tool that owned it, so switching to the pencil left it sitting on the canvas at its last position. The tool switch itself now clears it — nobody else owns that moment.
+- **Rasterizing a thin stroke no longer moves it.** Found while testing the first fix: convert a one-pixel-tall pencil line to raster — which the eraser does automatically — and the line jumped by its own bounding-box offset. The trim that positions a converted layer skips very skinny content but kept the offsets the skipped trim would have justified. Draw a line, reach for the eraser, watch the line move: pre-existing, upstream, and invisible until a test aimed at exact coordinates.
+
+---
+
 ## Unreleased — "???"
 
 - (redacted)

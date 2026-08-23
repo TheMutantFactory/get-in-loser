@@ -821,6 +821,15 @@ class Base_layers_class {
 				if (w > 1 && h > 1) {
 					this.Helper.change_canvas_size(canvas, w, h, offset_x, offset_y);
 				}
+				else {
+					//THE CROP WAS SKIPPED, SO THE OFFSETS MUST NOT SURVIVE IT. They were set above
+					//on the assumption the content would be shifted to the canvas origin; skinny
+					//content - a one-pixel-tall pencil line - skips the shift but kept the offsets,
+					//so rasterizing it MOVED it by its own bounding box. Draw a thin line, reach
+					//for the eraser (which converts to raster), and the line jumps.
+					offset_x = 0;
+					offset_y = 0;
+				}
 			}
 		}
 
