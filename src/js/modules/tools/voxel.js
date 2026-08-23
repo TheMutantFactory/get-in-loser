@@ -34,6 +34,7 @@ import {
 	count_filled,
 } from './../../core/voxel.js';
 import {YAWS} from './../../core/voxel-view.js';
+import {encode_vox, decode_vox} from './../../core/voxel-vox.js';
 
 var instance = null;
 
@@ -477,6 +478,116 @@ class Tools_voxel_class {
 			document.body.removeChild(link);
 			URL.revokeObjectURL(link.href);
 		}, 'image/png');
+
+		return true;
+	}
+
+	/**
+	 * menu: Voxel > Export .vox
+	 *
+	 * MagicaVoxel format - what Godot, Unity, Blender and three.js importers all read. The PNG
+	 * strip is for inspecting and re-importing here; this is for taking the model somewhere else.
+	 */
+	export_vox() {
+		if (!this.is_active()) {
+			alertify.error('No voxel model. Use Voxel > New Voxel Model first.');
+			return false;
+		}
+
+		this.commit_slice();
+
+		var state = config.voxel;
+		var out = encode_vox(state.volume, unpack);
+
+		if (out.voxels === 0) {
+			alertify.error('Nothing to export - the model is empty.');
+			return false;
+		}
+
+		var blob = new Blob([out.bytes], {type: 'application/octet-stream'});
+		var link = document.createElement('a');
+		link.href = URL.createObjectURL(blob);
+		link.download = 'model-' + state.volume.w + 'x' + state.volume.d + 'x' + state.volume.h + '.vox';
+		document.body.appendChild(link);
+		link.click();
+		document.body.removeChild(link);
+		URL.revokeObjectURL(link.href);
+
+		if (out.folded > 0) {
+			//said out loud: .vox indices only reach 255, so anything past that was matched to the
+			//nearest colour already in the palette
+			alertify.warning('Exported ' + out.voxels + ' voxels. ' + out.folded
+				+ ' colours were folded onto the nearest of the 255 the format allows.');
+		}
+		else {
+			alertify.success('Exported ' + out.voxels + ' voxels, ' + out.colors + ' colours.');
+		}
+
+		return true;
+	}
+
+	/**
+	 * menu: Voxel > Import .vox
+	 */
+	import_vox() {
+		var _this = this;
+		var input = document.createElement('input');
+
+		input.type = 'file';
+		input.accept = '.vox';
+		input.addEventListener('change', function () {
+			var file = this.files[0];
+			if (file == undefined) {
+				return;
+			}
+
+			var reader = new FileReader();
+			reader.onload = function (event) {
+				_this.import_vox_bytes(new Uint8Array(event.target.result));
+			};
+			reader.onerror = function () {
+				alertify.error('Could not read that file.');
+			};
+			reader.readAsArrayBuffer(file);
+		}, false);
+
+		input.click();
+	}
+
+	/**
+	 * @param {Uint8Array} bytes
+	 */
+	async import_vox_bytes(bytes) {
+		var loaded = decode_vox(bytes, create_volume, pack);
+
+		if (loaded == null) {
+			alertify.error('That is not a readable .vox file.');
+			return false;
+		}
+
+		//a .vox brings its own dimensions, so this replaces the model rather than filling the
+		//current one - the alternative is silently cropping someone's work
+		config.voxel = {
+			volume: loaded.volume,
+			axis: 'y',
+			slice: 0,
+			yaw: config.voxel ? config.voxel.yaw : 0,
+			enabled: true,
+			onion: config.voxel && config.voxel.onion
+				? config.voxel.onion
+				: {enabled: true, before: 1, after: 1},
+		};
+
+		var pixel = this.Base_gui.modules['tools/pixel'];
+		if (pixel) {
+			pixel.set_pixel_mode(true, true);
+		}
+
+		await this.reset_canvas_for_slice(true);
+
+		var v = loaded.volume;
+		alertify.success('Imported ' + loaded.voxels + ' voxels (' + v.w + ' x ' + v.d + ' x ' + v.h + ').'
+			+ (loaded.skipped > 0 ? ' ' + loaded.skipped + ' were outside the declared size and dropped.' : ''));
 
 		return true;
 	}

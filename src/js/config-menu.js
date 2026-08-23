@@ -400,6 +400,18 @@ const menuDefinition = [
 				divider: true
 			},
 			{
+				name: 'Export .vox',
+				target: 'tools/voxel.export_vox'
+			},
+			{
+				name: 'Import .vox',
+				ellipsis: true,
+				target: 'tools/voxel.import_vox'
+			},
+			{
+				divider: true
+			},
+			{
 				name: 'Export Slices',
 				target: 'tools/voxel.export_slices'
 			},

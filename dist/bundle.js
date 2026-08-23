@@ -5016,6 +5016,15 @@ var menuDefinition = [{
   }, {
     divider: true
   }, {
+    name: 'Export .vox',
+    target: 'tools/voxel.export_vox'
+  }, {
+    name: 'Import .vox',
+    ellipsis: true,
+    target: 'tools/voxel.import_vox'
+  }, {
+    divider: true
+  }, {
     name: 'Export Slices',
     target: 'tools/voxel.export_slices'
   }, {
@@ -15183,6 +15192,323 @@ function visible_faces(yaw) {
   return {
     right: '+x',
     left: '+z'
+  };
+}
+
+
+/***/ },
+
+/***/ "./src/js/core/voxel-vox.js"
+/*!**********************************!*\
+  !*** ./src/js/core/voxel-vox.js ***!
+  \**********************************/
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   MAX_COLORS: () => (/* binding */ MAX_COLORS),
+/* harmony export */   MAX_DIMENSION: () => (/* binding */ MAX_DIMENSION),
+/* harmony export */   VOX_VERSION: () => (/* binding */ VOX_VERSION),
+/* harmony export */   build_palette: () => (/* binding */ build_palette),
+/* harmony export */   decode_vox: () => (/* binding */ decode_vox),
+/* harmony export */   encode_vox: () => (/* binding */ encode_vox),
+/* harmony export */   read_chunks: () => (/* binding */ read_chunks)
+/* harmony export */ });
+/*
+ * get-in-loser - https://github.com/TheMutantFactory/get-in-loser
+ *
+ * MagicaVoxel .vox, read and write. Pure - see tests/voxel-vox.test.js.
+ *
+ * WHY THIS FORMAT. It is what everything else reads: Godot, Unity, Blender and three.js all have
+ * importers, and it is palette-indexed, which is the same shape as working from a palette here.
+ * The PNG slice strip is inspectable but nothing else understands it as a model.
+ *
+ * THE TWO THINGS THAT GO WRONG, both handled below and both tested:
+ *
+ *   Z-UP. MagicaVoxel's z is height; ours is y. A file written without the swap imports lying on
+ *   its side, which looks like a modelling mistake rather than a format one.
+ *
+ *   1-BASED INDICES INTO A 0-BASED TABLE. A voxel's colour index i refers to RGBA entry i-1. Off
+ *   by one here shifts every colour in the model by one palette slot - subtle enough to ship.
+ *
+ * Layout, all little-endian:
+ *   'VOX ' int32 version
+ *   MAIN chunk, whose children are SIZE, XYZI and RGBA
+ *   chunk = 4 byte id, int32 content bytes, int32 children bytes, content, children
+ */
+
+/** The version every reader in the wild expects. */
+var VOX_VERSION = 150;
+
+/** Indices run 1..255; 0 means empty, so 255 colours is the ceiling. */
+var MAX_COLORS = 255;
+
+/** .vox addresses each axis with a single byte. */
+var MAX_DIMENSION = 256;
+
+/**
+ * Distinct colours used by a volume, and a lookup from packed colour to palette index.
+ *
+ * Past 255 colours the extras are folded onto the nearest already in the palette rather than the
+ * export failing. Losing an exact shade beats losing the model, and a palette-driven picture will
+ * never get here anyway.
+ *
+ * @param {object} vol
+ * @param {function} unpack
+ * @returns {object} keys: colors (array of {r,g,b,a}), index (Map packed -> 1..255), folded (int)
+ */
+function build_palette(vol, unpack) {
+  var index = new Map();
+  var colors = [];
+  var folded = 0;
+  for (var i = 0; i < vol.data.length; i++) {
+    var value = vol.data[i];
+    if (value === 0 || index.has(value)) {
+      continue;
+    }
+    if (colors.length < MAX_COLORS) {
+      colors.push(unpack(value));
+      index.set(value, colors.length);
+    } else {
+      index.set(value, nearest_index(unpack(value), colors));
+      folded++;
+    }
+  }
+  return {
+    colors: colors,
+    index: index,
+    folded: folded
+  };
+}
+
+/**
+ * @param {object} colour keys r,g,b,a
+ * @param {array} colors
+ * @returns {number} 1-based index of the closest entry
+ */
+function nearest_index(colour, colors) {
+  var best = 1;
+  var best_distance = Infinity;
+  for (var i = 0; i < colors.length; i++) {
+    var dr = colour.r - colors[i].r;
+    var dg = colour.g - colors[i].g;
+    var db = colour.b - colors[i].b;
+    //weights approximate how the eye judges "close", same as the palette matcher
+    var distance = 2 * dr * dr + 4 * dg * dg + 3 * db * db;
+    if (distance < best_distance) {
+      best_distance = distance;
+      best = i + 1;
+    }
+  }
+  return best;
+}
+
+/**
+ * @param {DataView} view
+ * @param {number} offset
+ * @param {string} id four characters
+ */
+function write_id(bytes, offset, id) {
+  for (var i = 0; i < 4; i++) {
+    bytes[offset + i] = id.charCodeAt(i);
+  }
+}
+
+/**
+ * Encode a volume as a .vox file.
+ *
+ * @param {object} vol
+ * @param {function} unpack from core/voxel.js
+ * @returns {object} keys: bytes (Uint8Array), voxels (int), colors (int), folded (int)
+ */
+function encode_vox(vol, unpack) {
+  var palette = build_palette(vol, unpack);
+
+  //collect the filled voxels, converting to MagicaVoxel's Z-up frame as we go
+  var voxels = [];
+  for (var y = 0; y < vol.h; y++) {
+    for (var z = 0; z < vol.d; z++) {
+      for (var x = 0; x < vol.w; x++) {
+        var value = vol.data[(y * vol.d + z) * vol.w + x];
+        if (value === 0) {
+          continue;
+        }
+        //ours (x, y=up, z=depth) -> theirs (x, y=depth, z=up)
+        voxels.push([x, z, y, palette.index.get(value)]);
+      }
+    }
+  }
+  var size_content = 12;
+  var xyzi_content = 4 + voxels.length * 4;
+  var rgba_content = 256 * 4;
+  var main_children = 12 + size_content + (12 + xyzi_content) + (12 + rgba_content);
+  var total = 8 + (12 + main_children);
+  var bytes = new Uint8Array(total);
+  var view = new DataView(bytes.buffer);
+  var o = 0;
+  write_id(bytes, o, 'VOX ');
+  o += 4;
+  view.setInt32(o, VOX_VERSION, true);
+  o += 4;
+
+  //MAIN carries no content of its own, only children
+  write_id(bytes, o, 'MAIN');
+  o += 4;
+  view.setInt32(o, 0, true);
+  o += 4;
+  view.setInt32(o, main_children, true);
+  o += 4;
+  write_id(bytes, o, 'SIZE');
+  o += 4;
+  view.setInt32(o, size_content, true);
+  o += 4;
+  view.setInt32(o, 0, true);
+  o += 4;
+  //SIZE is in their frame too: x, depth, height
+  view.setInt32(o, vol.w, true);
+  o += 4;
+  view.setInt32(o, vol.d, true);
+  o += 4;
+  view.setInt32(o, vol.h, true);
+  o += 4;
+  write_id(bytes, o, 'XYZI');
+  o += 4;
+  view.setInt32(o, xyzi_content, true);
+  o += 4;
+  view.setInt32(o, 0, true);
+  o += 4;
+  view.setInt32(o, voxels.length, true);
+  o += 4;
+  for (var v = 0; v < voxels.length; v++) {
+    bytes[o++] = voxels[v][0];
+    bytes[o++] = voxels[v][1];
+    bytes[o++] = voxels[v][2];
+    bytes[o++] = voxels[v][3];
+  }
+  write_id(bytes, o, 'RGBA');
+  o += 4;
+  view.setInt32(o, rgba_content, true);
+  o += 4;
+  view.setInt32(o, 0, true);
+  o += 4;
+  for (var c = 0; c < 256; c++) {
+    //INDEX i REFERS TO ENTRY i-1, so the palette starts at slot 0 and the last slot is unused
+    var colour = palette.colors[c];
+    bytes[o++] = colour ? colour.r : 0;
+    bytes[o++] = colour ? colour.g : 0;
+    bytes[o++] = colour ? colour.b : 0;
+    bytes[o++] = colour ? colour.a : 0;
+  }
+  return {
+    bytes: bytes,
+    voxels: voxels.length,
+    colors: palette.colors.length,
+    folded: palette.folded
+  };
+}
+
+/**
+ * Walk the chunks of a .vox file.
+ *
+ * @param {Uint8Array} bytes
+ * @returns {object|null} keys: size {x,y,z}, voxels [[x,y,z,i]], rgba [[r,g,b,a]]
+ */
+function read_chunks(bytes) {
+  if (bytes.length < 8) {
+    return null;
+  }
+  var view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  var magic = String.fromCharCode(bytes[0], bytes[1], bytes[2], bytes[3]);
+  if (magic !== 'VOX ') {
+    return null;
+  }
+  var found = {
+    size: null,
+    voxels: [],
+    rgba: null
+  };
+  var o = 8;
+
+  //flat walk. Only MAIN has children, and its children are what we want, so descending into it
+  //is the same as carrying straight on
+  while (o + 12 <= bytes.length) {
+    var id = String.fromCharCode(bytes[o], bytes[o + 1], bytes[o + 2], bytes[o + 3]);
+    var content = view.getInt32(o + 4, true);
+    o += 12;
+    if (content < 0 || o + content > bytes.length) {
+      //truncated or lying about its length
+      return null;
+    }
+    if (id === 'SIZE' && content >= 12) {
+      found.size = {
+        x: view.getInt32(o, true),
+        y: view.getInt32(o + 4, true),
+        z: view.getInt32(o + 8, true)
+      };
+    } else if (id === 'XYZI' && content >= 4) {
+      var n = view.getInt32(o, true);
+      var max = Math.min(n, Math.floor((content - 4) / 4));
+      for (var i = 0; i < max; i++) {
+        var p = o + 4 + i * 4;
+        found.voxels.push([bytes[p], bytes[p + 1], bytes[p + 2], bytes[p + 3]]);
+      }
+    } else if (id === 'RGBA' && content >= 256 * 4) {
+      found.rgba = [];
+      for (var c = 0; c < 256; c++) {
+        found.rgba.push([bytes[o + c * 4], bytes[o + c * 4 + 1], bytes[o + c * 4 + 2], bytes[o + c * 4 + 3]]);
+      }
+    }
+
+    //MAIN's content is empty and its children follow inline, so this walks them next
+    o += content;
+  }
+  return found.size == null ? null : found;
+}
+
+/**
+ * Decode a .vox file into a volume.
+ *
+ * @param {Uint8Array} bytes
+ * @param {function} create_volume from core/voxel.js
+ * @param {function} pack from core/voxel.js
+ * @returns {object|null} keys: volume, voxels, skipped
+ */
+function decode_vox(bytes, create_volume, pack) {
+  var parsed = read_chunks(bytes);
+  if (parsed == null) {
+    return null;
+  }
+
+  //back out of their frame: theirs (x, y=depth, z=up) -> ours (x, y=up, z=depth)
+  var w = parsed.size.x;
+  var d = parsed.size.y;
+  var h = parsed.size.z;
+  if (!(w > 0) || !(d > 0) || !(h > 0) || w > MAX_DIMENSION || d > MAX_DIMENSION || h > MAX_DIMENSION) {
+    return null;
+  }
+  var volume = create_volume(w, d, h);
+  var written = 0;
+  var skipped = 0;
+  for (var i = 0; i < parsed.voxels.length; i++) {
+    var v = parsed.voxels[i];
+    var x = v[0];
+    var z = v[1];
+    var y = v[2];
+    if (x >= w || y >= h || z >= d) {
+      //a voxel outside the declared size; drop it rather than wrapping it somewhere wrong
+      skipped++;
+      continue;
+    }
+    var entry = parsed.rgba ? parsed.rgba[v[3] - 1] : null;
+    var colour = entry ? pack(entry[0], entry[1], entry[2], entry[3] === 0 ? 255 : entry[3]) : pack(200, 200, 200, 255);
+    volume.data[(y * d + z) * w + x] = colour;
+    written++;
+  }
+  return {
+    volume: volume,
+    voxels: written,
+    skipped: skipped
   };
 }
 
@@ -37178,6 +37504,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(_node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10__);
 /* harmony import */ var _core_voxel_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./../../core/voxel.js */ "./src/js/core/voxel.js");
 /* harmony import */ var _core_voxel_view_js__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./../../core/voxel-view.js */ "./src/js/core/voxel-view.js");
+/* harmony import */ var _core_voxel_vox_js__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./../../core/voxel-vox.js */ "./src/js/core/voxel-vox.js");
 
 
 
@@ -37196,6 +37523,7 @@ __webpack_require__.r(__webpack_exports__);
  * action system - otherwise scrubbing through 24 slices would bury the undo history. The trade is
  * that undo does not step backwards across a slice change; it applies to the slice you are on.
  */
+
 
 
 
@@ -37761,8 +38089,130 @@ var Tools_voxel_class = /*#__PURE__*/function () {
     }
 
     /**
+     * menu: Voxel > Export .vox
+     *
+     * MagicaVoxel format - what Godot, Unity, Blender and three.js importers all read. The PNG
+     * strip is for inspecting and re-importing here; this is for taking the model somewhere else.
+     */
+  }, {
+    key: "export_vox",
+    value: function export_vox() {
+      if (!this.is_active()) {
+        _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10___default().error('No voxel model. Use Voxel > New Voxel Model first.');
+        return false;
+      }
+      this.commit_slice();
+      var state = _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].voxel;
+      var out = (0,_core_voxel_vox_js__WEBPACK_IMPORTED_MODULE_13__.encode_vox)(state.volume, _core_voxel_js__WEBPACK_IMPORTED_MODULE_11__.unpack);
+      if (out.voxels === 0) {
+        _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10___default().error('Nothing to export - the model is empty.');
+        return false;
+      }
+      var blob = new Blob([out.bytes], {
+        type: 'application/octet-stream'
+      });
+      var link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'model-' + state.volume.w + 'x' + state.volume.d + 'x' + state.volume.h + '.vox';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(link.href);
+      if (out.folded > 0) {
+        //said out loud: .vox indices only reach 255, so anything past that was matched to the
+        //nearest colour already in the palette
+        _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10___default().warning('Exported ' + out.voxels + ' voxels. ' + out.folded + ' colours were folded onto the nearest of the 255 the format allows.');
+      } else {
+        _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10___default().success('Exported ' + out.voxels + ' voxels, ' + out.colors + ' colours.');
+      }
+      return true;
+    }
+
+    /**
+     * menu: Voxel > Import .vox
+     */
+  }, {
+    key: "import_vox",
+    value: function import_vox() {
+      var _this = this;
+      var input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.vox';
+      input.addEventListener('change', function () {
+        var file = this.files[0];
+        if (file == undefined) {
+          return;
+        }
+        var reader = new FileReader();
+        reader.onload = function (event) {
+          _this.import_vox_bytes(new Uint8Array(event.target.result));
+        };
+        reader.onerror = function () {
+          _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10___default().error('Could not read that file.');
+        };
+        reader.readAsArrayBuffer(file);
+      }, false);
+      input.click();
+    }
+
+    /**
+     * @param {Uint8Array} bytes
+     */
+  }, {
+    key: "import_vox_bytes",
+    value: (function () {
+      var _import_vox_bytes = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().mark(function _callee6(bytes) {
+        var loaded, pixel, v;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().wrap(function (_context6) {
+          while (1) switch (_context6.prev = _context6.next) {
+            case 0:
+              loaded = (0,_core_voxel_vox_js__WEBPACK_IMPORTED_MODULE_13__.decode_vox)(bytes, _core_voxel_js__WEBPACK_IMPORTED_MODULE_11__.create_volume, _core_voxel_js__WEBPACK_IMPORTED_MODULE_11__.pack);
+              if (!(loaded == null)) {
+                _context6.next = 1;
+                break;
+              }
+              _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10___default().error('That is not a readable .vox file.');
+              return _context6.abrupt("return", false);
+            case 1:
+              //a .vox brings its own dimensions, so this replaces the model rather than filling the
+              //current one - the alternative is silently cropping someone's work
+              _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].voxel = {
+                volume: loaded.volume,
+                axis: 'y',
+                slice: 0,
+                yaw: _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].voxel ? _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].voxel.yaw : 0,
+                enabled: true,
+                onion: _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].voxel && _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].voxel.onion ? _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].voxel.onion : {
+                  enabled: true,
+                  before: 1,
+                  after: 1
+                }
+              };
+              pixel = this.Base_gui.modules['tools/pixel'];
+              if (pixel) {
+                pixel.set_pixel_mode(true, true);
+              }
+              _context6.next = 2;
+              return this.reset_canvas_for_slice(true);
+            case 2:
+              v = loaded.volume;
+              _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10___default().success('Imported ' + loaded.voxels + ' voxels (' + v.w + ' x ' + v.d + ' x ' + v.h + ').' + (loaded.skipped > 0 ? ' ' + loaded.skipped + ' were outside the declared size and dropped.' : ''));
+              return _context6.abrupt("return", true);
+            case 3:
+            case "end":
+              return _context6.stop();
+          }
+        }, _callee6, this);
+      }));
+      function import_vox_bytes(_x5) {
+        return _import_vox_bytes.apply(this, arguments);
+      }
+      return import_vox_bytes;
+    }()
+    /**
      * menu: Voxel > Import Slices
      */
+    )
   }, {
     key: "import_slices",
     value: function import_slices() {
@@ -37793,27 +38243,27 @@ var Tools_voxel_class = /*#__PURE__*/function () {
   }, {
     key: "import_sheet",
     value: (function () {
-      var _import_sheet = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().mark(function _callee6(image) {
+      var _import_sheet = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().mark(function _callee7(image) {
         var state, dims, expected, canvas, ctx, i, img, pixels, p;
-        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().wrap(function (_context6) {
-          while (1) switch (_context6.prev = _context6.next) {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().wrap(function (_context7) {
+          while (1) switch (_context7.prev = _context7.next) {
             case 0:
               if (this.is_active()) {
-                _context6.next = 1;
+                _context7.next = 1;
                 break;
               }
               _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10___default().error('Create a voxel model first, so the strip has something to load into.');
-              return _context6.abrupt("return", false);
+              return _context7.abrupt("return", false);
             case 1:
               state = _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].voxel;
               dims = (0,_core_voxel_js__WEBPACK_IMPORTED_MODULE_11__.slice_dimensions)(state.volume, state.axis);
               expected = dims.width * dims.count;
               if (!(image.width !== expected || image.height !== dims.height)) {
-                _context6.next = 2;
+                _context7.next = 2;
                 break;
               }
               _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10___default().error('Expected a ' + expected + ' x ' + dims.height + ' strip for this axis, got ' + image.width + ' x ' + image.height + '.');
-              return _context6.abrupt("return", false);
+              return _context7.abrupt("return", false);
             case 2:
               canvas = document.createElement('canvas');
               canvas.width = image.width;
@@ -37829,18 +38279,18 @@ var Tools_voxel_class = /*#__PURE__*/function () {
                 }
                 (0,_core_voxel_js__WEBPACK_IMPORTED_MODULE_11__.write_slice)(state.volume, state.axis, i, pixels);
               }
-              _context6.next = 3;
+              _context7.next = 3;
               return this.reset_canvas_for_slice(false);
             case 3:
               _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10___default().success('Imported ' + dims.count + ' slices (' + (0,_core_voxel_js__WEBPACK_IMPORTED_MODULE_11__.count_filled)(state.volume) + ' voxels).');
-              return _context6.abrupt("return", true);
+              return _context7.abrupt("return", true);
             case 4:
             case "end":
-              return _context6.stop();
+              return _context7.stop();
           }
-        }, _callee6, this);
+        }, _callee7, this);
       }));
-      function import_sheet(_x5) {
+      function import_sheet(_x6) {
         return _import_sheet.apply(this, arguments);
       }
       return import_sheet;
