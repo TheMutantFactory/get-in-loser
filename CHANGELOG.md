@@ -304,6 +304,14 @@ Clicking **Fit** took you to 1%, and then nothing you drew landed where you clic
 
 ---
 
+## v0.1.30 — "Which One Am I Running"
+
+- **The version now sits at the end of the menu bar,** to the right of Help. Selectable, so it can be read off and pasted into a bug report.
+- **And it is now the version you are actually running,** which it previously was not. The number came from a build-time constant that reads `package.json` exactly once, when the dev server starts — so after a version bump, every rebuild kept reporting the old number. The build was fresh; the label was three releases stale, which made a working fix look as though it had not loaded at all and cost most of a session.
+- **That same stale number was going into saved files and into every feedback report,** so a report could name a version that was never the one running. All three now read from one place that is re-read on every build.
+
+---
+
 ## Unreleased — "???"
 
 - (redacted)

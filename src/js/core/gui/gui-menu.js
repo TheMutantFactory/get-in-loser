@@ -3,6 +3,7 @@
  * author: Vilius L.
  */
 
+import { VERSION_LABEL } from './../../libs/version.js';
 import config from './../../config.js';
 import menuDefinition from './../../config-menu.js';
 import Tools_translate_class from './../../modules/tools/translate.js';
@@ -31,6 +32,7 @@ class GUI_menu_class {
 			const item = menuDefinition[i];
 			menuTemplate += this.generate_menu_bar_item_template(item, i);
 		}
+		menuTemplate += this.generate_version_template();
 		menuTemplate += '</ul>';
 
 		this.menuContainer.innerHTML = menuTemplate;
@@ -52,6 +54,26 @@ class GUI_menu_class {
 		if (config.LANG != 'en') {
 			this.Tools_translate.translate(config.LANG, this.menuContainer);
 		}
+	}
+
+	/**
+	 * The running version, sat at the end of the menu bar.
+	 *
+	 * role="none" because it is a label, not a menu item: the menu bar's keyboard navigation walks
+	 * its menuitems, and a thing you cannot activate has no business being one of them.
+	 *
+	 * @returns {string}
+	 */
+	generate_version_template() {
+		//it comes from our own package.json, but it lands in innerHTML, so it gets the same
+		//treatment anything else would
+		const version = String(VERSION_LABEL).replace(/[^0-9A-Za-z.+-]/g, '');
+
+		if (version === '') {
+			return '';
+		}
+
+		return `<li role="none" class="menu_version"><span>${version}</span></li>`;
 	}
 
 	on(eventName, callback) {

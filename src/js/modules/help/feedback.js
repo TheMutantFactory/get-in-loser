@@ -12,6 +12,7 @@
  * it is, and never taken unless the box is ticked.
  */
 
+import { VERSION } from './../../libs/version.js';
 import config from './../../config.js';
 import Dialog_class from './../../libs/popup.js';
 import Helper_class from './../../libs/helpers.js';
@@ -134,7 +135,7 @@ class Help_feedback_class {
 
 		var envelope = build_envelope({
 			text: text,
-			app_version: typeof VERSION !== 'undefined' ? VERSION : 'unknown',
+			app_version: VERSION,
 			platform: detect_platform(window.navigator),
 			install_id: install_id(window.localStorage, () => this.random_id()),
 			tool: config.TOOL ? config.TOOL.name : null,

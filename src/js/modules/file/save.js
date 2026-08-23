@@ -1,3 +1,4 @@
+import { VERSION } from './../../libs/version.js';
 import app from './../../app.js';
 import config from './../../config.js';
 import Base_layers_class from './../../core/base-layers.js';

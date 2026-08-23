@@ -13290,9 +13290,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
 /* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
-/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../../config.js */ "./src/js/config.js");
-/* harmony import */ var _config_menu_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./../../config-menu.js */ "./src/js/config-menu.js");
-/* harmony import */ var _modules_tools_translate_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./../../modules/tools/translate.js */ "./src/js/modules/tools/translate.js");
+/* harmony import */ var _libs_version_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../../libs/version.js */ "./src/js/libs/version.js");
+/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./../../config.js */ "./src/js/config.js");
+/* harmony import */ var _config_menu_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./../../config-menu.js */ "./src/js/config-menu.js");
+/* harmony import */ var _modules_tools_translate_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./../../modules/tools/translate.js */ "./src/js/modules/tools/translate.js");
 
 
 function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t["return"] || t["return"](); } finally { if (u) throw o; } } }; }
@@ -13302,6 +13303,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
  * miniPaint - https://github.com/viliusle/miniPaint
  * author: Vilius L.
  */
+
 
 
 
@@ -13319,7 +13321,7 @@ var GUI_menu_class = /*#__PURE__*/function () {
     this.menuBarNode = null;
     this.lastFocusedMenuBarLink = 0;
     this.dropdownStack = [];
-    this.Tools_translate = new _modules_tools_translate_js__WEBPACK_IMPORTED_MODULE_4__["default"]();
+    this.Tools_translate = new _modules_tools_translate_js__WEBPACK_IMPORTED_MODULE_5__["default"]();
   }
   return (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__["default"])(GUI_menu_class, [{
     key: "render_main",
@@ -13327,10 +13329,11 @@ var GUI_menu_class = /*#__PURE__*/function () {
       var _this = this;
       this.menuContainer = document.getElementById('main_menu');
       var menuTemplate = '<ul class="menu_bar" role="menubar" tabindex="0">';
-      for (var i = 0; i < _config_menu_js__WEBPACK_IMPORTED_MODULE_3__["default"].length; i++) {
-        var item = _config_menu_js__WEBPACK_IMPORTED_MODULE_3__["default"][i];
+      for (var i = 0; i < _config_menu_js__WEBPACK_IMPORTED_MODULE_4__["default"].length; i++) {
+        var item = _config_menu_js__WEBPACK_IMPORTED_MODULE_4__["default"][i];
         menuTemplate += this.generate_menu_bar_item_template(item, i);
       }
+      menuTemplate += this.generate_version_template();
       menuTemplate += '</ul>';
       this.menuContainer.innerHTML = menuTemplate;
       this.menuBarNode = this.menuContainer.querySelector('[role="menubar"]');
@@ -13361,9 +13364,29 @@ var GUI_menu_class = /*#__PURE__*/function () {
         return _this.on_resize_window(event);
       }, true);
       document.body.classList.add('loaded');
-      if (_config_js__WEBPACK_IMPORTED_MODULE_2__["default"].LANG != 'en') {
-        this.Tools_translate.translate(_config_js__WEBPACK_IMPORTED_MODULE_2__["default"].LANG, this.menuContainer);
+      if (_config_js__WEBPACK_IMPORTED_MODULE_3__["default"].LANG != 'en') {
+        this.Tools_translate.translate(_config_js__WEBPACK_IMPORTED_MODULE_3__["default"].LANG, this.menuContainer);
       }
+    }
+
+    /**
+     * The running version, sat at the end of the menu bar.
+     *
+     * role="none" because it is a label, not a menu item: the menu bar's keyboard navigation walks
+     * its menuitems, and a thing you cannot activate has no business being one of them.
+     *
+     * @returns {string}
+     */
+  }, {
+    key: "generate_version_template",
+    value: function generate_version_template() {
+      //it comes from our own package.json, but it lands in innerHTML, so it gets the same
+      //treatment anything else would
+      var version = String(_libs_version_js__WEBPACK_IMPORTED_MODULE_2__.VERSION_LABEL).replace(/[^0-9A-Za-z.+-]/g, '');
+      if (version === '') {
+        return '';
+      }
+      return "<li role=\"none\" class=\"menu_version\"><span>".concat(version, "</span></li>");
     }
   }, {
     key: "on",
@@ -13586,7 +13609,7 @@ var GUI_menu_class = /*#__PURE__*/function () {
       var index = parseInt(link.getAttribute('data-index'), 10) || 0;
 
       // Find link definition
-      var children = _config_menu_js__WEBPACK_IMPORTED_MODULE_3__["default"];
+      var children = _config_menu_js__WEBPACK_IMPORTED_MODULE_4__["default"];
       for (var i = 0; i < level; i++) {
         var childIndex = this.dropdownStack[i] != null ? this.dropdownStack[i].index : index;
         children = children[childIndex].children;
@@ -13620,7 +13643,7 @@ var GUI_menu_class = /*#__PURE__*/function () {
       this.close_child_dropdowns(level);
 
       // Find child list in the menu definition
-      var children = _config_menu_js__WEBPACK_IMPORTED_MODULE_3__["default"];
+      var children = _config_menu_js__WEBPACK_IMPORTED_MODULE_4__["default"];
       for (var i = 0; i <= level; i++) {
         var childIndex = this.dropdownStack[i] != null ? this.dropdownStack[i].index : index;
         children = children[childIndex].children;
@@ -13638,8 +13661,8 @@ var GUI_menu_class = /*#__PURE__*/function () {
       }
       dropdownElement.innerHTML = dropdownTemplate;
       this.menuContainer.appendChild(dropdownElement);
-      if (_config_js__WEBPACK_IMPORTED_MODULE_2__["default"].LANG != 'en') {
-        this.Tools_translate.translate(_config_js__WEBPACK_IMPORTED_MODULE_2__["default"].LANG, this.menuContainer);
+      if (_config_js__WEBPACK_IMPORTED_MODULE_3__["default"].LANG != 'en') {
+        this.Tools_translate.translate(_config_js__WEBPACK_IMPORTED_MODULE_3__["default"].LANG, this.menuContainer);
       }
       if (focusAfterCreation) {
         dropdownElement.querySelector('a').focus();
@@ -23792,6 +23815,51 @@ var Smart_folder_class = /*#__PURE__*/function () {
 
 /***/ },
 
+/***/ "./src/js/libs/version.js"
+/*!********************************!*\
+  !*** ./src/js/libs/version.js ***!
+  \********************************/
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   VERSION: () => (/* binding */ VERSION),
+/* harmony export */   VERSION_LABEL: () => (/* binding */ VERSION_LABEL),
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _package_json__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../../../package.json */ "./package.json");
+/*
+ * get-in-loser - https://github.com/TheMutantFactory/get-in-loser
+ *
+ * What version is running, from the one place that knows.
+ *
+ * WHY THIS IS NOT THE `VERSION` GLOBAL. That global comes from webpack's DefinePlugin, which reads
+ * package.json ONCE, when the config is evaluated - that is, when the dev server starts. Bump the
+ * version and every rebuild after it still reports the old number, because the config is not
+ * re-evaluated. The build is fresh and the label is not.
+ *
+ * This cost real time: a session spent testing a fix while the app displayed a version from three
+ * releases earlier, which made it look as though the new code was not loading at all. Worse, that
+ * same stale number went into saved files and into every feedback report - so a bug report could
+ * name a version that was never the one running.
+ *
+ * Importing package.json makes it a module dependency, so webpack re-reads it whenever it changes,
+ * and one import means one answer everywhere.
+ */
+
+
+
+/** The running version, e.g. "0.1.29". */
+var VERSION = typeof _package_json__WEBPACK_IMPORTED_MODULE_0__.version === 'string' ? _package_json__WEBPACK_IMPORTED_MODULE_0__.version : '0.0.0';
+
+/** With the leading v, for display. */
+var VERSION_LABEL = 'v' + VERSION;
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (VERSION);
+
+/***/ },
+
 /***/ "./src/js/libs/vintage.js"
 /*!********************************!*\
   !*** ./src/js/libs/vintage.js ***!
@@ -31808,23 +31876,25 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
 /* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
-/* harmony import */ var _app_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../../app.js */ "./src/js/app.js");
-/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./../../config.js */ "./src/js/config.js");
-/* harmony import */ var _core_base_layers_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./../../core/base-layers.js */ "./src/js/core/base-layers.js");
-/* harmony import */ var _libs_helpers_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./../../libs/helpers.js */ "./src/js/libs/helpers.js");
-/* harmony import */ var _libs_popup_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./../../libs/popup.js */ "./src/js/libs/popup.js");
-/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./../../../../node_modules/alertifyjs/build/alertify.min.js */ "./node_modules/alertifyjs/build/alertify.min.js");
-/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(_node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_7__);
-/* harmony import */ var _node_modules_blueimp_canvas_to_blob_js_canvas_to_blob_min_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./../../../../node_modules/blueimp-canvas-to-blob/js/canvas-to-blob.min.js */ "./node_modules/blueimp-canvas-to-blob/js/canvas-to-blob.min.js");
-/* harmony import */ var _node_modules_blueimp_canvas_to_blob_js_canvas_to_blob_min_js__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(_node_modules_blueimp_canvas_to_blob_js_canvas_to_blob_min_js__WEBPACK_IMPORTED_MODULE_8__);
-/* harmony import */ var _node_modules_file_saver_dist_FileSaver_min_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./../../../../node_modules/file-saver/dist/FileSaver.min.js */ "./node_modules/file-saver/dist/FileSaver.min.js");
-/* harmony import */ var _node_modules_file_saver_dist_FileSaver_min_js__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(_node_modules_file_saver_dist_FileSaver_min_js__WEBPACK_IMPORTED_MODULE_9__);
-/* harmony import */ var _node_modules_gif_js_optimized___WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./../../../../node_modules/gif.js.optimized/ */ "./node_modules/gif.js.optimized/dist/gif.js");
-/* harmony import */ var _node_modules_gif_js_optimized___WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(_node_modules_gif_js_optimized___WEBPACK_IMPORTED_MODULE_10__);
-/* harmony import */ var _libs_canvastotiff_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./../../libs/canvastotiff.js */ "./src/js/libs/canvastotiff.js");
-/* harmony import */ var _tools_settings__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../tools/settings */ "./src/js/modules/tools/settings.js");
-/* harmony import */ var _core_voxel_js__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./../../core/voxel.js */ "./src/js/core/voxel.js");
-/* harmony import */ var _libs_file_format_js__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./../../libs/file-format.js */ "./src/js/libs/file-format.js");
+/* harmony import */ var _libs_version_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./../../libs/version.js */ "./src/js/libs/version.js");
+/* harmony import */ var _app_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./../../app.js */ "./src/js/app.js");
+/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./../../config.js */ "./src/js/config.js");
+/* harmony import */ var _core_base_layers_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./../../core/base-layers.js */ "./src/js/core/base-layers.js");
+/* harmony import */ var _libs_helpers_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./../../libs/helpers.js */ "./src/js/libs/helpers.js");
+/* harmony import */ var _libs_popup_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./../../libs/popup.js */ "./src/js/libs/popup.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./../../../../node_modules/alertifyjs/build/alertify.min.js */ "./node_modules/alertifyjs/build/alertify.min.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(_node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_8__);
+/* harmony import */ var _node_modules_blueimp_canvas_to_blob_js_canvas_to_blob_min_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./../../../../node_modules/blueimp-canvas-to-blob/js/canvas-to-blob.min.js */ "./node_modules/blueimp-canvas-to-blob/js/canvas-to-blob.min.js");
+/* harmony import */ var _node_modules_blueimp_canvas_to_blob_js_canvas_to_blob_min_js__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(_node_modules_blueimp_canvas_to_blob_js_canvas_to_blob_min_js__WEBPACK_IMPORTED_MODULE_9__);
+/* harmony import */ var _node_modules_file_saver_dist_FileSaver_min_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./../../../../node_modules/file-saver/dist/FileSaver.min.js */ "./node_modules/file-saver/dist/FileSaver.min.js");
+/* harmony import */ var _node_modules_file_saver_dist_FileSaver_min_js__WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(_node_modules_file_saver_dist_FileSaver_min_js__WEBPACK_IMPORTED_MODULE_10__);
+/* harmony import */ var _node_modules_gif_js_optimized___WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./../../../../node_modules/gif.js.optimized/ */ "./node_modules/gif.js.optimized/dist/gif.js");
+/* harmony import */ var _node_modules_gif_js_optimized___WEBPACK_IMPORTED_MODULE_11___default = /*#__PURE__*/__webpack_require__.n(_node_modules_gif_js_optimized___WEBPACK_IMPORTED_MODULE_11__);
+/* harmony import */ var _libs_canvastotiff_js__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./../../libs/canvastotiff.js */ "./src/js/libs/canvastotiff.js");
+/* harmony import */ var _tools_settings__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../tools/settings */ "./src/js/modules/tools/settings.js");
+/* harmony import */ var _core_voxel_js__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./../../core/voxel.js */ "./src/js/core/voxel.js");
+/* harmony import */ var _libs_file_format_js__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./../../libs/file-format.js */ "./src/js/libs/file-format.js");
+
 
 
 
@@ -31855,10 +31925,10 @@ var File_save_class = /*#__PURE__*/function () {
       return instance;
     }
     instance = this;
-    this.Base_layers = new _core_base_layers_js__WEBPACK_IMPORTED_MODULE_4__["default"]();
-    this.Helper = new _libs_helpers_js__WEBPACK_IMPORTED_MODULE_5__["default"]();
-    this.POP = new _libs_popup_js__WEBPACK_IMPORTED_MODULE_6__["default"]();
-    this.Tools_settings = new _tools_settings__WEBPACK_IMPORTED_MODULE_12__["default"]();
+    this.Base_layers = new _core_base_layers_js__WEBPACK_IMPORTED_MODULE_5__["default"]();
+    this.Helper = new _libs_helpers_js__WEBPACK_IMPORTED_MODULE_6__["default"]();
+    this.POP = new _libs_popup_js__WEBPACK_IMPORTED_MODULE_7__["default"]();
+    this.Tools_settings = new _tools_settings__WEBPACK_IMPORTED_MODULE_13__["default"]();
     this.set_events();
 
     //save types config
@@ -31939,11 +32009,11 @@ var File_save_class = /*#__PURE__*/function () {
       save_default = save_default + " - " + file_types[save_default];
       var calc_size_value = false;
       var calc_size = false;
-      if (_config_js__WEBPACK_IMPORTED_MODULE_3__["default"].WIDTH * _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].HEIGHT < 1000000) {
+      if (_config_js__WEBPACK_IMPORTED_MODULE_4__["default"].WIDTH * _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].HEIGHT < 1000000) {
         calc_size_value = true;
         calc_size = true;
       }
-      var file_name = _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].layers[0].name;
+      var file_name = _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].layers[0].name;
       var parts = file_name.split('.');
       if (parts.length > 1) file_name = parts[parts.length - 2];
       file_name = file_name.replace(/ /g, "-");
@@ -31994,29 +32064,29 @@ var File_save_class = /*#__PURE__*/function () {
         },
         on_finish: function on_finish(params) {
           if (params.layers == 'Separated' || params.layers == 'Separated (original types)') {
-            var active_layer = _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].layer.id;
+            var active_layer = _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].layer.id;
             var original_layer_type = params.layers;
 
             //alter params
             params.layers = 'Selected';
-            for (var i in _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].layers) {
-              if (_config_js__WEBPACK_IMPORTED_MODULE_3__["default"].layers[i].visible == false) continue;
+            for (var i in _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].layers) {
+              if (_config_js__WEBPACK_IMPORTED_MODULE_4__["default"].layers[i].visible == false) continue;
 
               //detect type
               if (original_layer_type == 'Separated (original types)') {
                 //detect type from file name
                 params.type = _this.SAVE_TYPES[_this.default_extension];
                 for (var j in _this.SAVE_TYPES) {
-                  if (_this.Helper.strpos(_config_js__WEBPACK_IMPORTED_MODULE_3__["default"].layers[i].name.toLowerCase(), '.' + j.toLowerCase()) !== false) {
+                  if (_this.Helper.strpos(_config_js__WEBPACK_IMPORTED_MODULE_4__["default"].layers[i].name.toLowerCase(), '.' + j.toLowerCase()) !== false) {
                     params.type = j;
                     break;
                   }
                 }
               }
-              new _app_js__WEBPACK_IMPORTED_MODULE_2__["default"].Actions.Select_layer_action(_config_js__WEBPACK_IMPORTED_MODULE_3__["default"].layers[i].id, true)["do"]();
+              new _app_js__WEBPACK_IMPORTED_MODULE_3__["default"].Actions.Select_layer_action(_config_js__WEBPACK_IMPORTED_MODULE_4__["default"].layers[i].id, true)["do"]();
               _this.save_action(params, true);
             }
-            new _app_js__WEBPACK_IMPORTED_MODULE_2__["default"].Actions.Select_layer_action(active_layer, true)["do"]();
+            new _app_js__WEBPACK_IMPORTED_MODULE_3__["default"].Actions.Select_layer_action(active_layer, true)["do"]();
           } else {
             _this.save_action(params);
           }
@@ -32035,14 +32105,14 @@ var File_save_class = /*#__PURE__*/function () {
     key: "save_data_url",
     value: function save_data_url() {
       var max = 10 * 1000 * 1000;
-      if (_config_js__WEBPACK_IMPORTED_MODULE_3__["default"].WIDTH * _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].WIDTH > 10 * 1000 * 1000) {
-        _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_7___default().error('Size is too big, max ' + this.Helper.number_format(max, 0) + ' pixels.');
+      if (_config_js__WEBPACK_IMPORTED_MODULE_4__["default"].WIDTH * _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].WIDTH > 10 * 1000 * 1000) {
+        _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_8___default().error('Size is too big, max ' + this.Helper.number_format(max, 0) + ' pixels.');
         return;
       }
       var canvas = document.createElement('canvas');
       var ctx = canvas.getContext("2d");
-      canvas.width = _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].WIDTH;
-      canvas.height = _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].HEIGHT;
+      canvas.width = _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].WIDTH;
+      canvas.height = _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].HEIGHT;
       this.disable_canvas_smooth(ctx);
 
       //ask data
@@ -32050,7 +32120,7 @@ var File_save_class = /*#__PURE__*/function () {
       var data_url = canvas.toDataURL();
       max = 1000 * 1000;
       if (data_url.length > max) {
-        _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_7___default().error('Size is too big, max ' + this.Helper.number_format(max, 0) + ' bytes.');
+        _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_8___default().error('Size is too big, max ' + this.Helper.number_format(max, 0) + ' bytes.');
         return;
       }
       var settings = {
@@ -32119,14 +32189,14 @@ var File_save_class = /*#__PURE__*/function () {
         //create temp canvas
         var canvas = document.createElement('canvas');
         var ctx = canvas.getContext("2d");
-        canvas.width = _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].WIDTH;
-        canvas.height = _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].HEIGHT;
+        canvas.width = _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].WIDTH;
+        canvas.height = _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].HEIGHT;
         this.disable_canvas_smooth(ctx);
 
         //ask data
-        if (user_response.layers == 'Selected' && type != 'GIF' && _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].layer.type != null) {
+        if (user_response.layers == 'Selected' && type != 'GIF' && _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].layer.type != null) {
           //only current layer !!!
-          var layer = _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].layer;
+          var layer = _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].layer;
           var initial_x = null;
           var initial_y = null;
           if (layer.x != null && layer.y != null && layer.width != null && layer.height != null) {
@@ -32148,7 +32218,7 @@ var File_save_class = /*#__PURE__*/function () {
           this.Base_layers.convert_layers_to_canvas(ctx, null, false);
         }
       }
-      if (type != 'JSON' && (type == 'JPG' || _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].TRANSPARENCY == false)) {
+      if (type != 'JSON' && (type == 'JPG' || _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].TRANSPARENCY == false)) {
         //add white background
         ctx.globalCompositeOperation = 'destination-over';
         this.fillCanvasBackground(ctx, '#ffffff');
@@ -32205,7 +32275,7 @@ var File_save_class = /*#__PURE__*/function () {
       } else if (type == 'TIFF') {
         //tiff
         var data_header = "image/tiff";
-        _libs_canvastotiff_js__WEBPACK_IMPORTED_MODULE_11__["default"].toBlob(canvas, function (blob) {
+        _libs_canvastotiff_js__WEBPACK_IMPORTED_MODULE_12__["default"].toBlob(canvas, function (blob) {
           _this.update_file_size(blob.size);
         }, data_header);
       } else if (type == 'JSON') {
@@ -32232,7 +32302,7 @@ var File_save_class = /*#__PURE__*/function () {
     value: function save_action(user_response, autoname) {
       var fname = user_response.name;
       if (autoname === true && user_response.layers == 'Selected') {
-        fname = _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].layer.name;
+        fname = _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].layer.name;
       }
       var quality = parseInt(user_response.quality);
       if (quality > 100 || quality < 1 || isNaN(quality) == true) quality = 90;
@@ -32268,13 +32338,13 @@ var File_save_class = /*#__PURE__*/function () {
         } else {
           canvas = document.createElement('canvas');
           ctx = canvas.getContext("2d");
-          canvas.width = _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].WIDTH;
-          canvas.height = _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].HEIGHT;
+          canvas.width = _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].WIDTH;
+          canvas.height = _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].HEIGHT;
           this.disable_canvas_smooth(ctx);
           this.Base_layers.convert_layers_to_canvas(ctx, null, false);
         }
       }
-      if (type != 'JSON' && (type == 'JPG' || _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].TRANSPARENCY == false)) {
+      if (type != 'JSON' && (type == 'JPG' || _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].TRANSPARENCY == false)) {
         //add white background
         ctx.globalCompositeOperation = 'destination-over';
         this.fillCanvasBackground(ctx, '#ffffff');
@@ -32292,13 +32362,13 @@ var File_save_class = /*#__PURE__*/function () {
 
         //save using lib
         canvas.toBlob(function (blob) {
-          _node_modules_file_saver_dist_FileSaver_min_js__WEBPACK_IMPORTED_MODULE_9___default().saveAs(blob, fname);
+          _node_modules_file_saver_dist_FileSaver_min_js__WEBPACK_IMPORTED_MODULE_10___default().saveAs(blob, fname);
         });
       } else if (type == 'JPG') {
         //jpg
         if (this.Helper.strpos(fname, '.jpg') == false) fname = fname + ".jpg";
         canvas.toBlob(function (blob) {
-          _node_modules_file_saver_dist_FileSaver_min_js__WEBPACK_IMPORTED_MODULE_9___default().saveAs(blob, fname);
+          _node_modules_file_saver_dist_FileSaver_min_js__WEBPACK_IMPORTED_MODULE_10___default().saveAs(blob, fname);
         }, "image/jpeg", quality);
       } else if (type == 'WEBP') {
         //WEBP
@@ -32308,7 +32378,7 @@ var File_save_class = /*#__PURE__*/function () {
         //check support
         if (this.check_format_support(canvas, data_header) == false) return false;
         canvas.toBlob(function (blob) {
-          _node_modules_file_saver_dist_FileSaver_min_js__WEBPACK_IMPORTED_MODULE_9___default().saveAs(blob, fname);
+          _node_modules_file_saver_dist_FileSaver_min_js__WEBPACK_IMPORTED_MODULE_10___default().saveAs(blob, fname);
         }, data_header, quality);
       } else if (type == 'AVIF') {
         //AVIF
@@ -32318,7 +32388,7 @@ var File_save_class = /*#__PURE__*/function () {
         //check support
         if (this.check_format_support(canvas, data_header) == false) return false;
         canvas.toBlob(function (blob) {
-          _node_modules_file_saver_dist_FileSaver_min_js__WEBPACK_IMPORTED_MODULE_9___default().saveAs(blob, fname);
+          _node_modules_file_saver_dist_FileSaver_min_js__WEBPACK_IMPORTED_MODULE_10___default().saveAs(blob, fname);
         }, data_header, quality);
       } else if (type == 'BMP') {
         //bmp
@@ -32328,14 +32398,14 @@ var File_save_class = /*#__PURE__*/function () {
         //check support
         if (this.check_format_support(canvas, data_header) == false) return false;
         canvas.toBlob(function (blob) {
-          _node_modules_file_saver_dist_FileSaver_min_js__WEBPACK_IMPORTED_MODULE_9___default().saveAs(blob, fname);
+          _node_modules_file_saver_dist_FileSaver_min_js__WEBPACK_IMPORTED_MODULE_10___default().saveAs(blob, fname);
         }, data_header);
       } else if (type == 'TIFF') {
         //tiff
         if (this.Helper.strpos(fname, '.tiff') == false) fname = fname + ".tiff";
         var data_header = "image/tiff";
-        _libs_canvastotiff_js__WEBPACK_IMPORTED_MODULE_11__["default"].toBlob(canvas, function (blob) {
-          _node_modules_file_saver_dist_FileSaver_min_js__WEBPACK_IMPORTED_MODULE_9___default().saveAs(blob, fname);
+        _libs_canvastotiff_js__WEBPACK_IMPORTED_MODULE_12__["default"].toBlob(canvas, function (blob) {
+          _node_modules_file_saver_dist_FileSaver_min_js__WEBPACK_IMPORTED_MODULE_10___default().saveAs(blob, fname);
         }, data_header);
       } else if (type == 'JSON') {
         //json - full data with layers
@@ -32345,7 +32415,7 @@ var File_save_class = /*#__PURE__*/function () {
           type: "text/plain"
         });
         //var data = window.URL.createObjectURL(blob); //html5
-        _node_modules_file_saver_dist_FileSaver_min_js__WEBPACK_IMPORTED_MODULE_9___default().saveAs(blob, fname);
+        _node_modules_file_saver_dist_FileSaver_min_js__WEBPACK_IMPORTED_MODULE_10___default().saveAs(blob, fname);
       } else if (type == 'GIF') {
         //gif
         var cores = navigator.hardwareConcurrency || 4;
@@ -32354,24 +32424,24 @@ var File_save_class = /*#__PURE__*/function () {
           quality: 10,
           //1-30, lower is better
           repeat: 0,
-          width: _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].WIDTH,
-          height: _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].HEIGHT,
+          width: _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].WIDTH,
+          height: _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].HEIGHT,
           dither: 'FloydSteinberg-serpentine',
           workerScript: './src/js/libs/gifjs/gif.worker.js'
         };
-        if (_config_js__WEBPACK_IMPORTED_MODULE_3__["default"].TRANSPARENCY == true) {
+        if (_config_js__WEBPACK_IMPORTED_MODULE_4__["default"].TRANSPARENCY == true) {
           gif_settings.transparent = 'rgba(0,0,0,0)';
         }
-        var gif = new (_node_modules_gif_js_optimized___WEBPACK_IMPORTED_MODULE_10___default())(gif_settings);
+        var gif = new (_node_modules_gif_js_optimized___WEBPACK_IMPORTED_MODULE_11___default())(gif_settings);
 
         //add frames
-        for (var i = 0; i < _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].layers.length; i++) {
-          if (_config_js__WEBPACK_IMPORTED_MODULE_3__["default"].layers[i].visible == false) continue;
-          ctx.clearRect(0, 0, _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].WIDTH, _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].HEIGHT);
-          if (_config_js__WEBPACK_IMPORTED_MODULE_3__["default"].TRANSPARENCY == false) {
+        for (var i = 0; i < _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].layers.length; i++) {
+          if (_config_js__WEBPACK_IMPORTED_MODULE_4__["default"].layers[i].visible == false) continue;
+          ctx.clearRect(0, 0, _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].WIDTH, _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].HEIGHT);
+          if (_config_js__WEBPACK_IMPORTED_MODULE_4__["default"].TRANSPARENCY == false) {
             this.fillCanvasBackground(ctx, '#ffffff');
           }
-          this.Base_layers.convert_layers_to_canvas(ctx, _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].layers[i].id, false);
+          this.Base_layers.convert_layers_to_canvas(ctx, _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].layers[i].id, false);
           gif.addFrame(ctx, {
             copy: true,
             delay: delay
@@ -32379,15 +32449,15 @@ var File_save_class = /*#__PURE__*/function () {
         }
         gif.render();
         gif.on('finished', function (blob) {
-          _node_modules_file_saver_dist_FileSaver_min_js__WEBPACK_IMPORTED_MODULE_9___default().saveAs(blob, fname);
+          _node_modules_file_saver_dist_FileSaver_min_js__WEBPACK_IMPORTED_MODULE_10___default().saveAs(blob, fname);
         });
       }
     }
   }, {
     key: "fillCanvasBackground",
     value: function fillCanvasBackground(ctx, color) {
-      var width = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].WIDTH;
-      var height = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].HEIGHT;
+      var width = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].WIDTH;
+      var height = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].HEIGHT;
       ctx.beginPath();
       ctx.rect(0, 0, width, height);
       ctx.fillStyle = color;
@@ -32401,7 +32471,7 @@ var File_save_class = /*#__PURE__*/function () {
       if (data_header != actualType && data_header != "text/plain") {
         if (show_error == undefined || show_error == true) {
           //error - no support
-          _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_7___default().error('Your browser does not support this format.');
+          _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_8___default().error('Your browser does not support this format.');
         }
         return false;
       }
@@ -32426,61 +32496,61 @@ var File_save_class = /*#__PURE__*/function () {
       //data
       var export_data = {};
       export_data.info = {
-        width: _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].WIDTH,
-        height: _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].HEIGHT,
+        width: _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].WIDTH,
+        height: _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].HEIGHT,
         about: 'Image data with multi-layers. Can be opened using miniPaint - ' + 'https://github.com/viliusle/miniPaint',
         date: today,
         //how to READ the file. Separate from `version` below, which is only what wrote it -
         //conflating the two is what broke loading after this fork reset its version to 0.1.x.
         //See libs/file-format.js.
-        format: _libs_file_format_js__WEBPACK_IMPORTED_MODULE_14__.FILE_FORMAT,
-        version: "0.1.28",
-        layer_active: _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].layer.id,
-        guides: _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].guides
+        format: _libs_file_format_js__WEBPACK_IMPORTED_MODULE_15__.FILE_FORMAT,
+        version: _libs_version_js__WEBPACK_IMPORTED_MODULE_2__.VERSION,
+        layer_active: _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].layer.id,
+        guides: _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].guides
       };
 
       //fonts
-      export_data.user_fonts = _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].user_fonts;
+      export_data.user_fonts = _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].user_fonts;
 
       //voxel model. The layers only ever hold the ONE slice being edited, so without this the
       //other 23 are gone on reload - which is most of the work.
-      if (_config_js__WEBPACK_IMPORTED_MODULE_3__["default"].voxel != null && _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].voxel.volume != null) {
+      if (_config_js__WEBPACK_IMPORTED_MODULE_4__["default"].voxel != null && _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].voxel.volume != null) {
         export_data.voxel = {
-          volume: (0,_core_voxel_js__WEBPACK_IMPORTED_MODULE_13__.serialize_volume)(_config_js__WEBPACK_IMPORTED_MODULE_3__["default"].voxel.volume),
-          axis: _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].voxel.axis,
-          slice: _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].voxel.slice,
-          yaw: _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].voxel.yaw,
-          enabled: _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].voxel.enabled,
-          onion: _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].voxel.onion
+          volume: (0,_core_voxel_js__WEBPACK_IMPORTED_MODULE_14__.serialize_volume)(_config_js__WEBPACK_IMPORTED_MODULE_4__["default"].voxel.volume),
+          axis: _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].voxel.axis,
+          slice: _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].voxel.slice,
+          yaw: _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].voxel.yaw,
+          enabled: _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].voxel.enabled,
+          onion: _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].voxel.onion
         };
       }
 
       //layers
       export_data.layers = [];
-      for (var i in _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].layers) {
+      for (var i in _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].layers) {
         var layer = {};
-        for (var j in _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].layers[i]) {
+        for (var j in _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].layers[i]) {
           if (j[0] == '_' || j == 'link_canvas') {
             //private data
             continue;
           }
-          layer[j] = _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].layers[i][j];
+          layer[j] = _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].layers[i][j];
         }
         export_data.layers.push(layer);
       }
 
       //image data
       export_data.data = [];
-      for (var i in _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].layers) {
-        if (_config_js__WEBPACK_IMPORTED_MODULE_3__["default"].layers[i].type != 'image') continue;
+      for (var i in _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].layers) {
+        if (_config_js__WEBPACK_IMPORTED_MODULE_4__["default"].layers[i].type != 'image') continue;
         var canvas = document.createElement('canvas');
-        canvas.width = _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].layers[i].width_original;
-        canvas.height = _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].layers[i].height_original;
+        canvas.width = _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].layers[i].width_original;
+        canvas.height = _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].layers[i].height_original;
         this.disable_canvas_smooth(canvas.getContext("2d"));
-        canvas.getContext('2d').drawImage(_config_js__WEBPACK_IMPORTED_MODULE_3__["default"].layers[i].link, 0, 0);
+        canvas.getContext('2d').drawImage(_config_js__WEBPACK_IMPORTED_MODULE_4__["default"].layers[i].link, 0, 0);
         var data_tmp = canvas.toDataURL("image/png");
         export_data.data.push({
-          id: _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].layers[i].id,
+          id: _config_js__WEBPACK_IMPORTED_MODULE_4__["default"].layers[i].id,
           data: data_tmp
         });
         canvas.width = 1;
@@ -32547,7 +32617,7 @@ var Help_about_class = /*#__PURE__*/function () {
           html: '<span class="about-name">Get in loser</span>'
         }, {
           title: "Version:",
-          value: "0.1.28"
+          value: "0.1.30"
         }, {
           title: "Description:",
           value: "A personal browser-based image editor."
@@ -32692,13 +32762,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./../../config.js */ "./src/js/config.js");
-/* harmony import */ var _libs_popup_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./../../libs/popup.js */ "./src/js/libs/popup.js");
-/* harmony import */ var _libs_helpers_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./../../libs/helpers.js */ "./src/js/libs/helpers.js");
-/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./../../../../node_modules/alertifyjs/build/alertify.min.js */ "./node_modules/alertifyjs/build/alertify.min.js");
-/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(_node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_8__);
-/* harmony import */ var _libs_feedback_envelope_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./../../libs/feedback-envelope.js */ "./src/js/libs/feedback-envelope.js");
-/* harmony import */ var _libs_feedback_outbox_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./../../libs/feedback-outbox.js */ "./src/js/libs/feedback-outbox.js");
+/* harmony import */ var _libs_version_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./../../libs/version.js */ "./src/js/libs/version.js");
+/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./../../config.js */ "./src/js/config.js");
+/* harmony import */ var _libs_popup_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./../../libs/popup.js */ "./src/js/libs/popup.js");
+/* harmony import */ var _libs_helpers_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./../../libs/helpers.js */ "./src/js/libs/helpers.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./../../../../node_modules/alertifyjs/build/alertify.min.js */ "./node_modules/alertifyjs/build/alertify.min.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(_node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_9__);
+/* harmony import */ var _libs_feedback_envelope_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./../../libs/feedback-envelope.js */ "./src/js/libs/feedback-envelope.js");
+/* harmony import */ var _libs_feedback_outbox_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./../../libs/feedback-outbox.js */ "./src/js/libs/feedback-outbox.js");
 
 
 
@@ -32725,6 +32796,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
 /** No trailing slash. */
 var ENDPOINT = 'https://feedback.mutantfactory.net';
 
@@ -32740,8 +32812,8 @@ var Help_feedback_class = /*#__PURE__*/function () {
       return instance;
     }
     instance = this;
-    this.POP = new _libs_popup_js__WEBPACK_IMPORTED_MODULE_6__["default"]();
-    this.Helper = new _libs_helpers_js__WEBPACK_IMPORTED_MODULE_7__["default"]();
+    this.POP = new _libs_popup_js__WEBPACK_IMPORTED_MODULE_7__["default"]();
+    this.Helper = new _libs_helpers_js__WEBPACK_IMPORTED_MODULE_8__["default"]();
     this.draining = false;
 
     //an instance property, not the constant, so a staging service can be pointed at from the
@@ -32763,7 +32835,7 @@ var Help_feedback_class = /*#__PURE__*/function () {
     key: "feedback",
     value: function feedback() {
       var _this = this;
-      var waiting = (0,_libs_feedback_outbox_js__WEBPACK_IMPORTED_MODULE_10__.pending_count)(window.localStorage);
+      var waiting = (0,_libs_feedback_outbox_js__WEBPACK_IMPORTED_MODULE_11__.pending_count)(window.localStorage);
       var settings = {
         title: 'Send Feedback',
         params: [{
@@ -32818,28 +32890,28 @@ var Help_feedback_class = /*#__PURE__*/function () {
                 break;
               }
               //the server would 400 this; saying so here costs the reporter nothing
-              _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_8___default().error('Add a note first - a report with no note cannot be acted on.');
+              _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_9___default().error('Add a note first - a report with no note cannot be acted on.');
               return _context.abrupt("return");
             case 1:
-              if (!(text.length > _libs_feedback_envelope_js__WEBPACK_IMPORTED_MODULE_9__.TEXT_LIMIT)) {
+              if (!(text.length > _libs_feedback_envelope_js__WEBPACK_IMPORTED_MODULE_10__.TEXT_LIMIT)) {
                 _context.next = 2;
                 break;
               }
-              _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_8___default().error('That note is too long (limit ' + Math.floor(_libs_feedback_envelope_js__WEBPACK_IMPORTED_MODULE_9__.TEXT_LIMIT / 1024) + ' KB).');
+              _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_9___default().error('That note is too long (limit ' + Math.floor(_libs_feedback_envelope_js__WEBPACK_IMPORTED_MODULE_10__.TEXT_LIMIT / 1024) + ' KB).');
               return _context.abrupt("return");
             case 2:
               image = null;
               if (params.include_shot === true) {
                 image = this.capture_canvas();
               }
-              envelope = (0,_libs_feedback_envelope_js__WEBPACK_IMPORTED_MODULE_9__.build_envelope)({
+              envelope = (0,_libs_feedback_envelope_js__WEBPACK_IMPORTED_MODULE_10__.build_envelope)({
                 text: text,
-                app_version:  true ? "0.1.28" : 0,
-                platform: (0,_libs_feedback_envelope_js__WEBPACK_IMPORTED_MODULE_9__.detect_platform)(window.navigator),
-                install_id: (0,_libs_feedback_envelope_js__WEBPACK_IMPORTED_MODULE_9__.install_id)(window.localStorage, function () {
+                app_version: _libs_version_js__WEBPACK_IMPORTED_MODULE_5__.VERSION,
+                platform: (0,_libs_feedback_envelope_js__WEBPACK_IMPORTED_MODULE_10__.detect_platform)(window.navigator),
+                install_id: (0,_libs_feedback_envelope_js__WEBPACK_IMPORTED_MODULE_10__.install_id)(window.localStorage, function () {
                   return _this3.random_id();
                 }),
-                tool: _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].TOOL ? _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].TOOL.name : null,
+                tool: _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].TOOL ? _config_js__WEBPACK_IMPORTED_MODULE_6__["default"].TOOL.name : null,
                 //ONE FACT, ONE FIELD. The flag says what is actually attached, not what was asked for:
                 //if the capture failed there is no image, and claiming one nobody can produce is worse
                 //than a plain no.
@@ -32849,13 +32921,13 @@ var Help_feedback_class = /*#__PURE__*/function () {
                 _context.next = 3;
                 break;
               }
-              _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_8___default().error('Add a note first.');
+              _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_9___default().error('Add a note first.');
               return _context.abrupt("return");
             case 3:
               if (params.include_shot === true && image === null) {
-                _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_8___default().warning('The canvas picture could not be captured; sending the note without it.');
+                _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_9___default().warning('The canvas picture could not be captured; sending the note without it.');
               }
-              (0,_libs_feedback_outbox_js__WEBPACK_IMPORTED_MODULE_10__.enqueue)(window.localStorage, {
+              (0,_libs_feedback_outbox_js__WEBPACK_IMPORTED_MODULE_11__.enqueue)(window.localStorage, {
                 envelope: envelope,
                 image: image
               });
@@ -32864,15 +32936,15 @@ var Help_feedback_class = /*#__PURE__*/function () {
             case 4:
               result = _context.sent;
               if (result.sent > 0) {
-                _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_8___default().success('Thanks - your feedback was sent.');
+                _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_9___default().success('Thanks - your feedback was sent.');
               } else if (result.rejected > 0) {
-                _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_8___default().error('The server refused that report. It has been kept, not sent again.');
+                _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_9___default().error('The server refused that report. It has been kept, not sent again.');
               } else {
                 //HELD. The report is safe either way, but do not assert a reason that has not been
                 //checked: a browser reports a CORS refusal as a plain network failure, so "you are
                 //offline" was being said to people who were online and whose origin simply was not on
                 //the allow-list. Only navigator.onLine can rule offline in, and only in one direction.
-                _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_8___default().warning(window.navigator.onLine === false ? 'Saved. Your feedback will be sent next time you are online.' : 'Saved, but the feedback service could not be reached. It will be sent later.');
+                _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_9___default().warning(window.navigator.onLine === false ? 'Saved. Your feedback will be sent next time you are online.' : 'Saved, but the feedback service could not be reached. It will be sent later.');
               }
             case 5:
             case "end":
@@ -32910,7 +32982,7 @@ var Help_feedback_class = /*#__PURE__*/function () {
         var url = target.toDataURL('image/png');
 
         //a data URL is ~4/3 of the bytes it encodes; refuse rather than have the server 413 it
-        if (url.length * 0.75 > _libs_feedback_envelope_js__WEBPACK_IMPORTED_MODULE_9__.IMAGE_LIMIT) {
+        if (url.length * 0.75 > _libs_feedback_envelope_js__WEBPACK_IMPORTED_MODULE_10__.IMAGE_LIMIT) {
           return null;
         }
         return url;
@@ -32961,7 +33033,7 @@ var Help_feedback_class = /*#__PURE__*/function () {
               this.draining = true;
               _context2.prev = 2;
               _context2.next = 3;
-              return (0,_libs_feedback_outbox_js__WEBPACK_IMPORTED_MODULE_10__.drain)(window.localStorage, function (entry) {
+              return (0,_libs_feedback_outbox_js__WEBPACK_IMPORTED_MODULE_11__.drain)(window.localStorage, function (entry) {
                 return _this4.send(entry);
               });
             case 3:
@@ -33046,7 +33118,7 @@ var Help_feedback_class = /*#__PURE__*/function () {
               _context3.prev = 6;
               _t2 = _context3["catch"](4);
             case 7:
-              outcome = (0,_libs_feedback_envelope_js__WEBPACK_IMPORTED_MODULE_9__.classify_response)(response.status, body);
+              outcome = (0,_libs_feedback_envelope_js__WEBPACK_IMPORTED_MODULE_10__.classify_response)(response.status, body);
               if (!(outcome === 'sent' && entry.image && body && body.id && body.image_accepted)) {
                 _context3.next = 8;
                 break;
@@ -52983,7 +53055,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, ":root {\n\t--menu-dropdown-background-color: #ffffff;\n\t--menu-dropdown-border-color: #49844d;\n\t--menu-dropdown-text-color: #2d2b2b;\n\t--menu-dropdown-text-muted-color: #aaaaaa;\n\t--menu-dropdown-hover-background-color: #adecab;\n\t--menu-dropdown-hover-text-color: #2d2d2d;\n\t--menu-dropdown-divider-color: #e5e5e5;\n}\n\n.sr_only {\n\tposition: absolute;\n\twidth: 1px;\n\theight: 1px;\n\tpadding: 0;\n\toverflow: hidden;\n\tclip: rect(0, 0, 0, 0);\n\twhite-space: nowrap;\n\tborder: 0;\n}\n\n.main_menu {\n\tposition: fixed;\n\ttop: 0;\n\tleft: 0;\n\tright: 0;\n\tz-index: 100;\n}\n.main_menu > ul.menu_bar {\n\tdisplay: flex;\n\tflex-direction: row;\n\tlist-style: none;\n\tpadding: 0;\n\tmargin: 0;\n\theight: 30px;\n\tpadding-left: 10px;\n\tbackground: var(--menu-background-color);\n}\n.main_menu > ul.menu_bar > li {\n\tpadding: 0;\n\toverflow: hidden;\n\theight: 100%;\n}\n.main_menu > ul.menu_bar > li > a {\n\tdisplay: flex;\n\talign-items: center;\n\tfont-size: 14px;\n\tcolor: var(--menu-text-color);\n\ttext-decoration: none;\n\tpadding: 0 10px;\n\theight: 100%;\n}\n.main_menu > ul.menu_bar > li > a::-moz-focus-inner {\n\tborder: 0;\n}\n.main_menu > ul.menu_bar > li > a:focus {\n\toutline: none;\n\tbox-shadow: 0 -3px var(--menu-dropdown-background-color) inset;\n}\n.main_menu > ul.menu_bar > li > a:hover {\n\tbackground: var(--menu-dropdown-hover-background-color);\n\tbox-shadow: none;\n\tcolor: var(--menu-dropdown-hover-text-color);\n}\n.main_menu > ul.menu_bar > li > a[aria-expanded=\"true\"] {\n\tbackground: var(--menu-dropdown-background-color);\n\tbox-shadow: none;\n\tcolor: var(--menu-dropdown-text-color);\n}\n.main_menu > ul.menu_bar > li > a > * {\n\tpointer-events: none;\n}\n\n.main_menu > ul.menu_dropdown {\n\tdisplay: flex;\n\tflex-direction: column;\n\tposition: fixed;\n\ttop: 0;\n\tleft: 0;\n\tlist-style: none;\n\tpadding: 0;\n\tmargin: 0;\n\toverflow-x: hidden;\n\toverflow-y: auto;\n\tmin-width: 150px;\n\tbox-shadow: 0 0 0 1px var(--menu-dropdown-border-color);\n\tbackground: var(--menu-dropdown-background-color);\n}\n.main_menu > ul.menu_dropdown > li {\n\tpadding: 0;\n}\n.main_menu > ul.menu_dropdown > li > hr {\n\tbackground: none;\n\tborder: 1px solid var(--menu-dropdown-divider-color);\n\tborder-bottom: none;\n\tmargin: 0;\n}\n.main_menu > ul.menu_dropdown > li > a {\n\tdisplay: flex;\n\tflex-direction: row;\n\talign-items: center;\n\tposition: relative;\n\theight: 30px;\n\tpadding: 0 10px;\n\tfont-size: 14px;\n\tline-height: 30px;\n\ttext-decoration: none;\n\tcolor: var(--menu-dropdown-text-color);\n}\n.main_menu > ul.menu_dropdown > li > ::-moz-focus-inner {\n\tborder: 0;\n}\n.main_menu > ul.menu_dropdown > li > a:focus {\n\toutline: none;\n\tbox-shadow: 0 0 0 2px var(--menu-dropdown-hover-background-color) inset;\n}\n.main_menu > ul.menu_dropdown > li > a:hover {\n\tbackground: var(--menu-dropdown-hover-background-color);\n\tbox-shadow: none;\n\tcolor: var(--menu-dropdown-hover-text-color);\n}\n.main_menu > ul.menu_dropdown > li > a[aria-expanded=\"true\"] {\n\tbackground: var(--menu-dropdown-hover-background-color);\n\tbox-shadow: none;\n\tcolor: var(--menu-dropdown-hover-text-color);\n}\n.main_menu > ul.menu_dropdown > li > a[aria-haspopup=\"true\"]::after {\n\tposition: absolute;\n\tcontent: \">\";\n\tright: 9px;\n\twidth: 5px;\n\ttransform: scaleY(2);\n\tcolor: #808080;\n}\n.main_menu > ul.menu_dropdown > li > a[aria-haspopup=\"true\"] > .name {\n\tmargin-right: 8px;\n}\n.main_menu > ul.menu_dropdown > li > a[target=\"_blank\"]::after {\n\tcontent: \"\";\n\twidth: 10px;\n\theight: 10px;\n\tmargin-left: 5px;\n\tbackground: url('images/icons/external.png') no-repeat center center;\n\tbackground-size: auto 8px;\n\topacity: 0.3;\n}\n.main_menu > ul.menu_dropdown > li > a > * {\n\tpointer-events: none;\n}\n.main_menu > ul.menu_dropdown > li > a > .name {\n\tflex-grow: 1;\n\toverflow: hidden;\n\twhite-space: nowrap;\n}\n.main_menu > ul.menu_dropdown > li > a > .shortcut {\n\tflex-shrink: 1;\n\tcolor: var(--menu-dropdown-text-muted-color);\n}\n\n\n.mobile_menu {\n\tdisplay: none;\n\tposition: absolute;\n\twidth: 100%;\n\ttop: 0;\n}\n.left_mobile_menu, .right_mobile_menu {\n\tposition: absolute;\n\twidth: 50px;\n\theight: 50px;\n\tdisplay: block;\n\ttop: 0;\n\tz-index: 200;\n\tborder: 0;\n\toutline: 0;\n\tcursor: pointer;\n\tbackground-color: transparent;\n}\n.left_mobile_menu:after, .right_mobile_menu:after {\n\tposition: absolute;\n\tcontent: '';\n\tleft:0;\n\ttop:0;\n\tbottom:0;\n\tright:0;\n\tfilter: var(--mobile-menu-toggle-filter);\n\tbackground: url('images/icons/menu.svg') no-repeat center center;\n\tbackground-size: auto 26px;\n}\n.left_mobile_menu { left:0; }\n.right_mobile_menu { right:0; }\n\n@media screen and (max-width:700px) {\n\t.mobile_menu {\n\t\tdisplay: block;\n\t}\n\t.main_menu > ul.menu_bar {\n\t\theight: 50px;\n\t\tpadding-left: 50px;\n\t\tpadding-right: 50px;\n\t}\n}", "",{"version":3,"sources":["webpack://./src/css/menu.css"],"names":[],"mappings":"AAAA;CACC,yCAAyC;CACzC,qCAAqC;CACrC,mCAAmC;CACnC,yCAAyC;CACzC,+CAA+C;CAC/C,yCAAyC;CACzC,sCAAsC;AACvC;;AAEA;CACC,kBAAkB;CAClB,UAAU;CACV,WAAW;CACX,UAAU;CACV,gBAAgB;CAChB,sBAAsB;CACtB,mBAAmB;CACnB,SAAS;AACV;;AAEA;CACC,eAAe;CACf,MAAM;CACN,OAAO;CACP,QAAQ;CACR,YAAY;AACb;AACA;CACC,aAAa;CACb,mBAAmB;CACnB,gBAAgB;CAChB,UAAU;CACV,SAAS;CACT,YAAY;CACZ,kBAAkB;CAClB,wCAAwC;AACzC;AACA;CACC,UAAU;CACV,gBAAgB;CAChB,YAAY;AACb;AACA;CACC,aAAa;CACb,mBAAmB;CACnB,eAAe;CACf,6BAA6B;CAC7B,qBAAqB;CACrB,eAAe;CACf,YAAY;AACb;AACA;CACC,SAAS;AACV;AACA;CACC,aAAa;CACb,8DAA8D;AAC/D;AACA;CACC,uDAAuD;CACvD,gBAAgB;CAChB,4CAA4C;AAC7C;AACA;CACC,iDAAiD;CACjD,gBAAgB;CAChB,sCAAsC;AACvC;AACA;CACC,oBAAoB;AACrB;;AAEA;CACC,aAAa;CACb,sBAAsB;CACtB,eAAe;CACf,MAAM;CACN,OAAO;CACP,gBAAgB;CAChB,UAAU;CACV,SAAS;CACT,kBAAkB;CAClB,gBAAgB;CAChB,gBAAgB;CAChB,uDAAuD;CACvD,iDAAiD;AAClD;AACA;CACC,UAAU;AACX;AACA;CACC,gBAAgB;CAChB,oDAAoD;CACpD,mBAAmB;CACnB,SAAS;AACV;AACA;CACC,aAAa;CACb,mBAAmB;CACnB,mBAAmB;CACnB,kBAAkB;CAClB,YAAY;CACZ,eAAe;CACf,eAAe;CACf,iBAAiB;CACjB,qBAAqB;CACrB,sCAAsC;AACvC;AACA;CACC,SAAS;AACV;AACA;CACC,aAAa;CACb,uEAAuE;AACxE;AACA;CACC,uDAAuD;CACvD,gBAAgB;CAChB,4CAA4C;AAC7C;AACA;CACC,uDAAuD;CACvD,gBAAgB;CAChB,4CAA4C;AAC7C;AACA;CACC,kBAAkB;CAClB,YAAY;CACZ,UAAU;CACV,UAAU;CACV,oBAAoB;CACpB,cAAc;AACf;AACA;CACC,iBAAiB;AAClB;AACA;CACC,WAAW;CACX,WAAW;CACX,YAAY;CACZ,gBAAgB;CAChB,oEAAoE;CACpE,yBAAyB;CACzB,YAAY;AACb;AACA;CACC,oBAAoB;AACrB;AACA;CACC,YAAY;CACZ,gBAAgB;CAChB,mBAAmB;AACpB;AACA;CACC,cAAc;CACd,4CAA4C;AAC7C;;;AAGA;CACC,aAAa;CACb,kBAAkB;CAClB,WAAW;CACX,MAAM;AACP;AACA;CACC,kBAAkB;CAClB,WAAW;CACX,YAAY;CACZ,cAAc;CACd,MAAM;CACN,YAAY;CACZ,SAAS;CACT,UAAU;CACV,eAAe;CACf,6BAA6B;AAC9B;AACA;CACC,kBAAkB;CAClB,WAAW;CACX,MAAM;CACN,KAAK;CACL,QAAQ;CACR,OAAO;CACP,wCAAwC;CACxC,gEAAgE;CAChE,0BAA0B;AAC3B;AACA,oBAAoB,MAAM,EAAE;AAC5B,qBAAqB,OAAO,EAAE;;AAE9B;CACC;EACC,cAAc;CACf;CACA;EACC,YAAY;EACZ,kBAAkB;EAClB,mBAAmB;CACpB;AACD","sourcesContent":[":root {\n\t--menu-dropdown-background-color: #ffffff;\n\t--menu-dropdown-border-color: #49844d;\n\t--menu-dropdown-text-color: #2d2b2b;\n\t--menu-dropdown-text-muted-color: #aaaaaa;\n\t--menu-dropdown-hover-background-color: #adecab;\n\t--menu-dropdown-hover-text-color: #2d2d2d;\n\t--menu-dropdown-divider-color: #e5e5e5;\n}\n\n.sr_only {\n\tposition: absolute;\n\twidth: 1px;\n\theight: 1px;\n\tpadding: 0;\n\toverflow: hidden;\n\tclip: rect(0, 0, 0, 0);\n\twhite-space: nowrap;\n\tborder: 0;\n}\n\n.main_menu {\n\tposition: fixed;\n\ttop: 0;\n\tleft: 0;\n\tright: 0;\n\tz-index: 100;\n}\n.main_menu > ul.menu_bar {\n\tdisplay: flex;\n\tflex-direction: row;\n\tlist-style: none;\n\tpadding: 0;\n\tmargin: 0;\n\theight: 30px;\n\tpadding-left: 10px;\n\tbackground: var(--menu-background-color);\n}\n.main_menu > ul.menu_bar > li {\n\tpadding: 0;\n\toverflow: hidden;\n\theight: 100%;\n}\n.main_menu > ul.menu_bar > li > a {\n\tdisplay: flex;\n\talign-items: center;\n\tfont-size: 14px;\n\tcolor: var(--menu-text-color);\n\ttext-decoration: none;\n\tpadding: 0 10px;\n\theight: 100%;\n}\n.main_menu > ul.menu_bar > li > a::-moz-focus-inner {\n\tborder: 0;\n}\n.main_menu > ul.menu_bar > li > a:focus {\n\toutline: none;\n\tbox-shadow: 0 -3px var(--menu-dropdown-background-color) inset;\n}\n.main_menu > ul.menu_bar > li > a:hover {\n\tbackground: var(--menu-dropdown-hover-background-color);\n\tbox-shadow: none;\n\tcolor: var(--menu-dropdown-hover-text-color);\n}\n.main_menu > ul.menu_bar > li > a[aria-expanded=\"true\"] {\n\tbackground: var(--menu-dropdown-background-color);\n\tbox-shadow: none;\n\tcolor: var(--menu-dropdown-text-color);\n}\n.main_menu > ul.menu_bar > li > a > * {\n\tpointer-events: none;\n}\n\n.main_menu > ul.menu_dropdown {\n\tdisplay: flex;\n\tflex-direction: column;\n\tposition: fixed;\n\ttop: 0;\n\tleft: 0;\n\tlist-style: none;\n\tpadding: 0;\n\tmargin: 0;\n\toverflow-x: hidden;\n\toverflow-y: auto;\n\tmin-width: 150px;\n\tbox-shadow: 0 0 0 1px var(--menu-dropdown-border-color);\n\tbackground: var(--menu-dropdown-background-color);\n}\n.main_menu > ul.menu_dropdown > li {\n\tpadding: 0;\n}\n.main_menu > ul.menu_dropdown > li > hr {\n\tbackground: none;\n\tborder: 1px solid var(--menu-dropdown-divider-color);\n\tborder-bottom: none;\n\tmargin: 0;\n}\n.main_menu > ul.menu_dropdown > li > a {\n\tdisplay: flex;\n\tflex-direction: row;\n\talign-items: center;\n\tposition: relative;\n\theight: 30px;\n\tpadding: 0 10px;\n\tfont-size: 14px;\n\tline-height: 30px;\n\ttext-decoration: none;\n\tcolor: var(--menu-dropdown-text-color);\n}\n.main_menu > ul.menu_dropdown > li > ::-moz-focus-inner {\n\tborder: 0;\n}\n.main_menu > ul.menu_dropdown > li > a:focus {\n\toutline: none;\n\tbox-shadow: 0 0 0 2px var(--menu-dropdown-hover-background-color) inset;\n}\n.main_menu > ul.menu_dropdown > li > a:hover {\n\tbackground: var(--menu-dropdown-hover-background-color);\n\tbox-shadow: none;\n\tcolor: var(--menu-dropdown-hover-text-color);\n}\n.main_menu > ul.menu_dropdown > li > a[aria-expanded=\"true\"] {\n\tbackground: var(--menu-dropdown-hover-background-color);\n\tbox-shadow: none;\n\tcolor: var(--menu-dropdown-hover-text-color);\n}\n.main_menu > ul.menu_dropdown > li > a[aria-haspopup=\"true\"]::after {\n\tposition: absolute;\n\tcontent: \">\";\n\tright: 9px;\n\twidth: 5px;\n\ttransform: scaleY(2);\n\tcolor: #808080;\n}\n.main_menu > ul.menu_dropdown > li > a[aria-haspopup=\"true\"] > .name {\n\tmargin-right: 8px;\n}\n.main_menu > ul.menu_dropdown > li > a[target=\"_blank\"]::after {\n\tcontent: \"\";\n\twidth: 10px;\n\theight: 10px;\n\tmargin-left: 5px;\n\tbackground: url('images/icons/external.png') no-repeat center center;\n\tbackground-size: auto 8px;\n\topacity: 0.3;\n}\n.main_menu > ul.menu_dropdown > li > a > * {\n\tpointer-events: none;\n}\n.main_menu > ul.menu_dropdown > li > a > .name {\n\tflex-grow: 1;\n\toverflow: hidden;\n\twhite-space: nowrap;\n}\n.main_menu > ul.menu_dropdown > li > a > .shortcut {\n\tflex-shrink: 1;\n\tcolor: var(--menu-dropdown-text-muted-color);\n}\n\n\n.mobile_menu {\n\tdisplay: none;\n\tposition: absolute;\n\twidth: 100%;\n\ttop: 0;\n}\n.left_mobile_menu, .right_mobile_menu {\n\tposition: absolute;\n\twidth: 50px;\n\theight: 50px;\n\tdisplay: block;\n\ttop: 0;\n\tz-index: 200;\n\tborder: 0;\n\toutline: 0;\n\tcursor: pointer;\n\tbackground-color: transparent;\n}\n.left_mobile_menu:after, .right_mobile_menu:after {\n\tposition: absolute;\n\tcontent: '';\n\tleft:0;\n\ttop:0;\n\tbottom:0;\n\tright:0;\n\tfilter: var(--mobile-menu-toggle-filter);\n\tbackground: url('images/icons/menu.svg') no-repeat center center;\n\tbackground-size: auto 26px;\n}\n.left_mobile_menu { left:0; }\n.right_mobile_menu { right:0; }\n\n@media screen and (max-width:700px) {\n\t.mobile_menu {\n\t\tdisplay: block;\n\t}\n\t.main_menu > ul.menu_bar {\n\t\theight: 50px;\n\t\tpadding-left: 50px;\n\t\tpadding-right: 50px;\n\t}\n}"],"sourceRoot":""}]);
+___CSS_LOADER_EXPORT___.push([module.id, ":root {\n\t--menu-dropdown-background-color: #ffffff;\n\t--menu-dropdown-border-color: #49844d;\n\t--menu-dropdown-text-color: #2d2b2b;\n\t--menu-dropdown-text-muted-color: #aaaaaa;\n\t--menu-dropdown-hover-background-color: #adecab;\n\t--menu-dropdown-hover-text-color: #2d2d2d;\n\t--menu-dropdown-divider-color: #e5e5e5;\n}\n\n.sr_only {\n\tposition: absolute;\n\twidth: 1px;\n\theight: 1px;\n\tpadding: 0;\n\toverflow: hidden;\n\tclip: rect(0, 0, 0, 0);\n\twhite-space: nowrap;\n\tborder: 0;\n}\n\n.main_menu {\n\tposition: fixed;\n\ttop: 0;\n\tleft: 0;\n\tright: 0;\n\tz-index: 100;\n}\n.main_menu > ul.menu_bar {\n\tdisplay: flex;\n\tflex-direction: row;\n\tlist-style: none;\n\tpadding: 0;\n\tmargin: 0;\n\theight: 30px;\n\tpadding-left: 10px;\n\tbackground: var(--menu-background-color);\n}\n.main_menu > ul.menu_bar > li {\n\tpadding: 0;\n\toverflow: hidden;\n\theight: 100%;\n}\n.main_menu > ul.menu_bar > li > a {\n\tdisplay: flex;\n\talign-items: center;\n\tfont-size: 14px;\n\tcolor: var(--menu-text-color);\n\ttext-decoration: none;\n\tpadding: 0 10px;\n\theight: 100%;\n}\n.main_menu > ul.menu_bar > li.menu_version {\n\tdisplay: flex;\n\talign-items: center;\n\tpadding: 0 10px;\n\tfont-size: 12px;\n\tcolor: var(--menu-text-color);\n\topacity: 0.5;\n\t/* it is there to be read off and quoted in a bug report, so let it be selected */\n\tuser-select: text;\n\tcursor: default;\n}\n.main_menu > ul.menu_bar > li > a::-moz-focus-inner {\n\tborder: 0;\n}\n.main_menu > ul.menu_bar > li > a:focus {\n\toutline: none;\n\tbox-shadow: 0 -3px var(--menu-dropdown-background-color) inset;\n}\n.main_menu > ul.menu_bar > li > a:hover {\n\tbackground: var(--menu-dropdown-hover-background-color);\n\tbox-shadow: none;\n\tcolor: var(--menu-dropdown-hover-text-color);\n}\n.main_menu > ul.menu_bar > li > a[aria-expanded=\"true\"] {\n\tbackground: var(--menu-dropdown-background-color);\n\tbox-shadow: none;\n\tcolor: var(--menu-dropdown-text-color);\n}\n.main_menu > ul.menu_bar > li > a > * {\n\tpointer-events: none;\n}\n\n.main_menu > ul.menu_dropdown {\n\tdisplay: flex;\n\tflex-direction: column;\n\tposition: fixed;\n\ttop: 0;\n\tleft: 0;\n\tlist-style: none;\n\tpadding: 0;\n\tmargin: 0;\n\toverflow-x: hidden;\n\toverflow-y: auto;\n\tmin-width: 150px;\n\tbox-shadow: 0 0 0 1px var(--menu-dropdown-border-color);\n\tbackground: var(--menu-dropdown-background-color);\n}\n.main_menu > ul.menu_dropdown > li {\n\tpadding: 0;\n}\n.main_menu > ul.menu_dropdown > li > hr {\n\tbackground: none;\n\tborder: 1px solid var(--menu-dropdown-divider-color);\n\tborder-bottom: none;\n\tmargin: 0;\n}\n.main_menu > ul.menu_dropdown > li > a {\n\tdisplay: flex;\n\tflex-direction: row;\n\talign-items: center;\n\tposition: relative;\n\theight: 30px;\n\tpadding: 0 10px;\n\tfont-size: 14px;\n\tline-height: 30px;\n\ttext-decoration: none;\n\tcolor: var(--menu-dropdown-text-color);\n}\n.main_menu > ul.menu_dropdown > li > ::-moz-focus-inner {\n\tborder: 0;\n}\n.main_menu > ul.menu_dropdown > li > a:focus {\n\toutline: none;\n\tbox-shadow: 0 0 0 2px var(--menu-dropdown-hover-background-color) inset;\n}\n.main_menu > ul.menu_dropdown > li > a:hover {\n\tbackground: var(--menu-dropdown-hover-background-color);\n\tbox-shadow: none;\n\tcolor: var(--menu-dropdown-hover-text-color);\n}\n.main_menu > ul.menu_dropdown > li > a[aria-expanded=\"true\"] {\n\tbackground: var(--menu-dropdown-hover-background-color);\n\tbox-shadow: none;\n\tcolor: var(--menu-dropdown-hover-text-color);\n}\n.main_menu > ul.menu_dropdown > li > a[aria-haspopup=\"true\"]::after {\n\tposition: absolute;\n\tcontent: \">\";\n\tright: 9px;\n\twidth: 5px;\n\ttransform: scaleY(2);\n\tcolor: #808080;\n}\n.main_menu > ul.menu_dropdown > li > a[aria-haspopup=\"true\"] > .name {\n\tmargin-right: 8px;\n}\n.main_menu > ul.menu_dropdown > li > a[target=\"_blank\"]::after {\n\tcontent: \"\";\n\twidth: 10px;\n\theight: 10px;\n\tmargin-left: 5px;\n\tbackground: url('images/icons/external.png') no-repeat center center;\n\tbackground-size: auto 8px;\n\topacity: 0.3;\n}\n.main_menu > ul.menu_dropdown > li > a > * {\n\tpointer-events: none;\n}\n.main_menu > ul.menu_dropdown > li > a > .name {\n\tflex-grow: 1;\n\toverflow: hidden;\n\twhite-space: nowrap;\n}\n.main_menu > ul.menu_dropdown > li > a > .shortcut {\n\tflex-shrink: 1;\n\tcolor: var(--menu-dropdown-text-muted-color);\n}\n\n\n.mobile_menu {\n\tdisplay: none;\n\tposition: absolute;\n\twidth: 100%;\n\ttop: 0;\n}\n.left_mobile_menu, .right_mobile_menu {\n\tposition: absolute;\n\twidth: 50px;\n\theight: 50px;\n\tdisplay: block;\n\ttop: 0;\n\tz-index: 200;\n\tborder: 0;\n\toutline: 0;\n\tcursor: pointer;\n\tbackground-color: transparent;\n}\n.left_mobile_menu:after, .right_mobile_menu:after {\n\tposition: absolute;\n\tcontent: '';\n\tleft:0;\n\ttop:0;\n\tbottom:0;\n\tright:0;\n\tfilter: var(--mobile-menu-toggle-filter);\n\tbackground: url('images/icons/menu.svg') no-repeat center center;\n\tbackground-size: auto 26px;\n}\n.left_mobile_menu { left:0; }\n.right_mobile_menu { right:0; }\n\n@media screen and (max-width:700px) {\n\t.mobile_menu {\n\t\tdisplay: block;\n\t}\n\t.main_menu > ul.menu_bar {\n\t\theight: 50px;\n\t\tpadding-left: 50px;\n\t\tpadding-right: 50px;\n\t}\n}", "",{"version":3,"sources":["webpack://./src/css/menu.css"],"names":[],"mappings":"AAAA;CACC,yCAAyC;CACzC,qCAAqC;CACrC,mCAAmC;CACnC,yCAAyC;CACzC,+CAA+C;CAC/C,yCAAyC;CACzC,sCAAsC;AACvC;;AAEA;CACC,kBAAkB;CAClB,UAAU;CACV,WAAW;CACX,UAAU;CACV,gBAAgB;CAChB,sBAAsB;CACtB,mBAAmB;CACnB,SAAS;AACV;;AAEA;CACC,eAAe;CACf,MAAM;CACN,OAAO;CACP,QAAQ;CACR,YAAY;AACb;AACA;CACC,aAAa;CACb,mBAAmB;CACnB,gBAAgB;CAChB,UAAU;CACV,SAAS;CACT,YAAY;CACZ,kBAAkB;CAClB,wCAAwC;AACzC;AACA;CACC,UAAU;CACV,gBAAgB;CAChB,YAAY;AACb;AACA;CACC,aAAa;CACb,mBAAmB;CACnB,eAAe;CACf,6BAA6B;CAC7B,qBAAqB;CACrB,eAAe;CACf,YAAY;AACb;AACA;CACC,aAAa;CACb,mBAAmB;CACnB,eAAe;CACf,eAAe;CACf,6BAA6B;CAC7B,YAAY;CACZ,iFAAiF;CACjF,iBAAiB;CACjB,eAAe;AAChB;AACA;CACC,SAAS;AACV;AACA;CACC,aAAa;CACb,8DAA8D;AAC/D;AACA;CACC,uDAAuD;CACvD,gBAAgB;CAChB,4CAA4C;AAC7C;AACA;CACC,iDAAiD;CACjD,gBAAgB;CAChB,sCAAsC;AACvC;AACA;CACC,oBAAoB;AACrB;;AAEA;CACC,aAAa;CACb,sBAAsB;CACtB,eAAe;CACf,MAAM;CACN,OAAO;CACP,gBAAgB;CAChB,UAAU;CACV,SAAS;CACT,kBAAkB;CAClB,gBAAgB;CAChB,gBAAgB;CAChB,uDAAuD;CACvD,iDAAiD;AAClD;AACA;CACC,UAAU;AACX;AACA;CACC,gBAAgB;CAChB,oDAAoD;CACpD,mBAAmB;CACnB,SAAS;AACV;AACA;CACC,aAAa;CACb,mBAAmB;CACnB,mBAAmB;CACnB,kBAAkB;CAClB,YAAY;CACZ,eAAe;CACf,eAAe;CACf,iBAAiB;CACjB,qBAAqB;CACrB,sCAAsC;AACvC;AACA;CACC,SAAS;AACV;AACA;CACC,aAAa;CACb,uEAAuE;AACxE;AACA;CACC,uDAAuD;CACvD,gBAAgB;CAChB,4CAA4C;AAC7C;AACA;CACC,uDAAuD;CACvD,gBAAgB;CAChB,4CAA4C;AAC7C;AACA;CACC,kBAAkB;CAClB,YAAY;CACZ,UAAU;CACV,UAAU;CACV,oBAAoB;CACpB,cAAc;AACf;AACA;CACC,iBAAiB;AAClB;AACA;CACC,WAAW;CACX,WAAW;CACX,YAAY;CACZ,gBAAgB;CAChB,oEAAoE;CACpE,yBAAyB;CACzB,YAAY;AACb;AACA;CACC,oBAAoB;AACrB;AACA;CACC,YAAY;CACZ,gBAAgB;CAChB,mBAAmB;AACpB;AACA;CACC,cAAc;CACd,4CAA4C;AAC7C;;;AAGA;CACC,aAAa;CACb,kBAAkB;CAClB,WAAW;CACX,MAAM;AACP;AACA;CACC,kBAAkB;CAClB,WAAW;CACX,YAAY;CACZ,cAAc;CACd,MAAM;CACN,YAAY;CACZ,SAAS;CACT,UAAU;CACV,eAAe;CACf,6BAA6B;AAC9B;AACA;CACC,kBAAkB;CAClB,WAAW;CACX,MAAM;CACN,KAAK;CACL,QAAQ;CACR,OAAO;CACP,wCAAwC;CACxC,gEAAgE;CAChE,0BAA0B;AAC3B;AACA,oBAAoB,MAAM,EAAE;AAC5B,qBAAqB,OAAO,EAAE;;AAE9B;CACC;EACC,cAAc;CACf;CACA;EACC,YAAY;EACZ,kBAAkB;EAClB,mBAAmB;CACpB;AACD","sourcesContent":[":root {\n\t--menu-dropdown-background-color: #ffffff;\n\t--menu-dropdown-border-color: #49844d;\n\t--menu-dropdown-text-color: #2d2b2b;\n\t--menu-dropdown-text-muted-color: #aaaaaa;\n\t--menu-dropdown-hover-background-color: #adecab;\n\t--menu-dropdown-hover-text-color: #2d2d2d;\n\t--menu-dropdown-divider-color: #e5e5e5;\n}\n\n.sr_only {\n\tposition: absolute;\n\twidth: 1px;\n\theight: 1px;\n\tpadding: 0;\n\toverflow: hidden;\n\tclip: rect(0, 0, 0, 0);\n\twhite-space: nowrap;\n\tborder: 0;\n}\n\n.main_menu {\n\tposition: fixed;\n\ttop: 0;\n\tleft: 0;\n\tright: 0;\n\tz-index: 100;\n}\n.main_menu > ul.menu_bar {\n\tdisplay: flex;\n\tflex-direction: row;\n\tlist-style: none;\n\tpadding: 0;\n\tmargin: 0;\n\theight: 30px;\n\tpadding-left: 10px;\n\tbackground: var(--menu-background-color);\n}\n.main_menu > ul.menu_bar > li {\n\tpadding: 0;\n\toverflow: hidden;\n\theight: 100%;\n}\n.main_menu > ul.menu_bar > li > a {\n\tdisplay: flex;\n\talign-items: center;\n\tfont-size: 14px;\n\tcolor: var(--menu-text-color);\n\ttext-decoration: none;\n\tpadding: 0 10px;\n\theight: 100%;\n}\n.main_menu > ul.menu_bar > li.menu_version {\n\tdisplay: flex;\n\talign-items: center;\n\tpadding: 0 10px;\n\tfont-size: 12px;\n\tcolor: var(--menu-text-color);\n\topacity: 0.5;\n\t/* it is there to be read off and quoted in a bug report, so let it be selected */\n\tuser-select: text;\n\tcursor: default;\n}\n.main_menu > ul.menu_bar > li > a::-moz-focus-inner {\n\tborder: 0;\n}\n.main_menu > ul.menu_bar > li > a:focus {\n\toutline: none;\n\tbox-shadow: 0 -3px var(--menu-dropdown-background-color) inset;\n}\n.main_menu > ul.menu_bar > li > a:hover {\n\tbackground: var(--menu-dropdown-hover-background-color);\n\tbox-shadow: none;\n\tcolor: var(--menu-dropdown-hover-text-color);\n}\n.main_menu > ul.menu_bar > li > a[aria-expanded=\"true\"] {\n\tbackground: var(--menu-dropdown-background-color);\n\tbox-shadow: none;\n\tcolor: var(--menu-dropdown-text-color);\n}\n.main_menu > ul.menu_bar > li > a > * {\n\tpointer-events: none;\n}\n\n.main_menu > ul.menu_dropdown {\n\tdisplay: flex;\n\tflex-direction: column;\n\tposition: fixed;\n\ttop: 0;\n\tleft: 0;\n\tlist-style: none;\n\tpadding: 0;\n\tmargin: 0;\n\toverflow-x: hidden;\n\toverflow-y: auto;\n\tmin-width: 150px;\n\tbox-shadow: 0 0 0 1px var(--menu-dropdown-border-color);\n\tbackground: var(--menu-dropdown-background-color);\n}\n.main_menu > ul.menu_dropdown > li {\n\tpadding: 0;\n}\n.main_menu > ul.menu_dropdown > li > hr {\n\tbackground: none;\n\tborder: 1px solid var(--menu-dropdown-divider-color);\n\tborder-bottom: none;\n\tmargin: 0;\n}\n.main_menu > ul.menu_dropdown > li > a {\n\tdisplay: flex;\n\tflex-direction: row;\n\talign-items: center;\n\tposition: relative;\n\theight: 30px;\n\tpadding: 0 10px;\n\tfont-size: 14px;\n\tline-height: 30px;\n\ttext-decoration: none;\n\tcolor: var(--menu-dropdown-text-color);\n}\n.main_menu > ul.menu_dropdown > li > ::-moz-focus-inner {\n\tborder: 0;\n}\n.main_menu > ul.menu_dropdown > li > a:focus {\n\toutline: none;\n\tbox-shadow: 0 0 0 2px var(--menu-dropdown-hover-background-color) inset;\n}\n.main_menu > ul.menu_dropdown > li > a:hover {\n\tbackground: var(--menu-dropdown-hover-background-color);\n\tbox-shadow: none;\n\tcolor: var(--menu-dropdown-hover-text-color);\n}\n.main_menu > ul.menu_dropdown > li > a[aria-expanded=\"true\"] {\n\tbackground: var(--menu-dropdown-hover-background-color);\n\tbox-shadow: none;\n\tcolor: var(--menu-dropdown-hover-text-color);\n}\n.main_menu > ul.menu_dropdown > li > a[aria-haspopup=\"true\"]::after {\n\tposition: absolute;\n\tcontent: \">\";\n\tright: 9px;\n\twidth: 5px;\n\ttransform: scaleY(2);\n\tcolor: #808080;\n}\n.main_menu > ul.menu_dropdown > li > a[aria-haspopup=\"true\"] > .name {\n\tmargin-right: 8px;\n}\n.main_menu > ul.menu_dropdown > li > a[target=\"_blank\"]::after {\n\tcontent: \"\";\n\twidth: 10px;\n\theight: 10px;\n\tmargin-left: 5px;\n\tbackground: url('images/icons/external.png') no-repeat center center;\n\tbackground-size: auto 8px;\n\topacity: 0.3;\n}\n.main_menu > ul.menu_dropdown > li > a > * {\n\tpointer-events: none;\n}\n.main_menu > ul.menu_dropdown > li > a > .name {\n\tflex-grow: 1;\n\toverflow: hidden;\n\twhite-space: nowrap;\n}\n.main_menu > ul.menu_dropdown > li > a > .shortcut {\n\tflex-shrink: 1;\n\tcolor: var(--menu-dropdown-text-muted-color);\n}\n\n\n.mobile_menu {\n\tdisplay: none;\n\tposition: absolute;\n\twidth: 100%;\n\ttop: 0;\n}\n.left_mobile_menu, .right_mobile_menu {\n\tposition: absolute;\n\twidth: 50px;\n\theight: 50px;\n\tdisplay: block;\n\ttop: 0;\n\tz-index: 200;\n\tborder: 0;\n\toutline: 0;\n\tcursor: pointer;\n\tbackground-color: transparent;\n}\n.left_mobile_menu:after, .right_mobile_menu:after {\n\tposition: absolute;\n\tcontent: '';\n\tleft:0;\n\ttop:0;\n\tbottom:0;\n\tright:0;\n\tfilter: var(--mobile-menu-toggle-filter);\n\tbackground: url('images/icons/menu.svg') no-repeat center center;\n\tbackground-size: auto 26px;\n}\n.left_mobile_menu { left:0; }\n.right_mobile_menu { right:0; }\n\n@media screen and (max-width:700px) {\n\t.mobile_menu {\n\t\tdisplay: block;\n\t}\n\t.main_menu > ul.menu_bar {\n\t\theight: 50px;\n\t\tpadding-left: 50px;\n\t\tpadding-right: 50px;\n\t}\n}"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -68999,7 +69071,7 @@ webpackContext.id = "./src/palettes sync \\.json$";
 (module) {
 
 "use strict";
-module.exports = "# Changelog\n\nAll notable changes to **Get in loser** — a browser paint tool, and also, allegedly, a roguelite. In order of descent: oldest at the top, because the way down only makes sense from the top. Dates are approximate; time is a construct; the fog is real.\n\n---\n\n## v0.1.0 — \"First Coat\"\n\nThe one where it's just a paint app. For now.\n\n- **Painting:** brush, pencil, eraser, fill. They work. You can make an image. Congratulations, you are an artist.\n- **Themes:** shipped the Yoncé theme — Midnight Violet fading to Onyx, Vintage Grape panels, and a hot pink we later agreed was \"too hot.\"\n- **Fonts:** the entire UI now speaks Atkinson Hyperlegible, because we would very much like you to be able to read the pop-ups. You will see why.\n- **The hand:** the \"l\" in the logo is a finger pointing up. It is pointing *at* something. Do not look directly at it yet.\n- Fixed: the gradient background no longer tiles itself into venetian blinds.\n\n*This build contains no roguelite elements. None whatsoever. Why would you even ask.*\n\n---\n\n## v0.1.1 — \"Undo Considered Harmful\"\n\n- **New:** `Ctrl+Z` now also undoes minor regrets. Personal regrets remain out of scope — see roadmap.\n- **Balance:** the Bucket Fill tool no longer floods *adjacent save files.* We know. We are sorry. We have spoken with it.\n- **Layers:** you may now stack up to 8 layers before the Layers panel begins to whisper. This is intended. The whispering is a feature. It is called \"ambiance.\"\n- **Not a secret:** moving your mouse makes the logo letters bob. The secret is what happens on the 7th bob. (Nothing happens on the 7th bob. Keep bobbing.)\n\n---\n\n## v0.1.2 — \"The Fog Rolls In\"\n\n- **Tools:** added the Clone Stamp. It clones pixels. It has recently begun cloning *other things.* Inventory management is coming in a future patch.\n- **New resource — Ink:** every brushstroke now costs 1 Ink. You begin each canvas with 999 Ink. When it runs out you must *find more Ink.* The Ink is in the Effects menu. The Ink was always in the Effects menu.\n- **Encounter:** the Sharpen filter, applied three times in a row, will Sharpen *back.* Bring a friend. Bring the friend as a separate layer.\n- **Accessibility:** all bosses now have subtitles.\n- Fixed: the default color is black, not \"the specific green of a 2009 startup logo.\"\n\n---\n\n## v0.1.3 — \"Descent\" (Floors 1–3)\n\n- **Roguelite systems, now officially acknowledged:** the Zoom controls double as your Depth Meter. 100% is the surface. Keep clicking `-`. We'll wait.\n- **Loot:** every 50 brushstrokes drops a Modifier. Current pool — *Wet* (colors bleed), *Dry* (colors judge you), *Impasto* (colors gain mass, and eventually, opinions).\n- **Meta-progression:** the swatches you never use are being saved. For the run. For *a* run. It's fine.\n- **Boss — The Marquee:** defeat the dashed selection that circles your best work and calls it \"just a draft.\" Reward: the Crop tool, and closure.\n- **Known issue:** the tutorial for the paint tool is finished. The tutorial for the *other* thing is written on the inside of the fog. We are aware. We put it there.\n\n---\n\n## v0.1.4 — \"The Letters Have Learned To Float\"\n\nThe one where the UI stopped holding still.\n\n- **Legibility (paint tool):** the entire interface is now set in Atkinson Hyperlegible, and every font grew by a few points. This is so you can read the tool labels. It is also, per the Braille Institute, so you can read the *warnings.*\n- **Selection color:** softened the tool-selection pink to Petal Pink (`#ce59a7`), after the previous pink was formally reclassified as \"too hot to look at directly.\" Black icons are legible again. We are calling this a truce.\n- **De-pinking:** the number fields, the preview zoom buttons, and the layer controls no longer glow. They match the other inputs now. They are calmer. They have accepted their roles.\n- **Layers:** rows now grow to fit their names instead of clipping them. The names have more room. They are using it to become longer. We are monitoring the situation.\n- **Palette:** the swatch picker now ships pre-loaded with the theme colors, the default color is an honest black, and every tool fills with black by default. The 2009-startup green is gone. Do not ask where.\n- **THE LOGO:** the \"l\" in *loser* is the finger now. The finger hovers on its own, like a ghost, because it is one. Move your mouse and the other letters begin to bob — the wave is *ticked by your cursor,* so the logo only breathes while you are watching it. The finger and \"oser\" bleed from white into pink. It is still pointing at something. You have been moving your mouse for a while now.\n- **Meta:** added this Changelog (Help → Changelog). You are reading the tutorial. This is the tutorial. Hello.\n\n---\n\n## v0.1.5 — \"One Click, No Take-Backs\"\n\n- **Cosmetic:** the delete \"×\" on each layer is now Petal Pink, matching the tool-selection color — a red × felt like a threat, and we prefer our threats color-coordinated.\n- **Rename (a functional change, we admit it):** the layer rename dialog now opens on a *single* click instead of a double-click. One click. Faster. Also less deniable. The layer will know you named it. It will remember the name you chose. Choose kindly.\n\n---\n\n## v0.1.6 — \"Right Of Way\"\n\n- **Rename, reconsidered:** a single click on a layer now just *selects* it, like a reasonable tool. We heard you — the dialog was ambushing you every time you tried to switch layers. It has been asked to wait its turn.\n- **New — right-click menu:** right-click a layer name for a context menu. It currently offers exactly one option, \"Rename,\" with the quiet confidence of a menu that knows more options are coming and is choosing not to say so yet.\n\n---\n\n## v0.1.7 — \"The Menu Reveals Itself\"\n\n- **Layer right-click menu:** the context menu that previously offered only \"Rename\" now admits it has always had more to say. Added *Duplicate*, *Convert to Raster*, *Merge Down* (which appears only when there is, in fact, a layer below to merge into — it will not pretend otherwise), and, past a respectful divider, *Delete*. Each acts on the layer you clicked, whether or not it was the one you were looking at.\n\n---\n\n## v0.1.8 — \"Reunited (The Row Holds)\"\n\n- **Layers, responsiveness:** the visibility eye and the delete \"×\" had been wandering onto their own lines whenever a layer name got long or the panel got narrow. They have been returned to the row. The name now yields space — and truncates, politely — instead of evicting its neighbors. One layer, one line.\n\n---\n\n## v0.1.9 — \"Legible At Last\"\n\n- **Colors panel:** the three toggle icons (picker / channels / swatches) are now white instead of the pressed-state cyan, which had been quietly cosplaying as a UI accent.\n- **Error popups:** the lower-right notifications were black text on a muted red — a color combination previously only found in ransom notes. They now match the grape layer panels: white text, rounded corners, and a colored left edge (red for errors; other colors exist for the other outcomes, should you ever be so lucky).\n\n---\n\n## v0.1.10 — \"Paste, By Request\"\n\n- **Edit → Paste (menu):** now actually pastes. It asks the browser for clipboard-read permission the first time — grant it once and the menu item reads an image straight off your clipboard and drops it in as a layer. Where the browser refuses (Firefox, Safari, insecure contexts, a denied prompt), it steps aside and points you back to the ever-reliable Ctrl+V. Copy was never the problem; *reading* your clipboard is the part browsers guard, and rightly so.\n\n---\n\n## v0.1.11 — \"The Folder Remembers\"\n\n- **New — Smart folder** (*Settings → \"Smart folder\"*): toggle it on and pick a folder. Get in loser tells you plainly that it will read from and write to that folder, then keeps a single `get-in-loser.json` there holding your configuration and a session history.\n- **Pick a folder you have used before and it knows.** Your settings come back — theme and all — and the folder's history gains another entry. It has been counting. It will tell you how many times you have been here.\n- Requires a Chromium browser (Chrome/Edge) for the File System Access API; elsewhere it declines politely rather than pretending. The folder is remembered between sessions and reconnects on load, for as long as the browser still trusts you.\n\n---\n\n## v0.1.12 — \"There Is Only One Theme\"\n\n- **Smart folder has a home now:** a folder icon sits to the right of the logo. Click it to pick your folder; it glows Petal Pink while connected and tells you which folder it is holding. The Settings toggle still exists, at the bottom of a long list, where you did not find it. Fair.\n- **Theme selection, clarified:** choosing any theme other than *yonce* now returns you to the original miniPaint. Immediately. We are not angry. We simply understand that you would be happier there. (Your unsaved work still gets the usual \"are you sure\" — we are petty, not cruel.)\n\n---\n\n## v0.1.13 — \"Faster Than That\"\n\n- **Banishment, recalibrated:** the theme redirect only fired when you pressed *OK* — but the theme changes the instant you touch the dropdown, so you were getting a new theme and no consequences. Unacceptable. It now triggers the moment you pick a non-yonce theme. You do get a 1.5-second grace period: switch back to yonce in time and the matter is quietly dropped.\n\n---\n\n## v0.1.14 — \"A Theme For Every Kind Of Wrong\"\n\nTheme selection is now fully implemented. Each option has been considered carefully.\n\n- **yonce** — correct.\n- **classic** — a faithful copy of the original dark theme, in the sense that every single value in it is now `#000000`. Background, text, borders, icons. Black on black. It does not redirect you anywhere; it does not have to.\n- **dark** — still returns you to the original miniPaint, where dark is presumably fine.\n- **light** — redirects to adobe.com. Enjoy the subscription.\n- **green** — no longer a palette, more of a mood. Every application rolls fresh random greens, all crammed into the same narrow band of darkness so that no two elements are ever quite distinguishable. Re-roll by selecting it again. You will not find a good one.\n\nSwitching back to yonce inside the grace period still cancels any pending relocation, and leaving *green* restores the real palette.\n\n---\n\n## v0.1.15 — \"The Void Is Negotiable\"\n\n- **classic now has an exit.** It is still absolute black on absolute black. But as you move the mouse, the colour bleeds back in — the entire palette climbing out of black toward yonce over roughly ten seconds of actual movement, gradient and all. Stop moving and it stops healing. You are not trapped; you are being asked to demonstrate effort.\n- **green is greener.** The greys, the whites, and the blues it had quietly inherited are all green now — even the semantic \"red\" is green. There is no longer anything in that theme which is not green, which somehow makes the contrast worse.\n- **light** now carries a UTM to adobe.com so the referral is properly attributed. No spaces in it — `get-in-loser`. We are unserious, not unprofessional.\n\n---\n\n## v0.1.16 — \"Dark Mode, Taken Literally\"\n\n- **classic and dark have traded fates.** *classic* now returns you to the original miniPaint, which is what you were asking for by choosing it. *dark* is the void.\n- **dark is now genuinely, completely dark.** Previously the tool icons, the layer visibility eye, the finger in the logo and — most embarrassingly — the canvas itself all carried on glowing while everything else went black. They are black now too. Dark mode should not have exceptions.\n- **The whole void fades back together.** Icons and the canvas ride the recovery with everything else, so ten seconds of mouse movement returns the entire interface rather than most of it.\n- **Selecting dark now commits itself** and closes the dialog. You cannot click \"Ok\" on a dialog you cannot see; asking you to was rude.\n- **green finally reaches the canvas.** The canvas, the tool icons, the logo hand and the checkboxes are all green now. Every part of that theme is green. That was the promise.\n\n---\n\n## v0.1.17 — \"No, All Of It\"\n\n- **dark mode holds out no longer.** The colour picker had been quietly glowing this whole time — the saturation square, the hue strip, the alpha checkerboard, the swatch grid, the native colour and range inputs, the effect previews, and the gradient tool's icon, which upstream had specifically excused from tinting. All black now.\n- **Even the hairline.** Every button carried a hardcoded white inset highlight. It is a variable now, and in dark it is nothing.\n- All of it still fades back together on mouse movement. The void is complete, and it is still negotiable.\n\n---\n\n## v0.1.18 — \"The Sliders Were Hiding\"\n\n- **The colour sliders have joined us.** Their handles are little CSS triangles built out of hardcoded white borders, and the colour channel section is collapsed by default — so they were both invisible to the sweep and stubbornly bright once you opened it. The slider and picker components are now tinted whole, handles and all.\n- Nested pieces are explicitly exempted from tinting twice, because two filters multiply, and a slider that fades at the square of everything else looks haunted in a way we did not intend.\n\n---\n\n## v0.1.19 — \"The Hand Has A Name\"\n\n- **We looked up the icon.** The hand in the logo — the one that has been pointing this whole time — is a real icon by a real person, and we had never actually read its record. Its name is **\"Loser gesture.\"** We did not name it that. It was called that before we found it. We named the project *afterward.* We have decided not to think about this further.\n- **New — Help → Icon License**, or *right-click the hand itself.* The credit is now in the app: creator, license, the page it came from, and exactly which files it became. It reads from a data file fetched straight from the source, so the credit in the app and the credit in the repo cannot drift apart. One of them lying to you would be thematically appropriate but practically unacceptable.\n- **Attribution, properly.** It is used under CC BY 3.0, which asks that we say who made it. We say so in three places now. It is the least we can do for something that has been silently gesturing at you since v0.1.0.\n- **Under the hood:** the layer right-click menu and the new logo right-click menu are now the same menu, wearing different options.\n\n*Naming a thing gives it power. We are aware of the risk. We accepted it.*\n\n---\n\n## v0.1.20 — \"The Palette Talks Back\"\n\nThe one where the colors stop being a read-only fact about your image and start being negotiable.\n\n- **Image → Color Palette is no longer a museum.** The dialog used to show you your image's palette behind glass: here are your nine colors, look, don't touch. The glass is gone. Every swatch is now a real color input. Click one. Change it. The image *changes with it.* The dominant color stays behind glass, as a reminder of how things used to be.\n- **Two ways to negotiate:**\n  - **Shift — preserve shading:** every pixel follows its palette color by the same distance you moved it. Gradients survive. Anti-aliasing survives. Your image keeps its soul and changes its wardrobe.\n  - **Replace — exact colors:** every pixel snaps to its palette color, exactly, no survivors. It is Decrease Color Depth with *your* hand on the palette. The image comes back flatter, harder, and extremely certain of itself.\n- **Live preview, before and after,** so you can watch the negotiation happen. `Ctrl+Z` remains the mediator of record.\n- **SURFACE BREACH:** the editor is now live at **mutantfactory.net/get-in-loser**. Yes — after nineteen versions of descending, we went *up.* The Depth Meter reads 100%. The surface was up here the whole time. The fog thins at altitude but it does not lift; bring your own Ink.\n\n*The palette has always known what colors it wanted to be. Now it has a form to fill out.*\n\n---\n\n## v0.1.21 — \"The Changelog Could Not Read Itself\"\n\n- **Fixed:** every section heading in this very changelog was being teleported into the dialog's title bar, stacked in one spot, where only the topmost survived — so the dialog introduced itself as *Unreleased — \"???\"* and the history below scrolled by headless. A dialog that misreports its own history. In *this* app. We checked the CSS and, regrettably, it was CSS. The title bar's layout rule applied to every heading inside the dialog, not just the title. It has been scoped. The changelog can read itself again. We recommend it start from the top.\n\n---\n\n## v0.1.22 — \"Whole Numbers Only\"\n\nThe one where the app learns that a pixel is a pixel.\n\n- **New — Pixel mode** (`Pixel` menu). *New Pixel Canvas* and *Canvas Size in Pixels* take plain pixels, with no units and no resolution quietly multiplying them by 72 behind your back. Presets led by 16×24, because that is what we are actually drawing. Nearest-neighbour sampling at every zoom level, and a hairline grid on every image pixel once you are past 6× — stronger every 8, so you can count.\n- **New — Palettes are files now.** JSON in `src/palettes`, a **Palette** panel on the sidebar, one click to take a colour. Sweetie 16 by default, with PICO-8, Endesga 32, Game Boy and a greyscale ramp alongside. Import your own; export what you have. The loader is deliberately forgiving — bare arrays, hex without the `#`, rgb triplets, per-colour objects. It would rather understand you than be right.\n- **The right-hand panels can be arranged.** Pin, move up, move down and drag, on every block. A pinned block sticks to the top of the sidebar while the rest scrolls past it, and when several are pinned they stack instead of quietly covering each other. Your order and your pins are remembered.\n- **The Preview had been lying about the shape of your image.** It drew into a fixed 176×100 canvas no matter what it was previewing, so a 16×24 sprite came back 2.6 times wider than tall, with total confidence. It fits the real aspect ratio now. We wrote tests for it. The tests are about a rectangle. This is where we are.\n- **Fixed — a single pencil dot was consuming the entire canvas.** Not a metaphor. At the zoom levels pixel art actually needs, the canvas transform was being applied *twice* — the zoom, squared — because the render loop measured each change against the zoom it last *asked for* rather than the one in force, and the two had quietly stopped agreeing. One dot, laid down at 34×, arrived at 1167× and covered everything. It had been that way since upstream. Every stroke lands where you put it now.\n- **Fixed — paste, on a local network address.** Pasting worked on the live site and on `localhost` and nowhere else, because both of those are secure contexts and the fallback path for everything else reached for `this` inside a callback that did not have one. Anyone testing from their phone on the same wifi got nothing.\n\n---\n\n## v0.1.23 — \"Report Received\"\n\nThe one where the app grew a way to be told it was wrong, and was told within the hour.\n\n- **New — Help → Send Feedback.** The old *Report Issues* link sent you to GitHub, which asks you to leave the app, hold an account, and reassemble by hand the build and the state that make a report worth reading. This files it from inside, and carries that for you: version, platform, the tool you had selected. No account, no email.\n- **It is an outbox, not a form.** Nothing leaves local storage until the server says it has it. Offline holds the report for next session; a rate limit holds it *and everything queued behind it*; a genuine rejection sets it aside rather than dropping it, so \"it ate my feedback\" is a question with an answer.\n- **The screenshot is opt-in and off by default,** and the dialog says so before you send rather than after. This is a paint app: the canvas is your artwork, and possibly someone else's. If the capture fails, the note still goes and the report says *no picture* rather than promising one nobody can produce.\n- **New — hold the scroll wheel and drag to pan.** The tools only ever answered to the left button, so the middle one was free. You cannot drag the image off the screen.\n- **THE FIRST REPORT WAS ABOUT THE BRUSH.** *\"Pencil tool is correctly drawing pixels. Brush tool is incorrectly drawing sub-pixels. Eraser tool doesn't seem to erase pixels.\"* With a screenshot of the word PENCIL snapped hard to the grid beside a smooth, feathered *Brush*, which diagnosed the whole thing without anyone having to reproduce anything. It was right. Pixel mode had only ever changed how the canvas was *sampled*; no painting tool had ever consulted it. The pencil looked correct by accident, having always plotted whole pixels. The brush and eraser are vector tools with round caps, so one laid down feathered coverage and the other subtracted *part* of each pixel's alpha, which reads exactly like not erasing. Both plot whole pixels now.\n- **\"Please convert it to raster to apply this tool\" no longer exists anywhere in the application.** It was reachable in three clicks from a blank canvas — draw a stroke, pick the eraser, click — and it named the fix and then declined to apply it. Fifty modules and nine tools now just do the conversion, as its own undo step, and say so. The Effects menu, the Image menu, the whole toolbar.\n- **Selection got the opposite treatment,** and it is the more interesting half. Six places refused a non-raster layer, two of them *silently*. But a selection is a region of the canvas, not of a layer's pixels — drawing a marquee reads nothing and writes nothing, and `Ctrl+A` is a reflex nobody expects to cost them a vector stroke. Five of those refusals were deleted rather than converted. Only *Delete*, which genuinely clears pixels, converts — at the moment the pixels are needed.\n\n*The feature that lets you tell us it is broken has been used to tell us it is broken. Working as intended.*\n\n---\n\n## v0.1.24 — \"Depth, Actual\"\n\nNineteen versions ago the Zoom control was appointed Depth Meter, and it has been bluffing ever since. There is a real third axis now.\n\n- **New — Voxel mode** (`Voxel` menu). 16 wide, 16 deep, 24 high, edited one flat slice at a time. The slice is an ordinary raster layer, so every tool, the palette and pixel mode work on it with no special cases whatsoever.\n- **The volume is the model; the canvas is a view of one slice.** Not twenty-four stacked layers. This is the decision the rest follows from, and it is why the next bullet is free.\n- **Rotating changes which way the loaf is cut, never the loaf.** Slice from the Top, the Front or the Side; the data never moves, so it is instant and lossless and you can do it all day. Paint on the front face and it is there when you look down from the top — not an aspiration, a test.\n- **A second view,** because a flat canvas cannot tell you where in the model you are standing. The sidebar draws the whole thing in isometric with the current slice picked out in cyan, and orbits a quarter turn at a time. Quarter turns only: at multiples of 90 the projection stays exact and *which slice is that* stays answerable at a glance.\n- **Onion skinning.** The neighbouring slices, faint, behind the live one — warm below, cool above, fading with distance. Lining a shape up with what it sits on used to be a memory exercise.\n- **Exports MagicaVoxel `.vox`,** which Godot, Unity, Blender and three.js all read, and imports it back. Slices also still come out as a plain PNG strip. Two things that format makes very easy to get wrong are handled: it measures height on a different axis than we do, and its colour indices are off by one against its own palette table. Either mistake ships looking like a modelling error rather than a format one.\n- **The model rides along in quicksave,** which brings us to the last item.\n- **Quicksave had never worked in this fork. Not once.** Draw, `F9`, reload, `F10`, nothing — no error, no console, no toast. When this project reset its version number to `0.1.x`, the saved file kept writing that number into the field the *loader* consults to decide which historical migrations a file needs. `0.1.22` sorts below every one of them, so every file we ever saved was read as ancient and dragged through the full course of repairs, one of which forces every layer to be an image. A brush layer arrived claiming to be an image while still holding an array of stroke points, and the load threw. The thrown error was caught and returned as a status nobody printed. So it failed in perfect silence, for every file, for twenty-three versions. The file now records what it *is* separately from what wrote it, files you have already saved are rescued on the way in, and a discarded action says so out loud.\n\n*An application that could not read its own saved history, three versions after a changelog that could not read its own headings. We are choosing to see a theme rather than a pattern.*\n\n---\n\n## v0.1.26 — \"Soft Edges, Hard Boundaries\"\n\nTwo tools about the same question — where does the thing stop — answered in opposite directions. One blurs the boundary on purpose. The other insists on finding it exactly.\n\n- **New — Effects → Feather Edges.** Softens where a layer stops. Radius in actual pixels, and an option to fade inward only, for when the shape must not grow.\n- **It refuses to be a blur, twice over.** The obvious implementation blurs the alpha channel, and a transparent pixel still stores a colour, which is nearly always black — so a white cutout comes back wearing a grey rim. The colours are therefore blurred *weighted by their own alpha*, so pixels with nothing to show contribute nothing. The second refusal was found by looking at the preview: a red square with a blue panel inside it had its red-to-blue boundary smudged, nowhere near an edge. Feathering is an operation on coverage and must not touch the picture. The softened colour is now mixed in by how transparent the pixel already was, so an opaque pixel keeps its colour exactly and only the fringe borrows.\n- **And the radius means pixels.** It said 3 and reached 9 — three blur passes each going the full distance — which quietly dimmed the middle of anything smaller than about fifty pixels. A 16px square feathered by \"3\" came back with its centre at 248 out of 255. It is 255 now.\n- **New — Tools → Remove Background.** Clears the region that reaches the edge of the image, in one go, with a tolerance for backgrounds that are not quite one colour and a *soften edge* setting for anti-aliased outlines.\n- **The background is what touches the outside, not what happens to be that colour.** *Color to Alpha* removes a colour everywhere, so the sky goes and so do the highlights in the eyes. The *Magic Eraser* asks for a click per region, so a head with sky either side of it costs three. This floods inward from every border pixel at once — which means a background-coloured gap *enclosed* by the subject, the hole in a handle, the sky an arm closes off, stays. There is a test that holds it to that, and it is the only reason this is not fifteen lines.\n- Border colour is picked by the *mode* rather than the mean, because averaging a horizon of sky and grass gives a colour that is neither and matches nothing.\n\n*Thirty-four new tests. Two of them were wrong first and said so.*\n\n---\n\n## v0.1.27 — \"What Touches The Outside\"\n\nBackground removal shipped one version ago and was wrong in three separate ways, two of which you could see without measuring anything. Reported as *\"it seems to remove the foreground\"* and *\"it's really choppy.\"* Both true.\n\n- **It could remove the foreground, exactly and literally.** It took the single commonest border colour to be the background. On a tight crop the SUBJECT is most of the border — a portrait runs off the bottom and both sides — so it deleted the person and kept the wall. Measured on that case: 100% of the subject cleared, 100% of the background surviving. The border is now clustered rather than polled, and a cluster the middle of the picture is mostly *made of* is disqualified from being background at all.\n- **It leaked.** An anti-aliased edge is a smooth ramp from background to subject, so a threshold flood walks down it and out into the foreground. There was no safe tolerance, only a lucky one: 30 was correct, 60 destroyed 89.5% of the subject. Two fixes, because there turned out to be two mechanisms. Each step of the flood must now be small as well as its destination plausible, which stops the walk across an edge — and separately, the tolerance itself is tried and then **backed off while it is still taking the subject with it**, because when the subject runs off the frame the flood is *seeded* on it and never crosses an edge at all. No step is taken, so no step limit can help. The same scene now loses 0.3% of the subject at tolerance 12, 30 **and 120**.\n- **When your setting gets overruled, it says so,** rather than quietly doing something else with the number you typed.\n- **It is not choppy, because the mask is no longer binary.** A pixel on the boundary of a strand of hair is genuinely 40% hair and a yes/no test cannot say so. There is now a band around the boundary where real fractional coverage is solved for — nearest confident foreground colour, nearest confident background colour, and where the pixel sits on the line between them is its alpha. Same scene: 17 soft pixels before, 751 after.\n- **And the edge no longer carries a rim of what it used to sit on.** A half-covered red pixel on blue is *literally purple*; keeping it is what makes a cutout look pasted. The background is now divided back out of it.\n- **A two-tone backdrop goes in one pass.** Sky over grass used to average to a colour that was neither and matched nothing.\n\n*Three defects, one root cause: it was a colour-matching tool wearing a flood fill's coat. Background is what touches the outside.*\n\n---\n\n## v0.1.28 — \"Point At It\"\n\nThe automatic background remover has a ceiling, and it is not a matter of trying harder: when the subject is closer to the background than the background is to itself, there is no threshold to place. Measured on a test scene, a pale shirt sat 18.5 from the wall beside it while the wall's own top-to-bottom spread was 23.3. Every automatic setting lost most of the subject. So: a tool you point with.\n\n- **New — the Background Eraser** (toolbar, between the Magic Eraser and Fill). Click the background. Shift-click anything it took that it should not have. That is the whole interface.\n- **On the scene that defeats every automatic setting: 0.1% of the subject lost.** Same picture, three clicks.\n- **The slider is a SENSITIVITY, not a colour distance,** and that is the substantive difference. Once you have pointed at the background, the question stops being \"what colour is it\" and becomes \"how far does that region go\" - the answer being \"until the colour changes abruptly\". A hard edge between two *similar* colours is invisible to a colour threshold and obvious to a step test: on that scene the step across the shirt's edge was 9.93, while the steps along the wall's own gradient were 0.00.\n- **Shift-click claims a region, not a dot.** The first attempt blocked only the few pixels under the cursor, so the flood poured in around it and the correction corrected nothing you could see.\n- **And once you have marked the subject, the slider stops mattering at all.** Two kinds of mark compete for every pixel, and the cost of reaching one is the largest single colour step on the easiest route to it - so the boundary settles onto the strongest ridge between them without anyone naming a number. Marking the subject also changes the rule from \"take this region\" to \"keep what I marked, take the rest\", so a piece of the subject touching nothing marked goes until it is marked too.\n- **The costs are measured in sixteenths, and the sixteenths are the difference between working and not.** Rounding them to whole units looked harmless: on the pale shirt the ridge was 0.88 and the wall's own gradient was 0.47, both of which round to nothing. The ridge stopped existing and the subject swallowed the picture. Low-contrast images are the ones this tool is *for*.\n\n*The automatic one still runs first and still guesses. This one does not guess.*\n\n---\n\n## Unreleased — \"???\"\n\n- (redacted)\n- (redacted)\n- the frog is not fractions\n- the frog is not fractions\n- please stop resizing the canvas — it can tell\n";
+module.exports = "# Changelog\n\nAll notable changes to **Get in loser** — a browser paint tool, and also, allegedly, a roguelite. In order of descent: oldest at the top, because the way down only makes sense from the top. Dates are approximate; time is a construct; the fog is real.\n\n---\n\n## v0.1.0 — \"First Coat\"\n\nThe one where it's just a paint app. For now.\n\n- **Painting:** brush, pencil, eraser, fill. They work. You can make an image. Congratulations, you are an artist.\n- **Themes:** shipped the Yoncé theme — Midnight Violet fading to Onyx, Vintage Grape panels, and a hot pink we later agreed was \"too hot.\"\n- **Fonts:** the entire UI now speaks Atkinson Hyperlegible, because we would very much like you to be able to read the pop-ups. You will see why.\n- **The hand:** the \"l\" in the logo is a finger pointing up. It is pointing *at* something. Do not look directly at it yet.\n- Fixed: the gradient background no longer tiles itself into venetian blinds.\n\n*This build contains no roguelite elements. None whatsoever. Why would you even ask.*\n\n---\n\n## v0.1.1 — \"Undo Considered Harmful\"\n\n- **New:** `Ctrl+Z` now also undoes minor regrets. Personal regrets remain out of scope — see roadmap.\n- **Balance:** the Bucket Fill tool no longer floods *adjacent save files.* We know. We are sorry. We have spoken with it.\n- **Layers:** you may now stack up to 8 layers before the Layers panel begins to whisper. This is intended. The whispering is a feature. It is called \"ambiance.\"\n- **Not a secret:** moving your mouse makes the logo letters bob. The secret is what happens on the 7th bob. (Nothing happens on the 7th bob. Keep bobbing.)\n\n---\n\n## v0.1.2 — \"The Fog Rolls In\"\n\n- **Tools:** added the Clone Stamp. It clones pixels. It has recently begun cloning *other things.* Inventory management is coming in a future patch.\n- **New resource — Ink:** every brushstroke now costs 1 Ink. You begin each canvas with 999 Ink. When it runs out you must *find more Ink.* The Ink is in the Effects menu. The Ink was always in the Effects menu.\n- **Encounter:** the Sharpen filter, applied three times in a row, will Sharpen *back.* Bring a friend. Bring the friend as a separate layer.\n- **Accessibility:** all bosses now have subtitles.\n- Fixed: the default color is black, not \"the specific green of a 2009 startup logo.\"\n\n---\n\n## v0.1.3 — \"Descent\" (Floors 1–3)\n\n- **Roguelite systems, now officially acknowledged:** the Zoom controls double as your Depth Meter. 100% is the surface. Keep clicking `-`. We'll wait.\n- **Loot:** every 50 brushstrokes drops a Modifier. Current pool — *Wet* (colors bleed), *Dry* (colors judge you), *Impasto* (colors gain mass, and eventually, opinions).\n- **Meta-progression:** the swatches you never use are being saved. For the run. For *a* run. It's fine.\n- **Boss — The Marquee:** defeat the dashed selection that circles your best work and calls it \"just a draft.\" Reward: the Crop tool, and closure.\n- **Known issue:** the tutorial for the paint tool is finished. The tutorial for the *other* thing is written on the inside of the fog. We are aware. We put it there.\n\n---\n\n## v0.1.4 — \"The Letters Have Learned To Float\"\n\nThe one where the UI stopped holding still.\n\n- **Legibility (paint tool):** the entire interface is now set in Atkinson Hyperlegible, and every font grew by a few points. This is so you can read the tool labels. It is also, per the Braille Institute, so you can read the *warnings.*\n- **Selection color:** softened the tool-selection pink to Petal Pink (`#ce59a7`), after the previous pink was formally reclassified as \"too hot to look at directly.\" Black icons are legible again. We are calling this a truce.\n- **De-pinking:** the number fields, the preview zoom buttons, and the layer controls no longer glow. They match the other inputs now. They are calmer. They have accepted their roles.\n- **Layers:** rows now grow to fit their names instead of clipping them. The names have more room. They are using it to become longer. We are monitoring the situation.\n- **Palette:** the swatch picker now ships pre-loaded with the theme colors, the default color is an honest black, and every tool fills with black by default. The 2009-startup green is gone. Do not ask where.\n- **THE LOGO:** the \"l\" in *loser* is the finger now. The finger hovers on its own, like a ghost, because it is one. Move your mouse and the other letters begin to bob — the wave is *ticked by your cursor,* so the logo only breathes while you are watching it. The finger and \"oser\" bleed from white into pink. It is still pointing at something. You have been moving your mouse for a while now.\n- **Meta:** added this Changelog (Help → Changelog). You are reading the tutorial. This is the tutorial. Hello.\n\n---\n\n## v0.1.5 — \"One Click, No Take-Backs\"\n\n- **Cosmetic:** the delete \"×\" on each layer is now Petal Pink, matching the tool-selection color — a red × felt like a threat, and we prefer our threats color-coordinated.\n- **Rename (a functional change, we admit it):** the layer rename dialog now opens on a *single* click instead of a double-click. One click. Faster. Also less deniable. The layer will know you named it. It will remember the name you chose. Choose kindly.\n\n---\n\n## v0.1.6 — \"Right Of Way\"\n\n- **Rename, reconsidered:** a single click on a layer now just *selects* it, like a reasonable tool. We heard you — the dialog was ambushing you every time you tried to switch layers. It has been asked to wait its turn.\n- **New — right-click menu:** right-click a layer name for a context menu. It currently offers exactly one option, \"Rename,\" with the quiet confidence of a menu that knows more options are coming and is choosing not to say so yet.\n\n---\n\n## v0.1.7 — \"The Menu Reveals Itself\"\n\n- **Layer right-click menu:** the context menu that previously offered only \"Rename\" now admits it has always had more to say. Added *Duplicate*, *Convert to Raster*, *Merge Down* (which appears only when there is, in fact, a layer below to merge into — it will not pretend otherwise), and, past a respectful divider, *Delete*. Each acts on the layer you clicked, whether or not it was the one you were looking at.\n\n---\n\n## v0.1.8 — \"Reunited (The Row Holds)\"\n\n- **Layers, responsiveness:** the visibility eye and the delete \"×\" had been wandering onto their own lines whenever a layer name got long or the panel got narrow. They have been returned to the row. The name now yields space — and truncates, politely — instead of evicting its neighbors. One layer, one line.\n\n---\n\n## v0.1.9 — \"Legible At Last\"\n\n- **Colors panel:** the three toggle icons (picker / channels / swatches) are now white instead of the pressed-state cyan, which had been quietly cosplaying as a UI accent.\n- **Error popups:** the lower-right notifications were black text on a muted red — a color combination previously only found in ransom notes. They now match the grape layer panels: white text, rounded corners, and a colored left edge (red for errors; other colors exist for the other outcomes, should you ever be so lucky).\n\n---\n\n## v0.1.10 — \"Paste, By Request\"\n\n- **Edit → Paste (menu):** now actually pastes. It asks the browser for clipboard-read permission the first time — grant it once and the menu item reads an image straight off your clipboard and drops it in as a layer. Where the browser refuses (Firefox, Safari, insecure contexts, a denied prompt), it steps aside and points you back to the ever-reliable Ctrl+V. Copy was never the problem; *reading* your clipboard is the part browsers guard, and rightly so.\n\n---\n\n## v0.1.11 — \"The Folder Remembers\"\n\n- **New — Smart folder** (*Settings → \"Smart folder\"*): toggle it on and pick a folder. Get in loser tells you plainly that it will read from and write to that folder, then keeps a single `get-in-loser.json` there holding your configuration and a session history.\n- **Pick a folder you have used before and it knows.** Your settings come back — theme and all — and the folder's history gains another entry. It has been counting. It will tell you how many times you have been here.\n- Requires a Chromium browser (Chrome/Edge) for the File System Access API; elsewhere it declines politely rather than pretending. The folder is remembered between sessions and reconnects on load, for as long as the browser still trusts you.\n\n---\n\n## v0.1.12 — \"There Is Only One Theme\"\n\n- **Smart folder has a home now:** a folder icon sits to the right of the logo. Click it to pick your folder; it glows Petal Pink while connected and tells you which folder it is holding. The Settings toggle still exists, at the bottom of a long list, where you did not find it. Fair.\n- **Theme selection, clarified:** choosing any theme other than *yonce* now returns you to the original miniPaint. Immediately. We are not angry. We simply understand that you would be happier there. (Your unsaved work still gets the usual \"are you sure\" — we are petty, not cruel.)\n\n---\n\n## v0.1.13 — \"Faster Than That\"\n\n- **Banishment, recalibrated:** the theme redirect only fired when you pressed *OK* — but the theme changes the instant you touch the dropdown, so you were getting a new theme and no consequences. Unacceptable. It now triggers the moment you pick a non-yonce theme. You do get a 1.5-second grace period: switch back to yonce in time and the matter is quietly dropped.\n\n---\n\n## v0.1.14 — \"A Theme For Every Kind Of Wrong\"\n\nTheme selection is now fully implemented. Each option has been considered carefully.\n\n- **yonce** — correct.\n- **classic** — a faithful copy of the original dark theme, in the sense that every single value in it is now `#000000`. Background, text, borders, icons. Black on black. It does not redirect you anywhere; it does not have to.\n- **dark** — still returns you to the original miniPaint, where dark is presumably fine.\n- **light** — redirects to adobe.com. Enjoy the subscription.\n- **green** — no longer a palette, more of a mood. Every application rolls fresh random greens, all crammed into the same narrow band of darkness so that no two elements are ever quite distinguishable. Re-roll by selecting it again. You will not find a good one.\n\nSwitching back to yonce inside the grace period still cancels any pending relocation, and leaving *green* restores the real palette.\n\n---\n\n## v0.1.15 — \"The Void Is Negotiable\"\n\n- **classic now has an exit.** It is still absolute black on absolute black. But as you move the mouse, the colour bleeds back in — the entire palette climbing out of black toward yonce over roughly ten seconds of actual movement, gradient and all. Stop moving and it stops healing. You are not trapped; you are being asked to demonstrate effort.\n- **green is greener.** The greys, the whites, and the blues it had quietly inherited are all green now — even the semantic \"red\" is green. There is no longer anything in that theme which is not green, which somehow makes the contrast worse.\n- **light** now carries a UTM to adobe.com so the referral is properly attributed. No spaces in it — `get-in-loser`. We are unserious, not unprofessional.\n\n---\n\n## v0.1.16 — \"Dark Mode, Taken Literally\"\n\n- **classic and dark have traded fates.** *classic* now returns you to the original miniPaint, which is what you were asking for by choosing it. *dark* is the void.\n- **dark is now genuinely, completely dark.** Previously the tool icons, the layer visibility eye, the finger in the logo and — most embarrassingly — the canvas itself all carried on glowing while everything else went black. They are black now too. Dark mode should not have exceptions.\n- **The whole void fades back together.** Icons and the canvas ride the recovery with everything else, so ten seconds of mouse movement returns the entire interface rather than most of it.\n- **Selecting dark now commits itself** and closes the dialog. You cannot click \"Ok\" on a dialog you cannot see; asking you to was rude.\n- **green finally reaches the canvas.** The canvas, the tool icons, the logo hand and the checkboxes are all green now. Every part of that theme is green. That was the promise.\n\n---\n\n## v0.1.17 — \"No, All Of It\"\n\n- **dark mode holds out no longer.** The colour picker had been quietly glowing this whole time — the saturation square, the hue strip, the alpha checkerboard, the swatch grid, the native colour and range inputs, the effect previews, and the gradient tool's icon, which upstream had specifically excused from tinting. All black now.\n- **Even the hairline.** Every button carried a hardcoded white inset highlight. It is a variable now, and in dark it is nothing.\n- All of it still fades back together on mouse movement. The void is complete, and it is still negotiable.\n\n---\n\n## v0.1.18 — \"The Sliders Were Hiding\"\n\n- **The colour sliders have joined us.** Their handles are little CSS triangles built out of hardcoded white borders, and the colour channel section is collapsed by default — so they were both invisible to the sweep and stubbornly bright once you opened it. The slider and picker components are now tinted whole, handles and all.\n- Nested pieces are explicitly exempted from tinting twice, because two filters multiply, and a slider that fades at the square of everything else looks haunted in a way we did not intend.\n\n---\n\n## v0.1.19 — \"The Hand Has A Name\"\n\n- **We looked up the icon.** The hand in the logo — the one that has been pointing this whole time — is a real icon by a real person, and we had never actually read its record. Its name is **\"Loser gesture.\"** We did not name it that. It was called that before we found it. We named the project *afterward.* We have decided not to think about this further.\n- **New — Help → Icon License**, or *right-click the hand itself.* The credit is now in the app: creator, license, the page it came from, and exactly which files it became. It reads from a data file fetched straight from the source, so the credit in the app and the credit in the repo cannot drift apart. One of them lying to you would be thematically appropriate but practically unacceptable.\n- **Attribution, properly.** It is used under CC BY 3.0, which asks that we say who made it. We say so in three places now. It is the least we can do for something that has been silently gesturing at you since v0.1.0.\n- **Under the hood:** the layer right-click menu and the new logo right-click menu are now the same menu, wearing different options.\n\n*Naming a thing gives it power. We are aware of the risk. We accepted it.*\n\n---\n\n## v0.1.20 — \"The Palette Talks Back\"\n\nThe one where the colors stop being a read-only fact about your image and start being negotiable.\n\n- **Image → Color Palette is no longer a museum.** The dialog used to show you your image's palette behind glass: here are your nine colors, look, don't touch. The glass is gone. Every swatch is now a real color input. Click one. Change it. The image *changes with it.* The dominant color stays behind glass, as a reminder of how things used to be.\n- **Two ways to negotiate:**\n  - **Shift — preserve shading:** every pixel follows its palette color by the same distance you moved it. Gradients survive. Anti-aliasing survives. Your image keeps its soul and changes its wardrobe.\n  - **Replace — exact colors:** every pixel snaps to its palette color, exactly, no survivors. It is Decrease Color Depth with *your* hand on the palette. The image comes back flatter, harder, and extremely certain of itself.\n- **Live preview, before and after,** so you can watch the negotiation happen. `Ctrl+Z` remains the mediator of record.\n- **SURFACE BREACH:** the editor is now live at **mutantfactory.net/get-in-loser**. Yes — after nineteen versions of descending, we went *up.* The Depth Meter reads 100%. The surface was up here the whole time. The fog thins at altitude but it does not lift; bring your own Ink.\n\n*The palette has always known what colors it wanted to be. Now it has a form to fill out.*\n\n---\n\n## v0.1.21 — \"The Changelog Could Not Read Itself\"\n\n- **Fixed:** every section heading in this very changelog was being teleported into the dialog's title bar, stacked in one spot, where only the topmost survived — so the dialog introduced itself as *Unreleased — \"???\"* and the history below scrolled by headless. A dialog that misreports its own history. In *this* app. We checked the CSS and, regrettably, it was CSS. The title bar's layout rule applied to every heading inside the dialog, not just the title. It has been scoped. The changelog can read itself again. We recommend it start from the top.\n\n---\n\n## v0.1.22 — \"Whole Numbers Only\"\n\nThe one where the app learns that a pixel is a pixel.\n\n- **New — Pixel mode** (`Pixel` menu). *New Pixel Canvas* and *Canvas Size in Pixels* take plain pixels, with no units and no resolution quietly multiplying them by 72 behind your back. Presets led by 16×24, because that is what we are actually drawing. Nearest-neighbour sampling at every zoom level, and a hairline grid on every image pixel once you are past 6× — stronger every 8, so you can count.\n- **New — Palettes are files now.** JSON in `src/palettes`, a **Palette** panel on the sidebar, one click to take a colour. Sweetie 16 by default, with PICO-8, Endesga 32, Game Boy and a greyscale ramp alongside. Import your own; export what you have. The loader is deliberately forgiving — bare arrays, hex without the `#`, rgb triplets, per-colour objects. It would rather understand you than be right.\n- **The right-hand panels can be arranged.** Pin, move up, move down and drag, on every block. A pinned block sticks to the top of the sidebar while the rest scrolls past it, and when several are pinned they stack instead of quietly covering each other. Your order and your pins are remembered.\n- **The Preview had been lying about the shape of your image.** It drew into a fixed 176×100 canvas no matter what it was previewing, so a 16×24 sprite came back 2.6 times wider than tall, with total confidence. It fits the real aspect ratio now. We wrote tests for it. The tests are about a rectangle. This is where we are.\n- **Fixed — a single pencil dot was consuming the entire canvas.** Not a metaphor. At the zoom levels pixel art actually needs, the canvas transform was being applied *twice* — the zoom, squared — because the render loop measured each change against the zoom it last *asked for* rather than the one in force, and the two had quietly stopped agreeing. One dot, laid down at 34×, arrived at 1167× and covered everything. It had been that way since upstream. Every stroke lands where you put it now.\n- **Fixed — paste, on a local network address.** Pasting worked on the live site and on `localhost` and nowhere else, because both of those are secure contexts and the fallback path for everything else reached for `this` inside a callback that did not have one. Anyone testing from their phone on the same wifi got nothing.\n\n---\n\n## v0.1.23 — \"Report Received\"\n\nThe one where the app grew a way to be told it was wrong, and was told within the hour.\n\n- **New — Help → Send Feedback.** The old *Report Issues* link sent you to GitHub, which asks you to leave the app, hold an account, and reassemble by hand the build and the state that make a report worth reading. This files it from inside, and carries that for you: version, platform, the tool you had selected. No account, no email.\n- **It is an outbox, not a form.** Nothing leaves local storage until the server says it has it. Offline holds the report for next session; a rate limit holds it *and everything queued behind it*; a genuine rejection sets it aside rather than dropping it, so \"it ate my feedback\" is a question with an answer.\n- **The screenshot is opt-in and off by default,** and the dialog says so before you send rather than after. This is a paint app: the canvas is your artwork, and possibly someone else's. If the capture fails, the note still goes and the report says *no picture* rather than promising one nobody can produce.\n- **New — hold the scroll wheel and drag to pan.** The tools only ever answered to the left button, so the middle one was free. You cannot drag the image off the screen.\n- **THE FIRST REPORT WAS ABOUT THE BRUSH.** *\"Pencil tool is correctly drawing pixels. Brush tool is incorrectly drawing sub-pixels. Eraser tool doesn't seem to erase pixels.\"* With a screenshot of the word PENCIL snapped hard to the grid beside a smooth, feathered *Brush*, which diagnosed the whole thing without anyone having to reproduce anything. It was right. Pixel mode had only ever changed how the canvas was *sampled*; no painting tool had ever consulted it. The pencil looked correct by accident, having always plotted whole pixels. The brush and eraser are vector tools with round caps, so one laid down feathered coverage and the other subtracted *part* of each pixel's alpha, which reads exactly like not erasing. Both plot whole pixels now.\n- **\"Please convert it to raster to apply this tool\" no longer exists anywhere in the application.** It was reachable in three clicks from a blank canvas — draw a stroke, pick the eraser, click — and it named the fix and then declined to apply it. Fifty modules and nine tools now just do the conversion, as its own undo step, and say so. The Effects menu, the Image menu, the whole toolbar.\n- **Selection got the opposite treatment,** and it is the more interesting half. Six places refused a non-raster layer, two of them *silently*. But a selection is a region of the canvas, not of a layer's pixels — drawing a marquee reads nothing and writes nothing, and `Ctrl+A` is a reflex nobody expects to cost them a vector stroke. Five of those refusals were deleted rather than converted. Only *Delete*, which genuinely clears pixels, converts — at the moment the pixels are needed.\n\n*The feature that lets you tell us it is broken has been used to tell us it is broken. Working as intended.*\n\n---\n\n## v0.1.24 — \"Depth, Actual\"\n\nNineteen versions ago the Zoom control was appointed Depth Meter, and it has been bluffing ever since. There is a real third axis now.\n\n- **New — Voxel mode** (`Voxel` menu). 16 wide, 16 deep, 24 high, edited one flat slice at a time. The slice is an ordinary raster layer, so every tool, the palette and pixel mode work on it with no special cases whatsoever.\n- **The volume is the model; the canvas is a view of one slice.** Not twenty-four stacked layers. This is the decision the rest follows from, and it is why the next bullet is free.\n- **Rotating changes which way the loaf is cut, never the loaf.** Slice from the Top, the Front or the Side; the data never moves, so it is instant and lossless and you can do it all day. Paint on the front face and it is there when you look down from the top — not an aspiration, a test.\n- **A second view,** because a flat canvas cannot tell you where in the model you are standing. The sidebar draws the whole thing in isometric with the current slice picked out in cyan, and orbits a quarter turn at a time. Quarter turns only: at multiples of 90 the projection stays exact and *which slice is that* stays answerable at a glance.\n- **Onion skinning.** The neighbouring slices, faint, behind the live one — warm below, cool above, fading with distance. Lining a shape up with what it sits on used to be a memory exercise.\n- **Exports MagicaVoxel `.vox`,** which Godot, Unity, Blender and three.js all read, and imports it back. Slices also still come out as a plain PNG strip. Two things that format makes very easy to get wrong are handled: it measures height on a different axis than we do, and its colour indices are off by one against its own palette table. Either mistake ships looking like a modelling error rather than a format one.\n- **The model rides along in quicksave,** which brings us to the last item.\n- **Quicksave had never worked in this fork. Not once.** Draw, `F9`, reload, `F10`, nothing — no error, no console, no toast. When this project reset its version number to `0.1.x`, the saved file kept writing that number into the field the *loader* consults to decide which historical migrations a file needs. `0.1.22` sorts below every one of them, so every file we ever saved was read as ancient and dragged through the full course of repairs, one of which forces every layer to be an image. A brush layer arrived claiming to be an image while still holding an array of stroke points, and the load threw. The thrown error was caught and returned as a status nobody printed. So it failed in perfect silence, for every file, for twenty-three versions. The file now records what it *is* separately from what wrote it, files you have already saved are rescued on the way in, and a discarded action says so out loud.\n\n*An application that could not read its own saved history, three versions after a changelog that could not read its own headings. We are choosing to see a theme rather than a pattern.*\n\n---\n\n## v0.1.26 — \"Soft Edges, Hard Boundaries\"\n\nTwo tools about the same question — where does the thing stop — answered in opposite directions. One blurs the boundary on purpose. The other insists on finding it exactly.\n\n- **New — Effects → Feather Edges.** Softens where a layer stops. Radius in actual pixels, and an option to fade inward only, for when the shape must not grow.\n- **It refuses to be a blur, twice over.** The obvious implementation blurs the alpha channel, and a transparent pixel still stores a colour, which is nearly always black — so a white cutout comes back wearing a grey rim. The colours are therefore blurred *weighted by their own alpha*, so pixels with nothing to show contribute nothing. The second refusal was found by looking at the preview: a red square with a blue panel inside it had its red-to-blue boundary smudged, nowhere near an edge. Feathering is an operation on coverage and must not touch the picture. The softened colour is now mixed in by how transparent the pixel already was, so an opaque pixel keeps its colour exactly and only the fringe borrows.\n- **And the radius means pixels.** It said 3 and reached 9 — three blur passes each going the full distance — which quietly dimmed the middle of anything smaller than about fifty pixels. A 16px square feathered by \"3\" came back with its centre at 248 out of 255. It is 255 now.\n- **New — Tools → Remove Background.** Clears the region that reaches the edge of the image, in one go, with a tolerance for backgrounds that are not quite one colour and a *soften edge* setting for anti-aliased outlines.\n- **The background is what touches the outside, not what happens to be that colour.** *Color to Alpha* removes a colour everywhere, so the sky goes and so do the highlights in the eyes. The *Magic Eraser* asks for a click per region, so a head with sky either side of it costs three. This floods inward from every border pixel at once — which means a background-coloured gap *enclosed* by the subject, the hole in a handle, the sky an arm closes off, stays. There is a test that holds it to that, and it is the only reason this is not fifteen lines.\n- Border colour is picked by the *mode* rather than the mean, because averaging a horizon of sky and grass gives a colour that is neither and matches nothing.\n\n*Thirty-four new tests. Two of them were wrong first and said so.*\n\n---\n\n## v0.1.27 — \"What Touches The Outside\"\n\nBackground removal shipped one version ago and was wrong in three separate ways, two of which you could see without measuring anything. Reported as *\"it seems to remove the foreground\"* and *\"it's really choppy.\"* Both true.\n\n- **It could remove the foreground, exactly and literally.** It took the single commonest border colour to be the background. On a tight crop the SUBJECT is most of the border — a portrait runs off the bottom and both sides — so it deleted the person and kept the wall. Measured on that case: 100% of the subject cleared, 100% of the background surviving. The border is now clustered rather than polled, and a cluster the middle of the picture is mostly *made of* is disqualified from being background at all.\n- **It leaked.** An anti-aliased edge is a smooth ramp from background to subject, so a threshold flood walks down it and out into the foreground. There was no safe tolerance, only a lucky one: 30 was correct, 60 destroyed 89.5% of the subject. Two fixes, because there turned out to be two mechanisms. Each step of the flood must now be small as well as its destination plausible, which stops the walk across an edge — and separately, the tolerance itself is tried and then **backed off while it is still taking the subject with it**, because when the subject runs off the frame the flood is *seeded* on it and never crosses an edge at all. No step is taken, so no step limit can help. The same scene now loses 0.3% of the subject at tolerance 12, 30 **and 120**.\n- **When your setting gets overruled, it says so,** rather than quietly doing something else with the number you typed.\n- **It is not choppy, because the mask is no longer binary.** A pixel on the boundary of a strand of hair is genuinely 40% hair and a yes/no test cannot say so. There is now a band around the boundary where real fractional coverage is solved for — nearest confident foreground colour, nearest confident background colour, and where the pixel sits on the line between them is its alpha. Same scene: 17 soft pixels before, 751 after.\n- **And the edge no longer carries a rim of what it used to sit on.** A half-covered red pixel on blue is *literally purple*; keeping it is what makes a cutout look pasted. The background is now divided back out of it.\n- **A two-tone backdrop goes in one pass.** Sky over grass used to average to a colour that was neither and matched nothing.\n\n*Three defects, one root cause: it was a colour-matching tool wearing a flood fill's coat. Background is what touches the outside.*\n\n---\n\n## v0.1.28 — \"Point At It\"\n\nThe automatic background remover has a ceiling, and it is not a matter of trying harder: when the subject is closer to the background than the background is to itself, there is no threshold to place. Measured on a test scene, a pale shirt sat 18.5 from the wall beside it while the wall's own top-to-bottom spread was 23.3. Every automatic setting lost most of the subject. So: a tool you point with.\n\n- **New — the Background Eraser** (toolbar, between the Magic Eraser and Fill). Click the background. Shift-click anything it took that it should not have. That is the whole interface.\n- **On the scene that defeats every automatic setting: 0.1% of the subject lost.** Same picture, three clicks.\n- **The slider is a SENSITIVITY, not a colour distance,** and that is the substantive difference. Once you have pointed at the background, the question stops being \"what colour is it\" and becomes \"how far does that region go\" - the answer being \"until the colour changes abruptly\". A hard edge between two *similar* colours is invisible to a colour threshold and obvious to a step test: on that scene the step across the shirt's edge was 9.93, while the steps along the wall's own gradient were 0.00.\n- **Shift-click claims a region, not a dot.** The first attempt blocked only the few pixels under the cursor, so the flood poured in around it and the correction corrected nothing you could see.\n- **And once you have marked the subject, the slider stops mattering at all.** Two kinds of mark compete for every pixel, and the cost of reaching one is the largest single colour step on the easiest route to it - so the boundary settles onto the strongest ridge between them without anyone naming a number. Marking the subject also changes the rule from \"take this region\" to \"keep what I marked, take the rest\", so a piece of the subject touching nothing marked goes until it is marked too.\n- **The costs are measured in sixteenths, and the sixteenths are the difference between working and not.** Rounding them to whole units looked harmless: on the pale shirt the ridge was 0.88 and the wall's own gradient was 0.47, both of which round to nothing. The ridge stopped existing and the subject swallowed the picture. Low-contrast images are the ones this tool is *for*.\n\n*The automatic one still runs first and still guesses. This one does not guess.*\n\n---\n\n## v0.1.29 — \"Minus Fifteen Pixels Wide\"\n\nClicking **Fit** took you to 1%, and then nothing you drew landed where you clicked. One cause, a long way from either symptom.\n\n- **A fresh document was coming up −15 × −10 pixels.** Startup picks the largest standard size that fits the window and falls back to \"the window, less a small margin\" when the window is smaller than all of them. That measurement ran before the layout existed, so the wrapper reported **zero** — and zero minus fifteen is minus fifteen. Nothing complained, because nothing checked.\n- **Fit divides the window by the document,** so a negative document gave a negative zoom, which the clamp dutifully floored to the minimum. Hence 1%.\n- **And every click on the canvas is mapped back through that zoom,** so once Fit had been pressed, the brush painted thousands of pixels off-canvas — which looks exactly like a brush that has stopped working. Three separate \"the tool is broken\" symptoms, one arithmetic error at startup.\n- Sizes are now chosen in one place that will not return a number you cannot draw on, with tests. Fit also declines rather than applying a fit it cannot compute, and says so in the console — the next bad size should be a control that refuses, not a zoom that lies.\n\n*Found while testing something else, which is the only reason it was found: it does not announce itself, it just makes every other tool look faulty.*\n\n---\n\n## v0.1.30 — \"Which One Am I Running\"\n\n- **The version now sits at the end of the menu bar,** to the right of Help. Selectable, so it can be read off and pasted into a bug report.\n- **And it is now the version you are actually running,** which it previously was not. The number came from a build-time constant that reads `package.json` exactly once, when the dev server starts — so after a version bump, every rebuild kept reporting the old number. The build was fresh; the label was three releases stale, which made a working fix look as though it had not loaded at all and cost most of a session.\n- **That same stale number was going into saved files and into every feedback report,** so a report could name a version that was never the one running. All three now read from one place that is re-read on every build.\n\n---\n\n## Unreleased — \"???\"\n\n- (redacted)\n- (redacted)\n- the frog is not fractions\n- the frog is not fractions\n- please stop resizing the canvas — it can tell\n";
 
 /***/ },
 
@@ -70027,6 +70099,17 @@ function _unsupportedIterableToArray(r, a) {
 
 "use strict";
 module.exports = /*#__PURE__*/JSON.parse('{"_comment":"Licence data for third-party icon artwork bundled in this repo. Fetched from the Noun Project API v2 (GET /v2/icon/{id}) on 2026-07-23. This file is imported by src/js/modules/help/icon_license.js and shown in-app, so keep it accurate.","icons":[{"id":"4398322","term":"Loser gesture","attribution":"Loser gesture by Dooder from Noun Project","creator":{"name":"Dooder","username":"topg38","url":"https://thenounproject.com/creator/topg38/"},"collection":"Pixel Art Hand Gesture","tags":["finger","hand","loser","loser-gesture","pixel","pointing"],"license":{"id":"creative-commons-attribution","name":"CC BY 3.0","full_name":"Creative Commons Attribution 3.0 Unported","url":"https://creativecommons.org/licenses/by/3.0/","requires_attribution":true},"source":"The Noun Project","url":"https://thenounproject.com/icon/loser-gesture-4398322/","used_for":"The hand that forms the \\"l\\" in the get-in-loser wordmark, plus the favicons, PWA icons and social card.","source_file":"assets/noun-4398322-source.png","derived_files":["images/logo.png","images/favicon.png","images/favicon.svg","images/manifest/48x48.png","images/manifest/72x72.png","images/manifest/96x96.png","images/manifest/144x144.png","images/manifest/168x168.png","images/manifest/192x192.png","images/preview.jpg"]}]}');
+
+/***/ },
+
+/***/ "./package.json"
+/*!**********************!*\
+  !*** ./package.json ***!
+  \**********************/
+(module) {
+
+"use strict";
+module.exports = /*#__PURE__*/JSON.parse('{"name":"get-in-loser","version":"0.1.30","author":"DazzlingDukeOfLazers","description":"A personal browser-based image editor. Derivative of miniPaint by ViliusL.","keywords":["canvas","drawing","paint","layers","effects"],"scripts":{"server":"webpack serve --mode development --env development --open","dev":"webpack --mode development","build":"webpack --mode production","test":"jest"},"repository":{"type":"git","url":"https://github.com/TheMutantFactory/get-in-loser"},"homepage":"https://github.com/TheMutantFactory/get-in-loser","license":"MIT","devDependencies":{"@babel/core":"^7.14.5","@babel/plugin-transform-runtime":"^7.14.5","@babel/preset-env":"^7.14.5","babel-jest":"^29.7.0","babel-loader":"^8.2.2","css-loader":"^5.2.6","jest":"^29.7.0","source-map-loader":"^3.0.0","style-loader":"^2.0.0","webpack":"^5.106.2","webpack-cli":"^7.0.2","webpack-dev-server":"^5.2.3"},"dependencies":{"@babel/runtime":"^7.14.5","alertifyjs":"^1.13.1","blueimp-canvas-to-blob":"^3.28.0","exif-js":"^2.3.0","file-saver":"^2.0.5","fuzzysort":"^1.1.4","gif.js.optimized":"^1.0.1","hermite-resize":"git+https://github.com/viliusle/Hermite-resize.git","jquery":"^3.5.1","pica":"^7.0.0","semver-compare":"^1.0.0","uuid":"^8.3.2","webfontloader":"^1.6.28"}}');
 
 /***/ },
 
