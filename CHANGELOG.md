@@ -385,6 +385,15 @@ Three reports, filed with screenshots, all three real.
 
 ---
 
+## v0.1.37 — "Grip and Grab"
+
+Two follow-ups on yesterday's panel work, both from the field within a day.
+
+- **The width grip went dead over pinned panels.** Pinned panels are sticky *and* carry a stacking number counting down from 100 — that is how several pinned headers stack — so the grip, sitting at 5, lost the edge for exactly the stretch of sidebar you had pinned. Reported precisely as observed: *"doesn't pick up on the voxel panel, picks up below it."* The grip now stands above the whole pinned range.
+- **The preview drag was rotating the wrong way.** Grab metaphor: the face under your cursor should follow your cursor. The projected position of the nearest corner moves as −sin(yaw), so yaw must *decrease* as the cursor moves right — it shipped increasing, so the model turned against the drag. One sign, flipped, with the geometry written next to it so the next person does not have to re-derive which way is "natural".
+
+---
+
 ## Unreleased — "???"
 
 - (redacted)

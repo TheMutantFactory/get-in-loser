@@ -150,8 +150,12 @@ class GUI_voxel_class {
 			if (drag == null) {
 				return;
 			}
-			//0.75 degrees per pixel: a drag across the whole panel is about half a turn
-			config.voxel.yaw = ((drag.yaw + (e.clientX - drag.x) * 0.75) % 360 + 360) % 360;
+			//0.75 degrees per pixel: a drag across the whole panel is about half a turn. The sign
+			//is the grab metaphor, and the geometry says which sign that is: the projected x of
+			//the nearest corner moves as -sin(yaw), so yaw must DECREASE as the cursor moves right
+			//for the face under the cursor to follow it. It shipped increasing - "the horizontal
+			//panning is flipped", said the field, correctly.
+			config.voxel.yaw = ((drag.yaw - (e.clientX - drag.x) * 0.75) % 360 + 360) % 360;
 			_this.render_voxel();
 		});
 		var drag_end = function () {

@@ -504,7 +504,12 @@ IMPORTANT: any new icon should also must be added on /service-worker.js + its ve
 	width: 7px;
 	cursor: ew-resize;
 	touch-action: none;
-	z-index: 5;
+	/* above the PINNED panels. They are sticky AND carry an inline z-index counting down from 100
+	   (that is how several pinned panels stack their headers), so the grip lost hit-testing for
+	   exactly the stretch of sidebar somebody had pinned - the field report said the edge "doesn't
+	   pick up on the voxel panel, picks up below it", and the panel in question was pinned. Above
+	   100, below the dialogs at 9999. */
+	z-index: 120;
 }
 .sidebar_width_grip:hover{
 	background: rgba(255, 255, 255, 0.18);
