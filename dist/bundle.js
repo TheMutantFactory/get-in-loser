@@ -5205,6 +5205,10 @@ var menuDefinition = [{
     ellipsis: true,
     target: 'effects/enrich.enrich'
   }, {
+    name: 'Feather Edges',
+    ellipsis: true,
+    target: 'effects/feather.feather'
+  }, {
     name: 'Grains',
     ellipsis: true,
     target: 'effects/grains.grains'
@@ -5271,6 +5275,10 @@ var menuDefinition = [{
     name: 'Color Zoom',
     ellipsis: true,
     target: 'tools/color_zoom.color_zoom'
+  }, {
+    name: 'Remove Background',
+    ellipsis: true,
+    target: 'tools/remove_background.remove_background'
   }, {
     name: 'Replace Color',
     ellipsis: true,
@@ -5860,6 +5868,201 @@ config.TOOLS = [{
 //link to active tool
 config.TOOL = config.TOOLS[2];
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (config);
+
+/***/ },
+
+/***/ "./src/js/core/background-removal.js"
+/*!*******************************************!*\
+  !*** ./src/js/core/background-removal.js ***!
+  \*******************************************/
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   MAX_TOLERANCE: () => (/* binding */ MAX_TOLERANCE),
+/* harmony export */   color_distance: () => (/* binding */ color_distance),
+/* harmony export */   dominant_border_color: () => (/* binding */ dominant_border_color),
+/* harmony export */   remove_background: () => (/* binding */ remove_background)
+/* harmony export */ });
+/*
+ * get-in-loser - https://github.com/TheMutantFactory/get-in-loser
+ *
+ * Remove the background: clear the region that reaches the edge of the image. Pure - see
+ * tests/background-removal.test.js.
+ *
+ * WHY THIS IS NOT THE TOOLS WE ALREADY HAVE. Color to Alpha removes a colour EVERYWHERE, so a
+ * white background goes and so do the highlights in the eyes. The Magic Eraser is contiguous but
+ * wants a click per region, so a subject with sky either side of its head takes three. This starts
+ * from every border pixel at once and floods inward, which is the actual definition of background:
+ * the part that touches the outside.
+ *
+ * CONTIGUITY IS THE WHOLE POINT. A hole enclosed by the subject - the gap inside a handle, the sky
+ * between an arm and a body that the arm closes off - is the same colour as the background and is
+ * NOT the background. Flooding rather than colour-matching is what tells them apart, and there is a
+ * test that holds it to that.
+ */
+
+/** 0 removes only exact matches; 255 would remove everything. */
+var MAX_TOLERANCE = 255;
+
+/**
+ * Perceptual-ish distance between two colours, 0 when identical.
+ *
+ * Weighted toward green because the eye is, so a tolerance that looks right on one hue looks right
+ * on the others. Returned on the same 0-255 scale as the tolerance so the setting means something.
+ *
+ * @returns {number}
+ */
+function color_distance(r1, g1, b1, r2, g2, b2) {
+  var dr = r1 - r2;
+  var dg = g1 - g2;
+  var db = b1 - b2;
+  return Math.sqrt((2 * dr * dr + 4 * dg * dg + 3 * db * db) / 9);
+}
+
+/**
+ * The colour that most of the border is.
+ *
+ * The mode rather than the mean: averaging a border that is half sky and half grass gives a colour
+ * that is neither, and then nothing matches it. Colours are bucketed slightly so that a gradient
+ * sky still agrees with itself.
+ *
+ * @param {Uint8ClampedArray} rgba
+ * @param {number} width
+ * @param {number} height
+ * @returns {object|null} keys r, g, b
+ */
+function dominant_border_color(rgba, width, height) {
+  if (width < 1 || height < 1) {
+    return null;
+  }
+  var counts = new Map();
+  var best = null;
+  var best_count = 0;
+  var consider = function consider(x, y) {
+    var i = (y * width + x) * 4;
+    if (rgba[i + 3] === 0) {
+      //already transparent; it says nothing about what the background looks like
+      return;
+    }
+    //bucket to 1/8 of the range so near-identical shades agree
+    var key = (rgba[i] >> 3) * 1024 + (rgba[i + 1] >> 3) * 32 + (rgba[i + 2] >> 3);
+    var next = (counts.get(key) || 0) + 1;
+    counts.set(key, next);
+    if (next > best_count) {
+      best_count = next;
+      best = {
+        r: rgba[i],
+        g: rgba[i + 1],
+        b: rgba[i + 2]
+      };
+    }
+  };
+  for (var x = 0; x < width; x++) {
+    consider(x, 0);
+    consider(x, height - 1);
+  }
+  for (var y = 0; y < height; y++) {
+    consider(0, y);
+    consider(width - 1, y);
+  }
+  return best;
+}
+
+/**
+ * Clear the background.
+ *
+ * @param {Uint8ClampedArray} rgba source pixels, not modified
+ * @param {number} width
+ * @param {number} height
+ * @param {object} options keys:
+ *   tolerance - how far from the background colour still counts as background, 0-255
+ *   soften    - pixels within this much of the tolerance edge get partial alpha instead of being
+ *               cut clean, which is what keeps an anti-aliased outline from turning into a stair
+ * @returns {object|null} keys: data, removed, background
+ */
+function remove_background(rgba, width, height, options) {
+  options = options || {};
+  if (!(width > 0) || !(height > 0) || rgba == null || rgba.length < width * height * 4) {
+    return null;
+  }
+  var tolerance = Math.max(0, Math.min(MAX_TOLERANCE, Number(options.tolerance)));
+  if (isNaN(tolerance)) {
+    tolerance = 0;
+  }
+  var soften = Math.max(0, Number(options.soften) || 0);
+  var background = dominant_border_color(rgba, width, height);
+  if (background == null) {
+    //every border pixel is already transparent; there is nothing to take away
+    return {
+      data: new Uint8ClampedArray(rgba),
+      removed: 0,
+      background: null
+    };
+  }
+  var out = new Uint8ClampedArray(rgba);
+  var n = width * height;
+  var visited = new Uint8Array(n);
+  //a plain array used as a stack: the recursion depth of a flood over a large image is not
+  //something to hand to the call stack
+  var stack = [];
+  var removed = 0;
+  var distance_at = function distance_at(index) {
+    var i = index * 4;
+    return color_distance(rgba[i], rgba[i + 1], rgba[i + 2], background.r, background.g, background.b);
+  };
+  var push = function push(index) {
+    if (visited[index] === 1) {
+      return;
+    }
+    visited[index] = 1;
+    if (distance_at(index) <= tolerance + soften) {
+      stack.push(index);
+    }
+  };
+
+  //seed from EVERY border pixel, not one click
+  for (var x = 0; x < width; x++) {
+    push(x);
+    push((height - 1) * width + x);
+  }
+  for (var y = 0; y < height; y++) {
+    push(y * width);
+    push(y * width + width - 1);
+  }
+  while (stack.length > 0) {
+    var index = stack.pop();
+    var distance = distance_at(index);
+    var i = index * 4;
+    if (distance <= tolerance) {
+      //background
+      out[i + 3] = 0;
+      removed++;
+    } else if (soften > 0) {
+      //in the fringe: keep it, but proportionally. An anti-aliased outline lives here, and
+      //cutting it clean is what leaves a jagged halo of the old background behind.
+      var ratio = (distance - tolerance) / soften;
+      out[i + 3] = Math.min(rgba[i + 3], Math.round(rgba[i + 3] * ratio));
+      //a fringe pixel is a boundary; do not flood past it into the subject
+      continue;
+    } else {
+      continue;
+    }
+    var px = index % width;
+    var py = (index - px) / width;
+    if (px > 0) push(index - 1);
+    if (px < width - 1) push(index + 1);
+    if (py > 0) push(index - width);
+    if (py < height - 1) push(index + width);
+  }
+  return {
+    data: out,
+    removed: removed,
+    background: background
+  };
+}
+
 
 /***/ },
 
@@ -10727,6 +10930,199 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
     }
   };
 })(jQuery);
+
+/***/ },
+
+/***/ "./src/js/core/feather.js"
+/*!********************************!*\
+  !*** ./src/js/core/feather.js ***!
+  \********************************/
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   MAX_RADIUS: () => (/* binding */ MAX_RADIUS),
+/* harmony export */   blur_channel: () => (/* binding */ blur_channel),
+/* harmony export */   blur_plan: () => (/* binding */ blur_plan),
+/* harmony export */   feather_pixels: () => (/* binding */ feather_pixels)
+/* harmony export */ });
+/*
+ * get-in-loser - https://github.com/TheMutantFactory/get-in-loser
+ *
+ * Feather: soften the edge between what a layer draws and what it does not. Pure - see
+ * tests/feather.test.js.
+ *
+ * THE THING THAT MAKES THIS NOT JUST "BLUR THE ALPHA". A fully transparent pixel still has colour
+ * channels, and they are almost always black - nobody writes a colour they are not going to show.
+ * Blur the alpha on its own and those black pixels start being visible, so a feathered cutout comes
+ * back wearing a dark halo. The fix is to blur in PREMULTIPLIED space: multiply colour by alpha,
+ * blur colour and alpha together, then divide the colour back out. Transparent pixels contribute
+ * nothing because they weigh nothing, and the edge takes its colour from the pixels that actually
+ * had one.
+ *
+ * AND THE BLURRED COLOUR IS ONLY USED WHERE THERE WASN'T ONE. Feathering is an operation on ALPHA;
+ * it must not smear the picture. Taking the blurred colour everywhere does - a red square with a
+ * blue panel inside it came back with the red/blue boundary smudged, nowhere near any edge. So the
+ * blurred colour is mixed in by how transparent the pixel ORIGINALLY was: an opaque pixel keeps its
+ * own colour exactly, and a pixel that had none takes the colour that bled into it. The halo is
+ * still fixed, because the halo is exactly the region that had no colour of its own.
+ */
+
+/** Past this the blur costs more than the softness is worth at the sizes this app works at. */
+var MAX_RADIUS = 64;
+
+/**
+ * One pass of a separable box blur over a single channel.
+ *
+ * Three box passes approximate a Gaussian closely enough that nobody can tell, and each pass is a
+ * sliding sum - the cost does not grow with the radius.
+ *
+ * @param {Float32Array} src
+ * @param {Float32Array} dst
+ * @param {number} width
+ * @param {number} height
+ * @param {number} radius
+ * @param {boolean} horizontal
+ */
+function box_pass(src, dst, width, height, radius, horizontal) {
+  var outer = horizontal ? height : width;
+  var inner = horizontal ? width : height;
+  var step = horizontal ? 1 : width;
+  var span = radius * 2 + 1;
+  for (var o = 0; o < outer; o++) {
+    var base = horizontal ? o * width : o;
+    var sum = 0;
+
+    //prime the window, clamping at the edge so the border does not darken
+    for (var k = -radius; k <= radius; k++) {
+      sum += src[base + Math.min(inner - 1, Math.max(0, k)) * step];
+    }
+    for (var i = 0; i < inner; i++) {
+      dst[base + i * step] = sum / span;
+      var out_i = Math.min(inner - 1, Math.max(0, i - radius));
+      var in_i = Math.min(inner - 1, Math.max(0, i + radius + 1));
+      sum += src[base + in_i * step] - src[base + out_i * step];
+    }
+  }
+}
+
+/**
+ * How to spend a feather radius on box passes.
+ *
+ * THE RADIUS HAS TO MEAN WHAT IT SAYS. Three passes of box radius r reach 3r each way, not r - so
+ * feeding the requested radius straight in overshoots by three, and a 16px shape feathered by "3"
+ * came back with its CENTRE at alpha 248. The shape was being dimmed, not edged. The box radius is
+ * therefore a third of the ask, and small radii take a single pass so that "1" is one pixel rather
+ * than the minimum three passes can express.
+ *
+ * @param {number} radius the feather radius asked for
+ * @returns {object} keys: passes, box
+ */
+function blur_plan(radius) {
+  if (radius <= 2) {
+    //one pass gives a linear ramp exactly `radius` wide - crisp and honest at small sizes
+    return {
+      passes: 1,
+      box: radius
+    };
+  }
+
+  //three passes approximate a Gaussian; 6*box+1 is their combined support
+  return {
+    passes: 3,
+    box: Math.max(1, Math.round(radius / 3))
+  };
+}
+
+/**
+ * Blur one channel, spreading about `radius` pixels each way.
+ *
+ * @param {Float32Array} channel modified in place
+ * @param {number} width
+ * @param {number} height
+ * @param {number} radius the feather radius, not the box radius
+ */
+function blur_channel(channel, width, height, radius) {
+  if (radius < 1) {
+    return;
+  }
+  var plan = blur_plan(radius);
+  var tmp = new Float32Array(channel.length);
+  for (var pass = 0; pass < plan.passes; pass++) {
+    box_pass(channel, tmp, width, height, plan.box, true);
+    box_pass(tmp, channel, width, height, plan.box, false);
+  }
+}
+
+/**
+ * Soften a layer's alpha edge.
+ *
+ * @param {Uint8ClampedArray} rgba source pixels, not modified
+ * @param {number} width
+ * @param {number} height
+ * @param {object} options keys:
+ *   radius - how far the edge is spread, in pixels
+ *   inside_only - keep the shape from growing: the result is masked back to where there was
+ *                 already some coverage, so the edge fades inward instead of blooming outward
+ * @returns {Uint8ClampedArray} new pixels
+ */
+function feather_pixels(rgba, width, height, options) {
+  options = options || {};
+  var radius = Math.max(0, Math.min(MAX_RADIUS, Math.round(options.radius || 0)));
+  var out = new Uint8ClampedArray(rgba);
+  if (radius < 1 || width < 1 || height < 1) {
+    //nothing to do, and the caller gets a copy either way so it can always assign the result
+    return out;
+  }
+  var n = width * height;
+  var a = new Float32Array(n);
+  var r = new Float32Array(n);
+  var g = new Float32Array(n);
+  var b = new Float32Array(n);
+  var original_alpha = new Float32Array(n);
+
+  //PREMULTIPLY. Colour is weighted by how much of it there is, so transparent pixels carry no
+  //colour into the blur and cannot tint the new edge.
+  for (var i = 0; i < n; i++) {
+    var alpha = rgba[i * 4 + 3] / 255;
+    original_alpha[i] = alpha;
+    a[i] = alpha;
+    r[i] = rgba[i * 4] * alpha;
+    g[i] = rgba[i * 4 + 1] * alpha;
+    b[i] = rgba[i * 4 + 2] * alpha;
+  }
+  blur_channel(a, width, height, radius);
+  blur_channel(r, width, height, radius);
+  blur_channel(g, width, height, radius);
+  blur_channel(b, width, height, radius);
+  for (var p = 0; p < n; p++) {
+    var alpha_out = a[p];
+    if (options.inside_only === true) {
+      //never more coverage than there was; the shape softens rather than spreading
+      alpha_out = Math.min(alpha_out, original_alpha[p]);
+    }
+    if (alpha_out <= 0) {
+      out[p * 4] = 0;
+      out[p * 4 + 1] = 0;
+      out[p * 4 + 2] = 0;
+      out[p * 4 + 3] = 0;
+      continue;
+    }
+
+    //UN-PREMULTIPLY against the blurred alpha, which is what the colour was weighted by
+    var weight = a[p] > 0 ? a[p] : 1;
+    //...then keep the pixel's own colour in proportion to how much of it there already was
+    var keep = original_alpha[p];
+    var bleed = 1 - keep;
+    out[p * 4] = rgba[p * 4] * keep + r[p] / weight * bleed;
+    out[p * 4 + 1] = rgba[p * 4 + 1] * keep + g[p] / weight * bleed;
+    out[p * 4 + 2] = rgba[p * 4 + 2] * keep + b[p] / weight * bleed;
+    out[p * 4 + 3] = alpha_out * 255;
+  }
+  return out;
+}
+
 
 /***/ },
 
@@ -26168,6 +26564,153 @@ var Effects_enrich_class = /*#__PURE__*/function () {
 
 /***/ },
 
+/***/ "./src/js/modules/effects/feather.js"
+/*!*******************************************!*\
+  !*** ./src/js/modules/effects/feather.js ***!
+  \*******************************************/
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ "./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js");
+/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
+/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _app_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./../../app.js */ "./src/js/app.js");
+/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./../../config.js */ "./src/js/config.js");
+/* harmony import */ var _libs_popup_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./../../libs/popup.js */ "./src/js/libs/popup.js");
+/* harmony import */ var _core_base_layers_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./../../core/base-layers.js */ "./src/js/core/base-layers.js");
+/* harmony import */ var _core_feather_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./../../core/feather.js */ "./src/js/core/feather.js");
+/* harmony import */ var _libs_rasterize_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./../../libs/rasterize.js */ "./src/js/libs/rasterize.js");
+
+
+
+
+
+
+
+
+
+
+
+/**
+ * Feather: soften a layer's alpha edge. The maths lives in core/feather.js; this is the dialog.
+ */
+var Effects_feather_class = /*#__PURE__*/function () {
+  function Effects_feather_class() {
+    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__["default"])(this, Effects_feather_class);
+    this.POP = new _libs_popup_js__WEBPACK_IMPORTED_MODULE_6__["default"]();
+    this.Base_layers = new _core_base_layers_js__WEBPACK_IMPORTED_MODULE_7__["default"]();
+  }
+  return (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__["default"])(Effects_feather_class, [{
+    key: "feather",
+    value: function () {
+      var _feather = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().mark(function _callee() {
+        var _this, ready, settings;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().wrap(function (_context) {
+          while (1) switch (_context.prev = _context.next) {
+            case 0:
+              _this = this;
+              if (!(_config_js__WEBPACK_IMPORTED_MODULE_5__["default"].layer.type != 'image' || _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].layer.is_vector == true)) {
+                _context.next = 2;
+                break;
+              }
+              _context.next = 1;
+              return (0,_libs_rasterize_js__WEBPACK_IMPORTED_MODULE_9__.ensure_raster_layer)('edited');
+            case 1:
+              ready = _context.sent;
+              if (!(ready == false)) {
+                _context.next = 2;
+                break;
+              }
+              return _context.abrupt("return");
+            case 2:
+              settings = {
+                title: 'Feather Edges',
+                preview: true,
+                effects: true,
+                params: [{
+                  name: "radius",
+                  title: "Radius:",
+                  value: 4,
+                  range: [1, _core_feather_js__WEBPACK_IMPORTED_MODULE_8__.MAX_RADIUS]
+                }, {
+                  name: "inside_only",
+                  title: "Fade inward only:",
+                  value: false
+                }],
+                on_change: function on_change(params, canvas_preview, w, h) {
+                  var img = canvas_preview.getImageData(0, 0, w, h);
+                  //SCALE THE RADIUS TO THE PREVIEW. The preview is the layer shrunk to fit the box, so
+                  //a radius applied at full strength there looks several times softer than the result.
+                  var scale = _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].layer.width > 0 ? w / _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].layer.width : 1;
+                  var out = _this.change(img, params, scale);
+                  canvas_preview.putImageData(out, 0, 0);
+                },
+                on_finish: function on_finish(params) {
+                  _this.save(params);
+                }
+              };
+              this.POP.show(settings);
+            case 3:
+            case "end":
+              return _context.stop();
+          }
+        }, _callee, this);
+      }));
+      function feather() {
+        return _feather.apply(this, arguments);
+      }
+      return feather;
+    }()
+  }, {
+    key: "save",
+    value: function save(params) {
+      var canvas = this.Base_layers.convert_layer_to_canvas(null, true);
+      var ctx = canvas.getContext("2d");
+      var img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      ctx.putImageData(this.change(img, params, 1), 0, 0);
+      return _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].Actions.Update_layer_image_action(canvas));
+    }
+
+    /**
+     * @param {ImageData} data
+     * @param {object} params
+     * @param {number} scale how much smaller than the layer this data is
+     * @returns {ImageData}
+     */
+  }, {
+    key: "change",
+    value: function change(data, params, scale) {
+      var radius = Math.max(1, Math.round(parseFloat(params.radius) * (scale || 1)));
+      data.data.set((0,_core_feather_js__WEBPACK_IMPORTED_MODULE_8__.feather_pixels)(data.data, data.width, data.height, {
+        radius: radius,
+        inside_only: params.inside_only === true
+      }));
+      return data;
+    }
+  }, {
+    key: "demo",
+    value: function demo(canvas_id, canvas_thumb) {
+      var canvas = document.getElementById(canvas_id);
+      var ctx = canvas.getContext("2d");
+      ctx.drawImage(canvas_thumb, 0, 0);
+      var img = ctx.getImageData(0, 0, canvas_thumb.width, canvas_thumb.height);
+      ctx.putImageData(this.change(img, {
+        radius: 6,
+        inside_only: false
+      }, 1), 0, 0);
+    }
+  }]);
+}();
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Effects_feather_class);
+
+/***/ },
+
 /***/ "./src/js/modules/effects/grains.js"
 /*!******************************************!*\
   !*** ./src/js/modules/effects/grains.js ***!
@@ -31041,7 +31584,7 @@ var File_save_class = /*#__PURE__*/function () {
         //conflating the two is what broke loading after this fork reset its version to 0.1.x.
         //See libs/file-format.js.
         format: _libs_file_format_js__WEBPACK_IMPORTED_MODULE_14__.FILE_FORMAT,
-        version: "0.1.25",
+        version: "0.1.26",
         layer_active: _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].layer.id,
         guides: _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].guides
       };
@@ -31154,7 +31697,7 @@ var Help_about_class = /*#__PURE__*/function () {
           html: '<span class="about-name">Get in loser</span>'
         }, {
           title: "Version:",
-          value: "0.1.25"
+          value: "0.1.26"
         }, {
           title: "Description:",
           value: "A personal browser-based image editor."
@@ -31441,7 +31984,7 @@ var Help_feedback_class = /*#__PURE__*/function () {
               }
               envelope = (0,_libs_feedback_envelope_js__WEBPACK_IMPORTED_MODULE_9__.build_envelope)({
                 text: text,
-                app_version:  true ? "0.1.25" : 0,
+                app_version:  true ? "0.1.26" : 0,
                 platform: (0,_libs_feedback_envelope_js__WEBPACK_IMPORTED_MODULE_9__.detect_platform)(window.navigator),
                 install_id: (0,_libs_feedback_envelope_js__WEBPACK_IMPORTED_MODULE_9__.install_id)(window.localStorage, function () {
                   return _this3.random_id();
@@ -36697,6 +37240,161 @@ var Tools_pixel_class = /*#__PURE__*/function () {
   }]);
 }();
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Tools_pixel_class);
+
+/***/ },
+
+/***/ "./src/js/modules/tools/remove_background.js"
+/*!***************************************************!*\
+  !*** ./src/js/modules/tools/remove_background.js ***!
+  \***************************************************/
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ "./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js");
+/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
+/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _app_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./../../app.js */ "./src/js/app.js");
+/* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./../../config.js */ "./src/js/config.js");
+/* harmony import */ var _libs_popup_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./../../libs/popup.js */ "./src/js/libs/popup.js");
+/* harmony import */ var _core_base_layers_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./../../core/base-layers.js */ "./src/js/core/base-layers.js");
+/* harmony import */ var _core_background_removal_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./../../core/background-removal.js */ "./src/js/core/background-removal.js");
+/* harmony import */ var _libs_rasterize_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./../../libs/rasterize.js */ "./src/js/libs/rasterize.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./../../../../node_modules/alertifyjs/build/alertify.min.js */ "./node_modules/alertifyjs/build/alertify.min.js");
+/* harmony import */ var _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(_node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10__);
+
+
+
+
+
+
+
+
+
+
+
+
+/**
+ * Remove Background: clear whatever region reaches the edge of the layer. The flood lives in
+ * core/background-removal.js; this is the dialog.
+ */
+var Tools_removeBackground_class = /*#__PURE__*/function () {
+  function Tools_removeBackground_class() {
+    (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__["default"])(this, Tools_removeBackground_class);
+    this.POP = new _libs_popup_js__WEBPACK_IMPORTED_MODULE_6__["default"]();
+    this.Base_layers = new _core_base_layers_js__WEBPACK_IMPORTED_MODULE_7__["default"]();
+  }
+  return (0,_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__["default"])(Tools_removeBackground_class, [{
+    key: "remove_background",
+    value: function () {
+      var _remove_background = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_0__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().mark(function _callee() {
+        var _this, ready, settings;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_3___default().wrap(function (_context) {
+          while (1) switch (_context.prev = _context.next) {
+            case 0:
+              _this = this;
+              if (!(_config_js__WEBPACK_IMPORTED_MODULE_5__["default"].layer.type != 'image' || _config_js__WEBPACK_IMPORTED_MODULE_5__["default"].layer.is_vector == true)) {
+                _context.next = 2;
+                break;
+              }
+              _context.next = 1;
+              return (0,_libs_rasterize_js__WEBPACK_IMPORTED_MODULE_9__.ensure_raster_layer)('edited');
+            case 1:
+              ready = _context.sent;
+              if (!(ready == false)) {
+                _context.next = 2;
+                break;
+              }
+              return _context.abrupt("return");
+            case 2:
+              settings = {
+                title: 'Remove Background',
+                preview: true,
+                effects: true,
+                params: [{
+                  name: "tolerance",
+                  title: "Tolerance:",
+                  value: 30,
+                  range: [0, _core_background_removal_js__WEBPACK_IMPORTED_MODULE_8__.MAX_TOLERANCE]
+                }, {
+                  name: "soften",
+                  title: "Soften edge:",
+                  value: 30,
+                  range: [0, 128]
+                }],
+                on_change: function on_change(params, canvas_preview, w, h) {
+                  var img = canvas_preview.getImageData(0, 0, w, h);
+                  canvas_preview.putImageData(_this.change(img, params), 0, 0);
+                },
+                on_finish: function on_finish(params) {
+                  _this.save(params);
+                }
+              };
+              this.POP.show(settings);
+            case 3:
+            case "end":
+              return _context.stop();
+          }
+        }, _callee, this);
+      }));
+      function remove_background() {
+        return _remove_background.apply(this, arguments);
+      }
+      return remove_background;
+    }()
+  }, {
+    key: "save",
+    value: function save(params) {
+      var canvas = this.Base_layers.convert_layer_to_canvas(null, true);
+      var ctx = canvas.getContext("2d");
+      var img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      var result = (0,_core_background_removal_js__WEBPACK_IMPORTED_MODULE_8__.remove_background)(img.data, img.width, img.height, this.options(params));
+      if (result == null || result.background == null) {
+        //nothing along the edge to take: say so rather than pushing an empty undo step
+        _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10___default().warning('Nothing to remove - the edges of this layer are already transparent.');
+        return;
+      }
+      if (result.removed == 0) {
+        _node_modules_alertifyjs_build_alertify_min_js__WEBPACK_IMPORTED_MODULE_10___default().warning('Nothing matched. Try a higher tolerance.');
+        return;
+      }
+      img.data.set(result.data);
+      ctx.putImageData(img, 0, 0);
+      return _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].State.do_action(new _app_js__WEBPACK_IMPORTED_MODULE_4__["default"].Actions.Update_layer_image_action(canvas));
+    }
+  }, {
+    key: "options",
+    value: function options(params) {
+      var tolerance = parseFloat(params.tolerance);
+      var soften = parseFloat(params.soften);
+      return {
+        tolerance: isNaN(tolerance) ? 0 : tolerance,
+        soften: isNaN(soften) ? 0 : soften
+      };
+    }
+
+    /**
+     * @param {ImageData} data
+     * @param {object} params
+     * @returns {ImageData}
+     */
+  }, {
+    key: "change",
+    value: function change(data, params) {
+      var result = (0,_core_background_removal_js__WEBPACK_IMPORTED_MODULE_8__.remove_background)(data.data, data.width, data.height, this.options(params));
+      if (result != null) {
+        data.data.set(result.data);
+      }
+      return data;
+    }
+  }]);
+}();
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Tools_removeBackground_class);
 
 /***/ },
 
@@ -66940,6 +67638,7 @@ var map = {
 	"./effects/edge.js": "./src/js/modules/effects/edge.js",
 	"./effects/emboss.js": "./src/js/modules/effects/emboss.js",
 	"./effects/enrich.js": "./src/js/modules/effects/enrich.js",
+	"./effects/feather.js": "./src/js/modules/effects/feather.js",
 	"./effects/grains.js": "./src/js/modules/effects/grains.js",
 	"./effects/heatmap.js": "./src/js/modules/effects/heatmap.js",
 	"./effects/instagram/1977.js": "./src/js/modules/effects/instagram/1977.js",
@@ -67004,6 +67703,7 @@ var map = {
 	"./tools/keypoints.js": "./src/js/modules/tools/keypoints.js",
 	"./tools/palettes.js": "./src/js/modules/tools/palettes.js",
 	"./tools/pixel.js": "./src/js/modules/tools/pixel.js",
+	"./tools/remove_background.js": "./src/js/modules/tools/remove_background.js",
 	"./tools/replace_color.js": "./src/js/modules/tools/replace_color.js",
 	"./tools/restore_alpha.js": "./src/js/modules/tools/restore_alpha.js",
 	"./tools/search.js": "./src/js/modules/tools/search.js",
@@ -67155,7 +67855,7 @@ webpackContext.id = "./src/palettes sync \\.json$";
 (module) {
 
 "use strict";
-module.exports = "# Changelog\n\nAll notable changes to **Get in loser** — a browser paint tool, and also, allegedly, a roguelite. In order of descent: oldest at the top, because the way down only makes sense from the top. Dates are approximate; time is a construct; the fog is real.\n\n---\n\n## v0.1.0 — \"First Coat\"\n\nThe one where it's just a paint app. For now.\n\n- **Painting:** brush, pencil, eraser, fill. They work. You can make an image. Congratulations, you are an artist.\n- **Themes:** shipped the Yoncé theme — Midnight Violet fading to Onyx, Vintage Grape panels, and a hot pink we later agreed was \"too hot.\"\n- **Fonts:** the entire UI now speaks Atkinson Hyperlegible, because we would very much like you to be able to read the pop-ups. You will see why.\n- **The hand:** the \"l\" in the logo is a finger pointing up. It is pointing *at* something. Do not look directly at it yet.\n- Fixed: the gradient background no longer tiles itself into venetian blinds.\n\n*This build contains no roguelite elements. None whatsoever. Why would you even ask.*\n\n---\n\n## v0.1.1 — \"Undo Considered Harmful\"\n\n- **New:** `Ctrl+Z` now also undoes minor regrets. Personal regrets remain out of scope — see roadmap.\n- **Balance:** the Bucket Fill tool no longer floods *adjacent save files.* We know. We are sorry. We have spoken with it.\n- **Layers:** you may now stack up to 8 layers before the Layers panel begins to whisper. This is intended. The whispering is a feature. It is called \"ambiance.\"\n- **Not a secret:** moving your mouse makes the logo letters bob. The secret is what happens on the 7th bob. (Nothing happens on the 7th bob. Keep bobbing.)\n\n---\n\n## v0.1.2 — \"The Fog Rolls In\"\n\n- **Tools:** added the Clone Stamp. It clones pixels. It has recently begun cloning *other things.* Inventory management is coming in a future patch.\n- **New resource — Ink:** every brushstroke now costs 1 Ink. You begin each canvas with 999 Ink. When it runs out you must *find more Ink.* The Ink is in the Effects menu. The Ink was always in the Effects menu.\n- **Encounter:** the Sharpen filter, applied three times in a row, will Sharpen *back.* Bring a friend. Bring the friend as a separate layer.\n- **Accessibility:** all bosses now have subtitles.\n- Fixed: the default color is black, not \"the specific green of a 2009 startup logo.\"\n\n---\n\n## v0.1.3 — \"Descent\" (Floors 1–3)\n\n- **Roguelite systems, now officially acknowledged:** the Zoom controls double as your Depth Meter. 100% is the surface. Keep clicking `-`. We'll wait.\n- **Loot:** every 50 brushstrokes drops a Modifier. Current pool — *Wet* (colors bleed), *Dry* (colors judge you), *Impasto* (colors gain mass, and eventually, opinions).\n- **Meta-progression:** the swatches you never use are being saved. For the run. For *a* run. It's fine.\n- **Boss — The Marquee:** defeat the dashed selection that circles your best work and calls it \"just a draft.\" Reward: the Crop tool, and closure.\n- **Known issue:** the tutorial for the paint tool is finished. The tutorial for the *other* thing is written on the inside of the fog. We are aware. We put it there.\n\n---\n\n## v0.1.4 — \"The Letters Have Learned To Float\"\n\nThe one where the UI stopped holding still.\n\n- **Legibility (paint tool):** the entire interface is now set in Atkinson Hyperlegible, and every font grew by a few points. This is so you can read the tool labels. It is also, per the Braille Institute, so you can read the *warnings.*\n- **Selection color:** softened the tool-selection pink to Petal Pink (`#ce59a7`), after the previous pink was formally reclassified as \"too hot to look at directly.\" Black icons are legible again. We are calling this a truce.\n- **De-pinking:** the number fields, the preview zoom buttons, and the layer controls no longer glow. They match the other inputs now. They are calmer. They have accepted their roles.\n- **Layers:** rows now grow to fit their names instead of clipping them. The names have more room. They are using it to become longer. We are monitoring the situation.\n- **Palette:** the swatch picker now ships pre-loaded with the theme colors, the default color is an honest black, and every tool fills with black by default. The 2009-startup green is gone. Do not ask where.\n- **THE LOGO:** the \"l\" in *loser* is the finger now. The finger hovers on its own, like a ghost, because it is one. Move your mouse and the other letters begin to bob — the wave is *ticked by your cursor,* so the logo only breathes while you are watching it. The finger and \"oser\" bleed from white into pink. It is still pointing at something. You have been moving your mouse for a while now.\n- **Meta:** added this Changelog (Help → Changelog). You are reading the tutorial. This is the tutorial. Hello.\n\n---\n\n## v0.1.5 — \"One Click, No Take-Backs\"\n\n- **Cosmetic:** the delete \"×\" on each layer is now Petal Pink, matching the tool-selection color — a red × felt like a threat, and we prefer our threats color-coordinated.\n- **Rename (a functional change, we admit it):** the layer rename dialog now opens on a *single* click instead of a double-click. One click. Faster. Also less deniable. The layer will know you named it. It will remember the name you chose. Choose kindly.\n\n---\n\n## v0.1.6 — \"Right Of Way\"\n\n- **Rename, reconsidered:** a single click on a layer now just *selects* it, like a reasonable tool. We heard you — the dialog was ambushing you every time you tried to switch layers. It has been asked to wait its turn.\n- **New — right-click menu:** right-click a layer name for a context menu. It currently offers exactly one option, \"Rename,\" with the quiet confidence of a menu that knows more options are coming and is choosing not to say so yet.\n\n---\n\n## v0.1.7 — \"The Menu Reveals Itself\"\n\n- **Layer right-click menu:** the context menu that previously offered only \"Rename\" now admits it has always had more to say. Added *Duplicate*, *Convert to Raster*, *Merge Down* (which appears only when there is, in fact, a layer below to merge into — it will not pretend otherwise), and, past a respectful divider, *Delete*. Each acts on the layer you clicked, whether or not it was the one you were looking at.\n\n---\n\n## v0.1.8 — \"Reunited (The Row Holds)\"\n\n- **Layers, responsiveness:** the visibility eye and the delete \"×\" had been wandering onto their own lines whenever a layer name got long or the panel got narrow. They have been returned to the row. The name now yields space — and truncates, politely — instead of evicting its neighbors. One layer, one line.\n\n---\n\n## v0.1.9 — \"Legible At Last\"\n\n- **Colors panel:** the three toggle icons (picker / channels / swatches) are now white instead of the pressed-state cyan, which had been quietly cosplaying as a UI accent.\n- **Error popups:** the lower-right notifications were black text on a muted red — a color combination previously only found in ransom notes. They now match the grape layer panels: white text, rounded corners, and a colored left edge (red for errors; other colors exist for the other outcomes, should you ever be so lucky).\n\n---\n\n## v0.1.10 — \"Paste, By Request\"\n\n- **Edit → Paste (menu):** now actually pastes. It asks the browser for clipboard-read permission the first time — grant it once and the menu item reads an image straight off your clipboard and drops it in as a layer. Where the browser refuses (Firefox, Safari, insecure contexts, a denied prompt), it steps aside and points you back to the ever-reliable Ctrl+V. Copy was never the problem; *reading* your clipboard is the part browsers guard, and rightly so.\n\n---\n\n## v0.1.11 — \"The Folder Remembers\"\n\n- **New — Smart folder** (*Settings → \"Smart folder\"*): toggle it on and pick a folder. Get in loser tells you plainly that it will read from and write to that folder, then keeps a single `get-in-loser.json` there holding your configuration and a session history.\n- **Pick a folder you have used before and it knows.** Your settings come back — theme and all — and the folder's history gains another entry. It has been counting. It will tell you how many times you have been here.\n- Requires a Chromium browser (Chrome/Edge) for the File System Access API; elsewhere it declines politely rather than pretending. The folder is remembered between sessions and reconnects on load, for as long as the browser still trusts you.\n\n---\n\n## v0.1.12 — \"There Is Only One Theme\"\n\n- **Smart folder has a home now:** a folder icon sits to the right of the logo. Click it to pick your folder; it glows Petal Pink while connected and tells you which folder it is holding. The Settings toggle still exists, at the bottom of a long list, where you did not find it. Fair.\n- **Theme selection, clarified:** choosing any theme other than *yonce* now returns you to the original miniPaint. Immediately. We are not angry. We simply understand that you would be happier there. (Your unsaved work still gets the usual \"are you sure\" — we are petty, not cruel.)\n\n---\n\n## v0.1.13 — \"Faster Than That\"\n\n- **Banishment, recalibrated:** the theme redirect only fired when you pressed *OK* — but the theme changes the instant you touch the dropdown, so you were getting a new theme and no consequences. Unacceptable. It now triggers the moment you pick a non-yonce theme. You do get a 1.5-second grace period: switch back to yonce in time and the matter is quietly dropped.\n\n---\n\n## v0.1.14 — \"A Theme For Every Kind Of Wrong\"\n\nTheme selection is now fully implemented. Each option has been considered carefully.\n\n- **yonce** — correct.\n- **classic** — a faithful copy of the original dark theme, in the sense that every single value in it is now `#000000`. Background, text, borders, icons. Black on black. It does not redirect you anywhere; it does not have to.\n- **dark** — still returns you to the original miniPaint, where dark is presumably fine.\n- **light** — redirects to adobe.com. Enjoy the subscription.\n- **green** — no longer a palette, more of a mood. Every application rolls fresh random greens, all crammed into the same narrow band of darkness so that no two elements are ever quite distinguishable. Re-roll by selecting it again. You will not find a good one.\n\nSwitching back to yonce inside the grace period still cancels any pending relocation, and leaving *green* restores the real palette.\n\n---\n\n## v0.1.15 — \"The Void Is Negotiable\"\n\n- **classic now has an exit.** It is still absolute black on absolute black. But as you move the mouse, the colour bleeds back in — the entire palette climbing out of black toward yonce over roughly ten seconds of actual movement, gradient and all. Stop moving and it stops healing. You are not trapped; you are being asked to demonstrate effort.\n- **green is greener.** The greys, the whites, and the blues it had quietly inherited are all green now — even the semantic \"red\" is green. There is no longer anything in that theme which is not green, which somehow makes the contrast worse.\n- **light** now carries a UTM to adobe.com so the referral is properly attributed. No spaces in it — `get-in-loser`. We are unserious, not unprofessional.\n\n---\n\n## v0.1.16 — \"Dark Mode, Taken Literally\"\n\n- **classic and dark have traded fates.** *classic* now returns you to the original miniPaint, which is what you were asking for by choosing it. *dark* is the void.\n- **dark is now genuinely, completely dark.** Previously the tool icons, the layer visibility eye, the finger in the logo and — most embarrassingly — the canvas itself all carried on glowing while everything else went black. They are black now too. Dark mode should not have exceptions.\n- **The whole void fades back together.** Icons and the canvas ride the recovery with everything else, so ten seconds of mouse movement returns the entire interface rather than most of it.\n- **Selecting dark now commits itself** and closes the dialog. You cannot click \"Ok\" on a dialog you cannot see; asking you to was rude.\n- **green finally reaches the canvas.** The canvas, the tool icons, the logo hand and the checkboxes are all green now. Every part of that theme is green. That was the promise.\n\n---\n\n## v0.1.17 — \"No, All Of It\"\n\n- **dark mode holds out no longer.** The colour picker had been quietly glowing this whole time — the saturation square, the hue strip, the alpha checkerboard, the swatch grid, the native colour and range inputs, the effect previews, and the gradient tool's icon, which upstream had specifically excused from tinting. All black now.\n- **Even the hairline.** Every button carried a hardcoded white inset highlight. It is a variable now, and in dark it is nothing.\n- All of it still fades back together on mouse movement. The void is complete, and it is still negotiable.\n\n---\n\n## v0.1.18 — \"The Sliders Were Hiding\"\n\n- **The colour sliders have joined us.** Their handles are little CSS triangles built out of hardcoded white borders, and the colour channel section is collapsed by default — so they were both invisible to the sweep and stubbornly bright once you opened it. The slider and picker components are now tinted whole, handles and all.\n- Nested pieces are explicitly exempted from tinting twice, because two filters multiply, and a slider that fades at the square of everything else looks haunted in a way we did not intend.\n\n---\n\n## v0.1.19 — \"The Hand Has A Name\"\n\n- **We looked up the icon.** The hand in the logo — the one that has been pointing this whole time — is a real icon by a real person, and we had never actually read its record. Its name is **\"Loser gesture.\"** We did not name it that. It was called that before we found it. We named the project *afterward.* We have decided not to think about this further.\n- **New — Help → Icon License**, or *right-click the hand itself.* The credit is now in the app: creator, license, the page it came from, and exactly which files it became. It reads from a data file fetched straight from the source, so the credit in the app and the credit in the repo cannot drift apart. One of them lying to you would be thematically appropriate but practically unacceptable.\n- **Attribution, properly.** It is used under CC BY 3.0, which asks that we say who made it. We say so in three places now. It is the least we can do for something that has been silently gesturing at you since v0.1.0.\n- **Under the hood:** the layer right-click menu and the new logo right-click menu are now the same menu, wearing different options.\n\n*Naming a thing gives it power. We are aware of the risk. We accepted it.*\n\n---\n\n## v0.1.20 — \"The Palette Talks Back\"\n\nThe one where the colors stop being a read-only fact about your image and start being negotiable.\n\n- **Image → Color Palette is no longer a museum.** The dialog used to show you your image's palette behind glass: here are your nine colors, look, don't touch. The glass is gone. Every swatch is now a real color input. Click one. Change it. The image *changes with it.* The dominant color stays behind glass, as a reminder of how things used to be.\n- **Two ways to negotiate:**\n  - **Shift — preserve shading:** every pixel follows its palette color by the same distance you moved it. Gradients survive. Anti-aliasing survives. Your image keeps its soul and changes its wardrobe.\n  - **Replace — exact colors:** every pixel snaps to its palette color, exactly, no survivors. It is Decrease Color Depth with *your* hand on the palette. The image comes back flatter, harder, and extremely certain of itself.\n- **Live preview, before and after,** so you can watch the negotiation happen. `Ctrl+Z` remains the mediator of record.\n- **SURFACE BREACH:** the editor is now live at **mutantfactory.net/get-in-loser**. Yes — after nineteen versions of descending, we went *up.* The Depth Meter reads 100%. The surface was up here the whole time. The fog thins at altitude but it does not lift; bring your own Ink.\n\n*The palette has always known what colors it wanted to be. Now it has a form to fill out.*\n\n---\n\n## v0.1.21 — \"The Changelog Could Not Read Itself\"\n\n- **Fixed:** every section heading in this very changelog was being teleported into the dialog's title bar, stacked in one spot, where only the topmost survived — so the dialog introduced itself as *Unreleased — \"???\"* and the history below scrolled by headless. A dialog that misreports its own history. In *this* app. We checked the CSS and, regrettably, it was CSS. The title bar's layout rule applied to every heading inside the dialog, not just the title. It has been scoped. The changelog can read itself again. We recommend it start from the top.\n\n---\n\n## v0.1.22 — \"Whole Numbers Only\"\n\nThe one where the app learns that a pixel is a pixel.\n\n- **New — Pixel mode** (`Pixel` menu). *New Pixel Canvas* and *Canvas Size in Pixels* take plain pixels, with no units and no resolution quietly multiplying them by 72 behind your back. Presets led by 16×24, because that is what we are actually drawing. Nearest-neighbour sampling at every zoom level, and a hairline grid on every image pixel once you are past 6× — stronger every 8, so you can count.\n- **New — Palettes are files now.** JSON in `src/palettes`, a **Palette** panel on the sidebar, one click to take a colour. Sweetie 16 by default, with PICO-8, Endesga 32, Game Boy and a greyscale ramp alongside. Import your own; export what you have. The loader is deliberately forgiving — bare arrays, hex without the `#`, rgb triplets, per-colour objects. It would rather understand you than be right.\n- **The right-hand panels can be arranged.** Pin, move up, move down and drag, on every block. A pinned block sticks to the top of the sidebar while the rest scrolls past it, and when several are pinned they stack instead of quietly covering each other. Your order and your pins are remembered.\n- **The Preview had been lying about the shape of your image.** It drew into a fixed 176×100 canvas no matter what it was previewing, so a 16×24 sprite came back 2.6 times wider than tall, with total confidence. It fits the real aspect ratio now. We wrote tests for it. The tests are about a rectangle. This is where we are.\n- **Fixed — a single pencil dot was consuming the entire canvas.** Not a metaphor. At the zoom levels pixel art actually needs, the canvas transform was being applied *twice* — the zoom, squared — because the render loop measured each change against the zoom it last *asked for* rather than the one in force, and the two had quietly stopped agreeing. One dot, laid down at 34×, arrived at 1167× and covered everything. It had been that way since upstream. Every stroke lands where you put it now.\n- **Fixed — paste, on a local network address.** Pasting worked on the live site and on `localhost` and nowhere else, because both of those are secure contexts and the fallback path for everything else reached for `this` inside a callback that did not have one. Anyone testing from their phone on the same wifi got nothing.\n\n---\n\n## v0.1.23 — \"Report Received\"\n\nThe one where the app grew a way to be told it was wrong, and was told within the hour.\n\n- **New — Help → Send Feedback.** The old *Report Issues* link sent you to GitHub, which asks you to leave the app, hold an account, and reassemble by hand the build and the state that make a report worth reading. This files it from inside, and carries that for you: version, platform, the tool you had selected. No account, no email.\n- **It is an outbox, not a form.** Nothing leaves local storage until the server says it has it. Offline holds the report for next session; a rate limit holds it *and everything queued behind it*; a genuine rejection sets it aside rather than dropping it, so \"it ate my feedback\" is a question with an answer.\n- **The screenshot is opt-in and off by default,** and the dialog says so before you send rather than after. This is a paint app: the canvas is your artwork, and possibly someone else's. If the capture fails, the note still goes and the report says *no picture* rather than promising one nobody can produce.\n- **New — hold the scroll wheel and drag to pan.** The tools only ever answered to the left button, so the middle one was free. You cannot drag the image off the screen.\n- **THE FIRST REPORT WAS ABOUT THE BRUSH.** *\"Pencil tool is correctly drawing pixels. Brush tool is incorrectly drawing sub-pixels. Eraser tool doesn't seem to erase pixels.\"* With a screenshot of the word PENCIL snapped hard to the grid beside a smooth, feathered *Brush*, which diagnosed the whole thing without anyone having to reproduce anything. It was right. Pixel mode had only ever changed how the canvas was *sampled*; no painting tool had ever consulted it. The pencil looked correct by accident, having always plotted whole pixels. The brush and eraser are vector tools with round caps, so one laid down feathered coverage and the other subtracted *part* of each pixel's alpha, which reads exactly like not erasing. Both plot whole pixels now.\n- **\"Please convert it to raster to apply this tool\" no longer exists anywhere in the application.** It was reachable in three clicks from a blank canvas — draw a stroke, pick the eraser, click — and it named the fix and then declined to apply it. Fifty modules and nine tools now just do the conversion, as its own undo step, and say so. The Effects menu, the Image menu, the whole toolbar.\n- **Selection got the opposite treatment,** and it is the more interesting half. Six places refused a non-raster layer, two of them *silently*. But a selection is a region of the canvas, not of a layer's pixels — drawing a marquee reads nothing and writes nothing, and `Ctrl+A` is a reflex nobody expects to cost them a vector stroke. Five of those refusals were deleted rather than converted. Only *Delete*, which genuinely clears pixels, converts — at the moment the pixels are needed.\n\n*The feature that lets you tell us it is broken has been used to tell us it is broken. Working as intended.*\n\n---\n\n## v0.1.24 — \"Depth, Actual\"\n\nNineteen versions ago the Zoom control was appointed Depth Meter, and it has been bluffing ever since. There is a real third axis now.\n\n- **New — Voxel mode** (`Voxel` menu). 16 wide, 16 deep, 24 high, edited one flat slice at a time. The slice is an ordinary raster layer, so every tool, the palette and pixel mode work on it with no special cases whatsoever.\n- **The volume is the model; the canvas is a view of one slice.** Not twenty-four stacked layers. This is the decision the rest follows from, and it is why the next bullet is free.\n- **Rotating changes which way the loaf is cut, never the loaf.** Slice from the Top, the Front or the Side; the data never moves, so it is instant and lossless and you can do it all day. Paint on the front face and it is there when you look down from the top — not an aspiration, a test.\n- **A second view,** because a flat canvas cannot tell you where in the model you are standing. The sidebar draws the whole thing in isometric with the current slice picked out in cyan, and orbits a quarter turn at a time. Quarter turns only: at multiples of 90 the projection stays exact and *which slice is that* stays answerable at a glance.\n- **Onion skinning.** The neighbouring slices, faint, behind the live one — warm below, cool above, fading with distance. Lining a shape up with what it sits on used to be a memory exercise.\n- **Exports MagicaVoxel `.vox`,** which Godot, Unity, Blender and three.js all read, and imports it back. Slices also still come out as a plain PNG strip. Two things that format makes very easy to get wrong are handled: it measures height on a different axis than we do, and its colour indices are off by one against its own palette table. Either mistake ships looking like a modelling error rather than a format one.\n- **The model rides along in quicksave,** which brings us to the last item.\n- **Quicksave had never worked in this fork. Not once.** Draw, `F9`, reload, `F10`, nothing — no error, no console, no toast. When this project reset its version number to `0.1.x`, the saved file kept writing that number into the field the *loader* consults to decide which historical migrations a file needs. `0.1.22` sorts below every one of them, so every file we ever saved was read as ancient and dragged through the full course of repairs, one of which forces every layer to be an image. A brush layer arrived claiming to be an image while still holding an array of stroke points, and the load threw. The thrown error was caught and returned as a status nobody printed. So it failed in perfect silence, for every file, for twenty-three versions. The file now records what it *is* separately from what wrote it, files you have already saved are rescued on the way in, and a discarded action says so out loud.\n\n*An application that could not read its own saved history, three versions after a changelog that could not read its own headings. We are choosing to see a theme rather than a pattern.*\n\n---\n\n## Unreleased — \"???\"\n\n- (redacted)\n- (redacted)\n- the frog is not fractions\n- the frog is not fractions\n- please stop resizing the canvas — it can tell\n";
+module.exports = "# Changelog\n\nAll notable changes to **Get in loser** — a browser paint tool, and also, allegedly, a roguelite. In order of descent: oldest at the top, because the way down only makes sense from the top. Dates are approximate; time is a construct; the fog is real.\n\n---\n\n## v0.1.0 — \"First Coat\"\n\nThe one where it's just a paint app. For now.\n\n- **Painting:** brush, pencil, eraser, fill. They work. You can make an image. Congratulations, you are an artist.\n- **Themes:** shipped the Yoncé theme — Midnight Violet fading to Onyx, Vintage Grape panels, and a hot pink we later agreed was \"too hot.\"\n- **Fonts:** the entire UI now speaks Atkinson Hyperlegible, because we would very much like you to be able to read the pop-ups. You will see why.\n- **The hand:** the \"l\" in the logo is a finger pointing up. It is pointing *at* something. Do not look directly at it yet.\n- Fixed: the gradient background no longer tiles itself into venetian blinds.\n\n*This build contains no roguelite elements. None whatsoever. Why would you even ask.*\n\n---\n\n## v0.1.1 — \"Undo Considered Harmful\"\n\n- **New:** `Ctrl+Z` now also undoes minor regrets. Personal regrets remain out of scope — see roadmap.\n- **Balance:** the Bucket Fill tool no longer floods *adjacent save files.* We know. We are sorry. We have spoken with it.\n- **Layers:** you may now stack up to 8 layers before the Layers panel begins to whisper. This is intended. The whispering is a feature. It is called \"ambiance.\"\n- **Not a secret:** moving your mouse makes the logo letters bob. The secret is what happens on the 7th bob. (Nothing happens on the 7th bob. Keep bobbing.)\n\n---\n\n## v0.1.2 — \"The Fog Rolls In\"\n\n- **Tools:** added the Clone Stamp. It clones pixels. It has recently begun cloning *other things.* Inventory management is coming in a future patch.\n- **New resource — Ink:** every brushstroke now costs 1 Ink. You begin each canvas with 999 Ink. When it runs out you must *find more Ink.* The Ink is in the Effects menu. The Ink was always in the Effects menu.\n- **Encounter:** the Sharpen filter, applied three times in a row, will Sharpen *back.* Bring a friend. Bring the friend as a separate layer.\n- **Accessibility:** all bosses now have subtitles.\n- Fixed: the default color is black, not \"the specific green of a 2009 startup logo.\"\n\n---\n\n## v0.1.3 — \"Descent\" (Floors 1–3)\n\n- **Roguelite systems, now officially acknowledged:** the Zoom controls double as your Depth Meter. 100% is the surface. Keep clicking `-`. We'll wait.\n- **Loot:** every 50 brushstrokes drops a Modifier. Current pool — *Wet* (colors bleed), *Dry* (colors judge you), *Impasto* (colors gain mass, and eventually, opinions).\n- **Meta-progression:** the swatches you never use are being saved. For the run. For *a* run. It's fine.\n- **Boss — The Marquee:** defeat the dashed selection that circles your best work and calls it \"just a draft.\" Reward: the Crop tool, and closure.\n- **Known issue:** the tutorial for the paint tool is finished. The tutorial for the *other* thing is written on the inside of the fog. We are aware. We put it there.\n\n---\n\n## v0.1.4 — \"The Letters Have Learned To Float\"\n\nThe one where the UI stopped holding still.\n\n- **Legibility (paint tool):** the entire interface is now set in Atkinson Hyperlegible, and every font grew by a few points. This is so you can read the tool labels. It is also, per the Braille Institute, so you can read the *warnings.*\n- **Selection color:** softened the tool-selection pink to Petal Pink (`#ce59a7`), after the previous pink was formally reclassified as \"too hot to look at directly.\" Black icons are legible again. We are calling this a truce.\n- **De-pinking:** the number fields, the preview zoom buttons, and the layer controls no longer glow. They match the other inputs now. They are calmer. They have accepted their roles.\n- **Layers:** rows now grow to fit their names instead of clipping them. The names have more room. They are using it to become longer. We are monitoring the situation.\n- **Palette:** the swatch picker now ships pre-loaded with the theme colors, the default color is an honest black, and every tool fills with black by default. The 2009-startup green is gone. Do not ask where.\n- **THE LOGO:** the \"l\" in *loser* is the finger now. The finger hovers on its own, like a ghost, because it is one. Move your mouse and the other letters begin to bob — the wave is *ticked by your cursor,* so the logo only breathes while you are watching it. The finger and \"oser\" bleed from white into pink. It is still pointing at something. You have been moving your mouse for a while now.\n- **Meta:** added this Changelog (Help → Changelog). You are reading the tutorial. This is the tutorial. Hello.\n\n---\n\n## v0.1.5 — \"One Click, No Take-Backs\"\n\n- **Cosmetic:** the delete \"×\" on each layer is now Petal Pink, matching the tool-selection color — a red × felt like a threat, and we prefer our threats color-coordinated.\n- **Rename (a functional change, we admit it):** the layer rename dialog now opens on a *single* click instead of a double-click. One click. Faster. Also less deniable. The layer will know you named it. It will remember the name you chose. Choose kindly.\n\n---\n\n## v0.1.6 — \"Right Of Way\"\n\n- **Rename, reconsidered:** a single click on a layer now just *selects* it, like a reasonable tool. We heard you — the dialog was ambushing you every time you tried to switch layers. It has been asked to wait its turn.\n- **New — right-click menu:** right-click a layer name for a context menu. It currently offers exactly one option, \"Rename,\" with the quiet confidence of a menu that knows more options are coming and is choosing not to say so yet.\n\n---\n\n## v0.1.7 — \"The Menu Reveals Itself\"\n\n- **Layer right-click menu:** the context menu that previously offered only \"Rename\" now admits it has always had more to say. Added *Duplicate*, *Convert to Raster*, *Merge Down* (which appears only when there is, in fact, a layer below to merge into — it will not pretend otherwise), and, past a respectful divider, *Delete*. Each acts on the layer you clicked, whether or not it was the one you were looking at.\n\n---\n\n## v0.1.8 — \"Reunited (The Row Holds)\"\n\n- **Layers, responsiveness:** the visibility eye and the delete \"×\" had been wandering onto their own lines whenever a layer name got long or the panel got narrow. They have been returned to the row. The name now yields space — and truncates, politely — instead of evicting its neighbors. One layer, one line.\n\n---\n\n## v0.1.9 — \"Legible At Last\"\n\n- **Colors panel:** the three toggle icons (picker / channels / swatches) are now white instead of the pressed-state cyan, which had been quietly cosplaying as a UI accent.\n- **Error popups:** the lower-right notifications were black text on a muted red — a color combination previously only found in ransom notes. They now match the grape layer panels: white text, rounded corners, and a colored left edge (red for errors; other colors exist for the other outcomes, should you ever be so lucky).\n\n---\n\n## v0.1.10 — \"Paste, By Request\"\n\n- **Edit → Paste (menu):** now actually pastes. It asks the browser for clipboard-read permission the first time — grant it once and the menu item reads an image straight off your clipboard and drops it in as a layer. Where the browser refuses (Firefox, Safari, insecure contexts, a denied prompt), it steps aside and points you back to the ever-reliable Ctrl+V. Copy was never the problem; *reading* your clipboard is the part browsers guard, and rightly so.\n\n---\n\n## v0.1.11 — \"The Folder Remembers\"\n\n- **New — Smart folder** (*Settings → \"Smart folder\"*): toggle it on and pick a folder. Get in loser tells you plainly that it will read from and write to that folder, then keeps a single `get-in-loser.json` there holding your configuration and a session history.\n- **Pick a folder you have used before and it knows.** Your settings come back — theme and all — and the folder's history gains another entry. It has been counting. It will tell you how many times you have been here.\n- Requires a Chromium browser (Chrome/Edge) for the File System Access API; elsewhere it declines politely rather than pretending. The folder is remembered between sessions and reconnects on load, for as long as the browser still trusts you.\n\n---\n\n## v0.1.12 — \"There Is Only One Theme\"\n\n- **Smart folder has a home now:** a folder icon sits to the right of the logo. Click it to pick your folder; it glows Petal Pink while connected and tells you which folder it is holding. The Settings toggle still exists, at the bottom of a long list, where you did not find it. Fair.\n- **Theme selection, clarified:** choosing any theme other than *yonce* now returns you to the original miniPaint. Immediately. We are not angry. We simply understand that you would be happier there. (Your unsaved work still gets the usual \"are you sure\" — we are petty, not cruel.)\n\n---\n\n## v0.1.13 — \"Faster Than That\"\n\n- **Banishment, recalibrated:** the theme redirect only fired when you pressed *OK* — but the theme changes the instant you touch the dropdown, so you were getting a new theme and no consequences. Unacceptable. It now triggers the moment you pick a non-yonce theme. You do get a 1.5-second grace period: switch back to yonce in time and the matter is quietly dropped.\n\n---\n\n## v0.1.14 — \"A Theme For Every Kind Of Wrong\"\n\nTheme selection is now fully implemented. Each option has been considered carefully.\n\n- **yonce** — correct.\n- **classic** — a faithful copy of the original dark theme, in the sense that every single value in it is now `#000000`. Background, text, borders, icons. Black on black. It does not redirect you anywhere; it does not have to.\n- **dark** — still returns you to the original miniPaint, where dark is presumably fine.\n- **light** — redirects to adobe.com. Enjoy the subscription.\n- **green** — no longer a palette, more of a mood. Every application rolls fresh random greens, all crammed into the same narrow band of darkness so that no two elements are ever quite distinguishable. Re-roll by selecting it again. You will not find a good one.\n\nSwitching back to yonce inside the grace period still cancels any pending relocation, and leaving *green* restores the real palette.\n\n---\n\n## v0.1.15 — \"The Void Is Negotiable\"\n\n- **classic now has an exit.** It is still absolute black on absolute black. But as you move the mouse, the colour bleeds back in — the entire palette climbing out of black toward yonce over roughly ten seconds of actual movement, gradient and all. Stop moving and it stops healing. You are not trapped; you are being asked to demonstrate effort.\n- **green is greener.** The greys, the whites, and the blues it had quietly inherited are all green now — even the semantic \"red\" is green. There is no longer anything in that theme which is not green, which somehow makes the contrast worse.\n- **light** now carries a UTM to adobe.com so the referral is properly attributed. No spaces in it — `get-in-loser`. We are unserious, not unprofessional.\n\n---\n\n## v0.1.16 — \"Dark Mode, Taken Literally\"\n\n- **classic and dark have traded fates.** *classic* now returns you to the original miniPaint, which is what you were asking for by choosing it. *dark* is the void.\n- **dark is now genuinely, completely dark.** Previously the tool icons, the layer visibility eye, the finger in the logo and — most embarrassingly — the canvas itself all carried on glowing while everything else went black. They are black now too. Dark mode should not have exceptions.\n- **The whole void fades back together.** Icons and the canvas ride the recovery with everything else, so ten seconds of mouse movement returns the entire interface rather than most of it.\n- **Selecting dark now commits itself** and closes the dialog. You cannot click \"Ok\" on a dialog you cannot see; asking you to was rude.\n- **green finally reaches the canvas.** The canvas, the tool icons, the logo hand and the checkboxes are all green now. Every part of that theme is green. That was the promise.\n\n---\n\n## v0.1.17 — \"No, All Of It\"\n\n- **dark mode holds out no longer.** The colour picker had been quietly glowing this whole time — the saturation square, the hue strip, the alpha checkerboard, the swatch grid, the native colour and range inputs, the effect previews, and the gradient tool's icon, which upstream had specifically excused from tinting. All black now.\n- **Even the hairline.** Every button carried a hardcoded white inset highlight. It is a variable now, and in dark it is nothing.\n- All of it still fades back together on mouse movement. The void is complete, and it is still negotiable.\n\n---\n\n## v0.1.18 — \"The Sliders Were Hiding\"\n\n- **The colour sliders have joined us.** Their handles are little CSS triangles built out of hardcoded white borders, and the colour channel section is collapsed by default — so they were both invisible to the sweep and stubbornly bright once you opened it. The slider and picker components are now tinted whole, handles and all.\n- Nested pieces are explicitly exempted from tinting twice, because two filters multiply, and a slider that fades at the square of everything else looks haunted in a way we did not intend.\n\n---\n\n## v0.1.19 — \"The Hand Has A Name\"\n\n- **We looked up the icon.** The hand in the logo — the one that has been pointing this whole time — is a real icon by a real person, and we had never actually read its record. Its name is **\"Loser gesture.\"** We did not name it that. It was called that before we found it. We named the project *afterward.* We have decided not to think about this further.\n- **New — Help → Icon License**, or *right-click the hand itself.* The credit is now in the app: creator, license, the page it came from, and exactly which files it became. It reads from a data file fetched straight from the source, so the credit in the app and the credit in the repo cannot drift apart. One of them lying to you would be thematically appropriate but practically unacceptable.\n- **Attribution, properly.** It is used under CC BY 3.0, which asks that we say who made it. We say so in three places now. It is the least we can do for something that has been silently gesturing at you since v0.1.0.\n- **Under the hood:** the layer right-click menu and the new logo right-click menu are now the same menu, wearing different options.\n\n*Naming a thing gives it power. We are aware of the risk. We accepted it.*\n\n---\n\n## v0.1.20 — \"The Palette Talks Back\"\n\nThe one where the colors stop being a read-only fact about your image and start being negotiable.\n\n- **Image → Color Palette is no longer a museum.** The dialog used to show you your image's palette behind glass: here are your nine colors, look, don't touch. The glass is gone. Every swatch is now a real color input. Click one. Change it. The image *changes with it.* The dominant color stays behind glass, as a reminder of how things used to be.\n- **Two ways to negotiate:**\n  - **Shift — preserve shading:** every pixel follows its palette color by the same distance you moved it. Gradients survive. Anti-aliasing survives. Your image keeps its soul and changes its wardrobe.\n  - **Replace — exact colors:** every pixel snaps to its palette color, exactly, no survivors. It is Decrease Color Depth with *your* hand on the palette. The image comes back flatter, harder, and extremely certain of itself.\n- **Live preview, before and after,** so you can watch the negotiation happen. `Ctrl+Z` remains the mediator of record.\n- **SURFACE BREACH:** the editor is now live at **mutantfactory.net/get-in-loser**. Yes — after nineteen versions of descending, we went *up.* The Depth Meter reads 100%. The surface was up here the whole time. The fog thins at altitude but it does not lift; bring your own Ink.\n\n*The palette has always known what colors it wanted to be. Now it has a form to fill out.*\n\n---\n\n## v0.1.21 — \"The Changelog Could Not Read Itself\"\n\n- **Fixed:** every section heading in this very changelog was being teleported into the dialog's title bar, stacked in one spot, where only the topmost survived — so the dialog introduced itself as *Unreleased — \"???\"* and the history below scrolled by headless. A dialog that misreports its own history. In *this* app. We checked the CSS and, regrettably, it was CSS. The title bar's layout rule applied to every heading inside the dialog, not just the title. It has been scoped. The changelog can read itself again. We recommend it start from the top.\n\n---\n\n## v0.1.22 — \"Whole Numbers Only\"\n\nThe one where the app learns that a pixel is a pixel.\n\n- **New — Pixel mode** (`Pixel` menu). *New Pixel Canvas* and *Canvas Size in Pixels* take plain pixels, with no units and no resolution quietly multiplying them by 72 behind your back. Presets led by 16×24, because that is what we are actually drawing. Nearest-neighbour sampling at every zoom level, and a hairline grid on every image pixel once you are past 6× — stronger every 8, so you can count.\n- **New — Palettes are files now.** JSON in `src/palettes`, a **Palette** panel on the sidebar, one click to take a colour. Sweetie 16 by default, with PICO-8, Endesga 32, Game Boy and a greyscale ramp alongside. Import your own; export what you have. The loader is deliberately forgiving — bare arrays, hex without the `#`, rgb triplets, per-colour objects. It would rather understand you than be right.\n- **The right-hand panels can be arranged.** Pin, move up, move down and drag, on every block. A pinned block sticks to the top of the sidebar while the rest scrolls past it, and when several are pinned they stack instead of quietly covering each other. Your order and your pins are remembered.\n- **The Preview had been lying about the shape of your image.** It drew into a fixed 176×100 canvas no matter what it was previewing, so a 16×24 sprite came back 2.6 times wider than tall, with total confidence. It fits the real aspect ratio now. We wrote tests for it. The tests are about a rectangle. This is where we are.\n- **Fixed — a single pencil dot was consuming the entire canvas.** Not a metaphor. At the zoom levels pixel art actually needs, the canvas transform was being applied *twice* — the zoom, squared — because the render loop measured each change against the zoom it last *asked for* rather than the one in force, and the two had quietly stopped agreeing. One dot, laid down at 34×, arrived at 1167× and covered everything. It had been that way since upstream. Every stroke lands where you put it now.\n- **Fixed — paste, on a local network address.** Pasting worked on the live site and on `localhost` and nowhere else, because both of those are secure contexts and the fallback path for everything else reached for `this` inside a callback that did not have one. Anyone testing from their phone on the same wifi got nothing.\n\n---\n\n## v0.1.23 — \"Report Received\"\n\nThe one where the app grew a way to be told it was wrong, and was told within the hour.\n\n- **New — Help → Send Feedback.** The old *Report Issues* link sent you to GitHub, which asks you to leave the app, hold an account, and reassemble by hand the build and the state that make a report worth reading. This files it from inside, and carries that for you: version, platform, the tool you had selected. No account, no email.\n- **It is an outbox, not a form.** Nothing leaves local storage until the server says it has it. Offline holds the report for next session; a rate limit holds it *and everything queued behind it*; a genuine rejection sets it aside rather than dropping it, so \"it ate my feedback\" is a question with an answer.\n- **The screenshot is opt-in and off by default,** and the dialog says so before you send rather than after. This is a paint app: the canvas is your artwork, and possibly someone else's. If the capture fails, the note still goes and the report says *no picture* rather than promising one nobody can produce.\n- **New — hold the scroll wheel and drag to pan.** The tools only ever answered to the left button, so the middle one was free. You cannot drag the image off the screen.\n- **THE FIRST REPORT WAS ABOUT THE BRUSH.** *\"Pencil tool is correctly drawing pixels. Brush tool is incorrectly drawing sub-pixels. Eraser tool doesn't seem to erase pixels.\"* With a screenshot of the word PENCIL snapped hard to the grid beside a smooth, feathered *Brush*, which diagnosed the whole thing without anyone having to reproduce anything. It was right. Pixel mode had only ever changed how the canvas was *sampled*; no painting tool had ever consulted it. The pencil looked correct by accident, having always plotted whole pixels. The brush and eraser are vector tools with round caps, so one laid down feathered coverage and the other subtracted *part* of each pixel's alpha, which reads exactly like not erasing. Both plot whole pixels now.\n- **\"Please convert it to raster to apply this tool\" no longer exists anywhere in the application.** It was reachable in three clicks from a blank canvas — draw a stroke, pick the eraser, click — and it named the fix and then declined to apply it. Fifty modules and nine tools now just do the conversion, as its own undo step, and say so. The Effects menu, the Image menu, the whole toolbar.\n- **Selection got the opposite treatment,** and it is the more interesting half. Six places refused a non-raster layer, two of them *silently*. But a selection is a region of the canvas, not of a layer's pixels — drawing a marquee reads nothing and writes nothing, and `Ctrl+A` is a reflex nobody expects to cost them a vector stroke. Five of those refusals were deleted rather than converted. Only *Delete*, which genuinely clears pixels, converts — at the moment the pixels are needed.\n\n*The feature that lets you tell us it is broken has been used to tell us it is broken. Working as intended.*\n\n---\n\n## v0.1.24 — \"Depth, Actual\"\n\nNineteen versions ago the Zoom control was appointed Depth Meter, and it has been bluffing ever since. There is a real third axis now.\n\n- **New — Voxel mode** (`Voxel` menu). 16 wide, 16 deep, 24 high, edited one flat slice at a time. The slice is an ordinary raster layer, so every tool, the palette and pixel mode work on it with no special cases whatsoever.\n- **The volume is the model; the canvas is a view of one slice.** Not twenty-four stacked layers. This is the decision the rest follows from, and it is why the next bullet is free.\n- **Rotating changes which way the loaf is cut, never the loaf.** Slice from the Top, the Front or the Side; the data never moves, so it is instant and lossless and you can do it all day. Paint on the front face and it is there when you look down from the top — not an aspiration, a test.\n- **A second view,** because a flat canvas cannot tell you where in the model you are standing. The sidebar draws the whole thing in isometric with the current slice picked out in cyan, and orbits a quarter turn at a time. Quarter turns only: at multiples of 90 the projection stays exact and *which slice is that* stays answerable at a glance.\n- **Onion skinning.** The neighbouring slices, faint, behind the live one — warm below, cool above, fading with distance. Lining a shape up with what it sits on used to be a memory exercise.\n- **Exports MagicaVoxel `.vox`,** which Godot, Unity, Blender and three.js all read, and imports it back. Slices also still come out as a plain PNG strip. Two things that format makes very easy to get wrong are handled: it measures height on a different axis than we do, and its colour indices are off by one against its own palette table. Either mistake ships looking like a modelling error rather than a format one.\n- **The model rides along in quicksave,** which brings us to the last item.\n- **Quicksave had never worked in this fork. Not once.** Draw, `F9`, reload, `F10`, nothing — no error, no console, no toast. When this project reset its version number to `0.1.x`, the saved file kept writing that number into the field the *loader* consults to decide which historical migrations a file needs. `0.1.22` sorts below every one of them, so every file we ever saved was read as ancient and dragged through the full course of repairs, one of which forces every layer to be an image. A brush layer arrived claiming to be an image while still holding an array of stroke points, and the load threw. The thrown error was caught and returned as a status nobody printed. So it failed in perfect silence, for every file, for twenty-three versions. The file now records what it *is* separately from what wrote it, files you have already saved are rescued on the way in, and a discarded action says so out loud.\n\n*An application that could not read its own saved history, three versions after a changelog that could not read its own headings. We are choosing to see a theme rather than a pattern.*\n\n---\n\n## v0.1.26 — \"Soft Edges, Hard Boundaries\"\n\nTwo tools about the same question — where does the thing stop — answered in opposite directions. One blurs the boundary on purpose. The other insists on finding it exactly.\n\n- **New — Effects → Feather Edges.** Softens where a layer stops. Radius in actual pixels, and an option to fade inward only, for when the shape must not grow.\n- **It refuses to be a blur, twice over.** The obvious implementation blurs the alpha channel, and a transparent pixel still stores a colour, which is nearly always black — so a white cutout comes back wearing a grey rim. The colours are therefore blurred *weighted by their own alpha*, so pixels with nothing to show contribute nothing. The second refusal was found by looking at the preview: a red square with a blue panel inside it had its red-to-blue boundary smudged, nowhere near an edge. Feathering is an operation on coverage and must not touch the picture. The softened colour is now mixed in by how transparent the pixel already was, so an opaque pixel keeps its colour exactly and only the fringe borrows.\n- **And the radius means pixels.** It said 3 and reached 9 — three blur passes each going the full distance — which quietly dimmed the middle of anything smaller than about fifty pixels. A 16px square feathered by \"3\" came back with its centre at 248 out of 255. It is 255 now.\n- **New — Tools → Remove Background.** Clears the region that reaches the edge of the image, in one go, with a tolerance for backgrounds that are not quite one colour and a *soften edge* setting for anti-aliased outlines.\n- **The background is what touches the outside, not what happens to be that colour.** *Color to Alpha* removes a colour everywhere, so the sky goes and so do the highlights in the eyes. The *Magic Eraser* asks for a click per region, so a head with sky either side of it costs three. This floods inward from every border pixel at once — which means a background-coloured gap *enclosed* by the subject, the hole in a handle, the sky an arm closes off, stays. There is a test that holds it to that, and it is the only reason this is not fifteen lines.\n- Border colour is picked by the *mode* rather than the mean, because averaging a horizon of sky and grass gives a colour that is neither and matches nothing.\n\n*Thirty-four new tests. Two of them were wrong first and said so.*\n\n---\n\n## Unreleased — \"???\"\n\n- (redacted)\n- (redacted)\n- the frog is not fractions\n- the frog is not fractions\n- please stop resizing the canvas — it can tell\n";
 
 /***/ },
 

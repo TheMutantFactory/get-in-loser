@@ -651,6 +651,11 @@ const menuDefinition = [
 				target: 'effects/enrich.enrich'
 			},
 			{
+				name: 'Feather Edges',
+				ellipsis: true,
+				target: 'effects/feather.feather'
+			},
+			{
 				name: 'Grains',
 				ellipsis: true,
 				target: 'effects/grains.grains'
@@ -736,6 +741,11 @@ const menuDefinition = [
 				name: 'Color Zoom',
 				ellipsis: true,
 				target: 'tools/color_zoom.color_zoom'
+			},
+			{
+				name: 'Remove Background',
+				ellipsis: true,
+				target: 'tools/remove_background.remove_background'
 			},
 			{
 				name: 'Replace Color',
