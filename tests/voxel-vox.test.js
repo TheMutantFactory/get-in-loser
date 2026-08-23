@@ -81,8 +81,48 @@ describe('Z-up conversion', () => {
 		const [x, y, z] = parsed.voxels[0];
 
 		expect(x).toBe(1);
-		expect(y).toBe(2);  //our depth
+		expect(y).toBe(3);  //our depth 2, FLIPPED across d=6 - see the chirality test below
 		expect(z).toBe(8);  //our height
+	});
+
+	test('CHIRALITY: the file is the model, not its mirror image', () => {
+		//THE BUG THIS PINS DOWN. Both frames are right-handed, so mapping ours to theirs by a bare
+		//axis swap has determinant -1 and writes a MIRROR IMAGE - which no round-trip test can see,
+		//because the decoder inverts the same wrong map. Reported from the field as "export seems
+		//to reverse sides. Like a half rotated quaternion."
+		//
+		//So: assert the determinant itself. Three unit steps from a corner voxel - one along each
+		//of our axes - must land in the file as vectors whose determinant, taken in THEIR
+		//right-handed (X, Y, Z-up) frame and in the order (image of our x, y, z), is POSITIVE.
+		const v = create_volume(4, 6, 9);
+		set_voxel(v, 0, 0, 0, RED);   //origin
+		set_voxel(v, 1, 0, 0, BLUE);  //+x, one step right
+		set_voxel(v, 0, 1, 0, BLUE);  //+y, one step up
+		set_voxel(v, 0, 0, 1, BLUE);  //+z, one step out of the front face
+
+		const parsed = read_chunks(encode(v).bytes);
+		//locate each marker by decoding its file coordinates back to ours by hand
+		const at = (px, py, pz) => parsed.voxels.find(([fx, fy, fz]) => {
+			const back = {x: fx, y: fz, z: (parsed.size.y - 1) - fy};
+			return back.x === px && back.y === py && back.z === pz;
+		});
+
+		const o = at(0, 0, 0), ex = at(1, 0, 0), ey = at(0, 1, 0), ez = at(0, 0, 1);
+		expect(o && ex && ey && ez).toBeTruthy();
+
+		const sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+		const [ax, ay, az] = sub(ex, o);   //image of our x-step
+		const [bx, by, bz] = sub(ey, o);   //image of our y-step
+		const [cx, cy, cz] = sub(ez, o);   //image of our z-step
+
+		const det = ax * (by * cz - bz * cy) - ay * (bx * cz - bz * cx) + az * (bx * cy - by * cx);
+		expect(det).toBe(1);
+
+		//and the semantic anchors: right stays their X, up stays their Z, and our front face
+		//(z = 0) sits at their LARGEST y - the far side of their y axis is the model's back
+		expect(sub(ex, o)).toEqual([1, 0, 0]);
+		expect(sub(ey, o)).toEqual([0, 0, 1]);
+		expect(sub(ez, o)).toEqual([0, -1, 0]);
 	});
 
 	test('a model comes back the same way up', () => {

@@ -9,7 +9,11 @@
  * lossless, and repeatable. Storing 24 stacked layers instead would make every rotation a rebuild
  * of the whole stack, and a non-cube volume (16 x 16 x 24) would not survive the round trip.
  *
- * AXES. x is width (left to right), y is HEIGHT (bottom to top), z is depth (front to back).
+ * AXES. x is width (left to right), y is HEIGHT (bottom to top), z is depth - and the FRONT FACE
+ * IS z = d-1, not z = 0. This comment used to say "front to back", and believing it cost a real
+ * bug: the Front slice view draws x rightward and y upward, which places its viewer on the +z
+ * side (screen-out = x-cross-y = +z), so the face that viewer sees is the LARGEST z. The .vox
+ * exporter was written against the wrong reading and mirrored every model it saved.
  * "16w x 16d x 24h" is therefore w:16, d:16, h:24.
  */
 

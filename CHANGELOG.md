@@ -327,6 +327,19 @@ The Background Eraser was click-only, and a click is a thin description of a bac
 
 ---
 
+## v0.1.32 — "The Mirror Stage"
+
+One fix, reported from the field within hours of the deploy going live: *"voxel export seems to reverse sides. Like a half rotated quaternion or something."* Correct on both counts — and the second half of the sentence is the diagnosis.
+
+- **Exported `.vox` files were mirror images of the model.** Our frame and MagicaVoxel's are both right-handed, and the exporter mapped one onto the other with a bare axis swap — determinant −1, which is a reflection. A model that has been reflected genuinely does look *"like a half rotated quaternion"*: resembles a 180° turn, except every detail is backwards. The depth axis now flips as it swaps, the determinant is +1, and right is right, up is up, front is front.
+- **No test could have caught it, and that is the interesting part.** Every round-trip test passed throughout, because the importer inverted the same wrong map — encode and decode were mirrored in exactly compensating ways. A file format is a promise to programs you will never meet, and the only tests that can hold such a promise are ones that assert against the *other side's* convention, not your own inverse. There is now a test that computes the chirality determinant of the actual bytes.
+- **The comment lied, and the code believed it.** `voxel.js` declared z runs "front to back" with z = 0 the front; the geometry of the Front view (x rightward, y upward — which puts its viewer on the +z side) says the front face is z = d−1. The exporter was written against the comment.
+- One consequence worth knowing: a `.vox` exported by v0.1.24 through v0.1.31 was mirrored, so re-importing one now imports it mirrored. Orbit it 180° and re-export, or flip it in MagicaVoxel — the new file will be right from then on.
+
+*Lacan says the mirror stage is when the subject first mistakes an image for itself. Took us eight versions.*
+
+---
+
 ## Unreleased — "???"
 
 - (redacted)

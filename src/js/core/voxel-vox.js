@@ -120,8 +120,15 @@ function encode_vox(vol, unpack) {
 				if (value === 0) {
 					continue;
 				}
-				//ours (x, y=up, z=depth) -> theirs (x, y=depth, z=up)
-				voxels.push([x, z, y, palette.index.get(value)]);
+				//Ours (x, y=up, z=depth) -> theirs (x, y=depth, z=up) - AND THE DEPTH FLIPS.
+				//A bare axis swap has determinant -1: both frames are right-handed (ours has +z
+				//pointing OUT of the front face, which the isometric preview's depth key proves),
+				//so swapping two axes without negating one writes a MIRROR IMAGE. It round-trips
+				//through our own decoder perfectly - the flaw is invisible to any test that only
+				//talks to itself - and came back from the field as "export seems to reverse
+				//sides. Like a half rotated quaternion": exactly what a chirality flip looks
+				//like, a model that seems half-turned but whose details are backwards.
+				voxels.push([x, (vol.d - 1) - z, y, palette.index.get(value)]);
 			}
 		}
 	}
@@ -271,7 +278,8 @@ function decode_vox(bytes, create_volume, pack) {
 		return null;
 	}
 
-	//back out of their frame: theirs (x, y=depth, z=up) -> ours (x, y=up, z=depth)
+	//back out of their frame: theirs (x, y=depth, z=up) -> ours (x, y=up, z=depth), un-flipping
+	//the depth axis - the mirror-image reasoning in encode_vox, run backwards
 	var w = parsed.size.x;
 	var d = parsed.size.y;
 	var h = parsed.size.z;
@@ -295,6 +303,9 @@ function decode_vox(bytes, create_volume, pack) {
 			skipped++;
 			continue;
 		}
+
+		//un-mirror only once the raw value has passed the bounds check
+		z = (d - 1) - z;
 
 		var entry = parsed.rgba ? parsed.rgba[v[3] - 1] : null;
 		var colour = entry
