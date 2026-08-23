@@ -142,6 +142,39 @@ class Tools_voxel_class {
 	}
 
 	/**
+	 * The volume as it would be if the canvas were committed right now.
+	 *
+	 * FOR THE PREVIEW, WHICH USED TO LIE BY OMISSION. It rendered only the committed volume, so a
+	 * stroke did not appear in it until a slice change forced a commit - reported as "the voxel
+	 * preview doesn't update as you use the pencil". This composites the live canvas over a COPY,
+	 * so navigation stays the only thing that commits; the preview just stops waiting for it.
+	 * Symmetry is applied to the copy too, so all four walls move with the pencil.
+	 *
+	 * @returns {object|null} a temporary volume; never the real one
+	 */
+	live_volume() {
+		if (!this.is_active()) {
+			return null;
+		}
+
+		var state = config.voxel;
+		var dims = slice_dimensions(state.volume, state.axis);
+		var pixels = this.read_canvas(dims.width, dims.height);
+
+		var temp = create_volume(state.volume.w, state.volume.d, state.volume.h);
+		temp.data.set(state.volume.data);
+
+		if (pixels != null) {
+			write_slice(temp, state.axis, state.slice, pixels);
+			if (state.symmetry === true) {
+				apply_face_symmetry(temp, state.axis, state.slice);
+			}
+		}
+
+		return temp;
+	}
+
+	/**
 	 * Flatten what is on the canvas and store it as the current slice.
 	 *
 	 * @returns {boolean} whether anything was committed

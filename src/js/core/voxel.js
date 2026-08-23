@@ -170,7 +170,15 @@ function slice_dimensions(vol, axis) {
  */
 function slice_to_voxel(vol, axis, slice, u, v) {
 	if (axis === 'z') {
-		return {x: u, y: vol.h - 1 - v, z: slice};
+		//SLICE 1 IS THE WALL YOU ARE FACING. The Front canvas draws x rightward and y upward,
+		//which places its viewer on the +z side - so the first slice has to be the LARGEST z, or
+		//the numbering walks away from the person looking at it. It used to be z = slice, and the
+		//field caught what that did (report: "if I rotate the front to the camera, the editing
+		//field is flipped left-to-right"): the wall you had just painted, turned to face you,
+		//showed your pattern mirrored - because slice 1 was the far wall, and you were seeing it
+		//through the model, from behind. The Side view never had the problem: its viewer sits on
+		//the -x side and its slice 0 is x = 0, the near wall, by accident of orientation.
+		return {x: u, y: vol.h - 1 - v, z: vol.d - 1 - slice};
 	}
 	if (axis === 'x') {
 		return {x: slice, y: vol.h - 1 - v, z: u};

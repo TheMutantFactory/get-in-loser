@@ -374,6 +374,17 @@ The rest of field report b92e7706, which asked for three things and got all thre
 
 ---
 
+## v0.1.36 — "Through the Looking Glass, Again"
+
+Three reports, filed with screenshots, all three real.
+
+- **The Front view was showing you the back of your model.** *"If I rotate the front to the camera, the voxel editing field is flipped left-to-right"* — correct, and here is why: the Front canvas draws x rightward and y upward, which geometrically places its viewer on the **+z** side. But slice 1 was the plane z = 0 — the far wall. You were painting the back wall and seeing it through the model, from behind; turn that wall to face you and of course it reads mirrored. Slice 1 is now the wall you are actually facing, counting inward from there. Not one canvas pixel moved — only the numbering — and the Side view never had the bug, by pure accident of which side its viewer sits on. This is the same family as v0.1.32's mirrored exporter: every one of these bugs is somebody trusting a label over the geometry.
+- **The preview follows the pencil now.** It used to render only the committed volume, so a stroke appeared in it when you changed slices and not before. The preview now composites the live canvas over a copy of the volume on every paint — and with Face Symmetry on, all four walls move with the pencil, which is the first time you can actually *watch* the symmetry work.
+- **The right panel is grabbable.** Drag its left edge to widen the whole column — the voxel preview grows with it, the canvas area reflows, and the width is remembered. Between this, the height grip, and free rotation, the preview asks are done.
+- One found while wiring: the sidebar animates its width, and a transition under a live drag reads as rubber-banding — so the drag suspends it and the release restores it.
+
+---
+
 ## Unreleased — "???"
 
 - (redacted)

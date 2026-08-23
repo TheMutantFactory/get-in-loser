@@ -169,10 +169,22 @@ describe('read_slice / write_slice', () => {
 
 		//top view: slice y=7, pixel (x=3, z=11)
 		expect(read_slice(v, 'y', 7).data[11 * 16 + 3]).toBe(RED);
-		//front view: slice z=11, pixel (x=3, row = h-1-y = 16)
-		expect(read_slice(v, 'z', 11).data[(24 - 1 - 7) * 16 + 3]).toBe(RED);
+		//front view: slices count from the +z wall inward, so z=11 is slice (16-1)-11 = 4
+		expect(read_slice(v, 'z', 4).data[(24 - 1 - 7) * 16 + 3]).toBe(RED);
 		//side view: slice x=3, pixel (z=11, row = 16)
 		expect(read_slice(v, 'x', 3).data[(24 - 1 - 7) * 16 + 11]).toBe(RED);
+	});
+
+	test('THE FRONT SLICE IS THE WALL YOU FACE, so it reads unmirrored when turned to the camera', () => {
+		//field report: "if I rotate the front to the camera, the editing field is flipped
+		//left-to-right." The Front canvas views from +z (it draws x rightward, y upward), so slice
+		//0 must be the LARGEST z - the near wall - or every pattern shows mirrored when that wall
+		//is turned to face you, because you painted the far wall and are seeing it from behind.
+		const v = vol16();
+		expect(slice_to_voxel(v, 'z', 0, 0, 0).z).toBe(16 - 1);
+		expect(slice_to_voxel(v, 'z', 15, 0, 0).z).toBe(0);
+		//the Side view was already right: its viewer is on the -x side and slice 0 is x = 0
+		expect(slice_to_voxel(v, 'x', 0, 0, 0).x).toBe(0);
 	});
 
 	test('painting on one face is visible from the others - the whole point of rotating', () => {
@@ -182,9 +194,9 @@ describe('read_slice / write_slice', () => {
 		front.data[10 * front.width + 2] = BLUE;
 		write_slice(v, 'z', 5, front.data);
 
-		//now look from the TOP and it is there
+		//now look from the TOP and it is there - front slice 5 is the plane z = (16-1)-5 = 10
 		const y = 24 - 1 - 10;
-		expect(read_slice(v, 'y', y).data[5 * 16 + 2]).toBe(BLUE);
+		expect(read_slice(v, 'y', y).data[10 * 16 + 2]).toBe(BLUE);
 		expect(count_filled(v)).toBe(1);
 	});
 
@@ -395,7 +407,8 @@ describe('apply_face_symmetry', () => {
 		set_voxel(v, 0, 0, 4, RED);
 		set_voxel(v, 1, 2, 4, BLUE);
 		set_voxel(v, 3, 1, 4, RED);
-		apply_face_symmetry(v, 'z', 4);
+		//the z = 4 wall is front slice (5-1)-4 = 0 - slice numbering counts from the front wall in
+		apply_face_symmetry(v, 'z', 0);
 
 		const rot90 = (x, z) => ({x: (5 - 1) - z, z: x});
 		for (let y = 0; y < 4; y++)
@@ -410,12 +423,12 @@ describe('apply_face_symmetry', () => {
 		const v = create_volume(4, 4, 3);
 		//paint all four walls by symmetrising a full front wall
 		for (let x = 0; x < 4; x++) for (let y = 0; y < 3; y++) set_voxel(v, x, y, 3, RED);
-		apply_face_symmetry(v, 'z', 3);
+		apply_face_symmetry(v, 'z', 0);   //the z = 3 wall is slice 0
 		expect(count_filled(v)).toBeGreaterThan(12);
 
 		//now clear one cell of the front and re-apply
 		set_voxel(v, 1, 1, 3, 0);
-		apply_face_symmetry(v, 'z', 3);
+		apply_face_symmetry(v, 'z', 0);
 
 		//the rotated positions of that cell must be empty too
 		expect(get_voxel(v, 3 - 3, 1, 1)).toBe(0);   //90:  (d-1-z, x) = (0, 1)
@@ -427,9 +440,9 @@ describe('apply_face_symmetry', () => {
 		const v = create_volume(5, 5, 4);
 		set_voxel(v, 2, 1, 4, RED);
 		set_voxel(v, 0, 3, 4, BLUE);
-		apply_face_symmetry(v, 'z', 4);
+		apply_face_symmetry(v, 'z', 0);
 		const once = Array.from(v.data);
-		apply_face_symmetry(v, 'z', 4);
+		apply_face_symmetry(v, 'z', 0);
 		expect(Array.from(v.data)).toEqual(once);
 	});
 
@@ -447,7 +460,7 @@ describe('apply_face_symmetry', () => {
 		//no quarter-turn symmetry exists to enforce - the rotated wall has the wrong dimensions
 		const v = create_volume(4, 6, 3);
 		set_voxel(v, 0, 1, 5, RED);
-		apply_face_symmetry(v, 'z', 5);
+		apply_face_symmetry(v, 'z', 0);   //z = 5 is the front wall, slice 0
 
 		//180: (w-1-x, d-1-z) = (3, 0)
 		expect(get_voxel(v, 3, 1, 0)).toBe(RED);
@@ -457,7 +470,7 @@ describe('apply_face_symmetry', () => {
 
 	test('an interior slice symmetrises its own depth, not the walls', () => {
 		const v = create_volume(5, 5, 4);
-		set_voxel(v, 1, 1, 2, RED);   //two in from the front
+		set_voxel(v, 1, 1, 2, RED);   //the z = 2 plane is slice (5-1)-2 = 2 - unchanged by luck of the middle
 		apply_face_symmetry(v, 'z', 2);
 
 		//its rotations sit on the matching interior planes: (x,z)=(1,2), w=d=5

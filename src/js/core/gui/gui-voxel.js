@@ -103,6 +103,25 @@ class GUI_voxel_class {
 		this.ctx.imageSmoothingEnabled = false;
 	}
 
+	/**
+	 * A render for the main paint loop to call: at most one per animation frame, and only while a
+	 * voxel model exists. The paint loop runs on every stroke movement, and the whole point is
+	 * that the preview keeps up with it.
+	 */
+	render_voxel_throttled() {
+		var _this = this;
+
+		if (config.voxel == null || config.voxel.volume == null || this.render_queued === true) {
+			return;
+		}
+
+		this.render_queued = true;
+		requestAnimationFrame(function () {
+			_this.render_queued = false;
+			_this.render_voxel();
+		});
+	}
+
 	set_events() {
 		var _this = this;
 		var voxel = function () {
@@ -283,7 +302,9 @@ class GUI_voxel_class {
 	 */
 	render_model(state) {
 		var canvas = this.ctx.canvas;
-		var vol = state.volume;
+		//the live slice composited in, so the preview follows the pencil instead of the commits
+		var mod = this.GUI && this.GUI.modules ? this.GUI.modules['tools/voxel'] : null;
+		var vol = (mod && mod.live_volume ? mod.live_volume() : null) || state.volume;
 		var view = {yaw: state.yaw, w: vol.w, d: vol.d, scale: 1};
 
 		view.scale = fit_scale(vol, view, {w: canvas.width, h: canvas.height}, 6);

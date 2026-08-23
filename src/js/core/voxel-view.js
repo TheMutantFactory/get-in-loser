@@ -214,7 +214,10 @@ function slice_quad(vol, axis, slice, view) {
 	var corners;
 
 	if (axis === 'z') {
-		corners = [[0, 0, s], [vol.w, 0, s], [vol.w, vol.h, s], [0, vol.h, s]];
+		//front slices count from the +z wall inward now (see slice_to_voxel), so the marker for
+		//slice k stands on the outer face of the voxels at z = (d-1) - k
+		var zz = vol.d - slice;
+		corners = [[0, 0, zz], [vol.w, 0, zz], [vol.w, vol.h, zz], [0, vol.h, zz]];
 	}
 	else if (axis === 'x') {
 		corners = [[s, 0, 0], [s, 0, vol.d], [s, vol.h, vol.d], [s, vol.h, 0]];

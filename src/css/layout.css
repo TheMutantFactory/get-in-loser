@@ -395,6 +395,8 @@ IMPORTANT: any new icon should also must be added on /service-worker.js + its ve
 	z-index: 2;
 	display: flex;
 	flex-direction: column;
+	/* the width grip pins to this edge */
+	position: relative;
 	transition: 0.2s;
 	overflow-x: hidden;
 	overflow-y: scroll;
@@ -493,6 +495,19 @@ IMPORTANT: any new icon should also must be added on /service-worker.js + its ve
 	image-rendering: pixelated;
 	cursor: grab;
 	touch-action: none;
+}
+.sidebar_width_grip{
+	position: absolute;
+	left: -3px;
+	top: 0;
+	bottom: 0;
+	width: 7px;
+	cursor: ew-resize;
+	touch-action: none;
+	z-index: 5;
+}
+.sidebar_width_grip:hover{
+	background: rgba(255, 255, 255, 0.18);
 }
 .voxel_resize_grip{
 	height: 7px;

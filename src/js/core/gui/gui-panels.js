@@ -5,6 +5,7 @@
  * buttons and drag & drop, and persistence of both.
  */
 
+import config from './../../config.js';
 import Helper_class from './../../libs/helpers.js';
 
 var instance = null;
@@ -74,9 +75,86 @@ class GUI_panels_class {
 
 		this.restore_order();
 		this.restore_pinned();
+		this.restore_width();
+		this.add_width_grip();
 
 		this.set_events();
 		this.update_layout();
+	}
+
+	/**
+	 * A grab handle on the sidebar's left edge - drag it to widen the whole panel column.
+	 *
+	 * Field report: "we need to be able to grab and widen the right-hand panel so the voxel
+	 * preview gets bigger." The page grid's third column is auto-sized, so an explicit width on
+	 * the sidebar is all it takes; the canvas area reflows, and anything that sizes itself from
+	 * its panel - the voxel preview does - is told to remeasure.
+	 */
+	add_width_grip() {
+		var _this = this;
+		var grip = document.createElement('div');
+		grip.className = 'sidebar_width_grip';
+		grip.title = 'Drag to resize the panels';
+		this.sidebar.appendChild(grip);
+
+		var drag = null;
+
+		grip.addEventListener('pointerdown', function (e) {
+			drag = {x: e.clientX, width: _this.sidebar.getBoundingClientRect().width};
+			//the sidebar animates width changes, which under a drag reads as rubber-banding - and
+			//anything measuring the panel mid-transition measures the old width
+			_this.sidebar.style.transition = 'none';
+			try {
+				grip.setPointerCapture(e.pointerId);
+			}
+			catch (err) {
+				//an untracked pointer cannot be captured; the drag still works inside the grip
+			}
+			e.preventDefault();
+		});
+
+		grip.addEventListener('pointermove', function (e) {
+			if (drag == null) {
+				return;
+			}
+			//the sidebar is on the right, so dragging LEFT makes it wider
+			var width = Math.max(220, Math.min(600, drag.width + (drag.x - e.clientX)));
+			_this.apply_width(width);
+			_this.Helper.setCookie('sidebar_width', Math.round(width));
+		});
+
+		var done = function () {
+			if (drag != null) {
+				drag = null;
+				_this.sidebar.style.transition = '';
+				//one more pass now the width has settled, for anything that measured mid-drag
+				_this.apply_width(_this.sidebar.getBoundingClientRect().width);
+			}
+		};
+		grip.addEventListener('pointerup', done);
+		grip.addEventListener('pointercancel', done);
+	}
+
+	apply_width(width) {
+		this.sidebar.style.width = width + 'px';
+
+		//everything that measures its container has to be told the container moved
+		if (this.GUI != null) {
+			if (this.GUI.GUI_voxel != null && this.GUI.GUI_voxel.ctx != null) {
+				this.GUI.GUI_voxel.size_canvas();
+				this.GUI.GUI_voxel.render_voxel();
+			}
+			this.GUI.prepare_canvas();
+		}
+		config.need_render = true;
+	}
+
+	restore_width() {
+		var saved = parseInt(this.Helper.getCookie('sidebar_width'), 10);
+
+		if (!isNaN(saved) && saved >= 220 && saved <= 600) {
+			this.sidebar.style.width = saved + 'px';
+		}
 	}
 
 	/**

@@ -208,6 +208,11 @@ class Base_layers_class {
 			//render preview
 			this.render_preview(layers_sorted);
 
+			//and the voxel second view, which follows the live canvas rather than the commits
+			if (this.Base_gui.GUI_voxel != null) {
+				this.Base_gui.GUI_voxel.render_voxel_throttled();
+			}
+
 			//reset
 			this.after_render();
 
