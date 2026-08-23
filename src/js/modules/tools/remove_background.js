@@ -2,7 +2,7 @@ import app from './../../app.js';
 import config from './../../config.js';
 import Dialog_class from './../../libs/popup.js';
 import Base_layers_class from './../../core/base-layers.js';
-import { MAX_TOLERANCE, remove_background } from './../../core/background-removal.js';
+import { MAX_TOLERANCE, MAX_REFINE, remove_background } from './../../core/background-removal.js';
 import { ensure_raster_layer } from './../../libs/rasterize.js';
 import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
 
@@ -34,7 +34,7 @@ class Tools_removeBackground_class {
 			effects: true,
 			params: [
 				{name: "tolerance", title: "Tolerance:", value: 30, range: [0, MAX_TOLERANCE]},
-				{name: "soften", title: "Soften edge:", value: 30, range: [0, 128]},
+				{name: "refine", title: "Edge refine:", value: 2, range: [0, MAX_REFINE]},
 			],
 			on_change: function (params, canvas_preview, w, h) {
 				var img = canvas_preview.getImageData(0, 0, w, h);
@@ -63,6 +63,13 @@ class Tools_removeBackground_class {
 			alertify.warning('Nothing matched. Try a higher tolerance.');
 			return;
 		}
+		if (result.tolerance_used < this.options(params).tolerance - 0.5) {
+			//SAY WHEN THE SETTING WAS OVERRULED. The tolerance is backed off when it starts taking
+			//the subject with it, and silently ignoring what someone typed makes the slider look
+			//broken rather than careful.
+			alertify.warning('Tolerance reduced to ' + Math.round(result.tolerance_used)
+				+ ' - above that it began removing the subject.');
+		}
 
 		img.data.set(result.data);
 		ctx.putImageData(img, 0, 0);
@@ -74,11 +81,11 @@ class Tools_removeBackground_class {
 
 	options(params) {
 		var tolerance = parseFloat(params.tolerance);
-		var soften = parseFloat(params.soften);
+		var refine = parseFloat(params.refine);
 
 		return {
 			tolerance: isNaN(tolerance) ? 0 : tolerance,
-			soften: isNaN(soften) ? 0 : soften,
+			refine: isNaN(refine) ? 0 : refine,
 		};
 	}
 

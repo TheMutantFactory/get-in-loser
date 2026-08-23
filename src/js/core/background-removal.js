@@ -4,20 +4,46 @@
  * Remove the background: clear the region that reaches the edge of the image. Pure - see
  * tests/background-removal.test.js.
  *
- * WHY THIS IS NOT THE TOOLS WE ALREADY HAVE. Color to Alpha removes a colour EVERYWHERE, so a
- * white background goes and so do the highlights in the eyes. The Magic Eraser is contiguous but
- * wants a click per region, so a subject with sky either side of its head takes three. This starts
- * from every border pixel at once and floods inward, which is the actual definition of background:
- * the part that touches the outside.
+ * WHY THIS IS NOT THE TOOLS WE ALREADY HAVE. Color to Alpha removes a colour EVERYWHERE, so a white
+ * background goes and so do the highlights in the eyes. The Magic Eraser is contiguous but wants a
+ * click per region, so a subject with sky either side of its head takes three. This starts from the
+ * border and floods inward, which is the actual definition of background: the part that touches the
+ * outside.
  *
  * CONTIGUITY IS THE WHOLE POINT. A hole enclosed by the subject - the gap inside a handle, the sky
  * between an arm and a body that the arm closes off - is the same colour as the background and is
- * NOT the background. Flooding rather than colour-matching is what tells them apart, and there is a
- * test that holds it to that.
+ * NOT the background. Flooding rather than colour-matching is what tells them apart.
+ *
+ * ------------------------------------------------------------------------------------------------
+ * THE FIRST VERSION OF THIS FILE MATCHED ONE BORDER COLOUR WITH ONE THRESHOLD, AND FAILED THREE WAYS
+ * that are worth writing down, because each stage below exists to fix one of them.
+ *
+ *   1. IT COULD INVERT. It took the single most common border colour as the background. On a tight
+ *      crop the SUBJECT is most of the border, so the tool deleted the subject and kept the wall.
+ *      Measured: 100% of the subject cleared, 100% of the background surviving.
+ *   2. IT LEAKED. An anti-aliased edge is a smooth ramp from background to subject, so a plain
+ *      threshold flood walks straight down it and out into the foreground. Measured on a photo-like
+ *      scene: tolerance 30 removed the background correctly, tolerance 60 removed 89.5% of the
+ *      SUBJECT. There was no safe setting, only a lucky one.
+ *   3. IT WAS CHOPPY, because the mask was binary. A real edge is fractionally covered - a pixel on
+ *      the boundary of a strand of hair is genuinely 40% hair - and a yes/no test cannot say so.
+ *
+ * So: cluster the border instead of taking its mode, and refuse clusters the middle of the picture
+ * is made of (1); require each step of the flood to be small as well as the destination plausible
+ * (2); and solve real fractional alpha in a band around the boundary instead of thresholding (3).
  */
 
 /** 0 removes only exact matches; 255 would remove everything. */
 const MAX_TOLERANCE = 255;
+
+/** How wide the band of solved alpha can be. Past this it is a selection, not an edge. */
+const MAX_REFINE = 16;
+
+/** How many distinct colours the background is allowed to be made of. */
+const MAX_CLUSTERS = 4;
+
+/** A tolerance timid enough that it cannot plausibly reach past a real edge. */
+const SAFE_TOLERANCE = 18;
 
 /**
  * Perceptual-ish distance between two colours, 0 when identical.
@@ -36,53 +62,464 @@ function color_distance(r1, g1, b1, r2, g2, b2) {
 }
 
 /**
- * The colour that most of the border is.
+ * Group a weighted list of colours into at most k representative ones.
  *
- * The mode rather than the mean: averaging a border that is half sky and half grass gives a colour
- * that is neither, and then nothing matches it. Colours are bucketed slightly so that a gradient
- * sky still agrees with itself.
+ * Plain Lloyd's algorithm, seeded from the heaviest coarse buckets rather than at random - this has
+ * to give the same answer twice or a live preview flickers as you drag the slider.
  *
- * @param {Uint8ClampedArray} rgba
- * @param {number} width
- * @param {number} height
- * @returns {object|null} keys r, g, b
+ * @param {Array} samples entries [r, g, b, weight]
+ * @param {number} k
+ * @returns {Array} entries {r, g, b, weight}
  */
-function dominant_border_color(rgba, width, height) {
-	if (width < 1 || height < 1) {
-		return null;
+function cluster_colors(samples, k) {
+	if (samples.length === 0) {
+		return [];
 	}
 
-	var counts = new Map();
-	var best = null;
-	var best_count = 0;
+	//seed: the heaviest coarse buckets, which are already a decent guess at the modes
+	var buckets = new Map();
+	for (var s = 0; s < samples.length; s++) {
+		var key = (samples[s][0] >> 4) * 256 + (samples[s][1] >> 4) * 16 + (samples[s][2] >> 4);
+		var slot = buckets.get(key);
+		if (slot == null) {
+			buckets.set(key, {r: samples[s][0], g: samples[s][1], b: samples[s][2], weight: samples[s][3]});
+		}
+		else {
+			slot.weight += samples[s][3];
+		}
+	}
 
-	var consider = function (x, y) {
+	var seeds = Array.from(buckets.values()).sort(function (a, b) { return b.weight - a.weight; });
+	var centers = seeds.slice(0, k).map(function (c) { return {r: c.r, g: c.g, b: c.b, weight: 0}; });
+
+	if (centers.length === 0) {
+		return [];
+	}
+
+	for (var pass = 0; pass < 8; pass++) {
+		var sums = centers.map(function () { return {r: 0, g: 0, b: 0, w: 0}; });
+
+		for (var i = 0; i < samples.length; i++) {
+			var best = 0;
+			var best_d = Infinity;
+
+			for (var c = 0; c < centers.length; c++) {
+				var d = color_distance(samples[i][0], samples[i][1], samples[i][2],
+					centers[c].r, centers[c].g, centers[c].b);
+				if (d < best_d) {
+					best_d = d;
+					best = c;
+				}
+			}
+
+			var w = samples[i][3];
+			sums[best].r += samples[i][0] * w;
+			sums[best].g += samples[i][1] * w;
+			sums[best].b += samples[i][2] * w;
+			sums[best].w += w;
+		}
+
+		for (var m = 0; m < centers.length; m++) {
+			if (sums[m].w > 0) {
+				centers[m].r = sums[m].r / sums[m].w;
+				centers[m].g = sums[m].g / sums[m].w;
+				centers[m].b = sums[m].b / sums[m].w;
+			}
+			centers[m].weight = sums[m].w;
+		}
+	}
+
+	return centers.filter(function (c) { return c.weight > 0; })
+		.sort(function (a, b) { return b.weight - a.weight; });
+}
+
+/**
+ * Collect the colours the border is made of, weighted, corners counting for more.
+ *
+ * CORNERS ARE THE LAST REDOUBT OF THE BACKGROUND. A subject can run off the bottom of the frame and
+ * off both sides; it is far rarer for it to hold all four corners as well. Weighting them is a cheap
+ * way of making the common tight crop behave.
+ *
+ * @returns {Array} entries [r, g, b, weight]
+ */
+function border_samples(rgba, width, height) {
+	var samples = [];
+	var corner = Math.max(2, Math.round(Math.min(width, height) * 0.15));
+
+	var take = function (x, y) {
 		var i = (y * width + x) * 4;
 		if (rgba[i + 3] === 0) {
 			//already transparent; it says nothing about what the background looks like
 			return;
 		}
-		//bucket to 1/8 of the range so near-identical shades agree
-		var key = (rgba[i] >> 3) * 1024 + (rgba[i + 1] >> 3) * 32 + (rgba[i + 2] >> 3);
-		var next = (counts.get(key) || 0) + 1;
-		counts.set(key, next);
+		var near_corner = (x < corner || x >= width - corner) && (y < corner || y >= height - corner);
+		samples.push([rgba[i], rgba[i + 1], rgba[i + 2], near_corner ? 3 : 1]);
+	};
 
-		if (next > best_count) {
-			best_count = next;
-			best = {r: rgba[i], g: rgba[i + 1], b: rgba[i + 2]};
+	for (var x = 0; x < width; x++) {
+		take(x, 0);
+		if (height > 1) take(x, height - 1);
+	}
+	for (var y = 1; y < height - 1; y++) {
+		take(0, y);
+		if (width > 1) take(width - 1, y);
+	}
+
+	return samples;
+}
+
+/**
+ * The colours that dominate the middle of the picture.
+ *
+ * Used only to VETO border clusters. Whatever the middle of the frame is mostly made of is the
+ * subject; if the border agrees with it, the border is subject too, and calling it background is
+ * how the old version came to delete the foreground.
+ *
+ * @returns {Array} entries {r, g, b, share} where share is a fraction of the centre region
+ */
+function center_colors(rgba, width, height) {
+	var x0 = Math.floor(width / 4), x1 = Math.ceil(width * 3 / 4);
+	var y0 = Math.floor(height / 4), y1 = Math.ceil(height * 3 / 4);
+	var samples = [];
+
+	for (var y = y0; y < y1; y++) {
+		for (var x = x0; x < x1; x++) {
+			var i = (y * width + x) * 4;
+			if (rgba[i + 3] > 0) {
+				samples.push([rgba[i], rgba[i + 1], rgba[i + 2], 1]);
+			}
+		}
+	}
+
+	if (samples.length === 0) {
+		return [];
+	}
+
+	return cluster_colors(samples, MAX_CLUSTERS).map(function (c) {
+		return {r: c.r, g: c.g, b: c.b, share: c.weight / samples.length};
+	});
+}
+
+/**
+ * Work out what the background is made of.
+ *
+ * @param {object} options keys: tolerance
+ * @returns {Array} entries {r, g, b, weight}
+ */
+function background_clusters(rgba, width, height, options) {
+	options = options || {};
+	var tolerance = options.tolerance == null ? 30 : options.tolerance;
+
+	var samples = border_samples(rgba, width, height);
+	if (samples.length === 0) {
+		return [];
+	}
+
+	var total = samples.reduce(function (sum, s) { return sum + s[3]; }, 0);
+	var clusters = cluster_colors(samples, MAX_CLUSTERS)
+		//a colour a twentieth of the border agrees on is noise, not a background
+		.filter(function (c) { return c.weight / total >= 0.05; });
+
+	var middle = center_colors(rgba, width, height);
+
+	//THE VETO HAS TO BE RARE, AND IT MUST NOT WIDEN WITH THE SETTING. Two things went wrong here
+	//before. Most photographs show plenty of background in the middle of the frame - sky either side
+	//of a head - so a cluster that merely APPEARS in the centre is still background; only a colour
+	//the centre is mostly MADE of is the subject. And matching at the USER'S tolerance meant a wide
+	//setting vetoed every cluster at once, the real background included, which threw the decision to
+	//the fallback and handed the subject straight back. It is judged at a fixed, timid radius.
+	var vetoed = clusters.filter(function (c) {
+		return !middle.some(function (m) {
+			return m.share >= 0.45 && color_distance(c.r, c.g, c.b, m.r, m.g, m.b) <= SAFE_TOLERANCE;
+		});
+	});
+
+	if (vetoed.length > 0) {
+		return vetoed;
+	}
+
+	//EVERY candidate looks like the subject, which means the centre is made of the same things the
+	//border is: a flat image, or a two-tone one, or a picture that is all background. Keep them all
+	//and let the flood decide - refusing would leave a two-tone backdrop half removed, and taking
+	//only the heaviest did exactly that.
+	return clusters;
+}
+
+/**
+ * Flood inward from the border, marking what is reachable background.
+ *
+ * TWO CONDITIONS, NOT ONE. A pixel joins the background if it looks like a background colour AND the
+ * step onto it from where we came was small. The second test is the one that matters: an
+ * anti-aliased edge is a smooth ramp, so its DESTINATION looks plausible all the way across - but
+ * each step down it is a large fraction of the whole subject-to-background difference, while steps
+ * within a real background are noise-sized.
+ *
+ * @returns {Uint8Array} 1 where background
+ */
+function flood_background(rgba, width, height, clusters, tolerance, step_limit) {
+	var n = width * height;
+	var mask = new Uint8Array(n);
+	var visited = new Uint8Array(n);
+	var stack = [];
+
+	var looks_like_background = function (index) {
+		var i = index * 4;
+		for (var c = 0; c < clusters.length; c++) {
+			if (color_distance(rgba[i], rgba[i + 1], rgba[i + 2],
+				clusters[c].r, clusters[c].g, clusters[c].b) <= tolerance) {
+				return true;
+			}
+		}
+		return false;
+	};
+
+	var step = function (from, to) {
+		var a = from * 4, b = to * 4;
+		return color_distance(rgba[a], rgba[a + 1], rgba[a + 2], rgba[b], rgba[b + 1], rgba[b + 2]);
+	};
+
+	var seed = function (index) {
+		if (visited[index] === 1) {
+			return;
+		}
+		visited[index] = 1;
+		if (looks_like_background(index)) {
+			stack.push(index);
 		}
 	};
 
 	for (var x = 0; x < width; x++) {
-		consider(x, 0);
-		consider(x, height - 1);
+		seed(x);
+		seed((height - 1) * width + x);
 	}
 	for (var y = 0; y < height; y++) {
-		consider(0, y);
-		consider(width - 1, y);
+		seed(y * width);
+		seed(y * width + width - 1);
 	}
 
-	return best;
+	while (stack.length > 0) {
+		var index = stack.pop();
+		mask[index] = 1;
+
+		var px = index % width;
+		var py = (index - px) / width;
+
+		var visit = function (next) {
+			if (visited[next] === 1) {
+				return;
+			}
+			if (!looks_like_background(next) || step(index, next) > step_limit) {
+				//leave it unvisited: another route may reach it across a smaller step
+				return;
+			}
+			visited[next] = 1;
+			stack.push(next);
+		};
+
+		if (px > 0) visit(index - 1);
+		if (px < width - 1) visit(index + 1);
+		if (py > 0) visit(index - width);
+		if (py < height - 1) visit(index + width);
+	}
+
+	return mask;
+}
+
+/**
+ * Grow a mask by `radius` pixels, four-connected.
+ *
+ * @returns {Uint8Array}
+ */
+function dilate(mask, width, height, radius) {
+	var out = Uint8Array.from(mask);
+	if (radius < 1) {
+		return out;
+	}
+
+	var frontier = [];
+	for (var i = 0; i < out.length; i++) {
+		if (out[i] === 1) frontier.push(i);
+	}
+
+	for (var r = 0; r < radius; r++) {
+		var next = [];
+		for (var f = 0; f < frontier.length; f++) {
+			var index = frontier[f];
+			var px = index % width;
+			var py = (index - px) / width;
+
+			var add = function (q) {
+				if (out[q] === 0) {
+					out[q] = 1;
+					next.push(q);
+				}
+			};
+
+			if (px > 0) add(index - 1);
+			if (px < width - 1) add(index + 1);
+			if (py > 0) add(index - width);
+			if (py < height - 1) add(index + width);
+		}
+		frontier = next;
+	}
+
+	return out;
+}
+
+/** Shrink a mask by `radius` pixels: dilate its complement instead. */
+function erode(mask, width, height, radius) {
+	var inverse = new Uint8Array(mask.length);
+	for (var i = 0; i < mask.length; i++) {
+		inverse[i] = mask[i] === 1 ? 0 : 1;
+	}
+
+	var grown = dilate(inverse, width, height, radius);
+
+	var out = new Uint8Array(mask.length);
+	for (var j = 0; j < mask.length; j++) {
+		out[j] = grown[j] === 1 ? 0 : 1;
+	}
+	return out;
+}
+
+/**
+ * Label every pixel definite-background (0), definite-foreground (1) or unknown (2).
+ *
+ * @returns {Uint8Array}
+ */
+function build_trimap(mask, width, height, refine) {
+	var inner = erode(mask, width, height, refine);
+	var outer = dilate(mask, width, height, refine);
+	var trimap = new Uint8Array(mask.length);
+
+	for (var i = 0; i < mask.length; i++) {
+		if (inner[i] === 1) {
+			trimap[i] = 0;
+		}
+		else if (outer[i] === 0) {
+			trimap[i] = 1;
+		}
+		else {
+			trimap[i] = 2;
+		}
+	}
+
+	return trimap;
+}
+
+/**
+ * Solve fractional coverage for one unknown pixel.
+ *
+ * THE FORMULA IS A PROJECTION. If a boundary pixel's colour C is a mix of some foreground colour F
+ * and some background colour B, then where it sits along the line from B to F IS its coverage. So
+ * find the nearest confident example of each, and project:
+ *
+ *     alpha = (C - B) . (F - B) / |F - B|^2
+ *
+ * This is the cheap end of a family that runs up to closed-form matting; it is enough to turn a
+ * staircase into an edge, and unlike a threshold it can answer "40% hair".
+ *
+ * @returns {object} keys: alpha, r, g, b
+ */
+function solve_pixel(rgba, width, height, trimap, index, search) {
+	var px = index % width;
+	var py = (index - px) / width;
+	var i = index * 4;
+
+	var fore = null, back = null;
+
+	var consider = function (qx, qy) {
+		if (qx < 0 || qy < 0 || qx >= width || qy >= height) {
+			return;
+		}
+		var q = qy * width + qx;
+		if (trimap[q] === 1 && fore == null) {
+			fore = q * 4;
+		}
+		else if (trimap[q] === 0 && back == null) {
+			back = q * 4;
+		}
+	};
+
+	//spiral outward until both a confident foreground and a confident background are in hand.
+	//ONLY THE PERIMETER OF EACH RING: scanning the filled square instead makes this cubic in the
+	//search radius, which at the largest edge-refine setting took a 64x64 test image 50 seconds.
+	for (var ring = 1; ring <= search && (fore == null || back == null); ring++) {
+		for (var d = -ring; d <= ring; d++) {
+			consider(px + d, py - ring);
+			consider(px + d, py + ring);
+			consider(px - ring, py + d);
+			consider(px + ring, py + d);
+		}
+	}
+
+	if (fore == null || back == null) {
+		//nothing confident nearby: keep whichever side of the boundary it fell
+		return {alpha: trimap[index] === 0 ? 0 : 1, r: rgba[i], g: rgba[i + 1], b: rgba[i + 2]};
+	}
+
+	var fr = rgba[fore], fg = rgba[fore + 1], fb = rgba[fore + 2];
+	var br = rgba[back], bg = rgba[back + 1], bb = rgba[back + 2];
+
+	var dr = fr - br, dg = fg - bg, db = fb - bb;
+	var len = dr * dr + dg * dg + db * db;
+
+	if (len < 1) {
+		//foreground and background are the same colour here; coverage is unknowable, keep the pixel
+		return {alpha: 1, r: rgba[i], g: rgba[i + 1], b: rgba[i + 2]};
+	}
+
+	var alpha = ((rgba[i] - br) * dr + (rgba[i + 1] - bg) * dg + (rgba[i + 2] - bb) * db) / len;
+	alpha = Math.max(0, Math.min(1, alpha));
+
+	//COLOUR DECONTAMINATION. A half-covered pixel's colour is half background; leave it and the
+	//cutout carries a rim of wherever it used to be. Undo the mix to recover the foreground alone.
+	if (alpha > 0.15) {
+		return {
+			alpha: alpha,
+			r: Math.max(0, Math.min(255, br + (rgba[i] - br) / alpha)),
+			g: Math.max(0, Math.min(255, bg + (rgba[i + 1] - bg) / alpha)),
+			b: Math.max(0, Math.min(255, bb + (rgba[i + 2] - bb) / alpha)),
+		};
+	}
+
+	//too little coverage to divide by; the nearby foreground is a better guess than the mix
+	return {alpha: alpha, r: fr, g: fg, b: fb};
+}
+
+/** How much of the protected subject the flood may take before the tolerance is judged too wide. */
+const MAX_SUBJECT_LOSS = 0.3;
+
+/**
+ * The part of the middle of the picture that a deliberately timid flood could not reach.
+ *
+ * This is the subject, identified rather than guessed at. Colour heuristics kept getting this
+ * wrong - the middle of a photograph is full of background too, and a background with any gradient
+ * in it reads as "a different colour" from its own border - but a flood too timid to cross an edge
+ * cannot be argued with about which side of one it is on.
+ *
+ * @returns {Array} pixel indices
+ */
+function protected_region(rgba, width, height, clusters, tolerance, step_limit) {
+	var timid = flood_background(rgba, width, height, clusters,
+		Math.min(tolerance, SAFE_TOLERANCE), step_limit);
+
+	var x0 = Math.floor(width / 4), x1 = Math.ceil(width * 3 / 4);
+	var y0 = Math.floor(height / 4), y1 = Math.ceil(height * 3 / 4);
+	var kept = [];
+
+	for (var y = y0; y < y1; y++) {
+		for (var x = x0; x < x1; x++) {
+			var index = y * width + x;
+			if (timid[index] === 0 && rgba[index * 4 + 3] > 0) {
+				kept.push(index);
+			}
+		}
+	}
+
+	//too little survives to be a subject: a flat image, or a small mark on a wide background, where
+	//flooding the middle is the correct answer rather than a mistake
+	return kept.length >= (x1 - x0) * (y1 - y0) * 0.05 ? kept : [];
 }
 
 /**
@@ -92,10 +529,9 @@ function dominant_border_color(rgba, width, height) {
  * @param {number} width
  * @param {number} height
  * @param {object} options keys:
- *   tolerance - how far from the background colour still counts as background, 0-255
- *   soften    - pixels within this much of the tolerance edge get partial alpha instead of being
- *               cut clean, which is what keeps an anti-aliased outline from turning into a stair
- * @returns {object|null} keys: data, removed, background
+ *   tolerance - how far from a background colour still counts as background, 0-255
+ *   refine    - how wide a band around the boundary gets real fractional alpha solved for it
+ * @returns {object|null} keys: data, removed, background, clusters
  */
 function remove_background(rgba, width, height, options) {
 	options = options || {};
@@ -108,82 +544,124 @@ function remove_background(rgba, width, height, options) {
 	if (isNaN(tolerance)) {
 		tolerance = 0;
 	}
-	var soften = Math.max(0, Number(options.soften) || 0);
 
-	var background = dominant_border_color(rgba, width, height);
-	if (background == null) {
-		//every border pixel is already transparent; there is nothing to take away
-		return {data: new Uint8ClampedArray(rgba), removed: 0, background: null};
+	var refine = Math.round(Number(options.refine));
+	if (isNaN(refine)) {
+		refine = 2;
 	}
+	refine = Math.max(0, Math.min(MAX_REFINE, refine));
+
+	//a step of half the tolerance is comfortably above background noise and comfortably below the
+	//jump an anti-aliased edge makes, which is where the leak used to get through
+	var step_limit = options.step_limit == null
+		? Math.max(6, tolerance * 0.5)
+		: Number(options.step_limit);
 
 	var out = new Uint8ClampedArray(rgba);
-	var n = width * height;
-	var visited = new Uint8Array(n);
-	//a plain array used as a stack: the recursion depth of a flood over a large image is not
-	//something to hand to the call stack
-	var stack = [];
+	var clusters = background_clusters(rgba, width, height, {tolerance: tolerance});
+
+	if (clusters.length === 0) {
+		//every border pixel is already transparent; there is nothing to take away
+		return {data: out, removed: 0, background: null, clusters: []};
+	}
+
+	//THE TOLERANCE IS CAPPED BY THE SUBJECT ITSELF, which is the difference between a setting that is
+	//too high and a setting that deletes your photograph. A tolerance wider than the gap between the
+	//background and what the middle of the picture is made of does not mean "remove more background";
+	//it means "the subject is now also background", and the flood duly removes it. Measured before
+	//this cap: a subject 42 units from the wall, at tolerance 60, came back 89.5% erased.
+	//THE TOLERANCE IS NOT ALLOWED TO EAT THE SUBJECT, which is the whole difference between a setting
+	//that is too high and a setting that deletes your photograph. A tolerance wider than the gap
+	//between background and subject does not mean "remove more background"; it means the subject is
+	//now ALSO background - and if the subject runs off the edge of the frame, as one in a tight crop
+	//does, the flood does not even have to cross an edge to get at it. It is SEEDED on it. Measured
+	//before this guard: a subject 42 units from the wall, at tolerance 60, came back 89.5% erased,
+	//and no step limit helped, because no step was ever taken.
+	//
+	//So the tolerance is tried, and backed off while it is taking the subject with it.
+	var guarded = protected_region(rgba, width, height, clusters, tolerance, step_limit);
+	var effective = tolerance;
+	var mask = null;
+
+	for (var attempt = 0; attempt < 5; attempt++) {
+		mask = flood_background(rgba, width, height, clusters, effective, step_limit);
+
+		if (guarded.length === 0) {
+			break;
+		}
+
+		var eaten = 0;
+		for (var g = 0; g < guarded.length; g++) {
+			if (mask[guarded[g]] === 1) {
+				eaten++;
+			}
+		}
+
+		if (eaten / guarded.length <= MAX_SUBJECT_LOSS) {
+			break;
+		}
+
+		effective *= 0.7;
+	}
+	var trimap = refine > 0
+		? build_trimap(mask, width, height, refine)
+		: mask.map(function (m) { return m === 1 ? 0 : 1; });
+
+	var search = Math.max(3, refine * 2);
 	var removed = 0;
 
-	var distance_at = function (index) {
+	for (var index = 0; index < width * height; index++) {
 		var i = index * 4;
-		return color_distance(
-			rgba[i], rgba[i + 1], rgba[i + 2],
-			background.r, background.g, background.b
-		);
-	};
+		var label = trimap[index];
 
-	var push = function (index) {
-		if (visited[index] === 1) {
-			return;
+		if (label === 1) {
+			//confident foreground, left exactly as it was
+			continue;
 		}
-		visited[index] = 1;
-		if (distance_at(index) <= tolerance + soften) {
-			stack.push(index);
-		}
-	};
 
-	//seed from EVERY border pixel, not one click
-	for (var x = 0; x < width; x++) {
-		push(x);
-		push((height - 1) * width + x);
-	}
-	for (var y = 0; y < height; y++) {
-		push(y * width);
-		push(y * width + width - 1);
-	}
-
-	while (stack.length > 0) {
-		var index = stack.pop();
-		var distance = distance_at(index);
-		var i = index * 4;
-
-		if (distance <= tolerance) {
-			//background
+		if (label === 0) {
 			out[i + 3] = 0;
 			removed++;
-		}
-		else if (soften > 0) {
-			//in the fringe: keep it, but proportionally. An anti-aliased outline lives here, and
-			//cutting it clean is what leaves a jagged halo of the old background behind.
-			var ratio = (distance - tolerance) / soften;
-			out[i + 3] = Math.min(rgba[i + 3], Math.round(rgba[i + 3] * ratio));
-			//a fringe pixel is a boundary; do not flood past it into the subject
-			continue;
-		}
-		else {
 			continue;
 		}
 
-		var px = index % width;
-		var py = (index - px) / width;
+		var solved = solve_pixel(rgba, width, height, trimap, index, search);
+		var alpha = Math.round(solved.alpha * rgba[i + 3]);
 
-		if (px > 0) push(index - 1);
-		if (px < width - 1) push(index + 1);
-		if (py > 0) push(index - width);
-		if (py < height - 1) push(index + width);
+		out[i] = solved.r;
+		out[i + 1] = solved.g;
+		out[i + 2] = solved.b;
+		out[i + 3] = alpha;
+
+		if (alpha < rgba[i + 3]) {
+			removed++;
+		}
 	}
 
-	return {data: out, removed: removed, background: background};
+	return {
+		data: out,
+		removed: removed,
+		tolerance_used: effective,
+		background: {
+			r: Math.round(clusters[0].r),
+			g: Math.round(clusters[0].g),
+			b: Math.round(clusters[0].b),
+		},
+		clusters: clusters,
+	};
 }
 
-export {MAX_TOLERANCE, color_distance, dominant_border_color, remove_background};
+export {
+	MAX_TOLERANCE,
+	MAX_REFINE,
+	SAFE_TOLERANCE,
+	color_distance,
+	cluster_colors,
+	border_samples,
+	center_colors,
+	background_clusters,
+	protected_region,
+	flood_background,
+	build_trimap,
+	remove_background,
+};

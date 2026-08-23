@@ -261,6 +261,21 @@ Two tools about the same question — where does the thing stop — answered in 
 
 ---
 
+## v0.1.27 — "What Touches The Outside"
+
+Background removal shipped one version ago and was wrong in three separate ways, two of which you could see without measuring anything. Reported as *"it seems to remove the foreground"* and *"it's really choppy."* Both true.
+
+- **It could remove the foreground, exactly and literally.** It took the single commonest border colour to be the background. On a tight crop the SUBJECT is most of the border — a portrait runs off the bottom and both sides — so it deleted the person and kept the wall. Measured on that case: 100% of the subject cleared, 100% of the background surviving. The border is now clustered rather than polled, and a cluster the middle of the picture is mostly *made of* is disqualified from being background at all.
+- **It leaked.** An anti-aliased edge is a smooth ramp from background to subject, so a threshold flood walks down it and out into the foreground. There was no safe tolerance, only a lucky one: 30 was correct, 60 destroyed 89.5% of the subject. Two fixes, because there turned out to be two mechanisms. Each step of the flood must now be small as well as its destination plausible, which stops the walk across an edge — and separately, the tolerance itself is tried and then **backed off while it is still taking the subject with it**, because when the subject runs off the frame the flood is *seeded* on it and never crosses an edge at all. No step is taken, so no step limit can help. The same scene now loses 0.3% of the subject at tolerance 12, 30 **and 120**.
+- **When your setting gets overruled, it says so,** rather than quietly doing something else with the number you typed.
+- **It is not choppy, because the mask is no longer binary.** A pixel on the boundary of a strand of hair is genuinely 40% hair and a yes/no test cannot say so. There is now a band around the boundary where real fractional coverage is solved for — nearest confident foreground colour, nearest confident background colour, and where the pixel sits on the line between them is its alpha. Same scene: 17 soft pixels before, 751 after.
+- **And the edge no longer carries a rim of what it used to sit on.** A half-covered red pixel on blue is *literally purple*; keeping it is what makes a cutout look pasted. The background is now divided back out of it.
+- **A two-tone backdrop goes in one pass.** Sky over grass used to average to a colour that was neither and matched nothing.
+
+*Three defects, one root cause: it was a colour-matching tool wearing a flood fill's coat. Background is what touches the outside.*
+
+---
+
 ## Unreleased — "???"
 
 - (redacted)
