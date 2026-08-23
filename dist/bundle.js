@@ -31041,7 +31041,7 @@ var File_save_class = /*#__PURE__*/function () {
         //conflating the two is what broke loading after this fork reset its version to 0.1.x.
         //See libs/file-format.js.
         format: _libs_file_format_js__WEBPACK_IMPORTED_MODULE_14__.FILE_FORMAT,
-        version: "0.1.24",
+        version: "0.1.25",
         layer_active: _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].layer.id,
         guides: _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].guides
       };
@@ -31154,7 +31154,7 @@ var Help_about_class = /*#__PURE__*/function () {
           html: '<span class="about-name">Get in loser</span>'
         }, {
           title: "Version:",
-          value: "0.1.24"
+          value: "0.1.25"
         }, {
           title: "Description:",
           value: "A personal browser-based image editor."
@@ -31441,7 +31441,7 @@ var Help_feedback_class = /*#__PURE__*/function () {
               }
               envelope = (0,_libs_feedback_envelope_js__WEBPACK_IMPORTED_MODULE_9__.build_envelope)({
                 text: text,
-                app_version:  true ? "0.1.24" : 0,
+                app_version:  true ? "0.1.25" : 0,
                 platform: (0,_libs_feedback_envelope_js__WEBPACK_IMPORTED_MODULE_9__.detect_platform)(window.navigator),
                 install_id: (0,_libs_feedback_envelope_js__WEBPACK_IMPORTED_MODULE_9__.install_id)(window.localStorage, function () {
                   return _this3.random_id();
