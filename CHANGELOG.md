@@ -200,6 +200,52 @@ The one where the colors stop being a read-only fact about your image and start 
 
 ---
 
+## v0.1.22 — "Whole Numbers Only"
+
+The one where the app learns that a pixel is a pixel.
+
+- **New — Pixel mode** (`Pixel` menu). *New Pixel Canvas* and *Canvas Size in Pixels* take plain pixels, with no units and no resolution quietly multiplying them by 72 behind your back. Presets led by 16×24, because that is what we are actually drawing. Nearest-neighbour sampling at every zoom level, and a hairline grid on every image pixel once you are past 6× — stronger every 8, so you can count.
+- **New — Palettes are files now.** JSON in `src/palettes`, a **Palette** panel on the sidebar, one click to take a colour. Sweetie 16 by default, with PICO-8, Endesga 32, Game Boy and a greyscale ramp alongside. Import your own; export what you have. The loader is deliberately forgiving — bare arrays, hex without the `#`, rgb triplets, per-colour objects. It would rather understand you than be right.
+- **The right-hand panels can be arranged.** Pin, move up, move down and drag, on every block. A pinned block sticks to the top of the sidebar while the rest scrolls past it, and when several are pinned they stack instead of quietly covering each other. Your order and your pins are remembered.
+- **The Preview had been lying about the shape of your image.** It drew into a fixed 176×100 canvas no matter what it was previewing, so a 16×24 sprite came back 2.6 times wider than tall, with total confidence. It fits the real aspect ratio now. We wrote tests for it. The tests are about a rectangle. This is where we are.
+- **Fixed — a single pencil dot was consuming the entire canvas.** Not a metaphor. At the zoom levels pixel art actually needs, the canvas transform was being applied *twice* — the zoom, squared — because the render loop measured each change against the zoom it last *asked for* rather than the one in force, and the two had quietly stopped agreeing. One dot, laid down at 34×, arrived at 1167× and covered everything. It had been that way since upstream. Every stroke lands where you put it now.
+- **Fixed — paste, on a local network address.** Pasting worked on the live site and on `localhost` and nowhere else, because both of those are secure contexts and the fallback path for everything else reached for `this` inside a callback that did not have one. Anyone testing from their phone on the same wifi got nothing.
+
+---
+
+## v0.1.23 — "Report Received"
+
+The one where the app grew a way to be told it was wrong, and was told within the hour.
+
+- **New — Help → Send Feedback.** The old *Report Issues* link sent you to GitHub, which asks you to leave the app, hold an account, and reassemble by hand the build and the state that make a report worth reading. This files it from inside, and carries that for you: version, platform, the tool you had selected. No account, no email.
+- **It is an outbox, not a form.** Nothing leaves local storage until the server says it has it. Offline holds the report for next session; a rate limit holds it *and everything queued behind it*; a genuine rejection sets it aside rather than dropping it, so "it ate my feedback" is a question with an answer.
+- **The screenshot is opt-in and off by default,** and the dialog says so before you send rather than after. This is a paint app: the canvas is your artwork, and possibly someone else's. If the capture fails, the note still goes and the report says *no picture* rather than promising one nobody can produce.
+- **New — hold the scroll wheel and drag to pan.** The tools only ever answered to the left button, so the middle one was free. You cannot drag the image off the screen.
+- **THE FIRST REPORT WAS ABOUT THE BRUSH.** *"Pencil tool is correctly drawing pixels. Brush tool is incorrectly drawing sub-pixels. Eraser tool doesn't seem to erase pixels."* With a screenshot of the word PENCIL snapped hard to the grid beside a smooth, feathered *Brush*, which diagnosed the whole thing without anyone having to reproduce anything. It was right. Pixel mode had only ever changed how the canvas was *sampled*; no painting tool had ever consulted it. The pencil looked correct by accident, having always plotted whole pixels. The brush and eraser are vector tools with round caps, so one laid down feathered coverage and the other subtracted *part* of each pixel's alpha, which reads exactly like not erasing. Both plot whole pixels now.
+- **"Please convert it to raster to apply this tool" no longer exists anywhere in the application.** It was reachable in three clicks from a blank canvas — draw a stroke, pick the eraser, click — and it named the fix and then declined to apply it. Fifty modules and nine tools now just do the conversion, as its own undo step, and say so. The Effects menu, the Image menu, the whole toolbar.
+- **Selection got the opposite treatment,** and it is the more interesting half. Six places refused a non-raster layer, two of them *silently*. But a selection is a region of the canvas, not of a layer's pixels — drawing a marquee reads nothing and writes nothing, and `Ctrl+A` is a reflex nobody expects to cost them a vector stroke. Five of those refusals were deleted rather than converted. Only *Delete*, which genuinely clears pixels, converts — at the moment the pixels are needed.
+
+*The feature that lets you tell us it is broken has been used to tell us it is broken. Working as intended.*
+
+---
+
+## v0.1.24 — "Depth, Actual"
+
+Nineteen versions ago the Zoom control was appointed Depth Meter, and it has been bluffing ever since. There is a real third axis now.
+
+- **New — Voxel mode** (`Voxel` menu). 16 wide, 16 deep, 24 high, edited one flat slice at a time. The slice is an ordinary raster layer, so every tool, the palette and pixel mode work on it with no special cases whatsoever.
+- **The volume is the model; the canvas is a view of one slice.** Not twenty-four stacked layers. This is the decision the rest follows from, and it is why the next bullet is free.
+- **Rotating changes which way the loaf is cut, never the loaf.** Slice from the Top, the Front or the Side; the data never moves, so it is instant and lossless and you can do it all day. Paint on the front face and it is there when you look down from the top — not an aspiration, a test.
+- **A second view,** because a flat canvas cannot tell you where in the model you are standing. The sidebar draws the whole thing in isometric with the current slice picked out in cyan, and orbits a quarter turn at a time. Quarter turns only: at multiples of 90 the projection stays exact and *which slice is that* stays answerable at a glance.
+- **Onion skinning.** The neighbouring slices, faint, behind the live one — warm below, cool above, fading with distance. Lining a shape up with what it sits on used to be a memory exercise.
+- **Exports MagicaVoxel `.vox`,** which Godot, Unity, Blender and three.js all read, and imports it back. Slices also still come out as a plain PNG strip. Two things that format makes very easy to get wrong are handled: it measures height on a different axis than we do, and its colour indices are off by one against its own palette table. Either mistake ships looking like a modelling error rather than a format one.
+- **The model rides along in quicksave,** which brings us to the last item.
+- **Quicksave had never worked in this fork. Not once.** Draw, `F9`, reload, `F10`, nothing — no error, no console, no toast. When this project reset its version number to `0.1.x`, the saved file kept writing that number into the field the *loader* consults to decide which historical migrations a file needs. `0.1.22` sorts below every one of them, so every file we ever saved was read as ancient and dragged through the full course of repairs, one of which forces every layer to be an image. A brush layer arrived claiming to be an image while still holding an array of stroke points, and the load threw. The thrown error was caught and returned as a status nobody printed. So it failed in perfect silence, for every file, for twenty-three versions. The file now records what it *is* separately from what wrote it, files you have already saved are rescued on the way in, and a discarded action says so out loud.
+
+*An application that could not read its own saved history, three versions after a changelog that could not read its own headings. We are choosing to see a theme rather than a pattern.*
+
+---
+
 ## Unreleased — "???"
 
 - (redacted)
