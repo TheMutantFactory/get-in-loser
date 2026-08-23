@@ -5891,7 +5891,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   color_distance: () => (/* binding */ color_distance),
 /* harmony export */   flood_background: () => (/* binding */ flood_background),
 /* harmony export */   protected_region: () => (/* binding */ protected_region),
-/* harmony export */   remove_background: () => (/* binding */ remove_background)
+/* harmony export */   remove_background: () => (/* binding */ remove_background),
+/* harmony export */   with_corner_support: () => (/* binding */ with_corner_support)
 /* harmony export */ });
 /*
  * get-in-loser - https://github.com/TheMutantFactory/get-in-loser
@@ -6060,7 +6061,7 @@ function border_samples(rgba, width, height) {
       return;
     }
     var near_corner = (x < corner || x >= width - corner) && (y < corner || y >= height - corner);
-    samples.push([rgba[i], rgba[i + 1], rgba[i + 2], near_corner ? 3 : 1]);
+    samples.push([rgba[i], rgba[i + 1], rgba[i + 2], near_corner ? 3 : 1, near_corner ? 1 : 0]);
   };
   for (var x = 0; x < width; x++) {
     take(x, 0);
@@ -6071,6 +6072,52 @@ function border_samples(rgba, width, height) {
     if (width > 1) take(width - 1, y);
   }
   return samples;
+}
+
+/**
+ * Keep only the clusters the corners actually vouch for.
+ *
+ * Each corner sample votes for its nearest cluster; a cluster with almost no corner behind it is
+ * something the subject brought to the border, not the background.
+ *
+ * @param {Array} clusters
+ * @param {Array} samples entries [r, g, b, weight, is_corner]
+ * @returns {Array}
+ */
+function with_corner_support(clusters, samples) {
+  if (clusters.length < 2) {
+    //nothing to choose between; a single cluster is the only answer available
+    return clusters;
+  }
+  var votes = clusters.map(function () {
+    return 0;
+  });
+  var corner_total = 0;
+  for (var i = 0; i < samples.length; i++) {
+    if (samples[i][4] !== 1) {
+      continue;
+    }
+    corner_total += samples[i][3];
+    var best = 0;
+    var best_d = Infinity;
+    for (var c = 0; c < clusters.length; c++) {
+      var d = color_distance(samples[i][0], samples[i][1], samples[i][2], clusters[c].r, clusters[c].g, clusters[c].b);
+      if (d < best_d) {
+        best_d = d;
+        best = c;
+      }
+    }
+    votes[best] += samples[i][3];
+  }
+  if (corner_total === 0) {
+    return clusters;
+  }
+  var supported = clusters.filter(function (c, index) {
+    return votes[index] / corner_total >= 0.1;
+  });
+
+  //if the corners agree with nothing, they are no help and the border stands as it was
+  return supported.length > 0 ? supported : clusters;
 }
 
 /**
@@ -6130,6 +6177,13 @@ function background_clusters(rgba, width, height, options) {
   .filter(function (c) {
     return c.weight / total >= 0.05;
   });
+
+  //A BACKGROUND HOLDS THE CORNERS. This is the fix for the subject that runs off the bottom of the
+  //frame: a portrait's shirt occupies a good share of the bottom edge, so it was becoming one of
+  //the background clusters and then seeding the flood ON THE SUBJECT - which is why no tolerance
+  //helped, not even 6. Measured: 53.8% of the subject lost with no noise and nothing else wrong.
+  //A subject can run off one edge, or three; it is far rarer for it to hold the corners too.
+  clusters = with_corner_support(clusters, samples);
   var middle = center_colors(rgba, width, height);
 
   //THE VETO HAS TO BE RARE, AND IT MUST NOT WIDEN WITH THE SETTING. Two things went wrong here
@@ -6405,23 +6459,22 @@ var MAX_SUBJECT_LOSS = 0.3;
  */
 function protected_region(rgba, width, height, clusters, tolerance, step_limit) {
   var timid = flood_background(rgba, width, height, clusters, Math.min(tolerance, SAFE_TOLERANCE), step_limit);
-  var x0 = Math.floor(width / 4),
-    x1 = Math.ceil(width * 3 / 4);
-  var y0 = Math.floor(height / 4),
-    y1 = Math.ceil(height * 3 / 4);
+
+  //THE WHOLE FRAME, NOT THE MIDDLE OF IT. This looked only at the central quarter, on the theory
+  //that the subject lives in the middle - and a pale shirt against a pale wall, which is most of
+  //the lower half of a portrait and barely inside that box, was therefore not protected at all.
+  //53.8% of the subject went, with no noise and nothing else wrong. A subject is not obliged to
+  //sit in the middle of the picture, and the timid flood already knows where it is.
   var kept = [];
-  for (var y = y0; y < y1; y++) {
-    for (var x = x0; x < x1; x++) {
-      var index = y * width + x;
-      if (timid[index] === 0 && rgba[index * 4 + 3] > 0) {
-        kept.push(index);
-      }
+  for (var index = 0; index < width * height; index++) {
+    if (timid[index] === 0 && rgba[index * 4 + 3] > 0) {
+      kept.push(index);
     }
   }
 
   //too little survives to be a subject: a flat image, or a small mark on a wide background, where
-  //flooding the middle is the correct answer rather than a mistake
-  return kept.length >= (x1 - x0) * (y1 - y0) * 0.05 ? kept : [];
+  //flooding all of it is the correct answer rather than a mistake
+  return kept.length >= width * height * 0.02 ? kept : [];
 }
 
 /**

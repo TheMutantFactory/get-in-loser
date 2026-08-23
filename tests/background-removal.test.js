@@ -11,6 +11,7 @@ import {
 	border_samples,
 	background_clusters,
 	protected_region,
+	with_corner_support,
 	remove_background,
 } from '../src/js/core/background-removal.js';
 
@@ -133,6 +134,31 @@ describe('background_clusters', () => {
 	});
 });
 
+describe('with_corner_support', () => {
+	test('drops a colour the corners never vote for', () => {
+		//[r, g, b, weight, is_corner]
+		const samples = [];
+		for (let i = 0; i < 20; i++) samples.push([200, 205, 215, 3, 1]);
+		for (let i = 0; i < 20; i++) samples.push([60, 70, 90, 1, 0]);
+		const kept = with_corner_support(
+			[{r: 200, g: 205, b: 215, weight: 60}, {r: 60, g: 70, b: 90, weight: 20}], samples);
+
+		expect(kept.length).toBe(1);
+		expect(kept[0].r).toBe(200);
+	});
+
+	test('leaves a single cluster alone - there is nothing to choose between', () => {
+		const one = [{r: 10, g: 10, b: 10, weight: 5}];
+		expect(with_corner_support(one, [])).toEqual(one);
+	});
+
+	test('keeps everything when the corners vouch for nothing at all', () => {
+		const two = [{r: 10, g: 10, b: 10, weight: 5}, {r: 200, g: 200, b: 200, weight: 5}];
+		//no corner samples: the corners are no help, so they get no veto either
+		expect(with_corner_support(two, [[10, 10, 10, 1, 0]])).toEqual(two);
+	});
+});
+
 describe('protected_region', () => {
 	test('finds the subject in the middle', () => {
 		const d = ring();
@@ -179,6 +205,23 @@ describe('remove_background', () => {
 		//...and the subject stays
 		expect(alpha(out.data, 32, 40)).toBe(255);
 		expect(alpha(out.data, 2, 60)).toBe(255);
+	});
+
+	test('A SUBJECT RUNNING OFF THE BOTTOM EDGE IS NOT THE BACKGROUND', () => {
+		//THE BUG. A portrait's shirt takes up a good share of the bottom edge, so it was becoming one
+		//of the border's background clusters and then SEEDING THE FLOOD ON THE SUBJECT. No tolerance
+		//helped, not even 6, because the subject was not being reached - it was being started from.
+		//Measured on this shape: 100% of the subject cleared and the wall left standing.
+		//A background holds the corners; a subject that runs off an edge usually does not.
+		const d = blank(W, H);
+		fill(d, W, H, WALL);
+		for (let y = 48; y < H; y++) for (let x = 10; x < 54; x++) put(d, W, x, y, [60, 70, 90]);
+		const out = remove_background(d, W, H, {tolerance: 30, refine: 0});
+
+		expect(alpha(out.data, 1, 1)).toBe(0);
+		expect(alpha(out.data, 1, 62)).toBe(0);
+		expect(alpha(out.data, 32, 56)).toBe(255);
+		expect(alpha(out.data, 32, 63)).toBe(255);
 	});
 
 	test('NO LEAK: a tolerance wide enough to cover the subject still does not eat it', () => {
