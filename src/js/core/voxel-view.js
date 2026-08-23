@@ -50,6 +50,53 @@ function rotate_xz(x, z, yaw, w, d) {
 }
 
 /**
+ * Sine and cosine of a yaw in degrees, EXACT at the quarter turns.
+ *
+ * Math.cos(Math.PI / 2) is 6.1e-17, not 0, and that residue is enough to make a quarter-turn
+ * projection land off its whole pixel - which the pixel-art look, and several tests, depend on.
+ * The cardinal angles matter more than the rest: they are where the preview rests.
+ *
+ * @param {number} yaw degrees, any value
+ * @returns {object} keys: cos, sin
+ */
+function yaw_trig(yaw) {
+	var turn = ((Number(yaw) || 0) % 360 + 360) % 360;
+
+	if (turn === 0) return {cos: 1, sin: 0};
+	if (turn === 90) return {cos: 0, sin: 1};
+	if (turn === 180) return {cos: -1, sin: 0};
+	if (turn === 270) return {cos: 0, sin: -1};
+
+	var rad = turn * Math.PI / 180;
+	return {cos: Math.cos(rad), sin: Math.sin(rad)};
+}
+
+/**
+ * Rotate a continuous footprint point about the footprint centre.
+ *
+ * ANY angle, not just quarter turns - the preview free-rotates now. Rotating about the CENTRE
+ * rather than a corner means the projection of a non-square footprint shifts by a constant as it
+ * turns, and a constant shift is invisible: the preview centres itself from bounds() either way.
+ *
+ * @param {number} x
+ * @param {number} z
+ * @param {number} yaw degrees
+ * @param {number} w footprint width
+ * @param {number} d footprint depth
+ * @returns {object} keys: rx, rz
+ */
+function rotate_continuous(x, z, yaw, w, d) {
+	var t = yaw_trig(yaw);
+	var u = x - w / 2;
+	var v = z - d / 2;
+
+	return {
+		rx: w / 2 + u * t.cos - v * t.sin,
+		rz: d / 2 + u * t.sin + v * t.cos,
+	};
+}
+
+/**
  * Project a point onto the preview.
  *
  * Takes CONTINUOUS coordinates, so it serves both voxel corners (whole numbers) and the slice
@@ -63,30 +110,11 @@ function rotate_xz(x, z, yaw, w, d) {
  */
 function project(x, y, z, view) {
 	var scale = view.scale || 1;
-	var turn = ((parseInt(view.yaw, 10) || 0) % 360 + 360) % 360;
-	var w = view.w;
-	var d = view.d;
-
-	//rotate in continuous space - rotate_xz works on voxel indices, and reusing it here would be
-	//off by one along the mirrored axes
-	var rx = x;
-	var rz = z;
-	if (turn === 90) {
-		rx = d - z;
-		rz = x;
-	}
-	else if (turn === 180) {
-		rx = w - x;
-		rz = d - z;
-	}
-	else if (turn === 270) {
-		rx = z;
-		rz = w - x;
-	}
+	var r = rotate_continuous(x, z, view.yaw, view.w, view.d);
 
 	return {
-		sx: (rx - rz) * (TILE.w / 2) * scale,
-		sy: ((rx + rz) * (TILE.h / 2) - y * VOXEL_H) * scale,
+		sx: (r.rx - r.rz) * (TILE.w / 2) * scale,
+		sy: ((r.rx + r.rz) * (TILE.h / 2) - y * VOXEL_H) * scale,
 	};
 }
 
@@ -97,9 +125,9 @@ function project(x, y, z, view) {
  * @returns {number}
  */
 function depth_key(x, y, z, yaw, w, d) {
-	var r = rotate_xz(x, z, yaw, w, d);
+	var r = rotate_continuous(x, z, yaw, w, d);
 
-	return r.x + r.z + y;
+	return r.rx + r.rz + y;
 }
 
 /**
@@ -314,19 +342,62 @@ const FACE_CORNERS = {
  * @returns {object} keys right (the +rx face) and left (the +rz face)
  */
 function visible_faces(yaw) {
-	var turn = ((parseInt(yaw, 10) || 0) % 360 + 360) % 360;
+	//kept for the quarter turns the tests and old callers speak; the walls list is the general form
+	var walls = visible_walls(yaw);
+	var out = {};
 
-	if (turn === 90) {
-		return {right: '-z', left: '+x'};
-	}
-	if (turn === 180) {
-		return {right: '-x', left: '-z'};
-	}
-	if (turn === 270) {
-		return {right: '+z', left: '-x'};
+	for (var i = 0; i < walls.length; i++) {
+		out[walls[i].side] = walls[i].face;
 	}
 
-	return {right: '+x', left: '+z'};
+	return out;
 }
 
-export {YAWS, ONION, onion_slices, FACE_CORNERS, visible_faces, TILE, VOXEL_H, rotate_xz, project, depth_key, draw_order, bounds, slice_quad, fit_scale};
+/**
+ * Which wall faces point at the camera at this yaw, with how brightly to draw each.
+ *
+ * THE TABLE THIS REPLACES ONLY KNEW FOUR ANGLES. The camera looks along (1, 1) in rotated
+ * footprint space - that is what the depth key says - so a wall is visible exactly when its
+ * rotated outward normal has a positive dot product with (1, 1). At the quarter turns this
+ * reproduces the old table; in between, one wall can be edge-on and drop out, which is not a
+ * special case but the dot product passing through zero.
+ *
+ * Shading: the old left wall drew at 0.72 and the right at 0.52. Those were walls at 45 degrees
+ * to the screen axes, so the continuous rule - brightness follows how much the normal points
+ * screen-left - is calibrated to hand back exactly those values at the cardinals.
+ *
+ * @param {number} yaw degrees
+ * @returns {array} [{face: '+x'|'-x'|'+z'|'-z', side: 'left'|'right', lit: number}]
+ */
+function visible_walls(yaw) {
+	var t = yaw_trig(yaw);
+	var normals = {
+		'+x': [t.cos, t.sin],
+		'-x': [-t.cos, -t.sin],
+		'+z': [-t.sin, t.cos],
+		'-z': [t.sin, -t.cos],
+	};
+
+	var out = [];
+	for (var face in normals) {
+		var n = normals[face];
+		var toward_camera = n[0] + n[1];
+
+		if (toward_camera <= 1e-9) {
+			continue;
+		}
+
+		//screen-left is the direction (-1, +1) in rotated footprint space
+		var leftness = (n[1] - n[0]) / Math.SQRT2;
+
+		out.push({
+			face: face,
+			side: leftness >= 0 ? 'left' : 'right',
+			lit: 0.62 + leftness * (0.72 - 0.52) / (2 * Math.SQRT2 / 2),
+		});
+	}
+
+	return out;
+}
+
+export {YAWS, ONION, onion_slices, FACE_CORNERS, visible_faces, visible_walls, yaw_trig, TILE, VOXEL_H, rotate_xz, rotate_continuous, project, depth_key, draw_order, bounds, slice_quad, fit_scale};

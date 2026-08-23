@@ -360,6 +360,20 @@ Four fixes, three of them straight off the feedback queue.
 
 ---
 
+## v0.1.35 — "Every Which Way"
+
+The rest of field report b92e7706, which asked for three things and got all three.
+
+- **New — Voxel → Face Symmetry.** While it is on, painting a wall paints all four walls: commit a wall slice and it is stamped onto its three rotations, so the model shows the *same picture from every side*. That phrase is doing real work — rotating the model a quarter turn carries each wall AND its outside viewer together, so rotation-invariance is exactly "identical from all four sides", and there is a test that asserts the invariance over the whole volume rather than taking it on trust. Erasing propagates too: symmetry that only copied paint would let an erase break the promise silently.
+- Two limitations, stated rather than fudged: the **top view propagates nothing** (a quarter turn maps a horizontal slice onto itself, and stamping there would overwrite the very cells just painted), and a **non-square footprint falls back to the half turn** — front matches back, left matches right, because no quarter-turn symmetry exists for it to enforce.
+- **The preview free-rotates — drag it.** The projection now takes any angle, not four. The quarter turns stay bit-exact (`cos 90°` is 0 here, not 6.1e-17, because the cardinals are where the preview rests and the pixel-art look depends on them), and the orbit buttons now *snap* to the next quarter mark rather than adding blindly — from 37°, "turn right" means 90, not 127.
+- **Which walls are drawn, and how brightly, follows the camera continuously.** The old fixed left/right pair becomes a dot product against the view direction — at 45° a wall faces you head-on and its neighbours go edge-on, which is not a special case but the dot product passing through zero. Calibrated to reproduce the old shading exactly at the cardinals.
+- **The preview is bigger.** It fills the panel's width, and a grip underneath drags it taller — up to 600px, remembered between sessions.
+
+*And yes: the project file saves the whole volume, not just the slice you were on. It has since v0.1.24. The changelog just never said it to your face.*
+
+---
+
 ## Unreleased — "???"
 
 - (redacted)

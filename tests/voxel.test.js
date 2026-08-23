@@ -19,6 +19,7 @@ import {
 	clamp_slice,
 	flip_volume,
 	flip_axis_for_view,
+	apply_face_symmetry,
 	count_filled,
 	serialize_volume,
 	deserialize_volume,
@@ -379,5 +380,90 @@ describe('flip_axis_for_view', () => {
 	test('nonsense in, null out', () => {
 		expect(flip_axis_for_view('q', 'horizontal')).toBe(null);
 		expect(flip_axis_for_view('y', 'diagonal')).toBe(null);
+	});
+});
+
+describe('apply_face_symmetry', () => {
+	const RED = pack(255, 0, 0, 255);
+	const BLUE = pack(0, 0, 255, 255);
+
+	test('THE PROMISE: after stamping, the volume is invariant under the quarter turn', () => {
+		//rotating the model carries each wall AND its outside viewer together, so
+		//rotation-invariance IS "the same picture from every side"
+		const v = create_volume(5, 5, 4);
+		//an asymmetric pattern on the front wall plane (z view, slice 4 = the front face)
+		set_voxel(v, 0, 0, 4, RED);
+		set_voxel(v, 1, 2, 4, BLUE);
+		set_voxel(v, 3, 1, 4, RED);
+		apply_face_symmetry(v, 'z', 4);
+
+		const rot90 = (x, z) => ({x: (5 - 1) - z, z: x});
+		for (let y = 0; y < 4; y++)
+			for (let z = 0; z < 5; z++)
+				for (let x = 0; x < 5; x++) {
+					const r = rot90(x, z);
+					expect(get_voxel(v, r.x, y, r.z)).toBe(get_voxel(v, x, y, z));
+				}
+	});
+
+	test('an erase on one wall erases the other three - symmetry includes the empties', () => {
+		const v = create_volume(4, 4, 3);
+		//paint all four walls by symmetrising a full front wall
+		for (let x = 0; x < 4; x++) for (let y = 0; y < 3; y++) set_voxel(v, x, y, 3, RED);
+		apply_face_symmetry(v, 'z', 3);
+		expect(count_filled(v)).toBeGreaterThan(12);
+
+		//now clear one cell of the front and re-apply
+		set_voxel(v, 1, 1, 3, 0);
+		apply_face_symmetry(v, 'z', 3);
+
+		//the rotated positions of that cell must be empty too
+		expect(get_voxel(v, 3 - 3, 1, 1)).toBe(0);   //90:  (d-1-z, x) = (0, 1)
+		expect(get_voxel(v, 2, 1, 0)).toBe(0);       //180: (w-1-x, d-1-z)
+		expect(get_voxel(v, 3, 1, 2)).toBe(0);       //270: (z, w-1-x)
+	});
+
+	test('applying twice changes nothing more - one application settles it', () => {
+		const v = create_volume(5, 5, 4);
+		set_voxel(v, 2, 1, 4, RED);
+		set_voxel(v, 0, 3, 4, BLUE);
+		apply_face_symmetry(v, 'z', 4);
+		const once = Array.from(v.data);
+		apply_face_symmetry(v, 'z', 4);
+		expect(Array.from(v.data)).toEqual(once);
+	});
+
+	test('the top view propagates nothing, on purpose', () => {
+		//a quarter turn maps a horizontal slice onto itself; stamping there would overwrite the
+		//cells just painted with rotations of possibly-empty cells - fresh work destroyed
+		const v = create_volume(4, 4, 3);
+		set_voxel(v, 1, 0, 2, RED);
+		const before = Array.from(v.data);
+		expect(apply_face_symmetry(v, 'y', 0)).toBe(0);
+		expect(Array.from(v.data)).toEqual(before);
+	});
+
+	test('a non-square footprint falls back to the half turn', () => {
+		//no quarter-turn symmetry exists to enforce - the rotated wall has the wrong dimensions
+		const v = create_volume(4, 6, 3);
+		set_voxel(v, 0, 1, 5, RED);
+		apply_face_symmetry(v, 'z', 5);
+
+		//180: (w-1-x, d-1-z) = (3, 0)
+		expect(get_voxel(v, 3, 1, 0)).toBe(RED);
+		//and nothing landed anywhere a quarter turn would have put it
+		expect(count_filled(v)).toBe(2);
+	});
+
+	test('an interior slice symmetrises its own depth, not the walls', () => {
+		const v = create_volume(5, 5, 4);
+		set_voxel(v, 1, 1, 2, RED);   //two in from the front
+		apply_face_symmetry(v, 'z', 2);
+
+		//its rotations sit on the matching interior planes: (x,z)=(1,2), w=d=5
+		expect(get_voxel(v, 2, 1, 1)).toBe(RED);   //90:  ((d-1)-z, x)       = (2, 1)
+		expect(get_voxel(v, 3, 1, 2)).toBe(RED);   //180: ((w-1)-x, (d-1)-z) = (3, 2)
+		expect(get_voxel(v, 2, 1, 3)).toBe(RED);   //270: (z, (w-1)-x)       = (2, 3)
+		expect(count_filled(v)).toBe(4);
 	});
 });

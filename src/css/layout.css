@@ -491,7 +491,19 @@ IMPORTANT: any new icon should also must be added on /service-worker.js + its ve
 }
 #canvas_voxel{
 	image-rendering: pixelated;
-	cursor: default;
+	cursor: grab;
+	touch-action: none;
+}
+.voxel_resize_grip{
+	height: 7px;
+	margin: -4px 12px 6px;
+	border-radius: 3px;
+	cursor: ns-resize;
+	background: rgba(255, 255, 255, 0.12);
+	touch-action: none;
+}
+.voxel_resize_grip:hover{
+	background: rgba(255, 255, 255, 0.28);
 }
 .voxel_controls .details{
 	display: flex;

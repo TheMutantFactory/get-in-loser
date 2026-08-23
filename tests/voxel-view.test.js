@@ -9,7 +9,10 @@ import {
 	onion_slices,
 	FACE_CORNERS,
 	visible_faces,
+	visible_walls,
+	yaw_trig,
 	rotate_xz,
+	rotate_continuous,
 	project,
 	depth_key,
 	draw_order,
@@ -327,6 +330,97 @@ describe('visible_faces', () => {
 			//a face is flat: one of the three axes is constant across all four corners
 			const constant = [0, 1, 2].filter((ax) => new Set(face.map((c) => c[ax])).size === 1);
 			expect(constant.length).toBeGreaterThanOrEqual(1);
+		}
+	});
+});
+
+describe('free rotation', () => {
+	test('the quarter turns are EXACT, not approximately zero', () => {
+		//Math.cos(PI/2) is 6.1e-17, and that residue pushes a quarter-turn projection off its
+		//whole pixel - the cardinals are where the preview rests, so they must be perfect
+		expect(yaw_trig(90)).toEqual({cos: 0, sin: 1});
+		expect(yaw_trig(180)).toEqual({cos: -1, sin: 0});
+		expect(yaw_trig(270)).toEqual({cos: 0, sin: -1});
+		expect(yaw_trig(360)).toEqual({cos: 1, sin: 0});
+		expect(yaw_trig(-90)).toEqual({cos: 0, sin: -1});
+	});
+
+	test('continuous rotation agrees with the index rotation at the quarter turns', () => {
+		//rotate_xz turns voxel INDICES, rotate_continuous turns points; a voxel index i is the
+		//point i + 0.5, and on a square footprint the two must say the same thing
+		const w = 6, d = 6;
+		for (const yaw of [90, 180, 270]) {
+			for (const [x, z] of [[0, 0], [5, 0], [2, 4], [3, 3]]) {
+				const idx = rotate_xz(x, z, yaw, w, d);
+				const cont = rotate_continuous(x + 0.5, z + 0.5, yaw, w, d);
+				expect(cont.rx).toBeCloseTo(idx.x + 0.5, 10);
+				expect(cont.rz).toBeCloseTo(idx.z + 0.5, 10);
+			}
+		}
+	});
+
+	test('a full turn is the identity, from any angle', () => {
+		const view = {yaw: 37, w: 4, d: 6, scale: 1};
+		const back = {yaw: 397, w: 4, d: 6, scale: 1};
+		const a = project(1, 2, 3, view);
+		const b = project(1, 2, 3, back);
+		expect(b.sx).toBeCloseTo(a.sx, 10);
+		expect(b.sy).toBeCloseTo(a.sy, 10);
+	});
+
+	test('between the quarter turns the projection stays finite and the model keeps its size', () => {
+		const vol = {w: 4, d: 6, h: 9};
+		for (const yaw of [15, 37, 45, 118, 200.5, 333]) {
+			const b = bounds(vol, {yaw});
+			expect(isFinite(b.width) && isFinite(b.height)).toBe(true);
+			expect(b.width).toBeGreaterThan(0);
+			expect(b.height).toBeGreaterThan(0);
+		}
+	});
+
+	test('turning half way round reverses the depth order of front and back', () => {
+		const near_at_0 = depth_key(3, 0, 5, 0, 4, 6);
+		const far_at_0 = depth_key(0, 0, 0, 0, 4, 6);
+		expect(near_at_0).toBeGreaterThan(far_at_0);
+		//the same two voxels, seen from behind
+		expect(depth_key(3, 0, 5, 180, 4, 6)).toBeLessThan(depth_key(0, 0, 0, 180, 4, 6));
+	});
+});
+
+describe('visible_walls', () => {
+	test('reproduces the old table at the cardinals, with the old shading', () => {
+		const at = (yaw) => {
+			const out = {};
+			for (const wall of visible_walls(yaw)) out[wall.side] = wall;
+			return out;
+		};
+		expect(at(0).left.face).toBe('+z');
+		expect(at(0).right.face).toBe('+x');
+		expect(at(90).left.face).toBe('+x');
+		expect(at(90).right.face).toBe('-z');
+		expect(at(0).left.lit).toBeCloseTo(0.72, 10);
+		expect(at(0).right.lit).toBeCloseTo(0.52, 10);
+	});
+
+	test('at 45 degrees one wall faces the camera head on and the side walls are edge-on', () => {
+		const walls = visible_walls(45);
+		expect(walls.length).toBe(1);
+		expect(walls[0].face).toBe('+x');
+	});
+
+	test('every wall it names genuinely points at the camera, at any angle', () => {
+		for (let yaw = 0; yaw < 360; yaw += 7) {
+			const t = yaw_trig(yaw);
+			const normals = {
+				'+x': [t.cos, t.sin], '-x': [-t.cos, -t.sin],
+				'+z': [-t.sin, t.cos], '-z': [t.sin, -t.cos],
+			};
+			for (const wall of visible_walls(yaw)) {
+				const n = normals[wall.face];
+				expect(n[0] + n[1]).toBeGreaterThan(0);
+				expect(wall.lit).toBeGreaterThan(0.4);
+				expect(wall.lit).toBeLessThan(0.8);
+			}
 		}
 	});
 });

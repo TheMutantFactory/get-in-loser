@@ -9,15 +9,17 @@
  */
 
 import config from './../../config.js';
+import Helper_class from './../../libs/helpers.js';
 import {AXES, AXIS_LABELS, unpack, get_voxel, slice_dimensions} from './../voxel.js';
-import {draw_order, project, bounds, slice_quad, fit_scale, FACE_CORNERS, visible_faces} from './../voxel-view.js';
+import {draw_order, project, bounds, slice_quad, fit_scale, FACE_CORNERS, visible_walls} from './../voxel-view.js';
 
 var instance = null;
 
 var template = `
 	<div class="voxel_preview_wrapper">
-		<canvas width="176" height="176" id="canvas_voxel"></canvas>
+		<canvas width="176" height="176" id="canvas_voxel" title="Drag to turn the model"></canvas>
 	</div>
+	<div class="voxel_resize_grip" id="voxel_resize_grip" title="Drag to resize the preview"></div>
 	<div class="voxel_controls">
 		<div class="details">
 			<button type="button" title="Turn the model left" class="layer_add" id="voxel_orbit_left">&#8630;</button>
@@ -55,6 +57,7 @@ class GUI_voxel_class {
 			this.GUI = GUI_class;
 		}
 		this.ctx = null;
+		this.Helper = new Helper_class();
 	}
 
 	render_main_voxel() {
@@ -65,6 +68,7 @@ class GUI_voxel_class {
 
 		target.innerHTML = template;
 		this.ctx = document.getElementById('canvas_voxel').getContext('2d');
+		this.size_canvas();
 		this.ctx.imageSmoothingEnabled = false;
 
 		document.getElementById('voxel_axes').innerHTML = AXES.map(function (axis) {
@@ -77,11 +81,92 @@ class GUI_voxel_class {
 		this.render_voxel();
 	}
 
+	/**
+	 * The preview fills the panel's width, and stands as tall as it was last dragged to.
+	 *
+	 * The backing store is sized here, not in CSS - a stretched canvas is a blurry one, and the
+	 * whole point of a bigger preview is seeing the voxels more clearly.
+	 */
+	size_canvas() {
+		var canvas = this.ctx.canvas;
+		var wrapper = canvas.parentElement;
+		var width = Math.max(120, (wrapper && wrapper.clientWidth) || 176);
+		var height = parseInt(this.Helper.getCookie('voxel_preview_height'), 10);
+
+		if (isNaN(height)) {
+			height = 176;
+		}
+
+		canvas.width = width;
+		canvas.height = Math.max(120, Math.min(600, height));
+		//the context forgets this on resize
+		this.ctx.imageSmoothingEnabled = false;
+	}
+
 	set_events() {
 		var _this = this;
 		var voxel = function () {
 			return _this.GUI.modules ? _this.GUI.modules['tools/voxel'] : null;
 		};
+
+		//FREE ROTATION - drag the preview itself (field report b92e7706). The orbit buttons still
+		//snap to quarter turns; dragging goes anywhere between.
+		var canvas = document.getElementById('canvas_voxel');
+		var drag = null;
+		canvas.addEventListener('pointerdown', function (e) {
+			if (config.voxel == null || config.voxel.volume == null) {
+				return;
+			}
+			drag = {x: e.clientX, yaw: config.voxel.yaw || 0};
+			try {
+				canvas.setPointerCapture(e.pointerId);
+			}
+			catch (err) {
+				//a pointer the browser is not tracking cannot be captured; the drag still works,
+				//it just will not follow the cursor outside the canvas
+			}
+			canvas.style.cursor = 'grabbing';
+		});
+		canvas.addEventListener('pointermove', function (e) {
+			if (drag == null) {
+				return;
+			}
+			//0.75 degrees per pixel: a drag across the whole panel is about half a turn
+			config.voxel.yaw = ((drag.yaw + (e.clientX - drag.x) * 0.75) % 360 + 360) % 360;
+			_this.render_voxel();
+		});
+		var drag_end = function () {
+			drag = null;
+			canvas.style.cursor = '';
+		};
+		canvas.addEventListener('pointerup', drag_end);
+		canvas.addEventListener('pointercancel', drag_end);
+
+		//RESIZE - drag the grip under the preview to give the model more room (same report). The
+		//width already fills the panel; the height is the dimension a sidebar has to spare.
+		var grip = document.getElementById('voxel_resize_grip');
+		var resizing = null;
+		grip.addEventListener('pointerdown', function (e) {
+			resizing = {y: e.clientY, h: _this.ctx.canvas.height};
+			try {
+				grip.setPointerCapture(e.pointerId);
+			}
+			catch (err) {
+				//as above
+			}
+			e.preventDefault();
+		});
+		grip.addEventListener('pointermove', function (e) {
+			if (resizing == null) {
+				return;
+			}
+			var h = Math.max(120, Math.min(600, resizing.h + (e.clientY - resizing.y)));
+			_this.Helper.setCookie('voxel_preview_height', h);
+			_this.size_canvas();
+			_this.render_voxel();
+		});
+		grip.addEventListener('pointerup', function () { resizing = null; });
+		grip.addEventListener('pointercancel', function () { resizing = null; });
 
 		document.getElementById('voxel_orbit_left').addEventListener('click', function () {
 			var v = voxel(); if (v) v.orbit_left();
@@ -218,17 +303,18 @@ class GUI_voxel_class {
 	 */
 	draw_voxels(vol, view, ox, oy) {
 		var order = draw_order(vol, view, get_voxel);
-		//which sides face the camera depends on the yaw; drawing a fixed pair leaves the model
-		//open at the back once it has been turned
-		var faces = visible_faces(view.yaw);
+		//which walls face the camera - and how brightly - now follows the yaw continuously, so a
+		//half-turned model is still a closed solid with sensible shading, not a fixed pair of faces
+		var walls = visible_walls(view.yaw);
 
 		for (var i = 0; i < order.length; i++) {
 			var v = order[i];
 			var c = unpack(v.value);
 
 			this.fill_face(this.face_points(v, FACE_CORNERS.top, view, ox, oy), c, 1);
-			this.fill_face(this.face_points(v, FACE_CORNERS[faces.left], view, ox, oy), c, 0.72);
-			this.fill_face(this.face_points(v, FACE_CORNERS[faces.right], view, ox, oy), c, 0.52);
+			for (var f = 0; f < walls.length; f++) {
+				this.fill_face(this.face_points(v, FACE_CORNERS[walls[f].face], view, ox, oy), c, walls[f].lit);
+			}
 		}
 	}
 

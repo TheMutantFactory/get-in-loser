@@ -386,6 +386,10 @@ const menuDefinition = [
 				target: 'tools/voxel.onion_skin'
 			},
 			{
+				name: 'Face Symmetry',
+				target: 'tools/voxel.face_symmetry'
+			},
+			{
 				divider: true
 			},
 			{

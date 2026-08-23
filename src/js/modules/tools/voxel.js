@@ -33,6 +33,7 @@ import {
 	clamp_slice,
 	flip_volume,
 	flip_axis_for_view,
+	apply_face_symmetry,
 	count_filled,
 } from './../../core/voxel.js';
 import {YAWS} from './../../core/voxel-view.js';
@@ -158,6 +159,12 @@ class Tools_voxel_class {
 		}
 
 		write_slice(state.volume, state.axis, state.slice, pixels);
+
+		if (state.symmetry === true) {
+			//the edited plane becomes the truth for its three rotations - see core/voxel.js for
+			//why this is the meaning of "the same on every face", and for the top-view caveat
+			apply_face_symmetry(state.volume, state.axis, state.slice);
+		}
 
 		return true;
 	}
@@ -384,8 +391,14 @@ class Tools_voxel_class {
 			return false;
 		}
 
-		var step = direction < 0 ? -90 : 90;
-		config.voxel.yaw = ((config.voxel.yaw + step) % 360 + 360) % 360;
+		//SNAP, do not add. The preview free-rotates by dragging now, so the yaw can be anything -
+		//and from 37 degrees, "turn right" means "the next quarter mark", not 127.
+		var current = ((Number(config.voxel.yaw) || 0) % 360 + 360) % 360;
+		var next = direction < 0
+			? Math.ceil(current / 90 - 1) * 90
+			: Math.floor(current / 90 + 1) * 90;
+
+		config.voxel.yaw = ((next % 360) + 360) % 360;
 		this.Base_gui.GUI_voxel.render_voxel();
 
 		return config.voxel.yaw;
@@ -474,6 +487,43 @@ class Tools_voxel_class {
 		alertify.success('Flipped ' + direction + '.');
 
 		return axis;
+	}
+
+	/**
+	 * menu: Voxel > Face Symmetry
+	 *
+	 * While on, committing a wall slice stamps it onto its three rotations, so the model shows the
+	 * same picture from every side. Toggling it ON symmetrises immediately from the slice in hand.
+	 */
+	face_symmetry() {
+		if (!this.is_active()) {
+			alertify.error('No voxel model yet.');
+			return false;
+		}
+
+		var state = config.voxel;
+		state.symmetry = state.symmetry !== true;
+
+		if (state.symmetry) {
+			this.commit_slice();
+			this.Base_gui.GUI_voxel.render_voxel();
+			config.need_render = true;
+
+			if (state.axis === 'y') {
+				alertify.success('Face symmetry on. It applies when editing walls - the top view stays free-hand.');
+			}
+			else if (state.volume.w !== state.volume.d) {
+				alertify.success('Face symmetry on. Footprint is not square, so front matches back and left matches right.');
+			}
+			else {
+				alertify.success('Face symmetry on. Each wall now mirrors the one you edit.');
+			}
+		}
+		else {
+			alertify.success('Face symmetry off.');
+		}
+
+		return state.symmetry;
 	}
 
 	/** menu: Voxel > Flip Horizontal / Vertical */

@@ -240,6 +240,63 @@ function write_slice(vol, axis, slice, pixels) {
  * @returns {number}
  */
 /**
+ * Make the volume rotationally symmetric about the vertical axis, using one wall slice as truth.
+ *
+ * THE PROMISE IS "THE SAME FROM EVERY SIDE". Rotating the model a quarter turn about the vertical
+ * carries each wall onto the next AND carries that wall's outside viewer along with it - so a
+ * model that is invariant under the rotation shows the identical picture from all four sides.
+ * That is what "drawing on one face draws it on each face" means once it has to be exact
+ * (field report b92e7706), and it is a property of the WHOLE volume: the freshly edited plane is
+ * stamped onto its three rotations, interiors included, empties included. Empties matter -
+ * symmetry that only copies paint would let an erase break the promise silently.
+ *
+ * Two honest limitations, both stated rather than fudged:
+ *
+ *   - The top view gets nothing. A quarter turn maps a horizontal slice ONTO ITSELF, so stamping
+ *     rotations there would overwrite the very cells just painted with rotations of cells that
+ *     may be empty - destroying fresh work is worse than doing nothing. Walls only.
+ *   - A non-square footprint has no quarter-turn symmetry to enforce (the rotated wall does not
+ *     even have the right dimensions), so it falls back to the half turn: front matches back,
+ *     left matches right.
+ *
+ * @param {object} vol
+ * @param {string} axis the slicing axis being edited - only 'z' and 'x' propagate
+ * @param {number} slice
+ * @returns {number} voxels stamped onto other planes
+ */
+function apply_face_symmetry(vol, axis, slice) {
+	if (axis !== 'z' && axis !== 'x') {
+		return 0;
+	}
+
+	//quarter turns about the vertical, on indices - the same map the preview's rotate_xz uses
+	var turn = function (x, z, yaw) {
+		if (yaw === 90) return {x: (vol.d - 1) - z, z: x};
+		if (yaw === 180) return {x: (vol.w - 1) - x, z: (vol.d - 1) - z};
+		return {x: z, z: (vol.w - 1) - x};  //270
+	};
+
+	var yaws = vol.w === vol.d ? [90, 180, 270] : [180];
+	var dims = slice_dimensions(vol, axis);
+	var stamped = 0;
+
+	for (var v = 0; v < dims.height; v++) {
+		for (var u = 0; u < dims.width; u++) {
+			var p = slice_to_voxel(vol, axis, slice, u, v);
+			var value = get_voxel(vol, p.x, p.y, p.z);
+
+			for (var i = 0; i < yaws.length; i++) {
+				var q = turn(p.x, p.z, yaws[i]);
+				set_voxel(vol, q.x, p.y, q.z, value);
+				stamped++;
+			}
+		}
+	}
+
+	return stamped;
+}
+
+/**
  * A new volume, mirrored along one model axis.
  *
  * THIS IS A REFLECTION, ON PURPOSE. The model's chirality flips - which is sometimes exactly the
@@ -418,5 +475,6 @@ export {
 	clamp_slice,
 	flip_volume,
 	flip_axis_for_view,
+	apply_face_symmetry,
 	count_filled,
 };
