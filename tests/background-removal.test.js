@@ -12,6 +12,7 @@ import {
 	background_clusters,
 	protected_region,
 	with_corner_support,
+	mark_pixels,
 	remove_background,
 } from '../src/js/core/background-removal.js';
 
@@ -353,5 +354,154 @@ describe('remove_background', () => {
 	test('a one-pixel image does not trip the border seeding', () => {
 		const out = remove_background(new Uint8ClampedArray([10, 10, 10, 255]), 1, 1, {tolerance: 0});
 		expect(out.removed).toBe(1);
+	});
+});
+
+describe('mark_pixels', () => {
+	test('a mark is a small disc, not the single pixel that was hit', () => {
+		//one pixel is a poor description of a colour - it might be the speck of noise its
+		//neighbours are not
+		expect(mark_pixels([[10, 10]], W, H, 0).length).toBe(1);
+		expect(mark_pixels([[10, 10]], W, H, 2).length).toBeGreaterThan(8);
+	});
+
+	test('overlapping marks do not double-count, and edges do not wrap', () => {
+		expect(mark_pixels([[10, 10], [10, 10]], W, H, 2))
+			.toEqual(mark_pixels([[10, 10]], W, H, 2));
+		//a mark in the corner keeps only the quarter of its disc that is on the image
+		const corner = mark_pixels([[0, 0]], W, H, 3);
+		expect(corner.every((i) => i >= 0 && i < W * H)).toBe(true);
+		expect(corner.length).toBeLessThan(mark_pixels([[30, 30]], W, H, 3).length);
+	});
+});
+
+describe('remove_background with marks', () => {
+	/** a pale subject on a pale graded wall: no threshold separates them, only the edge does */
+	const close_tones = () => {
+		const d = blank(W, H);
+		for (let y = 0; y < H; y++)
+			for (let x = 0; x < W; x++) put(d, W, x, y, [200 + y * 0.4, 205 + y * 0.35, 215 + y * 0.3]);
+		//subject runs off the bottom edge, 10 units from the wall beside it
+		for (let y = 34; y < H; y++) for (let x = 12; x < 52; x++) put(d, W, x, y, [205, 209, 214]);
+		return d;
+	};
+	const subject_at = (x, y) => y >= 34 && x >= 12 && x < 52;
+
+	const damage = (out) => {
+		let st = 0, lost = 0, bt = 0, left = 0;
+		for (let y = 0; y < H; y++)
+			for (let x = 0; x < W; x++) {
+				const a = alpha(out.data, x, y);
+				if (subject_at(x, y)) { st++; if (a < 128) lost++; }
+				else { bt++; if (a >= 128) left++; }
+			}
+		return {lost: lost / st, left: left / bt};
+	};
+
+	test('THE CASE NOTHING AUTOMATIC CAN DO', () => {
+		//the subject is closer to the background than the background is to itself, so there is no
+		//threshold to place and the automatic path loses most of the subject. Being TOLD where the
+		//background is replaces the whole question.
+		const d = close_tones();
+		const guessed = damage(remove_background(d, W, H, {tolerance: 30, refine: 2}));
+		const told = damage(remove_background(d, W, H, {
+			tolerance: 120, step_limit: 8, refine: 2, seeds: [[2, 2], [61, 2], [2, 61]]}));
+
+		expect(guessed.lost).toBeGreaterThan(0.5);
+		expect(told.lost).toBeLessThan(0.02);
+		expect(told.left).toBeLessThan(0.02);
+	});
+
+	test('the step test sees a hard edge between two SIMILAR colours', () => {
+		//which is exactly what a colour threshold cannot do, and why the slider governs the step
+		const d = close_tones();
+		const tight = damage(remove_background(d, W, H, {
+			tolerance: 120, step_limit: 8, refine: 0, seeds: [[2, 2]]}));
+		const loose = damage(remove_background(d, W, H, {
+			tolerance: 120, step_limit: 40, refine: 0, seeds: [[2, 2]]}));
+
+		expect(tight.lost).toBeLessThan(0.02);
+		expect(loose.lost).toBeGreaterThan(0.5);
+	});
+
+	test('only the region actually clicked is taken', () => {
+		//two separated background patches, one click: the other must survive
+		const d = blank(W, H);
+		fill(d, W, H, RED);
+		for (let y = 4; y < 20; y++) for (let x = 4; x < 20; x++) put(d, W, x, y, BLUE);
+		for (let y = 44; y < 60; y++) for (let x = 44; x < 60; x++) put(d, W, x, y, BLUE);
+		const out = remove_background(d, W, H, {tolerance: 40, step_limit: 20, refine: 0,
+			seeds: [[12, 12]]});
+
+		expect(alpha(out.data, 12, 12)).toBe(0);
+		expect(alpha(out.data, 52, 52)).toBe(255);
+	});
+
+	test('ONE shift-click puts a whole region back, not a dot', () => {
+		//THE BUG. A subject mark blocked only its own little disc, so the flood poured in around it
+		//and the correction corrected nothing you could see. A mark now grows by the same rule the
+		//background flood uses: pointing at the shirt means the shirt.
+		const d = close_tones();
+
+		//deliberately too loose, so the flood crosses the shirt's soft edge and takes it
+		const greedy = remove_background(d, W, H, {tolerance: 120, step_limit: 40, refine: 0,
+			seeds: [[2, 2]]});
+		expect(damage(greedy).lost).toBeGreaterThan(0.5);
+
+		//one mark, in the middle of the shirt, at the default brush size
+		const corrected = remove_background(d, W, H, {tolerance: 120, step_limit: 40, refine: 0,
+			seeds: [[2, 2]], protect: [[32, 50]], brush: 3});
+
+		expect(damage(corrected).lost).toBeLessThan(0.05);
+		//...and the background still goes
+		expect(damage(corrected).left).toBeLessThan(0.05);
+		expect(alpha(corrected.data, 2, 2)).toBe(0);
+	});
+
+	test('once the subject is marked too, the sensitivity stops mattering', () => {
+		//THE POINT OF THE COMPETITION. With one kind of mark the setting decides everything, and it
+		//is wrong in both directions at once - loose loses the subject, tight keeps the wall. With
+		//both kinds, the boundary is decided by where the strongest edge between them lies, and the
+		//slider becomes something you do not have to get right.
+		const d = close_tones();
+		const marks = {refine: 0, seeds: [[2, 2]], protect: [[32, 50]], brush: 3};
+		const results = [2, 8, 40, 200].map((step_limit) =>
+			damage(remove_background(d, W, H, Object.assign({tolerance: 120, step_limit}, marks))));
+
+		for (const r of results) {
+			expect(r.lost).toBeLessThan(0.05);
+			expect(r.left).toBeLessThan(0.05);
+		}
+	});
+
+	test('a protected region survives the edge band, not just the flood', () => {
+		//build_trimap erodes the mask to make room for solved alpha, and a mark must not be eaten
+		//by that erosion - it is an instruction, not a hint
+		const d = close_tones();
+		const out = remove_background(d, W, H, {tolerance: 120, step_limit: 40, refine: 6,
+			seeds: [[2, 2]], protect: [[32, 50]], brush: 3});
+
+		expect(alpha(out.data, 32, 50)).toBe(255);
+		expect(damage(out).lost).toBeLessThan(0.1);
+	});
+
+	test('marks on already-transparent pixels describe nothing and take nothing', () => {
+		const out = remove_background(blank(W, H), W, H, {tolerance: 40, seeds: [[10, 10]]});
+		expect(out.removed).toBe(0);
+		expect(out.background).toBe(null);
+	});
+
+	test('an empty seed list falls back to the automatic path', () => {
+		const d = ring();
+		expect(remove_background(d, W, H, {tolerance: 15, refine: 0, seeds: []}))
+			.toEqual(remove_background(d, W, H, {tolerance: 15, refine: 0}));
+	});
+
+	test('a mark outside the image does not throw or wrap around', () => {
+		const d = ring();
+		const out = remove_background(d, W, H, {tolerance: 20, refine: 0,
+			seeds: [[-50, -50], [999, 999], [2, 2]]});
+		expect(out).not.toBe(null);
+		expect(alpha(out.data, 2, 2)).toBe(0);
 	});
 });

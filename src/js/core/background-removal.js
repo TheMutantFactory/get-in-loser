@@ -311,10 +311,13 @@ function background_clusters(rgba, width, height, options) {
  *
  * @returns {Uint8Array} 1 where background
  */
-function flood_background(rgba, width, height, clusters, tolerance, step_limit) {
+function flood_background(rgba, width, height, clusters, tolerance, step_limit, options) {
+	options = options || {};
+
 	var n = width * height;
 	var mask = new Uint8Array(n);
 	var visited = new Uint8Array(n);
+	var blocked = options.blocked || null;
 	var stack = [];
 
 	var looks_like_background = function (index) {
@@ -334,7 +337,7 @@ function flood_background(rgba, width, height, clusters, tolerance, step_limit) 
 	};
 
 	var seed = function (index) {
-		if (visited[index] === 1) {
+		if (visited[index] === 1 || (blocked != null && blocked[index] === 1)) {
 			return;
 		}
 		visited[index] = 1;
@@ -343,13 +346,21 @@ function flood_background(rgba, width, height, clusters, tolerance, step_limit) 
 		}
 	};
 
-	for (var x = 0; x < width; x++) {
-		seed(x);
-		seed((height - 1) * width + x);
+	if (options.seeds != null && options.seeds.length > 0) {
+		//SOMEBODY TOLD US WHERE THE BACKGROUND IS. No guessing from here on.
+		for (var s = 0; s < options.seeds.length; s++) {
+			seed(options.seeds[s]);
+		}
 	}
-	for (var y = 0; y < height; y++) {
-		seed(y * width);
-		seed(y * width + width - 1);
+	else {
+		for (var x = 0; x < width; x++) {
+			seed(x);
+			seed((height - 1) * width + x);
+		}
+		for (var y = 0; y < height; y++) {
+			seed(y * width);
+			seed(y * width + width - 1);
+		}
 	}
 
 	while (stack.length > 0) {
@@ -360,7 +371,7 @@ function flood_background(rgba, width, height, clusters, tolerance, step_limit) 
 		var py = (index - px) / width;
 
 		var visit = function (next) {
-			if (visited[next] === 1) {
+			if (visited[next] === 1 || (blocked != null && blocked[next] === 1)) {
 				return;
 			}
 			if (!looks_like_background(next) || step(index, next) > step_limit) {
@@ -578,6 +589,254 @@ function protected_region(rgba, width, height, clusters, tolerance, step_limit) 
 }
 
 /**
+ * Turn a background mask into pixels: hard clear inside it, solved alpha in the band around it.
+ *
+ * @param {Uint8ClampedArray} out written to
+ * @param {Uint8Array} mask 1 where background
+ * @param {Array|null} protect pixel indices that are foreground no matter what the geometry says
+ * @returns {number} how many pixels lost some alpha
+ */
+function apply_mask(rgba, width, height, out, mask, refine, protect) {
+	var trimap = refine > 0
+		? build_trimap(mask, width, height, refine)
+		: mask.map(function (m) { return m === 1 ? 0 : 1; });
+
+	if (protect != null) {
+		//a mark is an instruction, not a hint: it survives the erosion that built the band
+		for (var p = 0; p < protect.length; p++) {
+			trimap[protect[p]] = 1;
+		}
+	}
+
+	var search = Math.max(3, refine * 2);
+	var removed = 0;
+
+	for (var index = 0; index < width * height; index++) {
+		var i = index * 4;
+		var label = trimap[index];
+
+		if (label === 1) {
+			//confident foreground, left exactly as it was
+			continue;
+		}
+
+		if (label === 0) {
+			out[i + 3] = 0;
+			removed++;
+			continue;
+		}
+
+		var solved = solve_pixel(rgba, width, height, trimap, index, search);
+		var alpha = Math.round(solved.alpha * rgba[i + 3]);
+
+		out[i] = solved.r;
+		out[i + 1] = solved.g;
+		out[i + 2] = solved.b;
+		out[i + 3] = alpha;
+
+		if (alpha < rgba[i + 3]) {
+			removed++;
+		}
+	}
+
+	return removed;
+}
+
+/**
+ * Let background marks and subject marks compete for every pixel; nearest wins.
+ *
+ * WHY A COMPETITION AND NOT TWO THRESHOLDS. Flooding out from each kind of mark separately means
+ * both floods obey the same sensitivity, so an edge that one of them can cross is an edge the other
+ * can cross too - set it loose and the background swallows the subject, set it tight and the subject
+ * claims the wall. Whichever way it is wrong, it is wrong in both directions at once, and no value
+ * of the setting fixes that.
+ *
+ * MARKING THE SUBJECT CHANGES THE RULE, and it is worth knowing which rule you are under. Background
+ * marks on their own mean "take this region, out to where it stops looking like this", and the
+ * sensitivity governs where that is. Add a subject mark and it becomes "keep what I marked, take
+ * everything else" - so a piece of the subject that touches nothing marked, a head not quite meeting
+ * the shoulders, goes with the background until it is marked too. That is the rule doing as it is
+ * told rather than a fault, but it is not what the first rule would have done.
+ *
+ * The distance used is MINIMAX: the cost of reaching a pixel is the largest single colour step on
+ * the easiest route to it. That is the right notion here because it asks "what is the strongest edge
+ * I had to cross to get here", which is exactly the question a boundary answers. Every pixel then
+ * belongs to whichever mark got to it over the lowest wall, and the boundary settles onto the
+ * highest ridge between them without anybody having to name a number.
+ *
+ * Dial's algorithm rather than a heap: costs are quantised, so the queue is a fixed set of buckets
+ * and the whole thing stays linear.
+ *
+ * COSTS ARE QUANTISED IN SIXTEENTHS, and the sixteenths matter. Rounding them to whole units looked
+ * harmless and was not: on a pale shirt against a pale graded wall, the largest step ACROSS the edge
+ * was 0.88 and the steps along the wall's own gradient were 0.47. Both round to nothing, the ridge
+ * the competition is supposed to find stops existing, and the subject swallows the entire picture.
+ * Low-contrast images are exactly the ones this tool is for, so the resolution has to survive them.
+ *
+ * @returns {Uint8Array} 1 where background
+ */
+function segment_by_competition(rgba, width, height, bg_seeds, fg_seeds) {
+	var SCALE = 16;
+	var LEVELS = 256 * SCALE + 1;
+	var n = width * height;
+	var cost = new Uint16Array(n).fill(LEVELS);
+	var owner = new Uint8Array(n);
+	var buckets = [];
+
+	for (var b = 0; b < LEVELS; b++) {
+		buckets.push([]);
+	}
+
+	var start = function (pixels, mark) {
+		for (var i = 0; i < pixels.length; i++) {
+			var p = pixels[i];
+			if (cost[p] !== 0) {
+				cost[p] = 0;
+				owner[p] = mark;
+				buckets[0].push(p);
+			}
+		}
+	};
+
+	//the subject goes first so that a tie is resolved in favour of keeping it; losing the subject is
+	//the failure people notice and mind
+	start(fg_seeds, 2);
+	start(bg_seeds, 1);
+
+	var step = function (a, c) {
+		var i = a * 4, j = c * 4;
+		return color_distance(rgba[i], rgba[i + 1], rgba[i + 2], rgba[j], rgba[j + 1], rgba[j + 2]);
+	};
+
+	for (var c = 0; c < LEVELS; c++) {
+		while (buckets[c].length > 0) {
+			var p = buckets[c].pop();
+
+			if (cost[p] !== c) {
+				//already reached more cheaply by another route
+				continue;
+			}
+
+			var px = p % width;
+			var py = (p - px) / width;
+
+			var relax = function (q) {
+				var next = Math.max(c, Math.round(step(p, q) * SCALE));
+				if (next < cost[q]) {
+					cost[q] = next;
+					owner[q] = owner[p];
+					buckets[next].push(q);
+				}
+			};
+
+			if (px > 0) relax(p - 1);
+			if (px < width - 1) relax(p + 1);
+			if (py > 0) relax(p - width);
+			if (py < height - 1) relax(p + width);
+		}
+	}
+
+	var mask = new Uint8Array(n);
+	for (var m = 0; m < n; m++) {
+		mask[m] = owner[m] === 1 ? 1 : 0;
+	}
+	return mask;
+}
+
+/**
+ * Clear the background the marks point at.
+ *
+ * @returns {object} the same shape remove_background returns
+ */
+function from_marks(rgba, width, height, out, seeds, blocked, protect,
+	tolerance, refine, step_limit, brush) {
+
+	var colors_of = function (pixels) {
+		var samples = [];
+		for (var i = 0; i < pixels.length; i++) {
+			var k = pixels[i] * 4;
+			if (rgba[k + 3] > 0) {
+				samples.push([rgba[k], rgba[k + 1], rgba[k + 2], 1]);
+			}
+		}
+		return cluster_colors(samples, MAX_MARK_CLUSTERS);
+	};
+
+	var clusters = colors_of(seeds);
+
+	if (clusters.length === 0) {
+		//every marked pixel is already transparent; there is nothing there to take
+		return {data: out, removed: 0, tolerance_used: tolerance, background: null, clusters: []};
+	}
+
+	//A SUBJECT MARK CLAIMS ITS WHOLE REGION, not the few pixels under the cursor - marking one dot in
+	//the middle of a shirt and having the flood pour in around it is not a correction. Once there is
+	//something to compete against, the sensitivity setting stops being consulted at all: the boundary
+	//is decided by where the strongest edge between the two marks lies.
+	var mask = protect != null && protect.length > 0
+		? segment_by_competition(rgba, width, height, seeds, protect)
+		: flood_background(rgba, width, height, clusters, tolerance, step_limit,
+			{seeds: seeds, blocked: blocked});
+
+	var removed = apply_mask(rgba, width, height, out, mask, refine, protect);
+
+	return {
+		data: out,
+		removed: removed,
+		tolerance_used: tolerance,
+		background: {
+			r: Math.round(clusters[0].r),
+			g: Math.round(clusters[0].g),
+			b: Math.round(clusters[0].b),
+		},
+		clusters: clusters,
+	};
+}
+
+/** How many colours a set of explicit marks may describe - more than the border gets, since a
+ * person clicking four different things means four different things. */
+const MAX_MARK_CLUSTERS = 8;
+
+/**
+ * Every pixel within `radius` of any mark.
+ *
+ * A click is one pixel, and one pixel is a poor description of a colour - it might be the single
+ * speck of noise its neighbours are not. Taking a small disc makes a mark mean what the person
+ * pointed at rather than exactly what they hit.
+ *
+ * @param {Array} marks entries [x, y]
+ * @returns {Array} pixel indices
+ */
+function mark_pixels(marks, width, height, radius) {
+	var seen = new Uint8Array(width * height);
+	var out = [];
+
+	for (var m = 0; m < marks.length; m++) {
+		var mx = Math.round(marks[m][0]);
+		var my = Math.round(marks[m][1]);
+
+		for (var dy = -radius; dy <= radius; dy++) {
+			for (var dx = -radius; dx <= radius; dx++) {
+				if (dx * dx + dy * dy > radius * radius) {
+					continue;
+				}
+				var x = mx + dx, y = my + dy;
+				if (x < 0 || y < 0 || x >= width || y >= height) {
+					continue;
+				}
+				var index = y * width + x;
+				if (seen[index] === 0) {
+					seen[index] = 1;
+					out.push(index);
+				}
+			}
+		}
+	}
+
+	return out;
+}
+
+/**
  * Clear the background.
  *
  * @param {Uint8ClampedArray} rgba source pixels, not modified
@@ -613,6 +872,31 @@ function remove_background(rgba, width, height, options) {
 		: Number(options.step_limit);
 
 	var out = new Uint8ClampedArray(rgba);
+	var brush = Math.max(0, Math.round(Number(options.brush)) || 3);
+	var seeds = options.seeds != null && options.seeds.length > 0
+		? mark_pixels(options.seeds, width, height, brush)
+		: null;
+	var protect = options.protect != null && options.protect.length > 0
+		? mark_pixels(options.protect, width, height, brush)
+		: null;
+
+	var blocked = null;
+	if (protect != null) {
+		blocked = new Uint8Array(width * height);
+		for (var b = 0; b < protect.length; b++) {
+			blocked[protect[b]] = 1;
+		}
+	}
+
+	if (seeds != null) {
+		//MARKED MODE. Everything the automatic path does to work out what the background is - reading
+		//the border, weighing the corners, vetoing against the middle, backing the tolerance off when
+		//it starts eating the subject - exists to guess at something it has now simply been told. All
+		//of it is skipped, which is the entire point: the guessing is what could be wrong.
+		return from_marks(rgba, width, height, out, seeds, blocked, protect,
+			tolerance, refine, step_limit, brush);
+	}
+
 	var clusters = background_clusters(rgba, width, height, {tolerance: tolerance});
 
 	if (clusters.length === 0) {
@@ -658,40 +942,7 @@ function remove_background(rgba, width, height, options) {
 
 		effective *= 0.7;
 	}
-	var trimap = refine > 0
-		? build_trimap(mask, width, height, refine)
-		: mask.map(function (m) { return m === 1 ? 0 : 1; });
-
-	var search = Math.max(3, refine * 2);
-	var removed = 0;
-
-	for (var index = 0; index < width * height; index++) {
-		var i = index * 4;
-		var label = trimap[index];
-
-		if (label === 1) {
-			//confident foreground, left exactly as it was
-			continue;
-		}
-
-		if (label === 0) {
-			out[i + 3] = 0;
-			removed++;
-			continue;
-		}
-
-		var solved = solve_pixel(rgba, width, height, trimap, index, search);
-		var alpha = Math.round(solved.alpha * rgba[i + 3]);
-
-		out[i] = solved.r;
-		out[i + 1] = solved.g;
-		out[i + 2] = solved.b;
-		out[i + 3] = alpha;
-
-		if (alpha < rgba[i + 3]) {
-			removed++;
-		}
-	}
+	var removed = apply_mask(rgba, width, height, out, mask, refine, null);
 
 	return {
 		data: out,
@@ -719,5 +970,6 @@ export {
 	protected_region,
 	flood_background,
 	build_trimap,
+	mark_pixels,
 	remove_background,
 };

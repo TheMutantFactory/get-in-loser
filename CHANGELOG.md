@@ -276,6 +276,21 @@ Background removal shipped one version ago and was wrong in three separate ways,
 
 ---
 
+## v0.1.28 — "Point At It"
+
+The automatic background remover has a ceiling, and it is not a matter of trying harder: when the subject is closer to the background than the background is to itself, there is no threshold to place. Measured on a test scene, a pale shirt sat 18.5 from the wall beside it while the wall's own top-to-bottom spread was 23.3. Every automatic setting lost most of the subject. So: a tool you point with.
+
+- **New — the Background Eraser** (toolbar, between the Magic Eraser and Fill). Click the background. Shift-click anything it took that it should not have. That is the whole interface.
+- **On the scene that defeats every automatic setting: 0.1% of the subject lost.** Same picture, three clicks.
+- **The slider is a SENSITIVITY, not a colour distance,** and that is the substantive difference. Once you have pointed at the background, the question stops being "what colour is it" and becomes "how far does that region go" - the answer being "until the colour changes abruptly". A hard edge between two *similar* colours is invisible to a colour threshold and obvious to a step test: on that scene the step across the shirt's edge was 9.93, while the steps along the wall's own gradient were 0.00.
+- **Shift-click claims a region, not a dot.** The first attempt blocked only the few pixels under the cursor, so the flood poured in around it and the correction corrected nothing you could see.
+- **And once you have marked the subject, the slider stops mattering at all.** Two kinds of mark compete for every pixel, and the cost of reaching one is the largest single colour step on the easiest route to it - so the boundary settles onto the strongest ridge between them without anyone naming a number. Marking the subject also changes the rule from "take this region" to "keep what I marked, take the rest", so a piece of the subject touching nothing marked goes until it is marked too.
+- **The costs are measured in sixteenths, and the sixteenths are the difference between working and not.** Rounding them to whole units looked harmless: on the pale shirt the ridge was 0.88 and the wall's own gradient was 0.47, both of which round to nothing. The ridge stopped existing and the subject swallowed the picture. Low-contrast images are the ones this tool is *for*.
+
+*The automatic one still runs first and still guesses. This one does not guess.*
+
+---
+
 ## Unreleased — "???"
 
 - (redacted)

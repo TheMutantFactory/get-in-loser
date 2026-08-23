@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+	 viewBox="0 0 512 512" xml:space="preserve">
+<g>
+	<!-- the subject that stays: a solid figure -->
+	<path d="M256,60c46,0,83,37,83,83s-37,83-83,83s-83-37-83-83S210,60,256,60z M256,256c62,0,142,31,142,93v103H114V349
+		C114,287,194,256,256,256z"/>
+	<!-- the background being taken away: a dashed frame around it -->
+	<path d="M16,16h84v34H50v50H16V16z M496,16v84h-34V50h-50V16H496z M16,496v-84h34v50h50v34H16z M496,496h-84v-34h50v-50h34V496z
+		M160,16h64v34h-64V16z M288,16h64v34h-64V16z M160,462h64v34h-64V462z M288,462h64v34h-64V462z M16,160h34v64H16V160z M16,288h34
+		v64H16V288z M462,160h34v64h-34V160z M462,288h34v64h-34V288z"/>
+</g>
+</svg>

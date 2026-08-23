@@ -148,6 +148,16 @@ config.TOOLS = [
 		},
 	},
 	{
+		name: 'background_erase',
+		on_activate: 'on_activate',
+		title: 'Background Eraser - click the background, shift-click to put back',
+		attributes: {
+			sensitivity: 8,
+			refine: 2,
+			brush: 3,
+		},
+	},
+	{
 		name: 'fill',
 		attributes: {
 			power: 5,
