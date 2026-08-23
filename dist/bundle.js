@@ -8568,6 +8568,11 @@ var Base_state_class = /*#__PURE__*/function () {
             case 3:
               _context.prev = 3;
               _t = _context["catch"](1);
+              // Action aborted. This is usually expected behavior as actions throw errors if they shouldn't run.
+              // SAY SO IN THE CONSOLE though. Returning the reason and nothing else means a genuine
+              // failure is indistinguishable from a deliberate refusal: quicksave was broken for
+              // every file this app saved and the only symptom was that nothing happened.
+              console.warn('Action aborted: ' + (action && action.action_id) + ' - ' + (_t && _t.message || _t), _t);
               return _context.abrupt("return", {
                 status: 'aborted',
                 reason: _t
@@ -17532,6 +17537,82 @@ function _drain() {
     }, _callee, null, [[3, 5]]);
   }));
   return _drain.apply(this, arguments);
+}
+
+
+/***/ },
+
+/***/ "./src/js/libs/file-format.js"
+/*!************************************!*\
+  !*** ./src/js/libs/file-format.js ***!
+  \************************************/
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   FILE_FORMAT: () => (/* binding */ FILE_FORMAT),
+/* harmony export */   OLDEST_FORMAT: () => (/* binding */ OLDEST_FORMAT),
+/* harmony export */   resolve_format_version: () => (/* binding */ resolve_format_version)
+/* harmony export */ });
+/*
+ * get-in-loser - https://github.com/TheMutantFactory/get-in-loser
+ *
+ * Which FILE FORMAT a saved .json is written in, as opposed to which version of the app wrote it.
+ * Pure - see tests/file-format.test.js.
+ *
+ * THE BUG THIS EXISTS TO FIX. `info.version` carried the app version, and the loader compared that
+ * same field against miniPaint's format milestones - 4.0.0, 4.5.0, 4.8.0, 4.11.0 - to decide which
+ * migrations to run. That worked for as long as the app version and the format version were the
+ * same number, which they were right up until this fork reset the app to 0.1.x.
+ *
+ * After that, every file this app saved claimed version "0.1.x", which is below all four
+ * milestones, so every migration ran on files that needed none. The v3 to v4 migration forces
+ * `type = "image"` onto every layer, so a brush layer came back as an image whose `data` was still
+ * an array of stroke points - and Insert_layer_action called cloneNode on it and threw. do_action
+ * catches and returns {status: 'aborted'} without a word, so quicksave simply stopped working and
+ * said nothing.
+ *
+ * The two numbers are now separate: `info.format` says how to read the file, `info.version` says
+ * what wrote it, and only the first one decides migrations.
+ */
+
+/**
+ * The format this app writes. It is miniPaint's lineage, not this app's version: the layout is
+ * unchanged from the 4.14.3 import, so files stay readable by miniPaint and vice versa. Bump it
+ * only when the SHAPE of the file changes, and add a migration when you do.
+ */
+var FILE_FORMAT = '4.14.3';
+
+/**
+ * The oldest format miniPaint ever wrote. A file that names no version at all predates the field.
+ */
+var OLDEST_FORMAT = '3.0.0';
+
+/**
+ * Work out which format version a file should be read as.
+ *
+ * @param {object} info the file's info block
+ * @param {function} semver_compare (a, b) => -1 | 0 | 1
+ * @returns {string} a version to compare migrations against
+ */
+function resolve_format_version(info, semver_compare) {
+  if (info == null) {
+    return OLDEST_FORMAT;
+  }
+  if (typeof info.format === 'string' && info.format.length > 0) {
+    //written by a version that knows the difference
+    return info.format;
+  }
+  var stated = typeof info.version === 'string' && info.version.length > 0 ? info.version : OLDEST_FORMAT;
+
+  //RESCUE FOR FILES ALREADY SAVED. Anything claiming a version below miniPaint's own oldest was
+  //written by this fork after the rebrand, when the field held the app version. Those files are
+  //in the current format; reading them as ancient is what broke them in the first place.
+  if (semver_compare(stated, OLDEST_FORMAT) < 0) {
+    return FILE_FORMAT;
+  }
+  return stated;
 }
 
 
@@ -29346,6 +29427,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _node_modules_semver_compare___WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./../../../../node_modules/semver-compare/ */ "./node_modules/semver-compare/index.js");
 /* harmony import */ var _node_modules_semver_compare___WEBPACK_IMPORTED_MODULE_15___default = /*#__PURE__*/__webpack_require__.n(_node_modules_semver_compare___WEBPACK_IMPORTED_MODULE_15__);
 /* harmony import */ var _core_voxel_js__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./../../core/voxel.js */ "./src/js/core/voxel.js");
+/* harmony import */ var _libs_file_format_js__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./../../libs/file-format.js */ "./src/js/libs/file-format.js");
+
 
 
 
@@ -29853,7 +29936,7 @@ var File_open_class = /*#__PURE__*/function () {
     key: "load_json",
     value: function () {
       var _load_json = (0,_babel_runtime_helpers_asyncToGenerator__WEBPACK_IMPORTED_MODULE_1__["default"])(/*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4___default().mark(function _callee3(data) {
-        var json, i, new_id, j, old_type, actions, max_id_order, value, _t, _t2;
+        var json, format, i, new_id, j, old_type, actions, max_id_order, value, _t, _t2;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_4___default().wrap(function (_context3) {
           while (1) switch (_context3.prev = _context3.next) {
             case 0:
@@ -29862,8 +29945,10 @@ var File_open_class = /*#__PURE__*/function () {
                 json.info.version = "3.0.0";
               }
 
-              //migration
-              if (!(_node_modules_semver_compare___WEBPACK_IMPORTED_MODULE_15___default()(json.info.version, '4.0.0') < 0)) {
+              //WHICH FORMAT, not which app version. See libs/file-format.js for why these are not the
+              //same field and what it cost to find out.
+              format = (0,_libs_file_format_js__WEBPACK_IMPORTED_MODULE_17__.resolve_format_version)(json.info, (_node_modules_semver_compare___WEBPACK_IMPORTED_MODULE_15___default())); //migration
+              if (!(_node_modules_semver_compare___WEBPACK_IMPORTED_MODULE_15___default()(format, '4.0.0') < 0)) {
                 _context3.next = 3;
                 break;
               }
@@ -29906,7 +29991,7 @@ var File_open_class = /*#__PURE__*/function () {
               _context3.next = 1;
               break;
             case 3:
-              if (_node_modules_semver_compare___WEBPACK_IMPORTED_MODULE_15___default()(json.info.version, '4.5.0') < 0) {
+              if (_node_modules_semver_compare___WEBPACK_IMPORTED_MODULE_15___default()(format, '4.5.0') < 0) {
                 //migrate "rectangle", "circle" and "line" types to "shape"
                 for (i in json.layers) {
                   old_type = json.layers[i].type;
@@ -29936,7 +30021,7 @@ var File_open_class = /*#__PURE__*/function () {
                   }
                 }
               }
-              if (_node_modules_semver_compare___WEBPACK_IMPORTED_MODULE_15___default()(json.info.version, '4.8.0') < 0) {
+              if (_node_modules_semver_compare___WEBPACK_IMPORTED_MODULE_15___default()(format, '4.8.0') < 0) {
                 //migrate "borders" layer to rectangle
                 for (i in json.layers) {
                   old_type = json.layers[i].type;
@@ -29956,7 +30041,7 @@ var File_open_class = /*#__PURE__*/function () {
                   }
                 }
               }
-              if (_node_modules_semver_compare___WEBPACK_IMPORTED_MODULE_15___default()(json.info.version, '4.11.0') < 0) {
+              if (_node_modules_semver_compare___WEBPACK_IMPORTED_MODULE_15___default()(format, '4.11.0') < 0) {
                 //migrate star and star24 objects
                 for (i in json.layers) {
                   old_type = json.layers[i].type;
@@ -30346,6 +30431,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _libs_canvastotiff_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./../../libs/canvastotiff.js */ "./src/js/libs/canvastotiff.js");
 /* harmony import */ var _tools_settings__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../tools/settings */ "./src/js/modules/tools/settings.js");
 /* harmony import */ var _core_voxel_js__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./../../core/voxel.js */ "./src/js/core/voxel.js");
+/* harmony import */ var _libs_file_format_js__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./../../libs/file-format.js */ "./src/js/libs/file-format.js");
+
 
 
 
@@ -30950,6 +31037,10 @@ var File_save_class = /*#__PURE__*/function () {
         height: _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].HEIGHT,
         about: 'Image data with multi-layers. Can be opened using miniPaint - ' + 'https://github.com/viliusle/miniPaint',
         date: today,
+        //how to READ the file. Separate from `version` below, which is only what wrote it -
+        //conflating the two is what broke loading after this fork reset its version to 0.1.x.
+        //See libs/file-format.js.
+        format: _libs_file_format_js__WEBPACK_IMPORTED_MODULE_14__.FILE_FORMAT,
         version: "0.1.22",
         layer_active: _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].layer.id,
         guides: _config_js__WEBPACK_IMPORTED_MODULE_3__["default"].guides

@@ -10,6 +10,7 @@ import GIF from './../../../../node_modules/gif.js.optimized/';
 import CanvasToTIFF from './../../libs/canvastotiff.js';
 import Tools_settings_class from "../tools/settings";
 import { serialize_volume } from './../../core/voxel.js';
+import { FILE_FORMAT } from './../../libs/file-format.js';
 
 var instance = null;
 
@@ -670,6 +671,10 @@ class File_save_class {
 			about: 'Image data with multi-layers. Can be opened using miniPaint - '
 				+ 'https://github.com/viliusle/miniPaint',
 			date: today,
+			//how to READ the file. Separate from `version` below, which is only what wrote it -
+			//conflating the two is what broke loading after this fork reset its version to 0.1.x.
+			//See libs/file-format.js.
+			format: FILE_FORMAT,
 			version: VERSION,
 			layer_active: config.layer.id,
 			guides: config.guides,

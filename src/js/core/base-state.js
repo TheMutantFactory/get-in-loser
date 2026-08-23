@@ -63,6 +63,11 @@ class Base_state_class {
 			await action.do();
 		} catch (error) {
 			// Action aborted. This is usually expected behavior as actions throw errors if they shouldn't run.
+			// SAY SO IN THE CONSOLE though. Returning the reason and nothing else means a genuine
+			// failure is indistinguishable from a deliberate refusal: quicksave was broken for
+			// every file this app saved and the only symptom was that nothing happened.
+			console.warn('Action aborted: ' + (action && action.action_id) + ' - '
+				+ ((error && error.message) || error), error);
 			return { status: 'aborted', reason: error };
 		}
 		// Remove all redo actions from history

@@ -10,6 +10,7 @@ import EXIF from './../../../../node_modules/exif-js/exif.js';
 import GUI_tools_class from "../../core/gui/gui-tools";
 import semver_compare from './../../../../node_modules/semver-compare/';
 import { deserialize_volume } from './../../core/voxel.js';
+import { resolve_format_version } from './../../libs/file-format.js';
 
 var instance = null;
 
@@ -503,8 +504,12 @@ class File_open_class {
 			json.info.version = "3.0.0";
 		}
 
+		//WHICH FORMAT, not which app version. See libs/file-format.js for why these are not the
+		//same field and what it cost to find out.
+		var format = resolve_format_version(json.info, semver_compare);
+
 		//migration
-		if(semver_compare(json.info.version, '4.0.0') < 0) {
+		if(semver_compare(format, '4.0.0') < 0) {
 			//convert from v3 to v4
 			for (var i in json.layers) {
 				//layers data
@@ -535,7 +540,7 @@ class File_open_class {
 				);
 			}
 		}
-		if(semver_compare(json.info.version, '4.5.0') < 0) {
+		if(semver_compare(format, '4.5.0') < 0) {
 			//migrate "rectangle", "circle" and "line" types to "shape"
 			for (var i in json.layers) {
 				var old_type = json.layers[i].type;
@@ -569,7 +574,7 @@ class File_open_class {
 				}
 			}
 		}
-		if(semver_compare(json.info.version, '4.8.0') < 0) {
+		if(semver_compare(format, '4.8.0') < 0) {
 			//migrate "borders" layer to rectangle
 			for (var i in json.layers) {
 				var old_type = json.layers[i].type;
@@ -590,7 +595,7 @@ class File_open_class {
 				}
 			}
 		}
-		if(semver_compare(json.info.version, '4.11.0') < 0) {
+		if(semver_compare(format, '4.11.0') < 0) {
 			//migrate star and star24 objects
 			for (var i in json.layers) {
 				var old_type = json.layers[i].type;
