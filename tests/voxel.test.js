@@ -17,6 +17,8 @@ import {
 	read_slice,
 	write_slice,
 	clamp_slice,
+	flip_volume,
+	flip_axis_for_view,
 	count_filled,
 	serialize_volume,
 	deserialize_volume,
@@ -295,5 +297,87 @@ describe('serialize_volume / deserialize_volume', () => {
 
 	test('an empty volume round trips too', () => {
 		expect(count_filled(deserialize_volume(serialize_volume(vol16())))).toBe(0);
+	});
+});
+
+describe('flip_volume', () => {
+	const RED = pack(255, 0, 0, 255);
+	const BLUE = pack(0, 0, 255, 255);
+
+	//deliberately non-cube: a flip along the wrong dimension cannot hide on a cube
+	const marked = () => {
+		const v = create_volume(4, 6, 9);
+		set_voxel(v, 0, 0, 0, RED);
+		set_voxel(v, 3, 8, 5, BLUE);
+		set_voxel(v, 1, 2, 3, pack(7, 7, 7, 255));
+		return v;
+	};
+
+	test('flipping x sends a voxel across the width and nowhere else', () => {
+		const out = flip_volume(marked(), 'x');
+		expect(get_voxel(out, 3, 0, 0)).toBe(RED);
+		expect(get_voxel(out, 0, 8, 5)).toBe(BLUE);
+		expect(get_voxel(out, 2, 2, 3)).toBe(pack(7, 7, 7, 255));
+		//and the old positions are empty
+		expect(get_voxel(out, 0, 0, 0)).toBe(0);
+	});
+
+	test('flipping y reverses height, flipping z reverses depth', () => {
+		expect(get_voxel(flip_volume(marked(), 'y'), 0, 8, 0)).toBe(RED);
+		expect(get_voxel(flip_volume(marked(), 'z'), 0, 0, 5)).toBe(RED);
+	});
+
+	test('a flip is its own undo - twice along any axis is the identity', () => {
+		//this involution IS the undo story: flips run outside the layer undo system, like rotation
+		const v = marked();
+		for (const axis of ['x', 'y', 'z']) {
+			const back = flip_volume(flip_volume(v, axis), axis);
+			expect(Array.from(back.data)).toEqual(Array.from(v.data));
+		}
+	});
+
+	test('nothing is created or destroyed, and the source is untouched', () => {
+		const v = marked();
+		const before = Array.from(v.data);
+		const out = flip_volume(v, 'x');
+
+		expect(count_filled(out)).toBe(count_filled(v));
+		expect(out).not.toBe(v);
+		expect(Array.from(v.data)).toEqual(before);
+	});
+
+	test('refuses an axis that is not one', () => {
+		expect(flip_volume(marked(), 'w')).toBe(null);
+		expect(flip_volume(marked(), null)).toBe(null);
+	});
+});
+
+describe('flip_axis_for_view', () => {
+	test('THE TABLE - horizontal and vertical are canvas words, and the canvas depends on the view', () => {
+		//read off slice_to_voxel: Top draws (x, z), Front draws (x, height), Side draws (z, height)
+		expect(flip_axis_for_view('y', 'horizontal')).toBe('x');
+		expect(flip_axis_for_view('y', 'vertical')).toBe('z');
+		expect(flip_axis_for_view('z', 'horizontal')).toBe('x');
+		expect(flip_axis_for_view('z', 'vertical')).toBe('y');
+		expect(flip_axis_for_view('x', 'horizontal')).toBe('z');
+		expect(flip_axis_for_view('x', 'vertical')).toBe('y');
+	});
+
+	test('the table and the slice mapping cannot drift apart', () => {
+		//the same fact slice_to_voxel states, asserted against it: moving one step along the
+		//canvas u must move the flipped-horizontal axis, and v the flipped-vertical one
+		const v = create_volume(4, 6, 9);
+		for (const axis of AXES) {
+			const at = (u, vv) => slice_to_voxel(v, axis, 0, u, vv);
+			const h = flip_axis_for_view(axis, 'horizontal');
+			const vert = flip_axis_for_view(axis, 'vertical');
+			expect(at(1, 0)[h]).not.toBe(at(0, 0)[h]);
+			expect(at(0, 1)[vert]).not.toBe(at(0, 0)[vert]);
+		}
+	});
+
+	test('nonsense in, null out', () => {
+		expect(flip_axis_for_view('q', 'horizontal')).toBe(null);
+		expect(flip_axis_for_view('y', 'diagonal')).toBe(null);
 	});
 });

@@ -31,6 +31,8 @@ import {
 	read_slice,
 	write_slice,
 	clamp_slice,
+	flip_volume,
+	flip_axis_for_view,
 	count_filled,
 } from './../../core/voxel.js';
 import {YAWS} from './../../core/voxel-view.js';
@@ -437,6 +439,46 @@ class Tools_voxel_class {
 	/** menu: Voxel > Orbit Left / Right */
 	orbit_left() { return this.orbit(-1); }
 	orbit_right() { return this.orbit(1); }
+
+	/**
+	 * Mirror the model, as seen on the face being edited.
+	 *
+	 * "Horizontal" and "vertical" are canvas words, so which model axis reverses depends on the
+	 * view - the table lives in core/voxel.js next to the slice mapping it must agree with. The
+	 * whole VOLUME flips, not the one slice: mirroring a single slice of a model is almost never
+	 * what anyone means, and would quietly shear the model across its depth.
+	 *
+	 * Like rotation, this runs outside the layer undo system: it is lossless and self-inverse, so
+	 * its undo is itself. It is also the one-step repair for a .vox exported by v0.1.24-0.1.31,
+	 * which wrote mirror images.
+	 *
+	 * @param {string} direction 'horizontal' | 'vertical'
+	 */
+	async flip(direction) {
+		if (!this.is_active()) {
+			alertify.error('No voxel model yet.');
+			return false;
+		}
+
+		var axis = flip_axis_for_view(config.voxel.axis, direction);
+		if (axis == null) {
+			return false;
+		}
+
+		//the live slice first, so unpainted work flips along with everything else
+		this.commit_slice();
+
+		config.voxel.volume = flip_volume(config.voxel.volume, axis);
+
+		await this.reset_canvas_for_slice(false);
+		alertify.success('Flipped ' + direction + '.');
+
+		return axis;
+	}
+
+	/** menu: Voxel > Flip Horizontal / Vertical */
+	flip_horizontal() { return this.flip('horizontal'); }
+	flip_vertical() { return this.flip('vertical'); }
 
 	/**
 	 * menu: Voxel > Export Slices

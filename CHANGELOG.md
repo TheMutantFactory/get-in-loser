@@ -340,6 +340,15 @@ One fix, reported from the field within hours of the deploy going live: *"voxel 
 
 ---
 
+## v0.1.33 — "Other Way Round"
+
+- **New — Voxel → Flip Horizontal / Flip Vertical.** Mirrors the model as seen on the face you are editing — so which model axis reverses depends on the view, and the table that decides lives next to the slice mapping it has to agree with, with a test that stops them drifting apart. Intuition about these axes is what shipped last release's mirrored exporter; nothing here is left to intuition.
+- **The whole volume flips, not the one slice.** Mirroring a single slice of a model is almost never what anyone means, and would quietly shear the model across its depth.
+- **Flipping is its own undo.** Lossless and self-inverse, so like rotation it lives outside the layer undo system — flip again and you are back.
+- And it is the one-step repair for a `.vox` exported by v0.1.24–v0.1.31: import it, flip horizontal, re-export.
+
+---
+
 ## Unreleased — "???"
 
 - (redacted)

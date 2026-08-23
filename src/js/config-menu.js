@@ -400,6 +400,17 @@ const menuDefinition = [
 				divider: true
 			},
 			{
+				name: 'Flip Horizontal',
+				target: 'tools/voxel.flip_horizontal'
+			},
+			{
+				name: 'Flip Vertical',
+				target: 'tools/voxel.flip_vertical'
+			},
+			{
+				divider: true
+			},
+			{
 				name: 'Export .vox',
 				target: 'tools/voxel.export_vox'
 			},

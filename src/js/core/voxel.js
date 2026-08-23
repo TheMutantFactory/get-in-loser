@@ -239,6 +239,63 @@ function write_slice(vol, axis, slice, pixels) {
  * @param {number} slice
  * @returns {number}
  */
+/**
+ * A new volume, mirrored along one model axis.
+ *
+ * THIS IS A REFLECTION, ON PURPOSE. The model's chirality flips - which is sometimes exactly the
+ * ask (a design facing the wrong way), and is also the one-step repair for a .vox exported by
+ * v0.1.24-0.1.31, which wrote mirror images. Flipping twice is the identity, which is also the
+ * undo story: this runs outside the layer undo system, like rotation, and reverses itself.
+ *
+ * @param {object} vol
+ * @param {string} axis 'x' | 'y' | 'z' - the MODEL axis to reverse
+ * @returns {object|null} a new volume, or null for an axis that is not one
+ */
+function flip_volume(vol, axis) {
+	if (axis !== 'x' && axis !== 'y' && axis !== 'z') {
+		return null;
+	}
+
+	var out = create_volume(vol.w, vol.d, vol.h);
+
+	for (var y = 0; y < vol.h; y++) {
+		for (var z = 0; z < vol.d; z++) {
+			for (var x = 0; x < vol.w; x++) {
+				var sx = axis === 'x' ? (vol.w - 1) - x : x;
+				var sy = axis === 'y' ? (vol.h - 1) - y : y;
+				var sz = axis === 'z' ? (vol.d - 1) - z : z;
+
+				out.data[(y * vol.d + z) * vol.w + x] =
+					vol.data[(sy * vol.d + sz) * vol.w + sx];
+			}
+		}
+	}
+
+	return out;
+}
+
+/**
+ * Which model axis "flip horizontal" or "flip vertical" means, for the face being edited.
+ *
+ * The words describe the CANVAS, so the answer depends on the view: horizontal is whatever axis
+ * runs along the canvas u, vertical along v. This is slice_to_voxel's mapping, read backwards -
+ * and the u/v mapping is what makes it right, not intuition. Intuition about these axes is what
+ * shipped a mirrored exporter.
+ *
+ * @param {string} view_axis the slicing axis - one of AXES
+ * @param {string} direction 'horizontal' | 'vertical'
+ * @returns {string|null} a model axis, or null for nonsense
+ */
+function flip_axis_for_view(view_axis, direction) {
+	var table = {
+		y: {horizontal: 'x', vertical: 'z'},  //Top:   u is x, v is z
+		z: {horizontal: 'x', vertical: 'y'},  //Front: u is x, v is height
+		x: {horizontal: 'z', vertical: 'y'},  //Side:  u is z, v is height
+	};
+
+	return (table[view_axis] && table[view_axis][direction]) || null;
+}
+
 function clamp_slice(vol, axis, slice) {
 	var count = slice_dimensions(vol, axis).count;
 	var n = parseInt(slice, 10);
@@ -359,5 +416,7 @@ export {
 	read_slice,
 	write_slice,
 	clamp_slice,
+	flip_volume,
+	flip_axis_for_view,
 	count_filled,
 };
