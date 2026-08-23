@@ -4,6 +4,7 @@
  */
 
 import config from './../config.js';
+import { pick_canvas_size } from './../libs/canvas-size.js';
 import Base_layers_class from './base-layers.js';
 import GUI_tools_class from './gui/gui-tools.js';
 import GUI_preview_class from './gui/gui-preview.js';
@@ -330,28 +331,10 @@ class Base_gui_class {
 
 	autodetect_dimensions() {
 		var wrapper = document.getElementById('main_wrapper');
-		var page_w = wrapper.clientWidth;
-		var page_h = wrapper.clientHeight;
-		var auto_size = false;
+		var size = pick_canvas_size(wrapper.clientWidth, wrapper.clientHeight, this.common_dimensions);
 
-		//use largest possible
-		for (var i = this.common_dimensions.length - 1; i >= 0; i--) {
-			if (this.common_dimensions[i][0] > page_w
-				|| this.common_dimensions[i][1] > page_h) {
-				//browser size is too small
-				continue;
-			}
-			config.WIDTH = parseInt(this.common_dimensions[i][0]);
-			config.HEIGHT = parseInt(this.common_dimensions[i][1]);
-			auto_size = true;
-			break;
-		}
-
-		if (auto_size == false) {
-			//screen size is smaller then 400x300
-			config.WIDTH = parseInt(page_w) - 15;
-			config.HEIGHT = parseInt(page_h) - 10;
-		}
+		config.WIDTH = size.width;
+		config.HEIGHT = size.height;
 	}
 
 	render_canvas_background(canvas_id, gap) {

@@ -458,6 +458,16 @@ class GUI_preview_class {
 
 		best_zoom = Math.min(best_width, best_height);
 
+		if (!(best_zoom > 0) || !isFinite(best_zoom)) {
+			//THE DOCUMENT SIZE IS NONSENSE, so this fit is too. It used to be applied anyway: a
+			//document that came up -15 pixels wide produced a NEGATIVE zoom here, which the clamp in
+			//zoom() floored to the minimum, so Fit took you to 1% and every click on the canvas
+			//afterwards mapped somewhere off it. Fixed at the source in libs/canvas-size.js; this
+			//stays so the next bad size is a fit that declines rather than a zoom that lies.
+			console.warn('Fit ignored: canvas is ' + config.WIDTH + 'x' + config.HEIGHT);
+			return false;
+		}
+
 		if (only_increase != undefined && best_zoom > 1) {
 			return false;
 		}

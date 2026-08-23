@@ -291,6 +291,19 @@ The automatic background remover has a ceiling, and it is not a matter of trying
 
 ---
 
+## v0.1.29 — "Minus Fifteen Pixels Wide"
+
+Clicking **Fit** took you to 1%, and then nothing you drew landed where you clicked. One cause, a long way from either symptom.
+
+- **A fresh document was coming up −15 × −10 pixels.** Startup picks the largest standard size that fits the window and falls back to "the window, less a small margin" when the window is smaller than all of them. That measurement ran before the layout existed, so the wrapper reported **zero** — and zero minus fifteen is minus fifteen. Nothing complained, because nothing checked.
+- **Fit divides the window by the document,** so a negative document gave a negative zoom, which the clamp dutifully floored to the minimum. Hence 1%.
+- **And every click on the canvas is mapped back through that zoom,** so once Fit had been pressed, the brush painted thousands of pixels off-canvas — which looks exactly like a brush that has stopped working. Three separate "the tool is broken" symptoms, one arithmetic error at startup.
+- Sizes are now chosen in one place that will not return a number you cannot draw on, with tests. Fit also declines rather than applying a fit it cannot compute, and says so in the console — the next bad size should be a control that refuses, not a zoom that lies.
+
+*Found while testing something else, which is the only reason it was found: it does not announce itself, it just makes every other tool look faulty.*
+
+---
+
 ## Unreleased — "???"
 
 - (redacted)
