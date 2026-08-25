@@ -50,7 +50,13 @@ class SoundGraph_engine_class extends EventTarget {
 			outputChannelCount: [2],
 		});
 		this.node.port.onmessage = (event) => this.receive(event.data);
-		this.node.connect(this.context.destination);
+
+		//a master gain between the graph and the speakers, for the top bar's volume slider - the
+		//patches have no business knowing how loud the room wants them
+		this.gain = this.context.createGain();
+		this.gain.gain.value = this.volume == null ? 0.8 : this.volume;
+		this.node.connect(this.gain);
+		this.gain.connect(this.context.destination);
 
 		//copied rather than transferred so a restart can send them again
 		this.node.port.postMessage({type: 'init', bytes: this.bytes.slice(0)});
@@ -73,6 +79,30 @@ class SoundGraph_engine_class extends EventTarget {
 		else if (message.type === 'error') {
 			this.dispatchEvent(new CustomEvent('engineerror', {detail: message.message}));
 		}
+	}
+
+	/** @param {number} value 0..1 */
+	set_volume(value) {
+		this.volume = Math.max(0, Math.min(1, Number(value) || 0));
+		if (this.gain) {
+			this.gain.gain.value = this.volume;
+		}
+	}
+
+	async mute() {
+		if (this.context && this.context.state === 'running') {
+			await this.context.suspend();
+		}
+	}
+
+	async unmute() {
+		if (this.context && this.context.state === 'suspended') {
+			await this.context.resume();
+		}
+	}
+
+	get muted() {
+		return this.context != null && this.context.state === 'suspended';
 	}
 
 	load_patch(patch_text) {

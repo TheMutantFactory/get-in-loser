@@ -424,7 +424,14 @@ class GUI_panels_class {
 			by_name[this.get_panel_name(panels[i])] = panels[i];
 		}
 
-		//append in saved order, unknown/new panels keep their markup position
+		//the panels as the MARKUP orders them, before anything moves - the reference for where a
+		//panel this cookie has never heard of belongs
+		var markup_order = [];
+		for (var m = 0; m < panels.length; m++) {
+			markup_order.push(this.get_panel_name(panels[m]));
+		}
+
+		//append in saved order
 		for (var j = 0; j < names.length; j++) {
 			var panel = by_name[names[j]];
 			if (panel != undefined) {
@@ -432,8 +439,34 @@ class GUI_panels_class {
 				delete by_name[names[j]];
 			}
 		}
-		for (var name in by_name) {
-			this.sidebar.appendChild(by_name[name]);
+
+		//A NEW PANEL LANDS WHERE THE MARKUP PUTS IT, not at the bottom. Appending leftovers sent
+		//every newly shipped panel to the end of the stack for everyone with a saved arrangement -
+		//so the Sound panel, designed to sit under the preview, arrived below the layers instead.
+		//Each unknown panel goes after its nearest markup predecessor that is actually present.
+		for (var u = 0; u < markup_order.length; u++) {
+			var name = markup_order[u];
+			if (by_name[name] == undefined) {
+				continue;
+			}
+
+			var placed = null;
+			for (var b = u - 1; b >= 0 && placed == null; b--) {
+				if (names.indexOf(markup_order[b]) > -1) {
+					placed = this.sidebar.querySelector('[data-panel="' + markup_order[b] + '"]');
+				}
+			}
+
+			if (placed != null && placed.nextSibling != null) {
+				this.sidebar.insertBefore(by_name[name], placed.nextSibling);
+			}
+			else if (placed != null) {
+				this.sidebar.appendChild(by_name[name]);
+			}
+			else {
+				this.sidebar.insertBefore(by_name[name], this.sidebar.firstChild);
+			}
+			delete by_name[name];
 		}
 
 		return true;
@@ -450,8 +483,9 @@ class GUI_panels_class {
 	restore_pinned() {
 		var saved = this.Helper.getCookie('panel_pinned');
 		if (saved == null) {
-			//preview pinned by default - it is the panel most worth keeping in view
-			saved = 'preview';
+			//preview and sound pinned by default - the two panels worth keeping in view while the
+			//rest of the stack scrolls
+			saved = 'preview,sound';
 		}
 
 		var names = String(saved).split(',');

@@ -496,6 +496,43 @@ IMPORTANT: any new icon should also must be added on /service-worker.js + its ve
 	cursor: grab;
 	touch-action: none;
 }
+/* ---------- sound: top bar toggle ---------- */
+
+:root{
+	--mutant-green: #45e065;
+}
+.sound_topbar_toggle{
+	background: none;
+	border: none;
+	padding: 4px;
+	cursor: pointer;
+	color: rgba(255, 255, 255, 0.35);
+	width: 30px;
+	height: 30px;
+	vertical-align: middle;
+}
+.sound_topbar_toggle svg{
+	width: 100%;
+	height: 100%;
+}
+.sound_topbar_toggle.sound_on{
+	color: var(--mutant-green);
+}
+.sound_topbar_toggle.sound_on .sound_mute_slash{
+	display: none;
+}
+.sound_topbar_volume{
+	/* the submenu is a flex row that stretches children; the slider is a control, not a spacer */
+	flex: 0 0 70px;
+	width: 70px;
+	min-width: 0;
+	align-self: center;
+	accent-color: var(--mutant-green);
+}
+.sound_topbar_toggle{
+	flex: 0 0 auto;
+}
+
 /* ---------- sound panel ---------- */
 
 .sound_boot{

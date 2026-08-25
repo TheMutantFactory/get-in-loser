@@ -434,6 +434,24 @@ const menuDefinition = [
 		]
 	},
 	{
+		name: 'Piano Roll',
+		children: [
+			{
+				name: 'New Piano Roll',
+				ellipsis: true,
+				target: 'tools/pianoroll.new_roll'
+			},
+			{
+				name: 'Roll Mode',
+				target: 'tools/pianoroll.roll_mode'
+			},
+			{
+				name: 'Rotate Roll',
+				target: 'tools/pianoroll.rotate'
+			}
+		]
+	},
+	{
 		name: 'Layer',
 		children: [
 			{

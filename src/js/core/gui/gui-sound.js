@@ -59,6 +59,62 @@ class GUI_sound_class {
 
 		target.innerHTML = template;
 		this.set_events();
+		this.set_topbar_events();
+	}
+
+	/**
+	 * The headphones in the top bar: muted until sound is on, house green once it is, with the
+	 * volume slider beside it. One switch, two homes - it drives the same power path as the
+	 * panel's button, and either one lights the other.
+	 */
+	set_topbar_events() {
+		var _this = this;
+		var toggle = document.getElementById('sound_topbar_toggle');
+		var volume = document.getElementById('sound_topbar_volume');
+
+		if (toggle == null) {
+			return;
+		}
+
+		toggle.addEventListener('click', async function () {
+			if (_this.engine == null) {
+				await _this.power_on();
+				return;
+			}
+			//already powered: the headphones become the mute switch
+			if (_this.engine.muted) {
+				await _this.engine.unmute();
+			}
+			else {
+				await _this.engine.mute();
+			}
+			_this.sync_topbar();
+		});
+
+		if (volume != null) {
+			volume.addEventListener('input', function () {
+				if (_this.engine != null) {
+					_this.engine.set_volume(this.value / 100);
+				}
+			});
+		}
+	}
+
+	sync_topbar() {
+		var toggle = document.getElementById('sound_topbar_toggle');
+		var volume = document.getElementById('sound_topbar_volume');
+		if (toggle == null) {
+			return;
+		}
+
+		var on = this.engine != null && !this.engine.muted;
+		toggle.classList.toggle('sound_on', on);
+		toggle.setAttribute('aria-pressed', on ? 'true' : 'false');
+		toggle.title = on ? 'Sound: on — click to mute' : 'Sound: off — click to power the instruments';
+
+		if (volume != null) {
+			volume.classList.toggle('hidden', this.engine == null);
+		}
 	}
 
 	set_events() {
@@ -132,6 +188,7 @@ class GUI_sound_class {
 
 		document.querySelector('.sound_boot').classList.add('hidden');
 		document.getElementById('sound_rack').classList.remove('hidden');
+		this.sync_topbar();
 
 		var select = document.getElementById('sound_instrument');
 		select.innerHTML = INSTRUMENTS.map(function (ins) {

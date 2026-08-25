@@ -410,6 +410,16 @@ Two follow-ups on yesterday's panel work, both from the field within a day.
 
 ---
 
+## v0.1.40 — "Roll With It"
+
+- **New — the Piano Roll menu**, after Voxel. A roll is a canvas whose pixels are notes: one axis time in steps, the other pitch in semitones, horizontal or vertical, flipped by an exact quarter turn that a test guarantees is a rotation and never a mirror — a mirrored roll inverts every melody, and this project has shipped enough mirrors.
+- **One layer for the whole thing, enforced.** In roll mode the pencil paints straight into the single Roll layer instead of growing a vector stack — each stroke its own undo step, and consecutive strokes serialized so a fast riff cannot snapshot the layer mid-commit and quietly eat the stroke before it (three of six rapid test strokes vanished exactly that way before the fix). Want two rolls? Save two files: every file tool this app has already works on a roll, because a roll is just an image.
+- **Headphones in the top bar**, beside the folder: muted grey until you click, mutant green with a volume slider once the sound is on, and a mute toggle thereafter. Same power switch as the Sound panel's button — either one lights the other.
+- **The Sound panel now sits pinned under the Preview by default** — and a saved panel arrangement from before the Sound panel existed slots it there too, instead of dumping it at the bottom of the stack, which is where every newly shipped panel used to land for anyone with an old cookie.
+- Rows are laid out playback-ready — one row per semitone, low notes at the bottom. The roll does not play yet. It knows how to, when asked.
+
+---
+
 ## Unreleased — "???"
 
 - (redacted)

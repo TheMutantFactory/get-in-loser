@@ -15,6 +15,13 @@ class Pencil_class extends Base_tools_class {
 		this.pressure_supported = false;
 		this.pointer_pressure = 0; // has range [0 - 1]
 
+		//the roll-mode paint stroke - one layer, no vector stack; see roll_paint_start
+		this.roll_painting = false;
+		this.roll_pointer_down = false;
+		this.roll_commit = null;
+		this.rollCanvas = null;
+		this.rollCtx = null;
+
 		//the right-button erase stroke - pixel mode only, see right_erase_start
 		this.right_erasing = false;
 		this.right_pointer_down = false;
@@ -51,6 +58,119 @@ class Pencil_class extends Base_tools_class {
 		document.addEventListener('mouseup', function (event) {
 			_this.right_erase_end(event);
 		});
+	}
+
+	/** roll mode on, and the layer under the pencil is the roll's one image layer */
+	roll_paint_applies() {
+		return config.pianoroll != null
+			&& config.pianoroll.enabled === true
+			&& config.layer != null
+			&& config.layer.type === 'image';
+	}
+
+	async roll_paint_start(mouse) {
+		this.roll_painting = true;
+		this.roll_pointer_down = true;
+
+		//WAIT FOR THE LAST STROKE TO LAND. Each stroke snapshots the layer image and commits a
+		//replacement; a quick second stroke could snapshot BEFORE the first one's replacement had
+		//swapped in, and quietly erase it - three of six rapid test strokes vanished this way.
+		//The commit promise is kept so the next stroke starts from settled ground.
+		if (this.roll_commit != null) {
+			try { await this.roll_commit; } catch (e) { /* an aborted action still unblocks us */ }
+			this.roll_commit = null;
+		}
+
+		var image = config.layer.link;
+		if (image != null && image.complete === false && typeof image.decode === 'function') {
+			//and the swapped-in image is a data URL that may not have decoded yet - snapshotting
+			//it undecoded snapshots blank (the Background Eraser's old trap)
+			try { await image.decode(); } catch (e) { this.roll_painting = false; return; }
+		}
+
+		this.rollCanvas = document.createElement('canvas');
+		this.rollCanvas.width = config.layer.width_original;
+		this.rollCanvas.height = config.layer.height_original;
+		this.rollCtx = this.rollCanvas.getContext('2d');
+		this.rollCtx.drawImage(config.layer.link, 0, 0);
+
+		this.roll_nibs(mouse, false);
+
+		config.layer.link_canvas = this.rollCanvas;
+		config.need_render = true;
+
+		if (this.roll_pointer_down === false) {
+			//released while we were waiting: keep the click rather than dropping it
+			this.roll_paint_end();
+		}
+	}
+
+	roll_paint_move(mouse) {
+		if (this.rollCtx == null) {
+			return;
+		}
+		this.roll_nibs(mouse, true);
+		config.need_render = true;
+	}
+
+	roll_paint_end() {
+		this.roll_painting = false;
+		this.roll_pointer_down = false;
+
+		if (this.rollCanvas == null) {
+			return;
+		}
+
+		delete config.layer.link_canvas;
+
+		//held, so the NEXT stroke can wait for this one to finish landing
+		this.roll_commit = app.State.do_action(
+			new app.Actions.Bundle_action('roll_paint', 'Roll Paint', [
+				new app.Actions.Update_layer_image_action(this.rollCanvas)
+			])
+		);
+
+		this.rollCanvas = null;
+		this.rollCtx = null;
+	}
+
+	/** whole pixels in the current colour, gaps filled along the drag - the eraser's nib logic */
+	roll_nibs(mouse, is_move) {
+		var ctx = this.rollCtx;
+		var layer = config.layer;
+		var size = parseInt(this.getParams().size) || 1;
+
+		var scale_x = layer.width ? layer.width_original / layer.width : 1;
+		if (!isFinite(scale_x) || scale_x <= 0) scale_x = 1;
+		var scale_y = layer.height ? layer.height_original / layer.height : 1;
+		if (!isFinite(scale_y) || scale_y <= 0) scale_y = 1;
+
+		var to_x = (v) => (v - layer.x) * scale_x;
+		var to_y = (v) => (v - layer.y) * scale_y;
+
+		ctx.save();
+		ctx.setTransform(1, 0, 0, 1, 0, 0);
+		ctx.fillStyle = config.COLOR;
+		ctx.imageSmoothingEnabled = false;
+
+		var x = to_x(mouse.x);
+		var y = to_y(mouse.y);
+		var nib_size = Math.max(1, Math.round(size * scale_x));
+		var has_last = mouse.last_x !== false && mouse.last_x != null
+			&& mouse.last_y !== false && mouse.last_y != null;
+
+		if (is_move && has_last) {
+			var nibs = stroke_nibs(to_x(mouse.last_x), to_y(mouse.last_y), x, y, nib_size);
+			for (var i = 0; i < nibs.length; i++) {
+				ctx.fillRect(nibs[i].x, nibs[i].y, nibs[i].size, nibs[i].size);
+			}
+		}
+		else {
+			var nib = nib_origin(x, y, nib_size);
+			ctx.fillRect(nib.x, nib.y, nib.size, nib.size);
+		}
+
+		ctx.restore();
 	}
 
 	/** the gesture exists only here: pencil selected, pixel mode on, cursor over the canvas */
@@ -198,6 +318,10 @@ class Pencil_class extends Base_tools_class {
 	dragMove(event) {
 		if (config.TOOL.name != this.name)
 			return;
+		if (this.roll_painting) {
+			this.roll_paint_move(this.get_mouse_info(event));
+			return;
+		}
 		this.mousemove(event);
 	}
 
@@ -224,6 +348,15 @@ class Pencil_class extends Base_tools_class {
 		var mouse = this.get_mouse_info(e);
 		if (mouse.click_valid == false)
 			return;
+
+		if (this.roll_paint_applies()) {
+			//PIANO ROLL MODE PAINTS THE LAYER, NOT A STACK. The normal pencil grows a vector layer
+			//per stroke, which is right for drawings and wrong for a roll - a roll is one flat
+			//image whose pixels are notes, and it stays one layer however much is drawn on it.
+			//Same working-copy pattern as the right-button erase below, with paint instead.
+			this.roll_paint_start(mouse);
+			return;
+		}
 
 		var params_hash = this.get_params_hash();
 		var opacity = Math.round(config.ALPHA / 255 * 100);
@@ -294,6 +427,10 @@ class Pencil_class extends Base_tools_class {
 	}
 
 	mouseup(e) {
+		if (this.roll_painting) {
+			this.roll_paint_end();
+			return;
+		}
 		var mouse = this.get_mouse_info(e);
 		var params = this.getParams();
 		if (mouse.click_valid == false) {

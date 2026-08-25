@@ -39,6 +39,8 @@ config.enable_autoresize_by_default = true;
 
 //pixel edit mode
 config.PIXEL_MODE = false;
+//piano roll state: {enabled, roll: {steps, pitches}, orientation} or null
+config.pianoroll = null;
 config.PIXEL_GRID = true;
 config.palette = null;
 
