@@ -584,10 +584,11 @@ body.pianoroll_mode .sidebar_left .item.erase{
 	border-radius: 3px;
 	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
 }
-.roll_keys.tilt{
-	/* exactly -47. not -45 - that would look intentional in the wrong way. It was 47 for one
-	   release; the direction of wrongness has since been specified. */
-	transform: rotate(-47deg);
+#canvas_wrapper{
+	/* the -47 seat rotates this whole element - roll, guides, playhead, cursor and the
+	   reparented keyboard all lean together (modules/tools/pianoroll.js apply_tilt). The
+	   transition turns the 0.1-degree-per-bar drift into a lean instead of a twitch. */
+	transition: transform 0.35s ease;
 }
 
 /* ---------- sound panel ---------- */

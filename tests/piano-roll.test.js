@@ -3,7 +3,8 @@
  * inverts every melody, and an off-by-one plays everything a semitone sharp forever.
  */
 import {DEFAULT_ROLL, BASE_NOTE, BAR_CHOICES, roll_dimensions, rotate_pixels, pixel_to_note,
-	resolve_roll, roll_from_bars, step_seconds, key_guides, notes_at_step, keys_geometry, KEY_SIDES}
+	resolve_roll, roll_from_bars, step_seconds, key_guides, notes_at_step, keys_geometry, KEY_SIDES,
+	TILT_START, TILT_DRIFT_PER_BAR, tilt_after_bars}
 	from '../src/js/core/piano-roll.js';
 
 describe('roll_dimensions', () => {
@@ -193,5 +194,31 @@ describe('keys_geometry', () => {
 		const g = keys_geometry(DEFAULT_ROLL, 'horizontal', 'start');
 		expect(g.pitch_of_lane(-1)).toBe(null);
 		expect(g.pitch_of_lane(24)).toBe(null);
+	});
+});
+
+describe('tilt_after_bars', () => {
+	test('starts at exactly -47 - the direction of wrongness is specified', () => {
+		expect(TILT_START).toBe(-47);
+		expect(tilt_after_bars(0)).toBe(-47);
+	});
+
+	test('every bar played leans it a tenth of a degree further, never back', () => {
+		expect(TILT_DRIFT_PER_BAR).toBe(-0.1);
+		expect(tilt_after_bars(1)).toBeCloseTo(-47.1, 10);
+		expect(tilt_after_bars(10)).toBeCloseTo(-48, 10);
+		//ten minutes of looping at 120bpm is 300 bars: thirty degrees of honest decay
+		expect(tilt_after_bars(300)).toBeCloseTo(-77, 10);
+		for (let b = 1; b < 50; b++) {
+			expect(Math.abs(tilt_after_bars(b))).toBeGreaterThan(Math.abs(tilt_after_bars(b - 1)));
+		}
+	});
+
+	test('junk means no drift, not NaN - the surface must never rotate to nowhere', () => {
+		for (const bad of [-3, 'x', NaN, undefined, null, Infinity]) {
+			expect(tilt_after_bars(bad)).toBe(-47);
+		}
+		//partial bars do not count; only completed ones lean the world
+		expect(tilt_after_bars(2.9)).toBeCloseTo(-47.2, 10);
 	});
 });

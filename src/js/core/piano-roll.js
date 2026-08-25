@@ -229,6 +229,31 @@ const KEY_SIDES = ['start', 'end', 'tilt'];
 /** How deep the keyboard strip draws, in screen pixels. */
 const KEY_DEPTH = 44;
 
+/** Where the -47 degree seat begins. Exactly -47: -45 would look intentional in the wrong way. */
+const TILT_START = -47;
+
+/** How much further every bar PLAYED leans the surface. Slow enough to be doubted. */
+const TILT_DRIFT_PER_BAR = -0.1;
+
+/**
+ * The tilted seat's angle after some number of bars have been played in it.
+ *
+ * THE ANGLE IS A FUNCTION OF PLAY, NOT OF TIME. Sitting and looking at the roll changes
+ * nothing; every bar the player completes leans the whole surface another tenth of a degree,
+ * and stopping does not lean it back. At 120bpm a bar is two seconds, so ten minutes of
+ * looping is 300 bars - thirty degrees of honest decay.
+ *
+ * @param {number} bars whole bars played while tilted
+ * @returns {number} degrees, negative
+ */
+function tilt_after_bars(bars) {
+	bars = Math.floor(Number(bars));
+	if (!isFinite(bars) || bars < 0) {
+		bars = 0;
+	}
+	return TILT_START + TILT_DRIFT_PER_BAR * bars;
+}
+
 /**
  * Where the keyboard strip sits and how its lanes map to pitches, for one orientation and side.
  *
@@ -274,6 +299,6 @@ function keys_geometry(roll, orientation, side) {
 }
 
 export {DEFAULT_ROLL, MAX_STEPS, MAX_PITCHES, BASE_NOTE, STEPS_PER_BAR, BAR_CHOICES,
-	KEY_SIDES, KEY_DEPTH,
+	KEY_SIDES, KEY_DEPTH, TILT_START, TILT_DRIFT_PER_BAR, tilt_after_bars,
 	roll_dimensions, rotate_pixels, pixel_to_note, resolve_roll, roll_from_bars, step_seconds,
 	key_guides, notes_at_step, keys_geometry};

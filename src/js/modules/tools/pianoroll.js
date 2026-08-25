@@ -16,8 +16,9 @@ import Base_layers_class from './../../core/base-layers.js';
 import Dialog_class from './../../libs/popup.js';
 import Helper_class from './../../libs/helpers.js';
 import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
-import {BAR_CHOICES, BASE_NOTE, KEY_DEPTH, roll_dimensions, rotate_pixels, roll_from_bars,
-	step_seconds, notes_at_step, key_guides, keys_geometry} from './../../core/piano-roll.js';
+import {BAR_CHOICES, BASE_NOTE, KEY_DEPTH, STEPS_PER_BAR, roll_dimensions, rotate_pixels,
+	roll_from_bars, step_seconds, notes_at_step, key_guides, keys_geometry,
+	tilt_after_bars} from './../../core/piano-roll.js';
 
 var instance = null;
 
@@ -90,6 +91,8 @@ class Tools_pianoroll_class {
 			roll: roll,
 			orientation: orientation,
 			keys: 'start',
+			//whole bars played while in the tilted seat; the -47 angle drifts by these
+			bars_played: 0,
 		};
 
 		app.State.do_action(
@@ -214,6 +217,7 @@ class Tools_pianoroll_class {
 	set_mode_side_effects(on) {
 		document.body.classList.toggle('pianoroll_mode', on === true);
 		this.sync_transport();
+		this.apply_tilt();
 
 		var kept = ['select', 'selection', 'pencil', 'erase'];
 		if (on === true && config.TOOL != null && kept.indexOf(config.TOOL.name) < 0) {
@@ -305,6 +309,13 @@ class Tools_pianoroll_class {
 			config.need_render = true;
 
 			_this.play_step += 1;
+
+			//every bar completed in the tilted seat leans the world another notch
+			if (_this.play_step % STEPS_PER_BAR === 0 && config.pianoroll.keys === 'tilt') {
+				config.pianoroll.bars_played = (config.pianoroll.bars_played || 0) + 1;
+				_this.apply_tilt();
+			}
+
 			if (_this.play_step >= roll.steps) {
 				_this.play_step = 0;
 				//a fresh read each loop, so edits made while it plays join in next pass
@@ -398,6 +409,7 @@ class Tools_pianoroll_class {
 		}
 
 		config.pianoroll.keys = side;
+		this.apply_tilt();
 		this.keys_signature = null;
 		config.need_render = true;
 
@@ -413,6 +425,41 @@ class Tools_pianoroll_class {
 	keyboard_top() { return this.set_keys_placement('vertical', 'start'); }
 	keyboard_bottom() { return this.set_keys_placement('vertical', 'end'); }
 	keyboard_tilt() { return this.set_keys_placement(null, 'tilt'); }
+
+	/**
+	 * The -47 degree seat tilts THE WHOLE SURFACE. canvas_wrapper carries a CSS rotation about
+	 * its own centre, so the roll, its guides, the playhead, the cursor and the reparented
+	 * keyboard all lean as one thing - no per-element trigonometry. Rotation about the centre
+	 * leaves the centre where it was, which is what lets get_mouse_coordinates_from_event
+	 * (core/base-tools.js) unturn the pointer exactly: it reads the angle back from
+	 * config.pianoroll_tilt, which this method owns.
+	 *
+	 * AND IT DRIFTS. Every bar played in this seat adds another 0.1 degrees (tilt_after_bars);
+	 * stopping does not straighten it. The seat was requested as a joke and is maintained as
+	 * one, with tests.
+	 */
+	apply_tilt() {
+		var state = config.pianoroll;
+		var wrapper = document.getElementById('canvas_wrapper');
+		var on = state != null && state.enabled === true && state.keys === 'tilt';
+
+		if (on) {
+			var angle = tilt_after_bars(state.bars_played);
+			wrapper.style.transform = 'rotate(' + angle + 'deg)';
+			config.pianoroll_tilt = angle;
+		}
+		else if (config.pianoroll_tilt != null) {
+			//LEAVING THE SEAT SNAPS. The transition that makes the drift a lean would make the
+			//exit a 350ms swing, and for that whole swing every measured rectangle - the strip's
+			//seat, a click's landing - would be mid-rotation and wrong. Suspend it, snap level,
+			//force the reflow, and hand the transition back for next time.
+			wrapper.style.transition = 'none';
+			wrapper.style.transform = '';
+			void wrapper.offsetWidth;
+			wrapper.style.transition = '';
+			config.pianoroll_tilt = null;
+		}
+	}
 
 	/**
 	 * The playable keyboard beside the roll: a strip of real keys along the pitch axis.
@@ -455,7 +502,34 @@ class Tools_pianoroll_class {
 		var gap = 4;
 
 		strip.style.display = 'block';
-		strip.classList.toggle('tilt', g.tilt === true);
+
+		//THE TILTED SEAT LIVES INSIDE THE ROTATED SURFACE. canvas_wrapper carries the -47 (and
+		//drifting - see apply_tilt) rotation, so a strip parented into it is glued to the roll
+		//by the transform itself: no rotated trigonometry, and no getBoundingClientRect, which
+		//under a transform measures the rotation's bounding box rather than the thing.
+		//canvas_wrapper is a positioning context and the canvas sits at its origin, so the seat
+		//is plain canvas-space arithmetic. The straight seats keep the viewport-rect code below,
+		//and keep the strip in main_wrapper so it can be clamped against the visible area.
+		var canvas_wrapper = document.getElementById('canvas_wrapper');
+		if (g.tilt === true) {
+			if (strip.parentNode !== canvas_wrapper) {
+				canvas_wrapper.appendChild(strip);
+			}
+			if (g.vertical) {
+				strip.width = KEY_DEPTH;
+				strip.height = length;
+				strip.style.left = Math.round((0 - origin.x) * zoom - KEY_DEPTH - gap) + 'px';
+				strip.style.top = Math.round((0 - origin.y) * zoom) + 'px';
+			}
+			else {
+				strip.width = length;
+				strip.height = KEY_DEPTH;
+				strip.style.left = Math.round((0 - origin.x) * zoom) + 'px';
+				strip.style.top = Math.round((0 - origin.y) * zoom - KEY_DEPTH - gap) + 'px';
+			}
+			this.paint_keys(strip, g, zoom, state.roll, lit);
+			return;
+		}
 
 		//POSITIONED FROM RECTANGLES, NOT offsetLeft. The strip is absolutely positioned and the
 		//wrapper is not a positioning context, so offset* and style.left answered to DIFFERENT
@@ -468,6 +542,9 @@ class Tools_pianoroll_class {
 		//edge (it carries a shadow for the occasion) and takes its proper seat when zoom or pan
 		//makes room.
 		var wrapper = document.getElementById('main_wrapper');
+		if (strip.parentNode !== wrapper) {
+			wrapper.appendChild(strip);
+		}
 		var wr = wrapper.getBoundingClientRect();
 		var cr = cv.getBoundingClientRect();
 		var pr = (strip.offsetParent || document.body).getBoundingClientRect();

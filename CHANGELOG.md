@@ -461,6 +461,14 @@ One crash report from the first human minutes with the roll, and the trail it op
 
 ---
 
+## v0.1.45 — "The Leaning Tower of Piano"
+
+- **The whole canvas tilts at −47° now.** You said the word. Choose Keyboard: −47° and the entire surface — roll, guides, playhead, cursor, keys — leans as one thing, keys glued to the roll's edge by geometry rather than apology. Drawing on it lands exactly where you click: the pointer is unturned about the canvas's centre, which rotation cannot move, and the taps land pixel-perfect in the corners at any angle. We checked the corners *specifically*.
+- **And it drifts.** Every bar played in the tilted seat leans the world another 0.1° — eased, so each notch is a lean and not a twitch. Ten minutes of looping at 120bpm is thirty degrees of honest decay. Stopping does not straighten it; the angle is a function of play, not of time, and sitting still changes nothing. There is a test that pins the arithmetic and a browser session that watched 212 bars carry the surface to −68.2° with the pencil still landing true.
+- **Leaving the seat snaps.** The ease that flatters the drift would make the exit a 350ms swing during which every click lands mid-rotation; the way out is instant, and the world is simply level again, as if it had never been otherwise.
+
+---
+
 ## Unreleased — "???"
 
 - (redacted)

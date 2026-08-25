@@ -183,8 +183,32 @@ class Base_tools_class {
 	}
 
 	get_mouse_coordinates_from_event(event){
-		var mouse_x = event.pageX - this.Base_gui.canvas_offset.x;
-		var mouse_y = event.pageY - this.Base_gui.canvas_offset.y;
+		var mouse_x, mouse_y;
+
+		var tilt = config.pianoroll_tilt;
+		if (typeof tilt === 'number' && isFinite(tilt)) {
+			//the piano roll's -47 degree seat rotates canvas_wrapper about its own centre
+			//(modules/tools/pianoroll.js apply_tilt), which makes canvas_offset - a bounding
+			//box corner - meaningless: a rotated box's corner is not the canvas's corner. But
+			//rotation about the centre leaves the CENTRE exactly where it was, so the middle of
+			//the transformed bounding box is a fixed point: unturn the pointer around it and
+			//the rest of this function sees a level canvas.
+			var cv = document.getElementById('canvas_minipaint');
+			var rect = cv.getBoundingClientRect();
+			var cx = rect.left + rect.width / 2 + window.scrollX;
+			var cy = rect.top + rect.height / 2 + window.scrollY;
+			var rad = tilt * Math.PI / 180;
+			var dx = event.pageX - cx;
+			var dy = event.pageY - cy;
+
+			//inverse rotation R(-tilt), then centre-relative becomes corner-relative
+			mouse_x = (dx * Math.cos(rad) + dy * Math.sin(rad)) + cv.width / 2;
+			mouse_y = (-dx * Math.sin(rad) + dy * Math.cos(rad)) + cv.height / 2;
+		}
+		else {
+			mouse_x = event.pageX - this.Base_gui.canvas_offset.x;
+			mouse_y = event.pageY - this.Base_gui.canvas_offset.y;
+		}
 
 		//adapt coords to ZOOM
 		var global_pos = this.Base_layers.get_world_coords(mouse_x, mouse_y);
