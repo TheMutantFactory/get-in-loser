@@ -496,6 +496,69 @@ IMPORTANT: any new icon should also must be added on /service-worker.js + its ve
 	cursor: grab;
 	touch-action: none;
 }
+/* ---------- sound panel ---------- */
+
+.sound_boot{
+	display: flex;
+	justify-content: center;
+	padding: 8px 0;
+}
+.sound_instrument{
+	width: 100%;
+	margin-bottom: 6px;
+}
+.sound_pads{
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 4px;
+}
+.sound_pad{
+	padding: 10px 2px;
+	font-size: 11px;
+	border: 1px solid var(--border-color);
+	border-radius: 3px;
+	background: rgba(255, 255, 255, 0.06);
+	color: var(--text-color);
+	cursor: pointer;
+	touch-action: none;
+}
+.sound_pad:active{
+	background: var(--main-color);
+}
+.sound_keys{
+	display: flex;
+	position: relative;
+	height: 64px;
+}
+.sound_key{
+	flex: 1;
+	border: 1px solid var(--border-color);
+	background: #f2ecf4;
+	cursor: pointer;
+	touch-action: none;
+	padding: 0;
+}
+.sound_key:active{
+	background: var(--main-color);
+}
+.sound_key.black{
+	flex: 0 0 7%;
+	height: 60%;
+	background: #241b28;
+	margin: 0 -3.5%;
+	z-index: 2;
+}
+.sound_key.black:active{
+	background: var(--main-color);
+}
+.sound_capture_row{
+	display: block;
+	margin-top: 6px;
+	font-size: 11px;
+	opacity: 0.8;
+	cursor: pointer;
+}
+
 .sidebar_width_grip{
 	position: absolute;
 	left: -3px;

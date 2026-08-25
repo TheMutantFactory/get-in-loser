@@ -400,6 +400,16 @@ Two follow-ups on yesterday's panel work, both from the field within a day.
 
 ---
 
+## v0.1.39 — "The Editor Hums"
+
+- **New — the Sound panel.** An 808 drum kit, an acid bass, a five-voice poly synth, and a rack of game sounds — coin, jump, hurt, explode, power up, select, shoot. Click the pads, click the keys, or tick *keyboard* and play the QWERTY row. Pin it, reorder it, widen it: it is a panel like any other.
+- **None of it is editable, and that is the point.** The instruments are [SoundGraph](https://github.com/TheMutantFactory/soundgraph) patches — JSON graphs played by SoundGraph's own 344K WebAssembly engine in an AudioWorklet, with no DSP in JavaScript anywhere. This panel is an instrument; SoundGraph is the editor. One graph, another host — which was always that project's whole claim.
+- **Why a paint app has a drum machine:** this editor makes game sprites and voxel models, and those ship next to game audio. Auditioning the coin sound beside the coin sprite beats alt-tabbing, and a beat to draw to costs nothing once the engine is aboard.
+- **It costs nothing until you press play.** The engine loads on the panel's power button — about 135K over the wire, and the browser wanted a click before making sound anyway, so the same gesture pays for both.
+- Keyboard capture is opt-in and stays off the editor's shortcuts: Z is a kick drum only while the checkbox says so, and never inside a text field.
+
+---
+
 ## Unreleased — "???"
 
 - (redacted)

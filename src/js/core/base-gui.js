@@ -10,6 +10,7 @@ import GUI_tools_class from './gui/gui-tools.js';
 import GUI_preview_class from './gui/gui-preview.js';
 import GUI_panels_class from './gui/gui-panels.js';
 import GUI_palette_class from './gui/gui-palette.js';
+import GUI_sound_class from './gui/gui-sound.js';
 import GUI_voxel_class from './gui/gui-voxel.js';
 import {should_draw_pixel_grid, grid_line_positions} from './pixel-grid.js';
 import {unpack, read_slice, slice_dimensions} from './voxel.js';
@@ -70,6 +71,7 @@ class Base_gui_class {
 		this.GUI_panels = new GUI_panels_class(this);
 		this.GUI_colors = new GUI_colors_class(this);
 		this.GUI_palette = new GUI_palette_class(this);
+		this.GUI_sound = new GUI_sound_class(this);
 		this.GUI_voxel = new GUI_voxel_class(this);
 		this.GUI_layers = new GUI_layers_class(this);
 		this.GUI_information = new GUI_information_class(this);
@@ -161,6 +163,7 @@ class Base_gui_class {
 		this.GUI_preview.render_main_preview();
 		this.GUI_colors.render_main_colors();
 		this.GUI_palette.render_main_palette();
+		this.GUI_sound.render_main_sound();
 		this.GUI_voxel.render_main_voxel();
 		this.GUI_layers.render_main_layers();
 		this.GUI_information.render_main_information();
