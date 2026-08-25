@@ -84,8 +84,13 @@ class Pencil_class extends Base_tools_class {
 		var image = config.layer.link;
 		if (image != null && image.complete === false && typeof image.decode === 'function') {
 			//and the swapped-in image is a data URL that may not have decoded yet - snapshotting
-			//it undecoded snapshots blank (the Background Eraser's old trap)
-			try { await image.decode(); } catch (e) { this.roll_painting = false; return; }
+			//it undecoded snapshots blank (the Background Eraser's old trap).
+			//ON FAILURE THE FLAG STAYS UP. Clearing roll_painting mid-drag handed the REST of the
+			//drag to the vector-pencil path, which pushes stroke points into config.layer.data -
+			//and the Roll layer is an image with no data array. That was the field crash: "null is
+			//not an object (evaluating config.layer.data.push)". With the flag up and no canvas,
+			//the remaining moves no-op and mouseup resets everything.
+			try { await image.decode(); } catch (e) { return; }
 		}
 
 		this.rollCanvas = document.createElement('canvas');
@@ -322,6 +327,11 @@ class Pencil_class extends Base_tools_class {
 			this.roll_paint_move(this.get_mouse_info(event));
 			return;
 		}
+		if (this.roll_paint_applies()) {
+			//roll mode owns the pencil entirely: a drag whose start was refused (decode failure,
+			//commit still landing) must fizzle, not hand its tail to the vector path
+			return;
+		}
 		this.mousemove(event);
 	}
 
@@ -409,12 +419,34 @@ class Pencil_class extends Base_tools_class {
 			return;
 		}
 
+		//ROLL ROUTING LIVES HERE, NOT IN dragMove. The base class wires mousemove events straight
+		//to THIS method (default_dragMove calls this.mousemove) - the dragMove override above it
+		//is never on the mouse path, and routing placed there quietly never ran: a held drag in
+		//roll mode painted only its first pixel, every later move falling through to the vector
+		//code below. The field crash's stack named default_dragMove -> mousemove, which is the
+		//breadcrumb that found this.
+		if (this.roll_painting) {
+			this.roll_paint_move(mouse);
+			return;
+		}
+		if (this.roll_paint_applies()) {
+			//a drag whose start was refused fizzles; it does not become vector strokes
+			return;
+		}
+
 		//detect line size
 		var size = params.size;
 		var new_size = size;
 
 		if (params.pressure == true && this.pressure_supported) {
 			new_size = size * this.pointer_pressure * 2;
+		}
+
+		if (config.layer == null || config.layer.data == null
+			|| typeof config.layer.data.push !== 'function') {
+			//the active layer is not a pencil layer - a tool/mode switch mid-drag can do this,
+			//and pushing stroke points into an image layer is a crash, not a stroke
+			return;
 		}
 
 		//more data
@@ -444,6 +476,13 @@ class Pencil_class extends Base_tools_class {
 
 		if (params.pressure == true && this.pressure_supported) {
 			new_size = size * this.pointer_pressure * 2;
+		}
+
+		if (config.layer == null || config.layer.data == null
+			|| typeof config.layer.data.push !== 'function') {
+			//the active layer is not a pencil layer - a tool/mode switch mid-drag can do this,
+			//and pushing stroke points into an image layer is a crash, not a stroke
+			return;
 		}
 
 		//more data

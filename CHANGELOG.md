@@ -431,6 +431,16 @@ The piano roll learns to be an instrument rather than a picture of one.
 
 ---
 
+## v0.1.42 — "Dead Letter Office"
+
+One crash report from the first human minutes with the roll, and the trail it opened.
+
+- **Fixed: drawing in roll mode could crash** — *"null is not an object (evaluating config.layer.data.push)"*. If a roll stroke's start was refused mid-drag, the rest of the drag fell through to the vector-pencil path, which shoves stroke points into a data array the Roll image layer does not have. Three fences now: a refused start no longer un-claims the drag, roll mode never falls through to the vector path, and the vector path checks its layer before pushing — that last one closes a hazard upstream has always had.
+- **The stack trace's real gift was bigger: held drags in roll mode had never worked.** The base class routes mouse moves straight to `mousemove`; the `dragMove` override where the roll's routing lived is not on the mouse path at all, so it silently never ran — a held drag painted its first pixel and discarded the rest. The routing now lives where the events actually arrive. And an embarrassment worth recording: v0.1.41's "a run of pixels holds as one note" was verified with a note-event tap whose signature for a one-pixel note and a sustained run are identical — the claim was true of the engine and untested of the pencil. This release re-proves it end to end: one eight-pixel drag, exactly one noteOn.
+- Also hardened: every keyboard shortcut runs through `is_input()` first, which threw on non-Element event targets and took the shortcut down with it.
+
+---
+
 ## Unreleased — "???"
 
 - (redacted)

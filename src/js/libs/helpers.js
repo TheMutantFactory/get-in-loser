@@ -555,9 +555,14 @@ class Helper_class {
 		}
 		if (element.type == 'text' || element.tagName == 'INPUT' || element.type == 'textarea') {
 			return true;
-		} else {
-			return element.closest('.ui_color_picker_gradient, .ui_number_input, .ui_range, .ui_swatches') != null;
 		}
+		if (typeof element.closest !== 'function') {
+			//not an Element - document or window can be an event target, and every keydown
+			//listener in the app runs through here first, so throwing here kills the shortcut
+			//behind it (an undo was lost to exactly this)
+			return false;
+		}
+		return element.closest('.ui_color_picker_gradient, .ui_number_input, .ui_range, .ui_swatches') != null;
 	}
 
 	//if IE 11 or Edge
