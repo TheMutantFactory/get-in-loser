@@ -1,3 +1,4 @@
+import {get_clipboard, has_clipboard} from './../../libs/clipboard-store.js';
 import app from './../../app.js';
 import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
 
@@ -11,6 +12,9 @@ class Edit_paste_class {
 	 */
 	async paste() {
 		if (!navigator.clipboard || !navigator.clipboard.read) {
+			if (this.paste_internal()) {
+				return;
+			}
 			alertify.error('This browser blocks reading the clipboard from a menu. Use the Ctrl+V keyboard shortcut to paste.');
 			return;
 		}
@@ -19,7 +23,10 @@ class Edit_paste_class {
 		try {
 			items = await navigator.clipboard.read();
 		} catch (e) {
-			//permission denied / not allowed / not a valid user gesture
+			//the system said no; whatever Copy stored in the app still pastes
+			if (this.paste_internal()) {
+				return;
+			}
 			alertify.error('Clipboard access was blocked. Allow clipboard access, or use the Ctrl+V keyboard shortcut to paste.');
 			return;
 		}
@@ -34,7 +41,19 @@ class Edit_paste_class {
 			}
 		}
 
+		if (this.paste_internal()) {
+			return;
+		}
 		alertify.error('No image found on the clipboard. Copy an image first, or use Ctrl+V.');
+	}
+
+	/** whatever Edit > Copy stored in the app, pasted - no browser opinion required */
+	paste_internal() {
+		if (!has_clipboard()) {
+			return false;
+		}
+		this.paste_image(get_clipboard());
+		return true;
 	}
 
 	//add the pasted image as a new layer (same as the Ctrl+V paste-event path)

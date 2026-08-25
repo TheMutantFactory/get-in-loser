@@ -585,8 +585,9 @@ body.pianoroll_mode .sidebar_left .item.erase{
 	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
 }
 .roll_keys.tilt{
-	/* exactly 47. not 45 - 45 would look intentional in the wrong way */
-	transform: rotate(47deg);
+	/* exactly -47. not -45 - that would look intentional in the wrong way. It was 47 for one
+	   release; the direction of wrongness has since been specified. */
+	transform: rotate(-47deg);
 }
 
 /* ---------- sound panel ---------- */

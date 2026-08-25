@@ -199,6 +199,9 @@ class Base_layers_class {
 			//piano roll keyboard lanes
 			this.Base_gui.draw_roll_guides(this.ctx);
 
+			//the playhead, over the lanes and under the guides
+			this.Base_gui.draw_roll_playhead(this.ctx);
+
 			//and the playable strip beside the canvas
 			this.Base_gui.update_roll_keys();
 

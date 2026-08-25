@@ -453,15 +453,23 @@ const menuDefinition = [
 				divider: true
 			},
 			{
-				name: 'Keyboard: Left / Top',
-				target: 'tools/pianoroll.keyboard_start'
+				name: 'Keyboard: Left',
+				target: 'tools/pianoroll.keyboard_left'
 			},
 			{
-				name: 'Keyboard: Right / Bottom',
-				target: 'tools/pianoroll.keyboard_end'
+				name: 'Keyboard: Right',
+				target: 'tools/pianoroll.keyboard_right'
 			},
 			{
-				name: 'Keyboard: 47°',
+				name: 'Keyboard: Top',
+				target: 'tools/pianoroll.keyboard_top'
+			},
+			{
+				name: 'Keyboard: Bottom',
+				target: 'tools/pianoroll.keyboard_bottom'
+			},
+			{
+				name: 'Keyboard: -47°',
 				target: 'tools/pianoroll.keyboard_tilt'
 			}
 		]

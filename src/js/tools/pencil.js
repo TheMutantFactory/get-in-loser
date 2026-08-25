@@ -15,12 +15,13 @@ class Pencil_class extends Base_tools_class {
 		this.pressure_supported = false;
 		this.pointer_pressure = 0; // has range [0 - 1]
 
-		//the roll-mode paint stroke - one layer, no vector stack; see roll_paint_start
+		//the roll-mode paint session - one layer, one working canvas; see roll_paint_start
 		this.roll_painting = false;
 		this.roll_pointer_down = false;
-		this.roll_commit = null;
+		this.roll_queue = [];
 		this.rollCanvas = null;
 		this.rollCtx = null;
+		this.roll_expected_link = null;
 
 		//the right-button erase stroke - pixel mode only, see right_erase_start
 		this.right_erasing = false;
@@ -68,50 +69,88 @@ class Pencil_class extends Base_tools_class {
 			&& config.layer.type === 'image';
 	}
 
+	/**
+	 * THE SESSION CANVAS, AND WHY THERE IS ONE. The first design re-snapshotted the layer at
+	 * every stroke, which meant every stroke START had to await the previous stroke's commit and
+	 * the image decode behind it - and two strokes arriving fast enough overlapped those awaits,
+	 * clobbered each other's state, and erased each other's work. Verified failing: three
+	 * back-to-back drags kept only the first.
+	 *
+	 * Now the roll keeps ONE working canvas. It is built from the layer once, every stroke paints
+	 * into it synchronously - no awaits anywhere on the drawing path - and each mouseup commits a
+	 * CLONE as its own undo step. The session is discarded whenever the layer's image is not the
+	 * one our last commit produced (an undo, another tool), and rebuilt from the layer on the
+	 * next stroke; only that rare rebuild awaits anything, and moves arriving inside it queue.
+	 */
+	roll_session_dirty() {
+		//two tells: the layer's image is not the one our last commit produced, or the undo
+		//history moved without us - an undo restores the image ASYNCHRONOUSLY, so for a moment
+		//the old link still hangs on the layer while history has already stepped back, and a
+		//stroke in that moment would resurrect what was just undone. (A stroke within ~200ms of
+		//the undo can still catch the restoration mid-air; that window is the undo's image
+		//loading and is not closable from here.)
+		return this.rollCanvas == null
+			|| config.layer.link !== this.roll_expected_link
+			|| (app.State != null && app.State.action_history_index !== this.roll_expected_index);
+	}
+
 	async roll_paint_start(mouse) {
 		this.roll_painting = true;
 		this.roll_pointer_down = true;
 
-		//WAIT FOR THE LAST STROKE TO LAND. Each stroke snapshots the layer image and commits a
-		//replacement; a quick second stroke could snapshot BEFORE the first one's replacement had
-		//swapped in, and quietly erase it - three of six rapid test strokes vanished this way.
-		//The commit promise is kept so the next stroke starts from settled ground.
-		if (this.roll_commit != null) {
-			try { await this.roll_commit; } catch (e) { /* an aborted action still unblocks us */ }
-			this.roll_commit = null;
-		}
+		//identity, not state: after an await, "is my stroke still the current one" must be asked
+		//with a token. The first cut asked roll_painting - which mouseup ALSO clears - so any
+		//stroke released before the first decode finished was read as superseded and aborted
+		//whole: no pixels, no commit, and an undo stack so empty that Ctrl+Z reached back and
+		//unmade the roll itself.
+		var token = {};
+		this.roll_token = token;
 
-		var image = config.layer.link;
-		if (image != null && image.complete === false && typeof image.decode === 'function') {
-			//and the swapped-in image is a data URL that may not have decoded yet - snapshotting
-			//it undecoded snapshots blank (the Background Eraser's old trap).
-			//ON FAILURE THE FLAG STAYS UP. Clearing roll_painting mid-drag handed the REST of the
-			//drag to the vector-pencil path, which pushes stroke points into config.layer.data -
-			//and the Roll layer is an image with no data array. That was the field crash: "null is
-			//not an object (evaluating config.layer.data.push)". With the flag up and no canvas,
-			//the remaining moves no-op and mouseup resets everything.
-			try { await image.decode(); } catch (e) { return; }
-		}
+		if (this.roll_session_dirty()) {
+			this.roll_queue = [];
+			var image = config.layer.link;
 
-		this.rollCanvas = document.createElement('canvas');
-		this.rollCanvas.width = config.layer.width_original;
-		this.rollCanvas.height = config.layer.height_original;
-		this.rollCtx = this.rollCanvas.getContext('2d');
-		this.rollCtx.drawImage(config.layer.link, 0, 0);
+			if (image != null && image.complete === false && typeof image.decode === 'function') {
+				try { await image.decode(); } catch (e) { return; }
+			}
+			if (this.roll_token !== token) {
+				//a genuinely NEWER stroke took over while this one waited; it owns the session now
+				return;
+			}
+
+			this.rollCanvas = document.createElement('canvas');
+			this.rollCanvas.width = config.layer.width_original;
+			this.rollCanvas.height = config.layer.height_original;
+			this.rollCtx = this.rollCanvas.getContext('2d');
+			this.rollCtx.drawImage(config.layer.link, 0, 0);
+			this.roll_expected_link = config.layer.link;
+			this.roll_expected_index = app.State != null ? app.State.action_history_index : null;
+		}
 
 		this.roll_nibs(mouse, false);
+
+		//replay anything the drag did while a rebuild was waiting, joined up in order
+		var last = {x: mouse.x, y: mouse.y};
+		for (var q = 0; q < this.roll_queue.length; q++) {
+			var point = this.roll_queue[q];
+			this.roll_nibs({x: point.x, y: point.y, last_x: last.x, last_y: last.y}, true);
+			last = point;
+		}
+		this.roll_queue = [];
 
 		config.layer.link_canvas = this.rollCanvas;
 		config.need_render = true;
 
 		if (this.roll_pointer_down === false) {
-			//released while we were waiting: keep the click rather than dropping it
 			this.roll_paint_end();
 		}
 	}
 
 	roll_paint_move(mouse) {
-		if (this.rollCtx == null) {
+		if (this.rollCtx == null || this.roll_session_dirty()) {
+			if (this.roll_painting) {
+				this.roll_queue.push({x: mouse.x, y: mouse.y});
+			}
 			return;
 		}
 		this.roll_nibs(mouse, true);
@@ -128,15 +167,26 @@ class Pencil_class extends Base_tools_class {
 
 		delete config.layer.link_canvas;
 
-		//held, so the NEXT stroke can wait for this one to finish landing
-		this.roll_commit = app.State.do_action(
-			new app.Actions.Bundle_action('roll_paint', 'Roll Paint', [
-				new app.Actions.Update_layer_image_action(this.rollCanvas)
-			])
-		);
+		//a CLONE goes into the undo step: the session canvas keeps living for the next stroke,
+		//and an undo must restore a frozen image, not a window onto our future edits
+		var frozen = document.createElement('canvas');
+		frozen.width = this.rollCanvas.width;
+		frozen.height = this.rollCanvas.height;
+		frozen.getContext('2d').drawImage(this.rollCanvas, 0, 0);
 
-		this.rollCanvas = null;
-		this.rollCtx = null;
+		var _this = this;
+		app.State.do_action(
+			new app.Actions.Bundle_action('roll_paint', 'Roll Paint', [
+				new app.Actions.Update_layer_image_action(frozen)
+			])
+		).then(function () {
+			//the layer's image is now the one we produced; the session stays valid
+			_this.roll_expected_link = config.layer.link;
+			_this.roll_expected_index = app.State.action_history_index;
+		}).catch(function () {
+			//the commit was refused: the session no longer matches the layer
+			_this.roll_expected_link = null;
+		});
 	}
 
 	/** whole pixels in the current colour, gaps filled along the drag - the eraser's nib logic */

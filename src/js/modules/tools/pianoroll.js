@@ -301,6 +301,9 @@ class Tools_pianoroll_class {
 			}
 			_this.sounding = notes;
 
+			//the playhead band and the lit keys both redraw from this
+			config.need_render = true;
+
 			_this.play_step += 1;
 			if (_this.play_step >= roll.steps) {
 				_this.play_step = 0;
@@ -332,6 +335,15 @@ class Tools_pianoroll_class {
 		}
 		this.sounding = [];
 		this.sync_play_button();
+		config.need_render = true;
+	}
+
+	/** where the playhead stands, or null when stopped - for the canvas render hook */
+	playhead() {
+		if (!this.playing || config.pianoroll == null) {
+			return null;
+		}
+		return {step: this.play_step, orientation: config.pianoroll.orientation};
 	}
 
 	sync_play_button() {
@@ -363,11 +375,26 @@ class Tools_pianoroll_class {
 		}
 	}
 
-	/** menu: Piano Roll > Keyboard ... - where the playable keys sit */
-	set_keys_side(side) {
+	/**
+	 * menu: Piano Roll > Keyboard ... - the keyboard's seat, and the roll follows it.
+	 *
+	 * THE KEYBOARD IS THE ONE CONTROL. Asking for the keys on the left or right means a
+	 * horizontal roll; asking for top or bottom means a vertical one - so choosing a seat from
+	 * the other orientation rotates the roll to match, rather than making the person find
+	 * Rotate Roll and reason about which way is which. The rotation is the same exact quarter
+	 * turn Rotate Roll performs; nothing mirrors.
+	 *
+	 * @param {string} wants 'horizontal' | 'vertical' | null (tilt keeps whatever is there)
+	 * @param {string} side 'start' | 'end' | 'tilt'
+	 */
+	async set_keys_placement(wants, side) {
 		if (config.pianoroll == null) {
 			alertify.error('No piano roll yet.');
 			return false;
+		}
+
+		if (wants != null && config.pianoroll.orientation !== wants) {
+			await this.rotate();
 		}
 
 		config.pianoroll.keys = side;
@@ -375,15 +402,17 @@ class Tools_pianoroll_class {
 		config.need_render = true;
 
 		alertify.success(side === 'tilt'
-			? 'Keyboard at 47 degrees. You asked for this.'
+			? 'Keyboard at -47 degrees. You asked for this.'
 			: 'Keyboard moved.');
 
 		return side;
 	}
 
-	keyboard_start() { return this.set_keys_side('start'); }
-	keyboard_end() { return this.set_keys_side('end'); }
-	keyboard_tilt() { return this.set_keys_side('tilt'); }
+	keyboard_left() { return this.set_keys_placement('horizontal', 'start'); }
+	keyboard_right() { return this.set_keys_placement('horizontal', 'end'); }
+	keyboard_top() { return this.set_keys_placement('vertical', 'start'); }
+	keyboard_bottom() { return this.set_keys_placement('vertical', 'end'); }
+	keyboard_tilt() { return this.set_keys_placement(null, 'tilt'); }
 
 	/**
 	 * The playable keyboard beside the roll: a strip of real keys along the pitch axis.
@@ -413,8 +442,10 @@ class Tools_pianoroll_class {
 		var side = state.keys || 'start';
 		var g = keys_geometry(state.roll, state.orientation, side);
 
+		var lit = this.lit_pitches();
 		var signature = [zoom, origin.x, origin.y, side, state.orientation, state.roll.pitches,
-			cv.offsetLeft, cv.offsetTop, cv.width, cv.height].join('|');
+			cv.offsetLeft, cv.offsetTop, cv.width, cv.height,
+			Array.from(lit).join(',')].join('|');
 		if (signature === this.keys_signature) {
 			return;
 		}
@@ -469,13 +500,30 @@ class Tools_pianoroll_class {
 			);
 		}
 
-		this.paint_keys(strip, g, zoom, state.roll);
+		this.paint_keys(strip, g, zoom, state.roll, lit);
 	}
 
-	paint_keys(strip, g, zoom, roll) {
+	/** every pitch that should glow: the one under a finger, and whatever the player is sounding */
+	lit_pitches() {
+		var lit = new Set();
+
+		if (this.pressed_pitch != null) {
+			lit.add(this.pressed_pitch);
+		}
+		if (this.playing) {
+			for (var i = 0; i < this.sounding.length; i++) {
+				lit.add(this.sounding[i] - BASE_NOTE);
+			}
+		}
+
+		return lit;
+	}
+
+	paint_keys(strip, g, zoom, roll, lit) {
 		var ctx = strip.getContext('2d');
 		var guides = key_guides(roll);
 		var along = g.vertical ? strip.height : strip.width;
+		lit = lit || new Set();
 
 		ctx.clearRect(0, 0, strip.width, strip.height);
 		ctx.fillStyle = '#f2ecf4';
@@ -494,7 +542,17 @@ class Tools_pianoroll_class {
 			var start = Math.round(lane * zoom);
 			var size = Math.round((lane + 1) * zoom) - start;
 
-			if (guide.black) {
+			if (lit.has(pitch)) {
+				//a pressed or sounding key glows the house green, black or white alike
+				ctx.fillStyle = '#45e065';
+				if (g.vertical) {
+					ctx.fillRect(0, start, KEY_DEPTH, size);
+				}
+				else {
+					ctx.fillRect(start, 0, size, KEY_DEPTH);
+				}
+			}
+			else if (guide.black) {
 				ctx.fillStyle = '#241b28';
 				if (g.vertical) {
 					ctx.fillRect(from_roll_edge ? KEY_DEPTH - black_depth : 0, start, black_depth, size);
@@ -575,6 +633,9 @@ class Tools_pianoroll_class {
 			}
 
 			held = BASE_NOTE + pitch;
+			_this.pressed_pitch = pitch;
+			_this.keys_signature = null;
+			_this.update_keys();
 			engine.note_on(held, 0.9);
 
 			if (this_press.released) {
@@ -596,6 +657,11 @@ class Tools_pianoroll_class {
 					sound.engine.note_off(held);
 				}
 				held = null;
+			}
+			if (_this.pressed_pitch != null) {
+				_this.pressed_pitch = null;
+				_this.keys_signature = null;
+				_this.update_keys();
 			}
 		};
 		strip.addEventListener('pointerup', lift);

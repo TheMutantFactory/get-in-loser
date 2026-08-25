@@ -450,6 +450,17 @@ One crash report from the first human minutes with the roll, and the trail it op
 
 ---
 
+## v0.1.44 — "Follow the Bouncing Band"
+
+- **A playhead.** A band of house green walks the roll as it plays, so bar three is no longer something you hear while staring at bar one.
+- **The keys light up** — the one under your finger and every note the player is sounding, so playback runs a little light show down the keyboard. Both glows come from the same note maps as everything else.
+- **The keyboard is now the one control, and the roll follows it.** Ask for the keys on the Left or Right and the roll lies horizontal; ask for Top or Bottom and it stands vertical — the roll rotates itself to honour the seat you chose, with the same exact quarter turn as Rotate Roll. (Read from *"make the piano roll rotate with the keyboard"* — if you meant the whole canvas tilting at −47° alongside the keys, say so, and I will commit that crime too.)
+- **−47°, as specified.** It was 47 for one release; the direction of wrongness has since been corrected.
+- **Copy works now, everywhere.** It asked the browser's permission first and treated anything but an explicit yes — including a permissions API that merely *throws* on some engines — as refusal, failing with upstream's own typo: *"Missing permissions to write to Clipboard.cc"*. Copy now lands in an in-app clipboard first, unconditionally, and offers the system clipboard as a courtesy; Paste falls back to the in-app copy whenever the system refuses. Copying inside the app never needed anyone's permission.
+- **Fast strokes rebuilt on honest foundations.** The roll now keeps one working canvas per session instead of re-snapshotting the layer every stroke — the re-snapshot design made every stroke start await the previous commit, and overlapping awaits ate each other's work (three back-to-back drags kept only the first; then a supersession guard that confused "ended" with "superseded" ate all three and left the undo stack so bare that Ctrl+Z unmade the roll itself). No awaits remain on the drawing path. One honest residue: a stroke begun within ~200ms of an undo can catch the undo's image restoration mid-air; that window is the restoration loading, and it is documented where it lives.
+
+---
+
 ## Unreleased — "???"
 
 - (redacted)

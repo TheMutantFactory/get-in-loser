@@ -476,6 +476,52 @@ class Base_gui_class {
 		return true;
 	}
 
+	/**
+	 * The playhead: a band of house green over the step the player is sounding right now.
+	 *
+	 * Without it, playback is audible and invisible - you hear bar three and stare at bar one.
+	 * Screen space with the transform reset, same as every roll overlay.
+	 */
+	draw_roll_playhead(ctx) {
+		var mod = this.modules ? this.modules['tools/pianoroll'] : null;
+		var head = mod != null && typeof mod.playhead === 'function' ? mod.playhead() : null;
+
+		if (head == null) {
+			return false;
+		}
+
+		var origin = this.Base_layers.get_world_coords(0, 0);
+		var zoom = config.ZOOM;
+		var start = (head.step - (head.orientation === 'vertical' ? origin.y : origin.x)) * zoom;
+
+		ctx.save();
+		ctx.setTransform(1, 0, 0, 1, 0, 0);
+		ctx.globalCompositeOperation = 'source-over';
+		ctx.filter = 'none';
+		ctx.fillStyle = 'rgba(69, 224, 101, 0.22)';
+		ctx.strokeStyle = 'rgba(69, 224, 101, 0.9)';
+		ctx.lineWidth = 1;
+
+		if (head.orientation === 'vertical') {
+			ctx.fillRect(0, start, ctx.canvas.width, zoom);
+			ctx.beginPath();
+			ctx.moveTo(0, start);
+			ctx.lineTo(ctx.canvas.width, start);
+			ctx.stroke();
+		}
+		else {
+			ctx.fillRect(start, 0, zoom, ctx.canvas.height);
+			ctx.beginPath();
+			ctx.moveTo(start, 0);
+			ctx.lineTo(start, ctx.canvas.height);
+			ctx.stroke();
+		}
+
+		ctx.restore();
+
+		return true;
+	}
+
 	/** The playable keyboard strip beside the roll tracks the canvas every render. */
 	update_roll_keys() {
 		var mod = this.modules ? this.modules['tools/pianoroll'] : null;
