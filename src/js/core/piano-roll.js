@@ -121,4 +121,108 @@ function resolve_roll(steps, pitches) {
 	};
 }
 
-export {DEFAULT_ROLL, MAX_STEPS, MAX_PITCHES, BASE_NOTE, roll_dimensions, rotate_pixels, pixel_to_note, resolve_roll};
+/** Sixteen sixteenths to the bar - the resolution every step of the roll is. */
+const STEPS_PER_BAR = 16;
+
+/** The bar counts the New Roll dialog offers. Powers of two: music is built by doubling. */
+const BAR_CHOICES = [1, 2, 4, 8, 16, 32];
+
+/**
+ * A roll sized in the units people think in: bars of time, octaves of pitch.
+ *
+ * @param {number} bars
+ * @param {number} octaves
+ * @returns {object|null} keys: steps, pitches
+ */
+function roll_from_bars(bars, octaves) {
+	var b = parseInt(bars, 10);
+	var o = parseInt(octaves, 10);
+
+	if (isNaN(b) || isNaN(o) || b < 1 || o < 1) {
+		return null;
+	}
+
+	return resolve_roll(b * STEPS_PER_BAR, o * 12);
+}
+
+/** How long one step lasts at a tempo, with steps as sixteenths. */
+function step_seconds(bpm) {
+	var b = Number(bpm);
+	if (!isFinite(b) || b <= 0) {
+		b = 120;
+	}
+	return 60 / Math.min(300, Math.max(20, b)) / 4;
+}
+
+/** Semitone offsets within an octave that are black keys. */
+const BLACK_KEYS = [1, 3, 6, 8, 10];
+
+/** Names for the C-row labels. */
+const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+
+/**
+ * What each pitch lane is, for drawing the keyboard guide: black-key shading and C labels.
+ *
+ * Indexed BY PITCH (0 = base note), not by canvas row - the caller lays lanes onto rows or
+ * columns per the orientation, using the same maps the notes use, so the guide can never
+ * disagree with the sound.
+ *
+ * @param {object} roll keys: pitches
+ * @returns {array} [{black: bool, label: 'C4'|null}] - label only on the Cs
+ */
+function key_guides(roll) {
+	var out = [];
+
+	for (var i = 0; i < roll.pitches; i++) {
+		var note = BASE_NOTE + i;
+		var semitone = note % 12;
+		out.push({
+			black: BLACK_KEYS.indexOf(semitone) > -1,
+			label: semitone === 0 ? 'C' + (Math.floor(note / 12) - 1) : null,
+		});
+	}
+
+	return out;
+}
+
+/**
+ * Which notes are sounding at one step of the roll: every painted pixel in that step's lane.
+ *
+ * The player diffs consecutive steps - a note present in both sustains rather than retriggering,
+ * so a run of painted pixels is one held note, which is what a bar drawn across the roll means.
+ *
+ * @param {Uint8ClampedArray} rgba the flattened roll image
+ * @param {object} roll keys: steps, pitches
+ * @param {string} orientation
+ * @param {number} step
+ * @returns {array} MIDI note numbers, ascending
+ */
+function notes_at_step(rgba, roll, orientation, step) {
+	var dims = roll_dimensions(roll, orientation);
+	var notes = [];
+
+	for (var p = 0; p < roll.pitches; p++) {
+		var x, y;
+		if (orientation === 'vertical') {
+			x = p;
+			y = step;
+		}
+		else {
+			x = step;
+			y = roll.pitches - 1 - p;
+		}
+
+		if (x < 0 || y < 0 || x >= dims.width || y >= dims.height) {
+			continue;
+		}
+		if (rgba[(y * dims.width + x) * 4 + 3] > 0) {
+			notes.push(BASE_NOTE + p);
+		}
+	}
+
+	return notes;
+}
+
+export {DEFAULT_ROLL, MAX_STEPS, MAX_PITCHES, BASE_NOTE, STEPS_PER_BAR, BAR_CHOICES,
+	roll_dimensions, rotate_pixels, pixel_to_note, resolve_roll, roll_from_bars, step_seconds,
+	key_guides, notes_at_step};

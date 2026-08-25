@@ -2,7 +2,8 @@
  * The roll is an image whose pixels are notes, so the mappings here are musical facts: a mirror
  * inverts every melody, and an off-by-one plays everything a semitone sharp forever.
  */
-import {DEFAULT_ROLL, BASE_NOTE, roll_dimensions, rotate_pixels, pixel_to_note, resolve_roll}
+import {DEFAULT_ROLL, BASE_NOTE, BAR_CHOICES, roll_dimensions, rotate_pixels, pixel_to_note,
+	resolve_roll, roll_from_bars, step_seconds, key_guides, notes_at_step}
 	from '../src/js/core/piano-roll.js';
 
 describe('roll_dimensions', () => {
@@ -82,5 +83,74 @@ describe('resolve_roll', () => {
 		expect(resolve_roll(10000, 10000)).toEqual({steps: 512, pitches: 96});
 		expect(resolve_roll('x', 24)).toBe(null);
 		expect(resolve_roll(0, 24)).toBe(null);
+	});
+});
+
+describe('roll_from_bars', () => {
+	test('bars and octaves become steps and pitches', () => {
+		expect(roll_from_bars(4, 2)).toEqual({steps: 64, pitches: 24});
+		expect(roll_from_bars(1, 1)).toEqual({steps: 16, pitches: 12});
+	});
+
+	test('the offered bar counts are powers of two', () => {
+		for (const b of BAR_CHOICES) expect(b & (b - 1)).toBe(0);
+	});
+
+	test('nonsense is refused, excess is clamped', () => {
+		expect(roll_from_bars('x', 2)).toBe(null);
+		expect(roll_from_bars(0, 2)).toBe(null);
+		expect(roll_from_bars(999, 99)).toEqual({steps: 512, pitches: 96});
+	});
+});
+
+describe('step_seconds', () => {
+	test('120 bpm makes a sixteenth an eighth of a second', () => {
+		expect(step_seconds(120)).toBeCloseTo(0.125, 10);
+	});
+
+	test('unplayable tempos are clamped, garbage becomes the default', () => {
+		expect(step_seconds(1)).toBeCloseTo(step_seconds(20), 10);
+		expect(step_seconds('x')).toBeCloseTo(step_seconds(120), 10);
+	});
+});
+
+describe('key_guides', () => {
+	test('the black keys of every octave, and a label on every C', () => {
+		const g = key_guides({pitches: 24});
+		expect(g.length).toBe(24);
+		//base note 48 = C3: lane 0 is a labelled white C
+		expect(g[0]).toEqual({black: false, label: 'C3'});
+		expect(g[12].label).toBe('C4');
+		//C# D D# E F F# G G# A A# B - blacks at offsets 1,3,6,8,10
+		expect(g.map(x => x.black ? 1 : 0).slice(0, 12)).toEqual([0,1,0,1,0,0,1,0,1,0,1,0]);
+	});
+});
+
+describe('notes_at_step', () => {
+	const paint = (w, h, spots) => {
+		const d = new Uint8ClampedArray(w * h * 4);
+		for (const [x, y] of spots) d[(y * w + x) * 4 + 3] = 255;
+		return d;
+	};
+
+	test('a painted pixel is its row\'s note, through the same map the editor uses', () => {
+		//horizontal 64x24: bottom row y=23 is the base note
+		const d = paint(64, 24, [[0, 23], [0, 11]]);
+		expect(notes_at_step(d, DEFAULT_ROLL, 'horizontal', 0)).toEqual([BASE_NOTE, BASE_NOTE + 12]);
+		expect(notes_at_step(d, DEFAULT_ROLL, 'horizontal', 1)).toEqual([]);
+	});
+
+	test('vertical reads the same music down the page', () => {
+		//vertical 24x64: column p at row step
+		const d = paint(24, 64, [[0, 5], [12, 5]]);
+		expect(notes_at_step(d, DEFAULT_ROLL, 'vertical', 5)).toEqual([BASE_NOTE, BASE_NOTE + 12]);
+	});
+
+	test('the two orientations agree note for note through the rotation', () => {
+		const d = paint(64, 24, [[10, 3], [10, 23]]);
+		const h_notes = notes_at_step(d, DEFAULT_ROLL, 'horizontal', 10);
+		const r = rotate_pixels(d, 64, 24, 'cw');
+		const v_notes = notes_at_step(r.data, DEFAULT_ROLL, 'vertical', 10);
+		expect(v_notes).toEqual(h_notes);
 	});
 });

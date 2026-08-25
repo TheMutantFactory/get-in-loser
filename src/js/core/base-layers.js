@@ -196,6 +196,9 @@ class Base_layers_class {
 			//pixel grid
 			this.Base_gui.draw_pixel_grid(this.ctx);
 
+			//piano roll keyboard lanes
+			this.Base_gui.draw_roll_guides(this.ctx);
+
 			//guides
 			this.Base_gui.draw_guides(this.ctx);
 

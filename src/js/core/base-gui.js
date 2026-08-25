@@ -11,6 +11,7 @@ import GUI_preview_class from './gui/gui-preview.js';
 import GUI_panels_class from './gui/gui-panels.js';
 import GUI_palette_class from './gui/gui-palette.js';
 import GUI_sound_class from './gui/gui-sound.js';
+import {key_guides} from './piano-roll.js';
 import GUI_voxel_class from './gui/gui-voxel.js';
 import {should_draw_pixel_grid, grid_line_positions} from './pixel-grid.js';
 import {unpack, read_slice, slice_dimensions} from './voxel.js';
@@ -468,6 +469,66 @@ class Base_gui_class {
 				Math.round(dims.width * zoom),
 				Math.round(dims.height * zoom)
 			);
+		}
+
+		ctx.restore();
+
+		return true;
+	}
+
+	/**
+	 * The piano roll's keyboard, drawn onto the canvas: black-key lanes shaded, every C labelled.
+	 *
+	 * Without this a roll is 24 identical rows and nobody knows which one is middle C - the
+	 * complaint that asked for it. The guide is built from the SAME pitch maps the player reads
+	 * (core/piano-roll.js), so what it says can never disagree with what sounds. Screen space
+	 * with the transform reset, for the pixel grid's reason: the ambient transform mid-render
+	 * is not the plain zoom matrix.
+	 */
+	draw_roll_guides(ctx) {
+		var state = config.pianoroll;
+
+		if (state == null || state.enabled !== true || config.PIXEL_MODE !== true) {
+			return false;
+		}
+
+		var guides = key_guides(state.roll);
+		var origin = this.Base_layers.get_world_coords(0, 0);
+		var zoom = config.ZOOM;
+		var vertical = state.orientation === 'vertical';
+
+		ctx.save();
+		ctx.setTransform(1, 0, 0, 1, 0, 0);
+		ctx.globalCompositeOperation = 'source-over';
+		ctx.filter = 'none';
+
+		for (var p = 0; p < guides.length; p++) {
+			//pitch p sits on canvas row (pitches-1-p) horizontally, or column p vertically -
+			//the same mapping pixel_to_note uses
+			var lane = vertical ? p : (state.roll.pitches - 1 - p);
+			var start = (lane - (vertical ? origin.x : origin.y)) * zoom;
+
+			if (guides[p].black) {
+				ctx.fillStyle = 'rgba(0, 0, 0, 0.12)';
+				if (vertical) {
+					ctx.fillRect(start, 0, zoom, ctx.canvas.height);
+				}
+				else {
+					ctx.fillRect(0, start, ctx.canvas.width, zoom);
+				}
+			}
+
+			if (guides[p].label != null && zoom >= 7) {
+				ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+				ctx.font = Math.min(11, Math.max(8, zoom * 0.8)) + 'px sans-serif';
+				ctx.textBaseline = 'middle';
+				if (vertical) {
+					ctx.fillText(guides[p].label, start + 1, 8);
+				}
+				else {
+					ctx.fillText(guides[p].label, 2, start + zoom / 2);
+				}
+			}
 		}
 
 		ctx.restore();

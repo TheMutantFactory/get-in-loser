@@ -420,6 +420,17 @@ Two follow-ups on yesterday's panel work, both from the field within a day.
 
 ---
 
+## v0.1.41 — "Sixteenths"
+
+The piano roll learns to be an instrument rather than a picture of one.
+
+- **It plays.** A green play button and a tempo box appear in the top bar whenever a roll exists: the playhead walks the time axis in sixteenths at the tempo, and every painted pixel sounds on its row's pitch through the Sound engine. **A run of pixels holds as one note** — the player triggers on rising edges only, so drawing a long bar means a long note, which is what it looks like. The roll loops and re-reads the image every pass, so you can paint while it plays and hear the edit next time round. Pressing play powers the audio and picks the poly synth if nothing melodic is loaded.
+- **The roll wears a keyboard.** Black-key lanes shaded, every C labelled — built from the *same* pitch maps the player reads, so what the lanes say and what the speaker does can never disagree. Without it a roll was twenty-four identical rows and nobody knew which one was middle C.
+- **Roll mode puts the toolbar on a diet:** point, select, pencil, erase — the four things a roll can use. A brushstroke on a piano roll is pixels that look like music and play like an accident.
+- **The New Roll dialog speaks music:** bars (in powers of two — music is built by doubling) and octaves, not steps and pitches. Four bars, two octaves is the default loop.
+
+---
+
 ## Unreleased — "???"
 
 - (redacted)

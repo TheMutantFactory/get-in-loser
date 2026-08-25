@@ -533,6 +533,49 @@ IMPORTANT: any new icon should also must be added on /service-worker.js + its ve
 	flex: 0 0 auto;
 }
 
+/* ---------- piano roll: transport + toolbar diet ---------- */
+
+.roll_transport{
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	margin-left: 6px;
+}
+.roll_transport.hidden{
+	/* the generic .hidden is declared earlier in this file, so at equal specificity the
+	   inline-flex above would win the cascade and un-hide the transport */
+	display: none;
+}
+.roll_play{
+	background: none;
+	border: 1px solid var(--border-color);
+	border-radius: 3px;
+	color: var(--mutant-green);
+	width: 26px;
+	height: 22px;
+	cursor: pointer;
+	line-height: 1;
+}
+.roll_tempo{
+	width: 52px;
+}
+.roll_tempo_label{
+	font-size: 11px;
+	opacity: 0.7;
+}
+
+/* roll mode: the toolbar keeps only what a roll can use - a brushstroke on a piano roll is
+   pixels that look like music and play like an accident */
+body.pianoroll_mode .sidebar_left .item{
+	display: none;
+}
+body.pianoroll_mode .sidebar_left .item.select,
+body.pianoroll_mode .sidebar_left .item.selection,
+body.pianoroll_mode .sidebar_left .item.pencil,
+body.pianoroll_mode .sidebar_left .item.erase{
+	display: block;
+}
+
 /* ---------- sound panel ---------- */
 
 .sound_boot{

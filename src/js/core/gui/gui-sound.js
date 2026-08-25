@@ -168,6 +168,21 @@ class GUI_sound_class {
 		}, true);
 	}
 
+	/**
+	 * The engine, powering it first if nobody has - for callers like the piano roll's play
+	 * button, whose click is a perfectly good user gesture.
+	 */
+	async ensure_engine() {
+		if (this.engine == null) {
+			await this.power_on();
+		}
+		else if (this.engine.muted) {
+			await this.engine.unmute();
+			this.sync_topbar();
+		}
+		return this.engine;
+	}
+
 	async power_on() {
 		var button = document.getElementById('sound_power');
 		button.disabled = true;

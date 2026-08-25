@@ -61,6 +61,11 @@
 				</svg>
 			</button>
 			<input type="range" class="sound_topbar_volume hidden" id="sound_topbar_volume" min="0" max="100" value="80" title="Volume">
+			<span class="roll_transport hidden" id="roll_transport">
+				<button type="button" class="roll_play" id="roll_play" title="Play the roll">&#9654;</button>
+				<input type="number" class="roll_tempo" id="roll_tempo" min="20" max="300" step="1" value="120" title="Tempo, beats per minute">
+				<span class="roll_tempo_label">bpm</span>
+			</span>
 			<div class="block attributes" id="action_attributes"></div>
 			<button class="undo_button" id="undo_button" type="button">
 				<span class="sr_only">Undo</span>
