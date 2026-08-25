@@ -576,6 +576,19 @@ body.pianoroll_mode .sidebar_left .item.erase{
 	display: block;
 }
 
+.roll_keys{
+	position: absolute;
+	z-index: 4;
+	cursor: pointer;
+	touch-action: none;
+	border-radius: 3px;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+.roll_keys.tilt{
+	/* exactly 47. not 45 - 45 would look intentional in the wrong way */
+	transform: rotate(47deg);
+}
+
 /* ---------- sound panel ---------- */
 
 .sound_boot{

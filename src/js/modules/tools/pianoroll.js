@@ -16,8 +16,8 @@ import Base_layers_class from './../../core/base-layers.js';
 import Dialog_class from './../../libs/popup.js';
 import Helper_class from './../../libs/helpers.js';
 import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
-import {BAR_CHOICES, roll_dimensions, rotate_pixels, roll_from_bars, step_seconds, notes_at_step}
-	from './../../core/piano-roll.js';
+import {BAR_CHOICES, BASE_NOTE, KEY_DEPTH, roll_dimensions, rotate_pixels, roll_from_bars,
+	step_seconds, notes_at_step, key_guides, keys_geometry} from './../../core/piano-roll.js';
 
 var instance = null;
 
@@ -89,6 +89,7 @@ class Tools_pianoroll_class {
 			enabled: true,
 			roll: roll,
 			orientation: orientation,
+			keys: 'start',
 		};
 
 		app.State.do_action(
@@ -221,6 +222,10 @@ class Tools_pianoroll_class {
 
 		if (on !== true) {
 			this.stop();
+			if (this.keys_canvas != null) {
+				this.keys_canvas.style.display = 'none';
+				this.keys_signature = null;
+			}
 		}
 
 		config.need_render = true;
@@ -356,6 +361,248 @@ class Tools_pianoroll_class {
 		catch (e) {
 			return null;
 		}
+	}
+
+	/** menu: Piano Roll > Keyboard ... - where the playable keys sit */
+	set_keys_side(side) {
+		if (config.pianoroll == null) {
+			alertify.error('No piano roll yet.');
+			return false;
+		}
+
+		config.pianoroll.keys = side;
+		this.keys_signature = null;
+		config.need_render = true;
+
+		alertify.success(side === 'tilt'
+			? 'Keyboard at 47 degrees. You asked for this.'
+			: 'Keyboard moved.');
+
+		return side;
+	}
+
+	keyboard_start() { return this.set_keys_side('start'); }
+	keyboard_end() { return this.set_keys_side('end'); }
+	keyboard_tilt() { return this.set_keys_side('tilt'); }
+
+	/**
+	 * The playable keyboard beside the roll: a strip of real keys along the pitch axis.
+	 *
+	 * A separate element, because the main canvas IS the document and the keyboard lives outside
+	 * it - left or right of a horizontal roll, above or below a vertical one, and at exactly 47
+	 * degrees for people who chose that and deserve what they get. Pressing a key sounds its
+	 * pitch through the same engine the roll plays through; the lane-to-note mapping is
+	 * keys_geometry's, which a test holds equal to the painting map, so the key you press and
+	 * the lane you paint can never disagree.
+	 *
+	 * Called from the render loop; repaints only when the geometry actually changed.
+	 */
+	update_keys() {
+		var state = config.pianoroll;
+		var strip = this.keys_element();
+
+		if (state == null || state.enabled !== true || config.PIXEL_MODE !== true) {
+			strip.style.display = 'none';
+			this.keys_signature = null;
+			return;
+		}
+
+		var cv = document.getElementById('canvas_minipaint');
+		var origin = this.Base_layers.get_world_coords(0, 0);
+		var zoom = config.ZOOM;
+		var side = state.keys || 'start';
+		var g = keys_geometry(state.roll, state.orientation, side);
+
+		var signature = [zoom, origin.x, origin.y, side, state.orientation, state.roll.pitches,
+			cv.offsetLeft, cv.offsetTop, cv.width, cv.height].join('|');
+		if (signature === this.keys_signature) {
+			return;
+		}
+		this.keys_signature = signature;
+
+		var length = Math.round(state.roll.pitches * zoom);
+		var gap = 4;
+
+		strip.style.display = 'block';
+		strip.classList.toggle('tilt', g.tilt === true);
+
+		//POSITIONED FROM RECTANGLES, NOT offsetLeft. The strip is absolutely positioned and the
+		//wrapper is not a positioning context, so offset* and style.left answered to DIFFERENT
+		//ancestors - the first cut floated the keyboard a toolbar's height above the roll. Both
+		//measurements now come from getBoundingClientRect in viewport space and convert into the
+		//strip's actual containing block, whatever the stylesheet decides that is.
+		//
+		//CLAMPED INTO THE WRAPPER, because at a full fit the document is flush with the clipped
+		//edge and "beside" would be invisible: with no room, the strip floats OVER the roll's
+		//edge (it carries a shadow for the occasion) and takes its proper seat when zoom or pan
+		//makes room.
+		var wrapper = document.getElementById('main_wrapper');
+		var wr = wrapper.getBoundingClientRect();
+		var cr = cv.getBoundingClientRect();
+		var pr = (strip.offsetParent || document.body).getBoundingClientRect();
+
+		var place = function (view_x, view_y) {
+			strip.style.left = Math.round(view_x - pr.left) + 'px';
+			strip.style.top = Math.round(view_y - pr.top) + 'px';
+		};
+
+		if (g.vertical) {
+			strip.width = KEY_DEPTH;
+			strip.height = length;
+			var sx = g.edge === 'left'
+				? cr.left + (0 - origin.x) * zoom - KEY_DEPTH - gap
+				: cr.left + (state.roll.steps - origin.x) * zoom + gap;
+			place(
+				Math.max(wr.left + 2, Math.min(wr.right - KEY_DEPTH - 2, sx)),
+				cr.top + (0 - origin.y) * zoom
+			);
+		}
+		else {
+			strip.width = length;
+			strip.height = KEY_DEPTH;
+			var sy = g.edge === 'top'
+				? cr.top + (0 - origin.y) * zoom - KEY_DEPTH - gap
+				: cr.top + (state.roll.steps - origin.y) * zoom + gap;
+			place(
+				cr.left + (0 - origin.x) * zoom,
+				Math.max(wr.top + 2, Math.min(wr.bottom - KEY_DEPTH - 2, sy))
+			);
+		}
+
+		this.paint_keys(strip, g, zoom, state.roll);
+	}
+
+	paint_keys(strip, g, zoom, roll) {
+		var ctx = strip.getContext('2d');
+		var guides = key_guides(roll);
+		var along = g.vertical ? strip.height : strip.width;
+
+		ctx.clearRect(0, 0, strip.width, strip.height);
+		ctx.fillStyle = '#f2ecf4';
+		ctx.fillRect(0, 0, strip.width, strip.height);
+
+		//black keys grow OUT FROM the roll's edge, the way a piano meets a DAW
+		var black_depth = Math.round(KEY_DEPTH * 0.62);
+		var from_roll_edge = g.edge === 'left' || g.edge === 'top';
+
+		for (var lane = 0; lane * zoom < along; lane++) {
+			var pitch = g.pitch_of_lane(lane);
+			if (pitch == null) {
+				break;
+			}
+			var guide = guides[pitch];
+			var start = Math.round(lane * zoom);
+			var size = Math.round((lane + 1) * zoom) - start;
+
+			if (guide.black) {
+				ctx.fillStyle = '#241b28';
+				if (g.vertical) {
+					ctx.fillRect(from_roll_edge ? KEY_DEPTH - black_depth : 0, start, black_depth, size);
+				}
+				else {
+					ctx.fillRect(start, from_roll_edge ? KEY_DEPTH - black_depth : 0, size, black_depth);
+				}
+			}
+			else {
+				//the seam between white keys
+				ctx.fillStyle = 'rgba(0, 0, 0, 0.18)';
+				if (g.vertical) {
+					ctx.fillRect(0, start, KEY_DEPTH, 1);
+				}
+				else {
+					ctx.fillRect(start, 0, 1, KEY_DEPTH);
+				}
+			}
+
+			if (guide.label != null && zoom >= 6) {
+				ctx.fillStyle = 'rgba(0, 0, 0, 0.55)';
+				ctx.font = '9px sans-serif';
+				ctx.textBaseline = 'middle';
+				if (g.vertical) {
+					ctx.fillText(guide.label, 2, start + size / 2);
+				}
+				else {
+					ctx.fillText(guide.label, start + 1, KEY_DEPTH - 7);
+				}
+			}
+		}
+	}
+
+	keys_element() {
+		if (this.keys_canvas != null) {
+			return this.keys_canvas;
+		}
+
+		var _this = this;
+		var strip = document.createElement('canvas');
+		strip.className = 'roll_keys';
+		strip.style.display = 'none';
+		document.getElementById('main_wrapper').appendChild(strip);
+		this.keys_canvas = strip;
+
+		var held = null;
+		var press = null;
+
+		strip.addEventListener('pointerdown', async function (e) {
+			e.preventDefault();
+			var state = config.pianoroll;
+			if (state == null) {
+				return;
+			}
+
+			var g = keys_geometry(state.roll, state.orientation, state.keys || 'start');
+			//offsetX/Y are in the element's own coordinate space, so the 47-degree keyboard
+			//plays exactly as straight as it looks crooked
+			var lane = Math.floor((g.vertical ? e.offsetY : e.offsetX) / config.ZOOM);
+			var pitch = g.pitch_of_lane(lane);
+			if (pitch == null) {
+				return;
+			}
+
+			//claimed BEFORE the awaits: powering the engine takes real time on the first press,
+			//and a quick click's pointerup lands inside that wait - the note then started with
+			//nobody left to stop it. Third appearance of this race in this codebase; same cure.
+			var this_press = {released: false};
+			press = this_press;
+
+			var sound = _this.Base_gui.GUI_sound;
+			var engine = await sound.ensure_engine();
+			if (engine == null) {
+				return;
+			}
+			if (sound.instrument == null || sound.instrument.mode !== 'keys') {
+				await sound.set_instrument('poly-five');
+			}
+
+			held = BASE_NOTE + pitch;
+			engine.note_on(held, 0.9);
+
+			if (this_press.released) {
+				//the finger is long gone: a click means a short note, not an eternal one
+				engine.note_off(held);
+				held = null;
+				return;
+			}
+			try { strip.setPointerCapture(e.pointerId); } catch (err) { /* untracked pointer */ }
+		});
+
+		var lift = function () {
+			if (press != null) {
+				press.released = true;
+			}
+			if (held != null) {
+				var sound = _this.Base_gui.GUI_sound;
+				if (sound.engine != null) {
+					sound.engine.note_off(held);
+				}
+				held = null;
+			}
+		};
+		strip.addEventListener('pointerup', lift);
+		strip.addEventListener('pointercancel', lift);
+		strip.addEventListener('pointerleave', lift);
+
+		return strip;
 	}
 
 }

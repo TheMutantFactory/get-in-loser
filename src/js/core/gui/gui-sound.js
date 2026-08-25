@@ -228,6 +228,14 @@ class GUI_sound_class {
 			await this.use_patch(instrument.patch);
 		}
 
+		//the dropdown follows even when the change came from outside - the piano roll's play
+		//button and keyboard both switch instruments, and a selector that says 808 Kit while
+		//the poly synth sounds is lying
+		var select = document.getElementById('sound_instrument');
+		if (select != null && select.value !== instrument.id) {
+			select.value = instrument.id;
+		}
+
 		this.render_surface();
 	}
 

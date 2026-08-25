@@ -223,6 +223,57 @@ function notes_at_step(rgba, roll, orientation, step) {
 	return notes;
 }
 
+/** The keyboard strip's positions. 'start' hugs the low edge (left / top), 'end' the far one. */
+const KEY_SIDES = ['start', 'end', 'tilt'];
+
+/** How deep the keyboard strip draws, in screen pixels. */
+const KEY_DEPTH = 44;
+
+/**
+ * Where the keyboard strip sits and how its lanes map to pitches, for one orientation and side.
+ *
+ * The strip runs along the PITCH axis: vertical beside a horizontal roll, horizontal above or
+ * below a vertical one. Lane index counts along the strip in screen order; the pitch it plays
+ * comes from the same mapping pixel_to_note uses, so pressing a key and painting its lane are
+ * always the same note. 'tilt' is 'start' geometry with 47 degrees applied by the renderer -
+ * deliberately, exactly, 47: a keyboard at a jaunty angle plays identically and unsettles
+ * beautifully.
+ *
+ * @param {object} roll keys: pitches
+ * @param {string} orientation 'horizontal' | 'vertical'
+ * @param {string} side one of KEY_SIDES
+ * @returns {object} keys: vertical (bool, the STRIP's long axis), edge, tilt (bool),
+ *                   pitch_of_lane (function)
+ */
+function keys_geometry(roll, orientation, side) {
+	var tilt = side === 'tilt';
+	var at_start = side !== 'end';
+
+	if (orientation === 'vertical') {
+		//pitch runs left to right across the roll; the strip lies horizontal, above or below
+		return {
+			vertical: false,
+			edge: at_start ? 'top' : 'bottom',
+			tilt: tilt,
+			pitch_of_lane: function (lane) {
+				return lane >= 0 && lane < roll.pitches ? lane : null;
+			},
+		};
+	}
+
+	//horizontal roll: pitch climbs up the rows; the strip stands vertical, left or right
+	return {
+		vertical: true,
+		edge: at_start ? 'left' : 'right',
+		tilt: tilt,
+		pitch_of_lane: function (lane) {
+			//screen lane 0 is the TOP of the strip, which is the highest pitch
+			return lane >= 0 && lane < roll.pitches ? (roll.pitches - 1 - lane) : null;
+		},
+	};
+}
+
 export {DEFAULT_ROLL, MAX_STEPS, MAX_PITCHES, BASE_NOTE, STEPS_PER_BAR, BAR_CHOICES,
+	KEY_SIDES, KEY_DEPTH,
 	roll_dimensions, rotate_pixels, pixel_to_note, resolve_roll, roll_from_bars, step_seconds,
-	key_guides, notes_at_step};
+	key_guides, notes_at_step, keys_geometry};

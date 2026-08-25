@@ -476,6 +476,14 @@ class Base_gui_class {
 		return true;
 	}
 
+	/** The playable keyboard strip beside the roll tracks the canvas every render. */
+	update_roll_keys() {
+		var mod = this.modules ? this.modules['tools/pianoroll'] : null;
+		if (mod != null && typeof mod.update_keys === 'function') {
+			mod.update_keys();
+		}
+	}
+
 	/**
 	 * The piano roll's keyboard, drawn onto the canvas: black-key lanes shaded, every C labelled.
 	 *

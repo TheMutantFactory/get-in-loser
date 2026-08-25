@@ -3,7 +3,7 @@
  * inverts every melody, and an off-by-one plays everything a semitone sharp forever.
  */
 import {DEFAULT_ROLL, BASE_NOTE, BAR_CHOICES, roll_dimensions, rotate_pixels, pixel_to_note,
-	resolve_roll, roll_from_bars, step_seconds, key_guides, notes_at_step}
+	resolve_roll, roll_from_bars, step_seconds, key_guides, notes_at_step, keys_geometry, KEY_SIDES}
 	from '../src/js/core/piano-roll.js';
 
 describe('roll_dimensions', () => {
@@ -152,5 +152,46 @@ describe('notes_at_step', () => {
 		const r = rotate_pixels(d, 64, 24, 'cw');
 		const v_notes = notes_at_step(r.data, DEFAULT_ROLL, 'vertical', 10);
 		expect(v_notes).toEqual(h_notes);
+	});
+});
+
+describe('keys_geometry', () => {
+	test('a horizontal roll wears its keyboard on the left or right, standing up', () => {
+		expect(keys_geometry(DEFAULT_ROLL, 'horizontal', 'start').edge).toBe('left');
+		expect(keys_geometry(DEFAULT_ROLL, 'horizontal', 'end').edge).toBe('right');
+		expect(keys_geometry(DEFAULT_ROLL, 'horizontal', 'start').vertical).toBe(true);
+	});
+
+	test('a vertical roll wears it above or below, lying down', () => {
+		expect(keys_geometry(DEFAULT_ROLL, 'vertical', 'start').edge).toBe('top');
+		expect(keys_geometry(DEFAULT_ROLL, 'vertical', 'end').edge).toBe('bottom');
+		expect(keys_geometry(DEFAULT_ROLL, 'vertical', 'end').vertical).toBe(false);
+	});
+
+	test('THE CONTRACT: pressing a key and painting its lane are the same note', () => {
+		//strip lane -> pitch must agree with pixel_to_note's row -> pitch, both orientations
+		const g_h = keys_geometry(DEFAULT_ROLL, 'horizontal', 'start');
+		for (let lane = 0; lane < 24; lane++) {
+			const pitch = g_h.pitch_of_lane(lane);
+			expect(BASE_NOTE + pitch).toBe(pixel_to_note(0, lane, DEFAULT_ROLL, 'horizontal').note);
+		}
+		const g_v = keys_geometry(DEFAULT_ROLL, 'vertical', 'start');
+		for (let lane = 0; lane < 24; lane++) {
+			const pitch = g_v.pitch_of_lane(lane);
+			expect(BASE_NOTE + pitch).toBe(pixel_to_note(lane, 0, DEFAULT_ROLL, 'vertical').note);
+		}
+	});
+
+	test('47 degrees is start geometry with the tilt flag up', () => {
+		const g = keys_geometry(DEFAULT_ROLL, 'horizontal', 'tilt');
+		expect(g.edge).toBe('left');
+		expect(g.tilt).toBe(true);
+		expect(KEY_SIDES).toContain('tilt');
+	});
+
+	test('off the ends of the strip is silence, not a wrong note', () => {
+		const g = keys_geometry(DEFAULT_ROLL, 'horizontal', 'start');
+		expect(g.pitch_of_lane(-1)).toBe(null);
+		expect(g.pitch_of_lane(24)).toBe(null);
 	});
 });

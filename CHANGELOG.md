@@ -441,6 +441,15 @@ One crash report from the first human minutes with the roll, and the trail it op
 
 ---
 
+## v0.1.43 — "Eighty-Eight Keys, Give or Take Sixty-Four"
+
+- **The roll wears a real piano now.** A playable keyboard strip beside the pitch axis — left or right of a horizontal roll, above or below a vertical one — with proper black keys growing out of the roll's edge and a label on every C. **Press a key, hear the pitch**: the strip plays through the same engine as the roll, and the lane-to-note mapping is the very map the pencil paints by, held equal by a test, so the key you press and the lane you paint cannot disagree.
+- **And a keyboard at 47 degrees.** Not 45 — 45 would look intentional in the wrong way. It plays exactly as straight as it looks crooked (pointer coordinates live in the element's own space, so the tilt costs nothing), and it exists because you specifically asked for something to fuck with people. Menu: Piano Roll → Keyboard: 47°.
+- When the fit leaves no room beside the document, the strip floats over the roll's edge — it carries a shadow for the occasion — and takes its proper seat when zoom or pan makes room.
+- Fixed while wiring: a quick key-press during the engine's first boot started a note nobody could stop (the third appearance of the released-during-await race in this codebase, same cure); the strip originally positioned itself against a different ancestor than it measured, floating a toolbar's height above the roll; and the Sound panel's instrument dropdown now follows instrument changes made from outside it.
+
+---
+
 ## Unreleased — "???"
 
 - (redacted)

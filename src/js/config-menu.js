@@ -448,6 +448,21 @@ const menuDefinition = [
 			{
 				name: 'Rotate Roll',
 				target: 'tools/pianoroll.rotate'
+			},
+			{
+				divider: true
+			},
+			{
+				name: 'Keyboard: Left / Top',
+				target: 'tools/pianoroll.keyboard_start'
+			},
+			{
+				name: 'Keyboard: Right / Bottom',
+				target: 'tools/pianoroll.keyboard_end'
+			},
+			{
+				name: 'Keyboard: 47°',
+				target: 'tools/pianoroll.keyboard_tilt'
 			}
 		]
 	},
