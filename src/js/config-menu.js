@@ -36,10 +36,6 @@ const menuDefinition = [
 						name: 'Open Data URL',
 						ellipsis: true,
 						target: 'file/open.open_data_url'
-					},
-					{
-						name: 'Open Test Template',
-						target: 'file/open.open_template_test'
 					}
 				]
 			},

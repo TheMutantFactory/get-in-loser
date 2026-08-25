@@ -394,6 +394,12 @@ Two follow-ups on yesterday's panel work, both from the field within a day.
 
 ---
 
+## v0.1.38 — "Spring Cleaning, Inherited Dust"
+
+- **The deployed app drops from 5.0M to 1.9M** by deleting two files this project never used: miniPaint's 3.1M demo `preview.gif` (a README animation the editor never loads) and its 36K test fixture, along with the debug menu entry that fetched it and the upstream embed examples that referenced both. Thirty-eight releases of features added ~217K to the bundle; the other three megabytes were sitting there from the first commit.
+
+---
+
 ## Unreleased — "???"
 
 - (redacted)
