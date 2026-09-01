@@ -1,5 +1,5 @@
 /*
- * Get in loser - https://github.com/DazzlingDukeOfLazers/get-in-loser
+ * Get in loser - https://github.com/TheMutantFactory/get-in-loser
  * Based on miniPaint by ViliusL.
  *
  * Shared right-click context menu. Used by the layers panel and by the hand

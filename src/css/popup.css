@@ -307,3 +307,54 @@ body.theme-yonce .markdown_body h1,
 body.theme-yonce .markdown_body h2{
 	color: var(--yc-petal-pink);
 }
+
+/* ========== About dialog ================================================== */
+/* The About dialog replaces the popup's title/value table with one markup
+   block (see modules/help/about.js), so it brings its own layout. */
+.get-in-loser-about{
+	max-width: 46rem;
+}
+#popups .popup td.html_value:has(.get-in-loser-about){
+	vertical-align: top;
+}
+.get-in-loser-about .about-intro{
+	margin: 0 0 1.25rem;
+	font-size: 1.05rem;
+	line-height: 1.5;
+}
+.get-in-loser-about .about-promise{
+	margin: 0 0 1.5rem;
+	font-weight: 700;
+}
+.get-in-loser-about .about-grid{
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: .75rem;
+	margin: 0 0 1.5rem;
+}
+.get-in-loser-about .about-feature{
+	padding: .85rem;
+	border: 1px solid currentColor;
+}
+.get-in-loser-about .about-feature strong{
+	display: block;
+	margin-bottom: .35rem;
+}
+.get-in-loser-about .about-feature span{
+	line-height: 1.4;
+}
+.get-in-loser-about .about-meta{
+	margin: 0;
+	padding-top: 1rem;
+	border-top: 1px solid currentColor;
+	line-height: 1.6;
+}
+.get-in-loser-about a{
+	color: inherit;
+	text-decoration: underline;
+}
+@media (max-width: 620px) {
+	.get-in-loser-about .about-grid{
+		grid-template-columns: 1fr;
+	}
+}

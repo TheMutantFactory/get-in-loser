@@ -1,5 +1,5 @@
 /*
- * Get in loser - https://github.com/DazzlingDukeOfLazers/get-in-loser
+ * Get in loser - https://github.com/TheMutantFactory/get-in-loser
  * Based on miniPaint by ViliusL.
  */
 import Dialog_class from './../../libs/popup.js';
