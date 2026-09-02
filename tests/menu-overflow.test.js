@@ -1,4 +1,6 @@
 import {
+	MENU_BAR_SLACK,
+	menu_bar_split,
 	menu_bar_overflow,
 	menu_bar_scroll_correction,
 } from '../src/js/core/menu-overflow.js';
@@ -91,5 +93,78 @@ describe('menu_bar_scroll_correction', () => {
 	test('survives missing measurements', () => {
 		expect(menu_bar_scroll_correction(null, {left: 0, right: 10})).toBe(0);
 		expect(menu_bar_scroll_correction(bar(), null)).toBe(0);
+	});
+});
+
+describe('menu_bar_split', () => {
+	/* the real bar: eleven menus, More is wider than most of them */
+	const MENUS = [37, 38, 40, 44, 40, 41, 63, 41, 45, 41, 40];
+	const MORE = 58;
+	const ALL = MENUS.reduce((a, b) => a + b, 0); // 470
+
+	const shown = (available) => menu_bar_split(MENUS, available, MORE);
+
+	test('a desktop bar shows every menu and no More', () => {
+		expect(shown(1180)).toBe(MENUS.length);
+	});
+
+	test('exactly wide enough, plus the slack, still shows them all', () => {
+		expect(shown(ALL + MENU_BAR_SLACK)).toBe(MENUS.length);
+	});
+
+	test('one pixel short collapses rather than clipping', () => {
+		expect(shown(ALL + MENU_BAR_SLACK - 1)).toBeLessThan(MENUS.length);
+	});
+
+	test('a portrait phone keeps the first few and collapses the rest', () => {
+		//275px between the hamburgers, 1px of slack: the first five total 199
+		//and 199 + 58 More = 257 fits inside 274; a sixth would make 240 + 58
+		//= 298, which does not
+		expect(shown(275)).toBe(5);
+	});
+
+	test('what it keeps always fits beside More', () => {
+		for (let available = 0; available <= 1200; available += 7) {
+			const count = shown(available);
+			if (count === MENUS.length || count === 0) {
+				//0 is the give-up case: More alone is shown and the bar scrolls
+				continue;
+			}
+			const used = MENUS.slice(0, count).reduce((a, b) => a + b, 0) + MORE;
+			expect(used).toBeLessThanOrEqual(available - MENU_BAR_SLACK);
+		}
+	});
+
+	test('it never keeps fewer menus as the bar grows', () => {
+		let previous = 0;
+		for (let available = 0; available <= 1200; available += 3) {
+			const count = shown(available);
+			expect(count).toBeGreaterThanOrEqual(previous);
+			previous = count;
+		}
+	});
+
+	test('too narrow for even one menu leaves a bar of just More', () => {
+		expect(shown(60)).toBe(0);
+		expect(shown(0)).toBe(0);
+	});
+
+	test('a negative width does not go below zero', () => {
+		expect(shown(-500)).toBe(0);
+	});
+
+	test('no menus at all is no menus', () => {
+		expect(menu_bar_split([], 800, MORE)).toBe(0);
+		expect(menu_bar_split(null, 800, MORE)).toBe(0);
+	});
+
+	test('an unmeasurable bar is left alone rather than collapsed', () => {
+		//a hidden or zero-width container must not stampede everything into More
+		expect(menu_bar_split(MENUS, NaN, MORE)).toBe(MENUS.length);
+		expect(menu_bar_split(MENUS, Infinity, MORE)).toBe(MENUS.length);
+	});
+
+	test('a free More still splits on the menus themselves', () => {
+		expect(menu_bar_split(MENUS, 200, 0)).toBe(5); // 37+38+40+44+40 = 199
 	});
 });

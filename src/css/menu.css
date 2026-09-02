@@ -141,7 +141,18 @@
 	content: ">";
 	right: 9px;
 	width: 5px;
-	transform: scaleY(2);
+	/*
+	 * The arrow is a stretched ">" and the stretch counts towards the
+	 * dropdown's scrollable overflow, so on a full height line box it spills
+	 * past the last row and gives the dropdown a phantom scrollbar. Bounding
+	 * the pseudo element to its own glyph and centring it keeps the doubled
+	 * height inside the row. Visible on the More dropdown, where every row has
+	 * an arrow and the content is exactly as tall as the box.
+	 */
+	top: 50%;
+	height: 1em;
+	line-height: 1;
+	transform: translateY(-50%) scaleY(2);
 	color: #808080;
 }
 .main_menu > ul.menu_dropdown > li > a[aria-haspopup="true"] > .name {
@@ -169,6 +180,16 @@
 	color: var(--menu-dropdown-text-muted-color);
 }
 
+
+/*
+ * "More" collects whatever no longer fits on the bar. It is a real menu item
+ * holding the overflowed menus as its children, so it opens and nests like any
+ * other; the caret is the only thing that marks it out.
+ */
+.main_menu > ul.menu_bar > li.menu_more > a > .name:after {
+	content: " \25BE";
+	opacity: 0.7;
+}
 
 .mobile_menu {
 	display: none;

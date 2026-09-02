@@ -7,7 +7,7 @@ import { VERSION_LABEL } from './../../libs/version.js';
 import config from './../../config.js';
 import menuDefinition from './../../config-menu.js';
 import Tools_translate_class from './../../modules/tools/translate.js';
-import { menu_bar_overflow, menu_bar_scroll_correction } from './../menu-overflow.js';
+import { menu_bar_split, menu_bar_overflow, menu_bar_scroll_correction } from './../menu-overflow.js';
 
 /**
  * class responsible for rendering main menu
@@ -22,16 +22,73 @@ class GUI_menu_class {
 		this.lastFocusedMenuBarLink = 0;
 		this.dropdownStack = [];
 
+		//the definition the bar is currently rendered from. Identical to the
+		//imported one until the bar runs out of room, at which point the menus
+		//that no longer fit move into the children of a synthetic More item -
+		//so every walk from the root has to start here, not at the import.
+		this.menuBarDefinition = menuDefinition;
+		//measured once per layout, keyed by the fingerprint below
+		this.menuBarItemWidths = null;
+		this.menuBarMoreWidth = 0;
+		this.menuBarVersionWidth = 0;
+		this.menuBarMetricsFingerprint = null;
+		this.menuBarVisibleCount = null;
+
 		this.Tools_translate = new Tools_translate_class();
 	}
 
 	render_main() {
 		this.menuContainer = document.getElementById('main_menu');
 
+		//container level, so they survive the bar being re-rendered
+		this.menuContainer.addEventListener('click', (event) => { return this.on_click_menu(event); }, true);
+		this.menuContainer.addEventListener('keydown', (event) => { return this.on_key_down_menu(event); }, true);
+		document.body.addEventListener('mousedown', (event) => { return this.on_mouse_down_body(event); }, true);
+		document.body.addEventListener('touchstart', (event) => { return this.on_mouse_down_body(event); }, true);
+		window.addEventListener('resize', (event) => { return this.on_resize_window(event); }, true);
+
+		this.render_menu_bar(menuDefinition);
+		this.update_menu_bar_collapse();
+
+		//the container, not the bar: the bar is replaced on every re-render, and
+		//re-rendering it must not feed the observer that triggered it. The
+		//container is fixed to both viewport edges, so its width is the bar's
+		//budget and it changes for any reason the budget could - a window
+		//resize, an orientation change, a zoom - without depending on the
+		//window resize event reaching us.
+		if (typeof ResizeObserver == 'function') {
+			this.menuBarObserver = new ResizeObserver(() => {
+				this.update_menu_bar_collapse();
+				this.update_menu_bar_overflow();
+			});
+			this.menuBarObserver.observe(this.menuContainer);
+		}
+
+		//a late webfont changes every label's width, so the split is recomputed
+		//once the real faces are in
+		if (document.fonts && document.fonts.ready) {
+			document.fonts.ready.then(() => {
+				this.menuBarMetricsFingerprint = null;
+				this.update_menu_bar_collapse();
+			}).catch(() => {});
+		}
+
+		document.body.classList.add('loaded');
+	}
+
+	/**
+	 * Renders the bar from a definition array and rebinds everything attached
+	 * to the <ul>, which this replaces. The array is not always the imported
+	 * menu definition - see menuBarDefinition.
+	 *
+	 * @param {array} definition top level menu items to render, in order
+	 */
+	render_menu_bar(definition) {
+		this.menuBarDefinition = definition;
+
 		let menuTemplate = '<ul class="menu_bar" role="menubar" tabindex="0">';
-		for (let i = 0; i < menuDefinition.length; i++) {
-			const item = menuDefinition[i];
-			menuTemplate += this.generate_menu_bar_item_template(item, i);
+		for (let i = 0; i < definition.length; i++) {
+			menuTemplate += this.generate_menu_bar_item_template(definition[i], i);
 		}
 		menuTemplate += this.generate_version_template();
 		menuTemplate += '</ul>';
@@ -39,24 +96,18 @@ class GUI_menu_class {
 		this.menuContainer.innerHTML = menuTemplate;
 		this.menuBarNode = this.menuContainer.querySelector('[role="menubar"]');
 
-		this.menuContainer.addEventListener('click', (event) => { return this.on_click_menu(event); }, true);
-		this.menuContainer.addEventListener('keydown', (event) => { return this.on_key_down_menu(event); }, true);
 		this.menuBarNode.addEventListener('focus', (event) => { return this.on_focus_menu_bar(event); });
 		this.menuBarNode.addEventListener('blur', (event) => { return this.on_blur_menu_bar(event); });
+		this.menuBarNode.addEventListener('scroll', () => { return this.update_menu_bar_overflow(); }, {passive: true});
 		this.menuBarNode.querySelectorAll('a').forEach((link) => {
 			link.addEventListener('focus', (event) => { return this.on_focus_menu_bar_link(event); });
 		});
-		document.body.addEventListener('mousedown', (event) => { return this.on_mouse_down_body(event); }, true);
-		document.body.addEventListener('touchstart', (event) => { return this.on_mouse_down_body(event); }, true);
-		window.addEventListener('resize', (event) => { return this.on_resize_window(event); }, true);
-		
-		this.register_menu_bar_overflow();
 
-		document.body.classList.add('loaded');
-		
 		if (config.LANG != 'en') {
 			this.Tools_translate.translate(config.LANG, this.menuContainer);
 		}
+
+		this.update_menu_bar_overflow();
 	}
 
 	/**
@@ -98,7 +149,7 @@ class GUI_menu_class {
 
 	generate_menu_bar_item_template(definition, index) {
 		return `
-			<li>
+			<li${ definition.overflow ? ' class="menu_more"' : '' }>
 				<a id="main_menu_0_${index}" role="menuitem" tabindex="-1" aria-haspopup="true" aria-expanded="false"
 					href="javascript:void(0)" data-level="0" data-index="${ index }"><span class="name trn">${ definition.name }</span></a>
 			</li>
@@ -155,30 +206,128 @@ class GUI_menu_class {
 	}
 
 	/**
-	 * On a phone the menu bar is too narrow for eleven menus, so it scrolls
-	 * sideways between the two hamburger gutters. Nothing about a scroll
-	 * container says "there is more over there", so the bar carries a fading
-	 * edge on whichever side still has menus to reveal; these classes drive
-	 * them from menu.css.
+	 * The synthetic top level item that holds whatever no longer fits. Its
+	 * children are the real menu definitions, untouched, so every dropdown
+	 * below it behaves exactly as it does when the menu sits on the bar.
+	 *
+	 * @param {array} children menus that did not fit
+	 * @returns {object} a menu definition node
 	 */
-	register_menu_bar_overflow() {
-		const bar = this.menuBarNode;
-		const container = this.menuContainer;
-		if (!bar || !container) {
-			return;
+	build_more_definition(children) {
+		return {name: 'More', overflow: true, children};
+	}
+
+	/**
+	 * Measures each menu at the current layout and caches the widths.
+	 *
+	 * Measuring means rendering: the bar is briefly rendered with every menu
+	 * plus a More item so all of them can be read off, and the caller then
+	 * re-renders it with the split it wants. The fingerprint is the padding
+	 * and font of a real bar link, which is what actually changes these widths
+	 * (the breakpoint widens the touch padding, and a theme or language can
+	 * change the font) - cheaper and more honest than duplicating the
+	 * breakpoint here.
+	 */
+	measure_menu_bar_items() {
+		this.render_menu_bar(menuDefinition.concat([this.build_more_definition([])]));
+
+		const widths = [];
+		let more_width = 0;
+		let version_width = 0;
+
+		for (const item of Array.prototype.slice.call(this.menuBarNode.children)) {
+			//fractional, because eleven rounded widths drift by several pixels
+			const width = item.getBoundingClientRect().width;
+			if (item.classList.contains('menu_version')) {
+				version_width = width;
+			}
+			else if (item.classList.contains('menu_more')) {
+				more_width = width;
+			}
+			else {
+				widths.push(width);
+			}
 		}
 
-		//also called directly after a programmatic scroll, which must not wait
-		//on the scroll event to repaint the edges
-		this.update_menu_bar_overflow = () => {
-			const overflow = menu_bar_overflow(bar.scrollLeft, bar.scrollWidth, bar.clientWidth);
-			container.classList.toggle('can_scroll_left', overflow.left);
-			container.classList.toggle('can_scroll_right', overflow.right);
-		};
+		this.menuBarItemWidths = widths;
+		this.menuBarMoreWidth = more_width;
+		this.menuBarVersionWidth = version_width;
+		this.menuBarMetricsFingerprint = this.menu_bar_metrics_fingerprint();
+	}
 
-		bar.addEventListener('scroll', this.update_menu_bar_overflow, {passive: true});
-		window.addEventListener('resize', this.update_menu_bar_overflow);
-		this.update_menu_bar_overflow();
+	/**
+	 * @returns {string} identifies the layout the cached widths were taken in
+	 */
+	menu_bar_metrics_fingerprint() {
+		const link = this.menuBarNode ? this.menuBarNode.querySelector('a') : null;
+		if (!link) {
+			return null;
+		}
+		const style = window.getComputedStyle(link);
+		return [style.paddingLeft, style.paddingRight, style.fontSize, style.fontFamily].join('|');
+	}
+
+	/**
+	 * Collapses the menus that no longer fit under a More item, or brings them
+	 * back out when there is room again. Driven purely by measurement, so it
+	 * works the same for a narrowed desktop window as for a phone.
+	 *
+	 * @returns {boolean} true when the bar was re-rendered
+	 */
+	update_menu_bar_collapse() {
+		if (!this.menuBarNode) {
+			return false;
+		}
+
+		if (this.menuBarItemWidths === null
+			|| this.menuBarMetricsFingerprint !== this.menu_bar_metrics_fingerprint()) {
+			this.measure_menu_bar_items();
+			//the probe render above is not a layout anyone should be left with
+			this.menuBarVisibleCount = null;
+		}
+
+		const bar = this.menuBarNode;
+		const style = window.getComputedStyle(bar);
+		const available = bar.clientWidth
+			- (parseFloat(style.paddingLeft) || 0)
+			- (parseFloat(style.paddingRight) || 0)
+			- this.menuBarVersionWidth;
+
+		const visible = menu_bar_split(this.menuBarItemWidths, available, this.menuBarMoreWidth);
+		if (visible === this.menuBarVisibleCount) {
+			return false;
+		}
+
+		//the re-render destroys the openers the stack points at
+		this.close_child_dropdowns(0);
+		this.menuBarVisibleCount = visible;
+
+		this.render_menu_bar(visible >= menuDefinition.length
+			? menuDefinition
+			: menuDefinition.slice(0, visible).concat([
+				this.build_more_definition(menuDefinition.slice(visible)),
+			]));
+
+		return true;
+	}
+
+	/**
+	 * Fallback for a bar too narrow even for More: it scrolls, and a scroll
+	 * container says nothing about what lies past its edge, so the bar carries
+	 * a fading edge on whichever side still hides menus. menu.css draws them
+	 * from these two classes.
+	 *
+	 * Also called directly after a programmatic scroll, which must not wait on
+	 * the scroll event to repaint the edges.
+	 */
+	update_menu_bar_overflow() {
+		const bar = this.menuBarNode;
+		if (!bar || !this.menuContainer) {
+			return;
+		}
+		const overflow = menu_bar_overflow(bar.scrollLeft, bar.scrollWidth, bar.clientWidth);
+		this.menuContainer.classList.toggle('can_scroll_left', overflow.left);
+		this.menuContainer.classList.toggle('can_scroll_right', overflow.right);
 	}
 
 	/**
@@ -211,10 +360,7 @@ class GUI_menu_class {
 		}
 
 		bar.scrollLeft += correction;
-
-		if (this.update_menu_bar_overflow) {
-			this.update_menu_bar_overflow();
-		}
+		this.update_menu_bar_overflow();
 	}
 
 	on_blur_menu_bar(event) {
@@ -354,7 +500,11 @@ class GUI_menu_class {
 	}
 
 	on_resize_window(event) {
-		if (this.dropdownStack.length > 0) {
+		const rerendered = this.update_menu_bar_collapse();
+		this.update_menu_bar_overflow();
+
+		//a re-render already closed the dropdowns, and their openers are gone
+		if (!rerendered && this.dropdownStack.length > 0) {
 			this.position_dropdowns();
 		}
 	}
@@ -379,7 +529,7 @@ class GUI_menu_class {
 		const index = parseInt(link.getAttribute('data-index'), 10) || 0;
 
 		// Find link definition
-		let children = menuDefinition;
+		let children = this.menuBarDefinition;
 		for (let i = 0; i < level; i++) {
 			const childIndex = this.dropdownStack[i] != null ? this.dropdownStack[i].index : index;
 			children = children[childIndex].children;
@@ -412,7 +562,7 @@ class GUI_menu_class {
 		this.close_child_dropdowns(level);
 
 		// Find child list in the menu definition
-		let children = menuDefinition;
+		let children = this.menuBarDefinition;
 		for (let i = 0; i <= level; i++) {
 			const childIndex = this.dropdownStack[i] != null ? this.dropdownStack[i].index : index;
 			children = children[childIndex].children;

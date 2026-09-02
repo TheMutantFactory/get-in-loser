@@ -7,15 +7,77 @@
  * sideways instead of shrinking its items into unreadable slivers, and these
  * two decisions are what make that scroll usable:
  *
+ *   - how many menus fit, so the rest can be collapsed under a "More" item
  *   - which edge still hides menus, so the bar can fade and point that way
  *   - how far to scroll so an opened menu clears the hamburgers overlaying
  *     the bar's padding gutters, instead of being sliced in half by one
+ *
+ * The last two are graceful degradation rather than the main event: once the
+ * menus collapse under More the bar does not overflow, so the fading edges
+ * stay hidden. They earn their keep in the window before the first split is
+ * computed, and anywhere the recompute never arrives - a browser without
+ * ResizeObserver that also swallows the resize event leaves the bar holding
+ * every menu, and a bar that scrolls and says so beats one that clips its
+ * labels into initials.
  *
  * See tests/menu-overflow.test.js. gui-menu.js supplies the measurements.
  */
 
 /** fractional scroll positions never land exactly on 0 or on the maximum */
 const SCROLL_EPSILON = 1;
+
+/**
+ * Breathing room, in pixels, kept between the menus and the edge of the bar.
+ * Item widths are fractional and the browser rounds; without this a bar that
+ * fits by a quarter of a pixel can still end up with a scrollbar.
+ */
+const MENU_BAR_SLACK = 1;
+
+/**
+ * How many leading menus to leave on the bar, with everything after them
+ * collapsed under a "More" item.
+ *
+ * Returns widths.length when they all fit, meaning no More item at all -- and
+ * 0 when not even the first menu fits beside More, meaning the bar becomes a
+ * single More holding everything, which is still better than a row of clipped
+ * initials.
+ *
+ * @param {array} widths each menu's rendered width, in order, in pixels
+ * @param {number} available content width of the bar, padding already removed
+ * @param {number} more_width rendered width of the More item
+ * @returns {number} count of menus to show directly on the bar
+ */
+function menu_bar_split(widths, available, more_width) {
+	if (!Array.isArray(widths) || widths.length === 0) {
+		return 0;
+	}
+	if (!isFinite(available)) {
+		//nothing measurable to fit into; leave the bar as it is
+		return widths.length;
+	}
+
+	const budget = available - MENU_BAR_SLACK;
+	let total = 0;
+	for (let i = 0; i < widths.length; i++) {
+		total += widths[i];
+	}
+
+	if (total <= budget) {
+		return widths.length;
+	}
+
+	const more = isFinite(more_width) ? more_width : 0;
+	let used = 0;
+	for (let i = 0; i < widths.length; i++) {
+		used += widths[i];
+		if (used + more > budget) {
+			//items 0..i-1 fit alongside More; this one does not
+			return i;
+		}
+	}
+
+	return widths.length;
+}
 
 /**
  * Which sides of a horizontally scrolling bar still have content off screen.
@@ -77,4 +139,4 @@ function menu_bar_scroll_correction(bar, link) {
 	return 0;
 }
 
-export {SCROLL_EPSILON, menu_bar_overflow, menu_bar_scroll_correction};
+export {SCROLL_EPSILON, MENU_BAR_SLACK, menu_bar_split, menu_bar_overflow, menu_bar_scroll_correction};
