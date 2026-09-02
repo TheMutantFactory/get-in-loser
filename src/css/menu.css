@@ -221,6 +221,56 @@
 		overflow-y: hidden;
 		-webkit-overflow-scrolling: touch;
 		scrollbar-width: none;
+		/* proximity, not mandatory: a swipe still coasts, but it comes to rest
+		   on a whole menu name rather than slicing one under a hamburger */
+		scroll-snap-type: x proximity;
+		scroll-padding-left: calc(var(--menu-h) + var(--safe-left));
+		scroll-padding-right: calc(var(--menu-h) + var(--safe-right));
+	}
+	/*
+	 * Eleven menus do not fit a phone, so the bar scrolls -- and a scroll
+	 * container tells you nothing about what is off its edge. These fading
+	 * edges appear only on the side that still has menus to reveal, just
+	 * inside the hamburger gutters; gui-menu.js maintains the two classes.
+	 * They sit under the hamburgers (z 200) and over the bar.
+	 */
+	.main_menu:before,
+	.main_menu:after {
+		content: '';
+		position: absolute;
+		top: var(--safe-top);
+		width: 26px;
+		height: var(--menu-h);
+		z-index: 150;
+		display: flex;
+		align-items: center;
+		opacity: 0;
+		transition: opacity 0.15s ease;
+		pointer-events: none;
+		font-size: 17px;
+		line-height: 1;
+		color: var(--menu-text-color);
+	}
+	.main_menu:before {
+		content: '\2039';
+		left: calc(var(--menu-h) + var(--safe-left));
+		justify-content: flex-start;
+		background: linear-gradient(to right,
+			var(--menu-background-color) 45%, transparent);
+	}
+	.main_menu:after {
+		content: '\203A';
+		right: calc(var(--menu-h) + var(--safe-right));
+		justify-content: flex-end;
+		background: linear-gradient(to left,
+			var(--menu-background-color) 45%, transparent);
+	}
+	.main_menu.can_scroll_left:before,
+	.main_menu.can_scroll_right:after {
+		opacity: 1;
+	}
+	.main_menu > ul.menu_bar > li {
+		scroll-snap-align: start;
 	}
 	.main_menu > ul.menu_bar::-webkit-scrollbar {
 		display: none;

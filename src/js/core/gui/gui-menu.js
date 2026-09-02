@@ -7,6 +7,7 @@ import { VERSION_LABEL } from './../../libs/version.js';
 import config from './../../config.js';
 import menuDefinition from './../../config-menu.js';
 import Tools_translate_class from './../../modules/tools/translate.js';
+import { menu_bar_overflow, menu_bar_scroll_correction } from './../menu-overflow.js';
 
 /**
  * class responsible for rendering main menu
@@ -49,6 +50,8 @@ class GUI_menu_class {
 		document.body.addEventListener('touchstart', (event) => { return this.on_mouse_down_body(event); }, true);
 		window.addEventListener('resize', (event) => { return this.on_resize_window(event); }, true);
 		
+		this.register_menu_bar_overflow();
+
 		document.body.classList.add('loaded');
 		
 		if (config.LANG != 'en') {
@@ -147,6 +150,71 @@ class GUI_menu_class {
 
 	on_focus_menu_bar_link(event) {
 		this.lastFocusedMenuBarLink = parseInt(event.target.getAttribute('data-index'), 10) || 0;
+		//arrowing along a scrolled bar must bring the focused menu with it
+		this.scroll_menu_bar_link_into_view(event.target);
+	}
+
+	/**
+	 * On a phone the menu bar is too narrow for eleven menus, so it scrolls
+	 * sideways between the two hamburger gutters. Nothing about a scroll
+	 * container says "there is more over there", so the bar carries a fading
+	 * edge on whichever side still has menus to reveal; these classes drive
+	 * them from menu.css.
+	 */
+	register_menu_bar_overflow() {
+		const bar = this.menuBarNode;
+		const container = this.menuContainer;
+		if (!bar || !container) {
+			return;
+		}
+
+		//also called directly after a programmatic scroll, which must not wait
+		//on the scroll event to repaint the edges
+		this.update_menu_bar_overflow = () => {
+			const overflow = menu_bar_overflow(bar.scrollLeft, bar.scrollWidth, bar.clientWidth);
+			container.classList.toggle('can_scroll_left', overflow.left);
+			container.classList.toggle('can_scroll_right', overflow.right);
+		};
+
+		bar.addEventListener('scroll', this.update_menu_bar_overflow, {passive: true});
+		window.addEventListener('resize', this.update_menu_bar_overflow);
+		this.update_menu_bar_overflow();
+	}
+
+	/**
+	 * Scrolls a top level menu clear of the hamburgers that overlay the bar's
+	 * padding gutters, so an opened or focused menu is never sliced in half by
+	 * one of them. Scrolls instantly on purpose: callers read the opener's
+	 * rect immediately afterwards to place the dropdown.
+	 */
+	scroll_menu_bar_link_into_view(link) {
+		const bar = this.menuBarNode;
+		if (!bar || !link || bar.scrollWidth - bar.clientWidth <= 1) {
+			return;
+		}
+		const bar_style = window.getComputedStyle(bar);
+		const bar_rect = bar.getBoundingClientRect();
+		const link_rect = link.getBoundingClientRect();
+
+		const correction = menu_bar_scroll_correction({
+			left: bar_rect.left,
+			right: bar_rect.right,
+			padding_left: parseFloat(bar_style.paddingLeft) || 0,
+			padding_right: parseFloat(bar_style.paddingRight) || 0,
+		}, {
+			left: link_rect.left,
+			right: link_rect.right,
+		});
+
+		if (correction === 0) {
+			return;
+		}
+
+		bar.scrollLeft += correction;
+
+		if (this.update_menu_bar_overflow) {
+			this.update_menu_bar_overflow();
+		}
 	}
 
 	on_blur_menu_bar(event) {
@@ -378,6 +446,11 @@ class GUI_menu_class {
 			index,
 			element: dropdownElement
 		});
+
+		//before positioning: this moves the opener, and the dropdown follows it
+		if (level === 0) {
+			this.scroll_menu_bar_link_into_view(opener);
+		}
 
 		this.position_dropdowns();
 	}
