@@ -1,12 +1,44 @@
+/*
+ * Responsive baseline.
+ *
+ * --menu-h is the height of the fixed top menu bar. .wrapper, the off-canvas
+ * drawers and the hamburgers all measure from it, so it only has to change in
+ * one place per breakpoint.
+ *
+ * The --safe-* vars carry the device's safe-area insets (notch, home
+ * indicator). index.html sets viewport-fit=cover, without which they are all
+ * 0px -- which is also what env() falls back to on anything but a notched
+ * phone, so they are inert on desktop.
+ *
+ * The "phone shape" breakpoint below is used verbatim by this file, menu.css
+ * and base-gui.js (MOBILE_LAYOUT_QUERY); keep the three in step:
+ *
+ *   screen and (max-width: 700px),
+ *   screen and (max-width: 1000px) and (max-height: 500px)
+ *
+ * The second clause catches a phone held landscape (e.g. 812x375), which is
+ * far wider than 700px but much too short for the desktop chrome. The 1000px
+ * bound keeps landscape tablets and short desktop windows on the desktop
+ * layout.
+ */
+:root{
+	--menu-h: 30px;
+	--safe-top: env(safe-area-inset-top, 0px);
+	--safe-right: env(safe-area-inset-right, 0px);
+	--safe-bottom: env(safe-area-inset-bottom, 0px);
+	--safe-left: env(safe-area-inset-left, 0px);
+}
+
 .wrapper{
 	display: -ms-grid;
 	display: grid;
 	margin: 0;
 	position: fixed; /* dont change it, vh does not work on mobiles with bottom footer */
-	top: 30px;
+	top: calc(var(--menu-h) + var(--safe-top));
 	right: 0;
 	left: 0;
-	bottom: 5px;
+	bottom: 0;
+	padding-bottom: max(5px, var(--safe-bottom));
 	height: auto;
 	overflow: hidden;
 
@@ -245,7 +277,7 @@ body.theme-yonce .logo_l{
 .undo_button:hover {
 	background-color: transparent;
 }
-@media screen and (max-width: 700px){
+@media screen and (max-width: 700px), screen and (max-width: 1000px) and (max-height: 500px){
 	.undo_button {
 		display: block;
 	}
@@ -435,12 +467,6 @@ IMPORTANT: any new icon should also must be added on /service-worker.js + its ve
 .sidebar_left .desaturate:after{ background-image: url('images/icons/desaturate.svg'); }
 .sidebar_left .bulge_pinch:after{ background-image: url('images/icons/bulge_pinch.svg'); }
 .sidebar_left .animation:after{ background-image: url('images/icons/animation.svg'); }
-
-@media screen and (max-width:550px){
-	#sidebar_left{
-		left: -110px;
-	}
-}
 
 /* ========== right sidebar ================================================= */
 
@@ -1177,33 +1203,182 @@ body.panning{
 	overflow-y: auto;
 }
 
-@media screen and (max-width:700px){
-	body{
-		padding-top:50px;
+/* ========== responsive: phone-shaped viewports ============================ */
+
+/*
+ * At this breakpoint both sidebars become off-canvas drawers driven by the
+ * hamburgers in .mobile_menu, and the top chrome grows to touch size.
+ *
+ * The drawers are position:fixed, not position:absolute. .wrapper is a CSS
+ * grid, and an out-of-flow grid child resolves its offsets against its own
+ * grid area -- so once the sidebars left the flow, their columns collapsed to
+ * 0px hard against the viewport edges. .sidebar_right's `right: 0` was then
+ * measured from a zero-width area pinned at x = 100vw, so the panel never came
+ * back on screen at all and layers, colors, palette, preview, sound and voxel
+ * were unreachable on a phone. Anchoring to the viewport and sliding with a
+ * transform sidesteps the grid area entirely, and animates on the compositor.
+ */
+@media screen and (max-width:700px), screen and (max-width:1000px) and (max-height:500px){
+	:root{
+		--menu-h: 50px;
 	}
-	.wrapper{
-		top: 50px;
+	body{
+		padding-top: var(--menu-h);
+	}
+
+	/* ---------- off-canvas drawers ---------- */
+
+	.sidebar_left,
+	.sidebar_right{
+		position: fixed;
+		top: calc(var(--menu-h) + var(--safe-top));
+		bottom: 0;
+		z-index: 60;
+		margin: 0;
+		max-height: none;
+		align-self: auto;
+		overflow-y: auto;
+		/* a drawer scrolled to its end must not scroll the canvas behind it */
+		overscroll-behavior: contain;
+		background: var(--section-background-color);
+		transition: transform 0.2s ease;
 	}
 	.sidebar_left{
-		position: absolute;
-		left: -90px;
-		background: var(--background);
-	}
-	.sidebar_left.active{
-		box-shadow: -5px 0px 10px 0px rgba(0,0,0,0.75);
 		left: 0;
-		z-index: 3;
+		/* two 44px touch columns: 40-odd tools in two screens, not six */
+		width: calc(104px + var(--safe-left));
+		padding: 0 4px 0 var(--safe-left);
+		align-content: flex-start;
+		transform: translateX(-100%);
+		box-shadow: 5px 0 14px rgba(0, 0, 0, 0.6);
 	}
 	.sidebar_right{
-		position: absolute;
-		height: 100%;
-		right: -210px;
-		background: var(--background);
-	}
-	.sidebar_right.active{
-		box-shadow: -5px 0px 10px 0px rgba(0,0,0,0.75);
 		right: 0;
-		margin-right: 0;
+		left: auto;
+		/* 200px of panel is too cramped for the layer rows and the palette */
+		width: 288px;
+		max-width: 84vw;
+		padding: 0 calc(5px + var(--safe-right)) var(--safe-bottom) 5px;
+		transform: translateX(100%);
+		box-shadow: -5px 0 14px rgba(0, 0, 0, 0.6);
+	}
+	.sidebar_left.active,
+	.sidebar_right.active{
+		transform: none;
+	}
+	/* a full-width flex line that keeps the last tool clear of the home bar */
+	.sidebar_left:after{
+		content: '';
+		flex: 0 0 100%;
+		height: var(--safe-bottom);
+	}
+	.sidebar_left .item{
+		width: 44px;
+		height: 44px;
+		margin: 4px 0 0 4px;
+	}
+	.sidebar_left .item:after{
+		background-size: 24px 24px;
+	}
+	.sidebar_left .gradient:after{
+		background-size: 24px 16px;
+	}
+	.sidebar_left .text:after{
+		background-size: 20px auto;
+	}
+
+	/* tap-away layer, only painted while a drawer is open */
+	.drawer_scrim{
+		display: none;
+		position: fixed;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		z-index: 55;
+		background: rgba(0, 0, 0, 0.45);
+	}
+	body.drawer_open .drawer_scrim{
+		display: block;
+	}
+
+	/* ---------- top chrome ---------- */
+
+	/* the wordmark eats a third of the row; the MF mark carries the branding */
+	.logo{
+		display: none;
+	}
+	.submenu{
+		padding-left: var(--safe-left);
+		padding-right: var(--safe-right);
+	}
+	.smart_folder_toggle{
+		width: 40px;
+		height: 40px;
+		margin: 5px 0 5px 2px;
+	}
+	.smart_folder_toggle > svg{
+		width: 20px;
+		height: 20px;
+	}
+	.sound_topbar_toggle{
+		width: 40px;
+		height: 40px;
+		padding: 7px;
+	}
+	.sound_topbar_volume{
+		flex-basis: 90px;
+		width: 90px;
+		height: 30px;
+	}
+	.roll_transport .roll_play{
+		min-width: 40px;
+		min-height: 40px;
+	}
+	.undo_button{
+		/* below .attributes' order, so it stays on the header row; auto margin
+		   pins it to the far edge once the wordmark is gone */
+		order: 5;
+		flex: 0 0 44px;
+		width: 44px;
+		margin-left: auto;
+	}
+	/* the wordmark used to supply this row's left inset */
+	.factory-imprint{
+		margin-left: 5px;
+	}
+	.attributes .item{
+		margin-right: 14px;
+	}
+	.attributes .item > button:not(.ui_icon_button){
+		padding: 8px 12px;
+	}
+	/* panel pin / reorder / collapse controls, in a drawer you drive by thumb */
+	.panel_control{
+		width: 28px;
+		height: 28px;
+	}
+}
+
+/* Portrait phones: tool options get a full-width row of their own instead of
+   fighting the header for the ~130px left over. Landscape keeps the single
+   row, where the scarce axis is height rather than width. */
+@media screen and (max-width:700px) and (min-height:500px){
+	.submenu{
+		flex-wrap: wrap;
+	}
+	.attributes{
+		order: 10;
+		flex: 1 0 100%;
+		width: 100%;
+		margin-top: 0;
+	}
+}
+
+/* Phone held landscape: claw back the vertical chrome the taller bar costs. */
+@media screen and (max-width:1000px) and (max-height:500px){
+	:root{
+		--menu-h: 42px;
 	}
 }
 
@@ -1361,12 +1536,12 @@ canvas{
 		margin-left: 0px;
 	}
 }
-@media screen and (max-height: 690px){
+@media screen and (min-width:1001px) and (max-height: 690px){
 	.sidebar_left{
 		width: 75px;
 	}
 }
-@media screen and (max-height:450px){
+@media screen and (min-width:1001px) and (max-height:450px){
 	.sidebar_left{
 		width: 88px;
 	}

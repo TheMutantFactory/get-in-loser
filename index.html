@@ -6,7 +6,7 @@
 	<title>Get in loser</title>
 	<meta name="description" content="Edit pixels, build tiny voxel models, remove backgrounds, and play SoundGraph instruments in one private browser workspace." />
 	<meta name="keywords" content="browser image editor, pixel art, voxel editor, background removal, SoundGraph, private image editor, local image editing" />
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=0" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=0, viewport-fit=cover" />
 	<link rel="icon" type="image/svg+xml" href="images/favicon.svg">
 	<link rel="icon" sizes="192x192" href="images/favicon.png">
 	<!-- <link rel="manifest" href="dist/manifest.json"> -->
@@ -141,12 +141,15 @@
 			</div>
 		</div>
 	</div>
+	<!-- tap-away layer behind an open mobile drawer; styled only below the
+	     phone-shape breakpoint, inert everywhere else -->
+	<div class="drawer_scrim" id="drawer_scrim"></div>
 	<div class="mobile_menu">
-		<button class="left_mobile_menu" id="left_mobile_menu_button" type="button">
-			<span class="sr_only">Toggle Menu</span>
+		<button class="left_mobile_menu" id="left_mobile_menu_button" type="button" aria-expanded="false" aria-controls="tools_container">
+			<span class="sr_only">Toggle tools</span>
 		</button>
-		<button class="right_mobile_menu" id="mobile_menu_button" type="button">
-			<span class="sr_only">Toggle Menu</span>
+		<button class="right_mobile_menu" id="mobile_menu_button" type="button" aria-expanded="false" aria-controls="sidebar_right">
+			<span class="sr_only">Toggle panels</span>
 		</button>
 	</div>
 	<div class="hidden" id="tmp"></div>

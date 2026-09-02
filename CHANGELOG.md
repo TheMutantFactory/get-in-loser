@@ -469,6 +469,18 @@ One crash report from the first human minutes with the roll, and the trail it op
 
 ---
 
+## v0.1.46 — "Thumbs"
+
+- **The right-hand panels existed only in theory on a phone.** Tapping the right hamburger dutifully added `.active` to a sidebar that stayed at x = 380 on a 375px screen, every time, forever. `.wrapper` is a CSS grid, and an absolutely-positioned grid child measures its offsets against its *own grid area* — which, once the sidebar left the flow, had collapsed to zero pixels hard against the right edge of the world. `right: 0` was faithfully honoured; it just meant nothing. Layers, colours, palette, preview, sound and voxel were unreachable. The drawers are now fixed to the viewport and slide on a transform, so they answer to the screen rather than to a column that isn't there.
+- **The menu was reduced to initials.** `F E V Im Pi Vo Piano Roll La Eff To H` — eleven menus squeezed into slivers seventeen pixels wide, because flex will shrink a thing forever before it will admit the row is too narrow. The bar now scrolls sideways between the two hamburgers, with every label at full length and "Piano Roll" back on one line.
+- **Everything is thumb-sized.** Tools went from 30×25 to 44×44 and the rail from one column to two — the whole toolbox fits on one screen instead of six hundred pixels of scroll. Menu rows, the folder toggle, the sound toggle and undo all grew to match.
+- **Drawers behave like drawers.** One at a time (two open at once left a ninety-pixel slice of canvas), a dimmed backdrop you can tap to dismiss, Escape closes them, picking a tool closes the tool drawer, and growing the window past the breakpoint clears both. Both hamburgers used to announce themselves as "Toggle Menu"; they now say which is which, and whether they are open.
+- **Tool options get their own row** on a portrait phone instead of fighting the wordmark for the hundred and thirty pixels left over. The wordmark steps aside there — the finger is still up, just not on your phone — and the Mutant Factory mark carries the branding. The version number leaves the bar too; it is in Help ▸ About, and rides along with every piece of feedback you send.
+- **A phone held sideways is now a phone.** 812×375 is far wider than the old 700px breakpoint and far too short for desktop chrome, so landscape used to get the full apparatus on a 375-pixel-tall viewport. It gets drawers now, and a shorter menu bar to go with them.
+- **Safe areas honoured.** Nothing hides behind the home indicator or under the notch any more.
+
+---
+
 ## Unreleased — "???"
 
 - (redacted)

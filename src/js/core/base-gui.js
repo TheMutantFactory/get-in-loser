@@ -226,12 +226,9 @@ class Base_gui_class {
 			});
 		}
 
-		document.getElementById('left_mobile_menu_button').addEventListener('click', function (event) {
-			document.querySelector('.sidebar_left').classList.toggle('active');
-		});
-		document.getElementById('mobile_menu_button').addEventListener('click', function (event) {
-			document.querySelector('.sidebar_right').classList.toggle('active');
-		});
+		//mobile drawers
+		this.register_mobile_drawers();
+
 		window.addEventListener('resize', function (event) {
 			//resize
 			_this.prepare_canvas();
@@ -252,6 +249,97 @@ class Base_gui_class {
 		document.getElementById('canvas_minipaint').addEventListener('contextmenu', function (e) {
 			e.preventDefault();
 		}, false);
+	}
+
+	/**
+	 * Wires the two hamburgers to the off-canvas sidebars.
+	 *
+	 * Drawer rules, all of which only apply below the phone-shape breakpoint:
+	 * only one drawer is open at a time (on a 375px screen two open drawers
+	 * leave a ~90px slice of canvas), a scrim closes them on a tap outside,
+	 * picking a tool closes the tool drawer, and growing past the breakpoint
+	 * clears both so the desktop grid is never left with a stale .active.
+	 */
+	register_mobile_drawers() {
+		//keep in step with the breakpoint in layout.css / menu.css
+		const MOBILE_LAYOUT_QUERY = '(max-width: 700px), (max-width: 1000px) and (max-height: 500px)';
+		const mobile_layout = window.matchMedia(MOBILE_LAYOUT_QUERY);
+
+		const left_sidebar = document.querySelector('.sidebar_left');
+		const right_sidebar = document.querySelector('.sidebar_right');
+		const left_button = document.getElementById('left_mobile_menu_button');
+		const right_button = document.getElementById('mobile_menu_button');
+		const scrim = document.getElementById('drawer_scrim');
+
+		const drawers = [
+			{sidebar: left_sidebar, button: left_button},
+			{sidebar: right_sidebar, button: right_button}
+		];
+
+		function sync() {
+			let any_open = false;
+			for (const drawer of drawers) {
+				const open = drawer.sidebar.classList.contains('active');
+				drawer.button.setAttribute('aria-expanded', open ? 'true' : 'false');
+				any_open = any_open || open;
+			}
+			document.body.classList.toggle('drawer_open', any_open);
+		}
+
+		function close_all() {
+			for (const drawer of drawers) {
+				drawer.sidebar.classList.remove('active');
+			}
+			sync();
+		}
+
+		function toggle(sidebar) {
+			const opening = !sidebar.classList.contains('active');
+			close_all();
+			if (opening) {
+				sidebar.classList.add('active');
+			}
+			sync();
+		}
+
+		left_button.addEventListener('click', function () {
+			toggle(left_sidebar);
+		});
+		right_button.addEventListener('click', function () {
+			toggle(right_sidebar);
+		});
+		if (scrim) {
+			scrim.addEventListener('click', close_all);
+		}
+
+		//picking a tool is the reason the drawer was opened, so get out of the way
+		left_sidebar.addEventListener('click', function (event) {
+			if (mobile_layout.matches && event.target.closest('.item') !== null) {
+				close_all();
+			}
+		});
+
+		document.addEventListener('keydown', function (event) {
+			//no preventDefault: tools also use Escape, this only tidies the drawers
+			if (event.key === 'Escape' && mobile_layout.matches) {
+				close_all();
+			}
+		});
+
+		const on_breakpoint_change = function (event) {
+			if (!event.matches) {
+				close_all();
+			}
+		};
+		if (typeof mobile_layout.addEventListener == 'function') {
+			mobile_layout.addEventListener('change', on_breakpoint_change);
+		}
+		else {
+			//Safari < 14
+			mobile_layout.addListener(on_breakpoint_change);
+		}
+
+		sync();
 	}
 
 	check_canvas_offset() {

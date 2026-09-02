@@ -25,6 +25,7 @@
 	left: 0;
 	right: 0;
 	z-index: 100;
+	padding-top: var(--safe-top);
 }
 .main_menu > ul.menu_bar {
 	display: flex;
@@ -32,7 +33,7 @@
 	list-style: none;
 	padding: 0;
 	margin: 0;
-	height: 30px;
+	height: var(--menu-h);
 	padding-left: 10px;
 	background: var(--menu-background-color);
 }
@@ -173,7 +174,7 @@
 	display: none;
 	position: absolute;
 	width: 100%;
-	top: 0;
+	top: var(--safe-top);
 }
 .left_mobile_menu, .right_mobile_menu {
 	position: absolute;
@@ -201,13 +202,54 @@
 .left_mobile_menu { left:0; }
 .right_mobile_menu { right:0; }
 
-@media screen and (max-width:700px) {
+/* phone-shaped viewports; see layout.css for the canonical breakpoint */
+@media screen and (max-width:700px), screen and (max-width:1000px) and (max-height:500px) {
 	.mobile_menu {
 		display: block;
 	}
+	/*
+	 * The bar scrolls horizontally between the two hamburger gutters. Without
+	 * flex-wrap:nowrap + overflow-x the flex items shrink to fit instead, and
+	 * every label is clipped to a sliver -- the top nav read "F E V Im Pi Vo"
+	 * on a 375px screen, with "Piano Roll" wrapping onto two lines.
+	 */
 	.main_menu > ul.menu_bar {
-		height: 50px;
-		padding-left: 50px;
-		padding-right: 50px;
+		padding-left: calc(var(--menu-h) + var(--safe-left));
+		padding-right: calc(var(--menu-h) + var(--safe-right));
+		flex-wrap: nowrap;
+		overflow-x: auto;
+		overflow-y: hidden;
+		-webkit-overflow-scrolling: touch;
+		scrollbar-width: none;
+	}
+	.main_menu > ul.menu_bar::-webkit-scrollbar {
+		display: none;
+	}
+	.main_menu > ul.menu_bar > li {
+		flex: 0 0 auto;
+	}
+	.main_menu > ul.menu_bar > li > a {
+		padding: 0 12px;
+		white-space: nowrap;
+	}
+	/* decoration, and the first thing worth scrolling past on a phone */
+	.main_menu > ul.menu_bar > li.menu_version {
+		display: none;
+	}
+	/* the bar now scrolls underneath them, so they cannot stay transparent */
+	.left_mobile_menu, .right_mobile_menu {
+		width: var(--menu-h);
+		height: var(--menu-h);
+		background-color: var(--menu-background-color);
+	}
+	.left_mobile_menu { left: var(--safe-left); }
+	.right_mobile_menu { right: var(--safe-right); }
+	/* touch-sized rows, and a flyout that can never exceed the screen */
+	.main_menu > ul.menu_dropdown {
+		max-width: calc(100vw - var(--safe-left) - var(--safe-right) - 8px);
+	}
+	.main_menu > ul.menu_dropdown > li > a {
+		height: 40px;
+		line-height: 40px;
 	}
 }
